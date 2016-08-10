@@ -30,7 +30,7 @@ export default function (params: any): Promise<{ html: string, globals?: any }> 
         template: '<!DOCTYPE html>\n<html><head></head><body><app></app></body></html>'
     };
 
-    return bootloader.serializeApplication(config).then(html => {
+    return bootloader.serializeApplication(config).then((html: any) => {
         return { html };
     });
 }

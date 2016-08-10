@@ -10,10 +10,11 @@ http://www.typescriptlang.org/docs/handbook/tsconfig-json.html.
     "moduleResolution": "node",
     "target": "es5",
     "sourceMap": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "skipDefaultLibCheck": true
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules"
