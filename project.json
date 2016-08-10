@@ -1,6 +1,7 @@
 {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "dependencies": {
+    "Lib.PBCAT": "1.0.0",
     "Microsoft.AspNetCore.AngularServices": "1.0.0-*",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.0",
@@ -17,7 +18,9 @@
     "Microsoft.Extensions.Logging": "1.0.0",
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
-    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0"
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+    "Oracle.ManagedDataAccess": "12.1.24160419",
+    "System.Data.Common": "4.1.0"
   },
 
   "tools": {
@@ -44,6 +47,7 @@
   "publishOptions": {
     "include": [
       "appsettings.json",
+      "appsettings.*.json",
       "ClientApp",
       "node_modules",
       "typings",
@@ -59,6 +63,7 @@
   "scripts": {
     "prepublish": [
       "npm install",
+      "typings install",
       "node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js",
       "node node_modules/webpack/bin/webpack.js"
     ],

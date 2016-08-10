@@ -8,9 +8,21 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using S4Analytics.Models;
 
 namespace S4Analytics
 {
+    public class DbOptions
+    {
+        public string WarehouseConnStr { get; set; }
+        public string SpatialConnStr { get; set; }
+    }
+
+    public class AppOptions
+    {
+        public string Version { get; set; }
+    }
+
     public class Startup
     {
         public Startup(IHostingEnvironment env)
@@ -30,6 +42,22 @@ namespace S4Analytics
         {
             // Add framework services.
             services.AddMvc();
+            services.AddOptions();
+
+            // Add configurations.
+            services.Configure<DbOptions>(dbOptions =>
+            {
+                dbOptions.WarehouseConnStr = Configuration.GetConnectionString("Warehouse");
+                dbOptions.SpatialConnStr = Configuration.GetConnectionString("Spatial");
+            });
+            services.Configure<AppOptions>(appOptions =>
+            {
+                var ver = Configuration["App:Version"];
+                appOptions.Version = ver;
+            });
+
+            // Add repositories.
+            services.AddSingleton<IAgencyRepository, AgencyRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
