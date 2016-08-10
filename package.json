@@ -4,7 +4,6 @@
   "description": "Signal Four Analytics",
   "author": "UF GeoPlan Center",
   "scripts": {
-    "postinstall": "typings install",
     "tslint": "tslint -c tslint.json \"ClientApp/**/*.ts\" || true",
     "stylelint": "stylelint \"ClientApp/styles/*.css\" || true"
   },
