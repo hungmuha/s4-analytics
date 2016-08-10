@@ -1,0 +1,21 @@
+/*
+tsconfig.json contains options for the TypeScript compiler,
+such as where to save the compiled output, which version of ECMAScript
+to target, and so forth. For a full list of options, visit
+http://www.typescriptlang.org/docs/handbook/tsconfig-json.html.
+*/
+
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es5",
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipDefaultLibCheck": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

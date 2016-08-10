@@ -1,0 +1,20 @@
+typings.json lists required TypeScript typings for project
+dependencies written in JavaScript, as opposed to TypeScript.
+
+To install the typings listed here, issue the following command:
+
+  typings install
+
+It is not possible to import a JavaScript module if the typings
+are missing. If you add a new dependency to index.html, install
+the typings with this command:
+
+  typings install <source>~<module> -SG
+
+For example:
+
+  typings install dt~jquery -SG
+
+This will install the typings and save a record to this file.
+
+For documentation, visit https://github.com/typings/typings/blob/master/README.md.
