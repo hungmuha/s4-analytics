@@ -25,6 +25,7 @@ build:dev:
   - demo
   - release
   script:
+  - rmdir src\S4Analytics\bin\Release\PublishOutput /s /q
   - dotnet restore
   - dotnet build "src\S4Analytics" --configuration Release --no-dependencies --no-incremental
   - cd src\S4Analytics
