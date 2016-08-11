@@ -1,6 +1,6 @@
 Next generation Signal Four Analytics.
 
-Refer to the [wiki](https://geodevops.geoplan.ufl.edu/signal-four/S4-Analytics-NG/wikis/home) for instructions on getting started.
+Refer to the [wiki](https://geodevops.geoplan.ufl.edu/signal-four/S4-Analytics-HTML5/wikis/home) for instructions on getting started.
 
 GitLab CI is configured for this project:
 - feature branches: build and test only

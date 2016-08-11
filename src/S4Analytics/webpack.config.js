@@ -15,7 +15,7 @@ var cssnext = require('postcss-cssnext');
 var failPlugin = require('webpack-fail-plugin');
 var devConfig = require('./webpack.config.dev');
 var prodConfig = require('./webpack.config.prod');
-var isDevelopment = process.env.ASPNETCORE_ENVIRONMENT === 'Development';
+var isDevelopment = process.env.ASPNETCORE_ENVIRONMENT === 'Local' || process.env.ASPNETCORE_ENVIRONMENT === 'Development';
 
 module.exports = merge({
     resolve: {
@@ -34,7 +34,7 @@ module.exports = merge({
         };
     },
     entry: {
-        main: ['./ClientApp/boot-client.ts']
+        main: ['./ClientApp/main.ts']
     },
     output: {
         path: path.join(__dirname, 'wwwroot', 'dist'),
