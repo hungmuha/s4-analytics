@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8A8D5760-D
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "S4Analytics", "src\S4Analytics\S4Analytics.xproj", "{26401250-A2C7-42F3-AFA0-F36213D83119}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "S4Analytics.Test", "test\S4Analytics.Test\S4Analytics.Test.xproj", "{758BCD05-ADC2-4D0B-96B7-E70A9F3AED61}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "S4Analytics.Tests", "test\S4Analytics.Tests\S4Analytics.Tests.xproj", "{758BCD05-ADC2-4D0B-96B7-E70A9F3AED61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
