@@ -31,6 +31,7 @@ build:dev:
   - call stylelint "ClientApp/**/*.css"
   - call tslint -c tslint.json "ClientApp/**/*.ts"
   - call npm install --cache-min=99999999
+  - call typings install
   # webpack looks for ASPNETCORE_ENVIRONMENT
   - set ASPNETCORE_ENVIRONMENT=Development
   - call webpack --config webpack.config.vendor.js
@@ -62,14 +63,11 @@ test:dev:
 
 .deploy:all: &deploy_script
   script:
-  - cd src\S4Analytics
-  - call npm prune --production
-  - cd ..\..
   - copy app_offline.htm \\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\ # app_offline.htm tells iis to shut down the site and release file locks
   - dotnet publish "src\S4Analytics" --no-build --configuration Release --output "%CD%\src\S4Analytics\bin\Release\PublishOutput"
   - msdeploy -verb:sync -source:contentPath="%CD%\src\S4Analytics\bin\Release\PublishOutput" -dest:contentPath="\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%" -skip:Directory="download" -skip:Directory="logs" -skip:File="app_offline.htm"
   - del \\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\app_offline.htm
-  - (echo %CI_BUILD_ID%)>>\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\build # write build number to build file
+  - (echo %CI_BUILD_ID%)>>\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\wwwroot\build # write build number to build file
 
 deploy:dev:
   stage: deploy
