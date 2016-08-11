@@ -1,0 +1,104 @@
+# cache build artifacts for the duration of the build
+cache:
+  key: "%CI_BUILD_REF_NAME%"
+  paths:
+  - src/S4Analytics/bin
+  - src/S4Analytics/obj
+  - src/S4Analytics/project.lock.json
+  - src/S4Analytics/wwwroot/dist
+  - src/S4Analytics/node_modules
+  - src/S4Analytics/typings
+  - test/S4Analytics.Tests/bin
+  - test/S4Analytics.Tests/obj
+  - test/S4Analytics.Tests/project.lock.json
+
+stages:
+  - build
+  - test
+  - deploy
+
+build:dev:
+  stage: build
+  except:
+  # master and feature branches only
+  - staging
+  - demo
+  - release
+  script:
+  - dotnet restore
+  - dotnet build "src\S4Analytics" --configuration Release --no-dependencies --no-incremental
+  - cd src\S4Analytics
+  - call stylelint "ClientApp/**/*.css"
+  - call tslint -c tslint.json "ClientApp/**/*.ts"
+  - call npm install --cache-min=99999999
+  # webpack looks for ASPNETCORE_ENVIRONMENT
+  - set ASPNETCORE_ENVIRONMENT=Development
+  - call webpack --config webpack.config.vendor.js
+  - call webpack
+
+build:others:
+  stage: build
+  only:
+  - staging
+  - demo
+  - release
+  script:
+  - dotnet restore
+  - dotnet build "src\S4Analytics" --configuration Release --no-dependencies --no-incremental
+  - cd src\S4Analytics
+  - call npm install --cache-min=99999999
+  - call webpack --config webpack.config.vendor.js
+  - call webpack -p
+
+test:dev:
+  stage: test
+  # master and feature branches only
+  except:
+  - staging
+  - demo
+  - release
+  script:
+  - dotnet test "test\S4Analytics.Tests"
+
+.deploy:all: &deploy_script
+  script:
+  - cd src\S4Analytics
+  - call npm prune --production
+  - cd ..\..
+  - copy app_offline.htm \\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\ # app_offline.htm tells iis to shut down the site and release file locks
+  - dotnet publish "src\S4Analytics" --no-build --configuration Release --output "%CD%\src\S4Analytics\bin\Release\PublishOutput"
+  - msdeploy -verb:sync -source:contentPath="%CD%\src\S4Analytics\bin\Release\PublishOutput" -dest:contentPath="\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%" -skip:Directory="download" -skip:Directory="logs" -skip:File="app_offline.htm"
+  - del \\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\app_offline.htm
+  - (echo %CI_BUILD_ID%)>>\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\build # write build number to build file
+
+deploy:dev:
+  stage: deploy
+  only:
+  - master
+  before_script:
+  - set CI_WEB_PATH=analytics-html5-dev
+  <<: *deploy_script
+
+deploy:staging:
+  stage: deploy
+  only:
+  - staging
+  before_script:
+  - set CI_WEB_PATH=analytics-html5-staging
+  <<: *deploy_script
+
+deploy:demo:
+  stage: deploy
+  only:
+  - demo
+  before_script:
+  - set CI_WEB_PATH=analytics-html5-demo
+  <<: *deploy_script
+
+deploy:release:
+  stage: deploy
+  only:
+  - release
+  before_script:
+  - set CI_WEB_PATH=analytics-html5
+  <<: *deploy_script
