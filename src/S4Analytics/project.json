@@ -48,14 +48,8 @@
     "include": [
       "appsettings.json",
       "appsettings.*.json",
-      "ClientApp",
-      "node_modules",
-      "typings",
       "Views",
-      "tsconfig.json",
-      "typings.json",
       "web.config",
-      "webpack.*.js",
       "wwwroot"
     ]
   },

@@ -185,8 +185,7 @@ ClientBin/
 *.pfx
 *.publishsettings
 node_modules/
-**/typings/*
-!**/typings/url-workaround.d.ts
+typings/
 orleans.codegen.cs
 
 # RIA/Silverlight projects
