@@ -27,8 +27,8 @@ obj/
 Obj/
 
 # Visual Studio 2015 cache/options directory
-.vs/
-/wwwroot/dist/
+**/.vs/
+**/wwwroot/dist/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -185,8 +185,8 @@ ClientBin/
 *.pfx
 *.publishsettings
 node_modules/
-typings/*
-!typings/url-workaround.d.ts
+**/typings/*
+!**/typings/url-workaround.d.ts
 orleans.codegen.cs
 
 # RIA/Silverlight projects
