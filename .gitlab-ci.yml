@@ -1,3 +1,8 @@
+# .gitlab-ci.yml is the build script for the GitLab-CI builds.
+# It is invoked upon every push to the GitLab server, but the
+# specific tasks that are run depend on the branch being committed to.
+# For a full configuration guide, visit http://docs.gitlab.com/ce/ci/yaml/README.html.
+
 # cache build artifacts for the duration of the build
 cache:
   key: "%CI_BUILD_REF_NAME%"
