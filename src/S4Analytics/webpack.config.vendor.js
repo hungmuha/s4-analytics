@@ -19,7 +19,6 @@ module.exports = {
             'bootstrap',
             'bootstrap/dist/css/bootstrap.css',
             'es6-shim',
-            'style-loader',
             'jquery',
             '@angular/common',
             '@angular/compiler',

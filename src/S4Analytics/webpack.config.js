@@ -10,12 +10,16 @@ which is responsible for build tasks such as:
 
 var path = require('path');
 var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var extractCSS = new ExtractTextPlugin('styles.css');
 var merge = require('extendify')({ isDeep: true, arrays: 'concat' });
 var cssnext = require('postcss-cssnext');
 var failPlugin = require('webpack-fail-plugin');
 var devConfig = require('./webpack.config.dev');
 var prodConfig = require('./webpack.config.prod');
-var isDevelopment = process.env.ASPNETCORE_ENVIRONMENT === 'Local' || process.env.ASPNETCORE_ENVIRONMENT === 'Development';
+var isDevelopment =
+    process.env.ASPNETCORE_ENVIRONMENT === 'Local' ||
+    process.env.ASPNETCORE_ENVIRONMENT === 'Development';
 
 module.exports = merge({
     resolve: {
@@ -25,7 +29,7 @@ module.exports = merge({
         loaders: [
             { test: /\.ts$/, include: /ClientApp/, loader: 'ts-loader?silent=true' },
             { test: /\.html$/, loader: 'raw-loader' },
-            { test: /\.css$/, loader: "style-loader!css-loader!postcss-loader" }
+            { test: /\.css$/, loader: extractCSS.extract(['css','postcss']) }
         ]
     },
     postcss: function () {
@@ -42,6 +46,7 @@ module.exports = merge({
         publicPath: '/dist/'
     },
     plugins: [
+        extractCSS,
         failPlugin, // cause CI build to fail if webpack encounters errors (see https://github.com/TypeStrong/ts-loader/issues/108)
         new webpack.DllReferencePlugin({
             context: __dirname,
