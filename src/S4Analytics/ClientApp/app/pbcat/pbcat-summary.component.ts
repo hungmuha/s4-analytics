@@ -2,8 +2,8 @@
 
 @ng.Component({
     selector: 'pbcat-summary',
-    template: require('./pbcat-summary.html')
+    template: require('./pbcat-summary.component.html')
 })
-export class PbcatSummary {
+export class PbcatSummaryComponent {
 
 }

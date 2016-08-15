@@ -40,7 +40,7 @@
     "raw-loader": "^0.5.1",
     "ts-loader": "^0.8.1",
     "tslint": "^3.13.0",
-    "typescript": "^2.1.0-dev.20160810",
+    "typescript": "^2.1.0-dev.20160811",
     "url-loader": "^0.5.7",
     "webpack": "^1.12.14",
     "webpack-fail-plugin": "^1.0.4",

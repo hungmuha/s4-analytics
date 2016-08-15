@@ -2,7 +2,7 @@ import * as ng from '@angular/core';
 
 @ng.Component({
   selector: 'home',
-  template: require('./home.html')
+  template: require('./home.component.html')
 })
-export class Home {
+export class HomeComponetn {
 }
