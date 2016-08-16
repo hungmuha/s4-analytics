@@ -1,5 +1,6 @@
 ﻿<!-- todo: header -->
 <div>PBCAT</div>
+<a [routerLink]="['/pbcat',hsmvReportNumber,'step',nextStepNumber()]" *ngIf="!showSummary">Go to step {{nextStepNumber()}}</a>
 <pbcat-step [stepNumber]="stepNumber" *ngIf="!showSummary"></pbcat-step>
 <pbcat-summary *ngIf="showSummary"></pbcat-summary>
 <!-- todo: navigation and footer -->

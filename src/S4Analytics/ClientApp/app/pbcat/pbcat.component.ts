@@ -11,25 +11,69 @@ import { PbcatService, PbcatStep, ParticipantType } from './shared';
     providers: [PbcatService]
 })
 export class PbcatComponent {
+    // url parameter-driven props
     private paramsSub: any;
+    private params: { [key: string]: any };
+    private hsmvReportNumber: number;
     private stepNumber: number;
-    private showSummary: boolean;
-    private stepHistory: PbcatStep[];
+    private participantType: ParticipantType = ParticipantType.Pedestrian; // bicyclist not implemented in prototype
+
+    // state props
+    private hsmvReportNumberDisplay: string;
+    private stepHistory: PbcatStep[] = [];
     private currentStep: PbcatStep;
     private previousStep: PbcatStep;
     private nextStep: PbcatStep;
-    private autoAdvance: boolean;
-    private showReturnToSummary: boolean;
-    private flowComplete: boolean;
-    private hsmvReportNumber: number;
-    private hsmvReportNumberDisplay: string;
-    private participantType: ParticipantType;
+    private autoAdvance: boolean = true;
+    private showSummary: boolean = false;
+    private showReturnToSummary: boolean = false;
+    private flowComplete: boolean = false;
 
     constructor(
         private router: Router,
         private activatedRoute: ActivatedRoute,
-        private pbcatService: PbcatService) {
-        this.stepHistory = [];
+        private pbcatService: PbcatService) { }
+
+    ngOnInit() {
+        // subscribe to params
+        this.paramsSub = this.activatedRoute.params.subscribe(
+            params => this.processParams(params)
+        );
+    }
+
+    ngOnDestroy() {
+        // unsubscribe from params
+        this.paramsSub.unsubscribe();
+    }
+
+    processParams(params: any) {
+        let invalidParams = false;
+
+        let hsmvReportNumber = params['hsmvReportNumber'];
+        this.hsmvReportNumber = Number(hsmvReportNumber);
+        if (isNaN(this.hsmvReportNumber)) {
+            invalidParams = true;
+        }
+
+        let stepNumber = params['stepNumber'];
+        if (stepNumber === undefined) {
+            this.showSummary = true;
+        }
+        else {
+            this.stepNumber = Number(stepNumber);
+            if (isNaN(this.stepNumber)) {
+                invalidParams = true;
+            }
+        }
+
+        if (invalidParams) {
+            // go home for now
+            this.router.navigate(['home']);
+        }
+    }
+
+    nextStepNumber(): number {
+        return this.stepNumber + 1;
     }
 
     back() {
@@ -37,6 +81,7 @@ export class PbcatComponent {
     }
 
     proceed() {
+        this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', this.nextStepNumber()]);
         // determine which step to show next, based on the selected item
         // if the user had navigated back and the next step differs from the
         // next step in stepHistory, clear all remaining items in stepHistory
@@ -56,29 +101,5 @@ export class PbcatComponent {
 
     saveAndNext() {
         // determine the type, save it, and load another crash report
-    }
-
-    navigateToStep(stepNumber: any) {
-        if (stepNumber === undefined) {
-            this.showSummary = true;
-        }
-        else {
-            this.stepNumber = Number(stepNumber);
-            // if invalid step number, go back to the starting point (for now)
-            if (isNaN(this.stepNumber)) {
-                this.router.navigate(['pbcat']);
-            }
-        }
-    }
-
-    ngOnInit() {
-        this.paramsSub = this.activatedRoute.params.subscribe(
-            params => this.navigateToStep(params['currentStep'])
-        );
-        this.pbcatService.getPedestrianNextStep().then(step => undefined);
-    }
-
-    ngOnDestroy() {
-        this.paramsSub.unsubscribe();
     }
 }
