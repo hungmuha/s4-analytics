@@ -1,8 +1,18 @@
-Next generation Signal Four Analytics.
+# Signal Four Analytics - Next Generation
 
-Refer to the [wiki](https://geodevops.geoplan.ufl.edu/signal-four/S4-Analytics-HTML5/wikis/home) for instructions on getting started.
+## Development
 
-GitLab CI is configured for this project:
+Refer to the [developer guide](https://geodevops.geoplan.ufl.edu/signal-four/S4-Analytics-Html5/wikis/developer-guide) to get started.
+
+Before contributing any code, consult the following:
+- [TypeScript Coding Guidelines](https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines)
+- [Angular2 Style Guide](https://angular.io/styleguide)
+- [C# Coding Conventions](https://msdn.microsoft.com/en-us/library/ff926074.aspx)
+- [Microsoft REST API Guidelines](https://github.com/Microsoft/api-guidelines/blob/master/Guidelines.md)
+
+## Builds
+
+[GitLab CI](http://docs.gitlab.com/ce/ci/quick_start/README.html) is configured for this project:
 - feature branches: build and test only
 - master branch: build, test, and deploy to [dev environment](https://s4.geoplan.ufl.edu/analytics-html5-dev/build)
 - staging branch: build and deploy to [staging environment](https://s4.geoplan.ufl.edu/analytics-html5-staging/build)
