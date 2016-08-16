@@ -1,6 +1,7 @@
 ﻿import * as ng from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PbcatStepComponent, PbcatSummaryComponent } from './';
+import { PbcatStepComponent } from './pbcat-step.component';
+import { PbcatSummaryComponent } from './pbcat-summary.component';
 
 @ng.Component({
     selector: 'pbcat',
@@ -12,7 +13,9 @@ export class PbcatComponent {
     private stepNumber: number;
     private showSummary: boolean;
 
-    constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
+    constructor(
+        private router: Router,
+        private activatedRoute: ActivatedRoute) { }
 
     setCurrentStep(currentStep: any) {
         if (currentStep === undefined) {

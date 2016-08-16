@@ -1,2 +1,2 @@
 ﻿Step {{stepNumber}}
-<div *ngFor="item: string of items">{{item}}</div>
+<div *ngFor="let item of step.items">{{item.index}}. {{item.title}}</div>
