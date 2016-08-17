@@ -1,6 +1,7 @@
 ﻿import * as ng from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PbcatService, PbcatStep, ParticipantType } from './shared';
+import { PbcatService } from './shared';
+// import { PbcatStep, ParticipantType } from './shared';
 
 @ng.Component({
     selector: 'pbcat-master',
@@ -11,18 +12,18 @@ export class PbcatMasterComponent {
     private paramsSub: any;
     private hsmvReportNumber: number;
     private stepNumber: number;
-    private participantType: ParticipantType = ParticipantType.Pedestrian; // bicyclist not implemented in prototype
+    // private participantType: ParticipantType = ParticipantType.Pedestrian; // bicyclist not implemented in prototype
 
     // state props
-    private hsmvReportNumberDisplay: string;
-    private stepHistory: PbcatStep[] = [];
-    private currentStep: PbcatStep;
-    private previousStep: PbcatStep;
-    private nextStep: PbcatStep;
-    private autoAdvance: boolean = true;
-    private showSummary: boolean = false;
-    private showReturnToSummary: boolean = false;
-    private flowComplete: boolean = false;
+    // private hsmvReportNumberDisplay: string;
+    // private stepHistory: PbcatStep[] = [];
+    // private currentStep: PbcatStep;
+    // private previousStep: PbcatStep;
+    // private nextStep: PbcatStep;
+    // private autoAdvance: boolean = true;
+    // private showSummary: boolean = false;
+    // private showReturnToSummary: boolean = false;
+    // private flowComplete: boolean = false;
 
     constructor(
         private router: Router,

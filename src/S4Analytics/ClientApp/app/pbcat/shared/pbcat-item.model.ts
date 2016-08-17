@@ -3,6 +3,7 @@
 
     constructor(
         public index: number,
+        public value: any,
         public title: string,
         public description: string = undefined,
         public imageUrl: string = undefined,

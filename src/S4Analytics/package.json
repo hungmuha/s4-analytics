@@ -5,7 +5,7 @@
   "author": "UF GeoPlan Center",
   "scripts": {
     "tslint": "tslint -c tslint.json \"ClientApp/**/*.ts\" || true",
-    "stylelint": "stylelint \"ClientApp/styles/*.css\" || true"
+    "stylelint": "stylelint \"ClientApp/**/*.css\" || true"
   },
   "dependencies": {
     "@angular/common": "2.0.0-rc.5",

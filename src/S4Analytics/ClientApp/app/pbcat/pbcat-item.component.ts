@@ -1,5 +1,4 @@
 ﻿import * as ng from '@angular/core';
-import { PbcatItem } from './shared';
 
 @ng.Component({
     selector: 'pbcat-item',

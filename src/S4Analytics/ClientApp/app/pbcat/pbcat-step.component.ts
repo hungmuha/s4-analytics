@@ -1,6 +1,6 @@
 ﻿import * as ng from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PbcatItem, PbcatStep, PbcatService } from './shared';
+import { PbcatService } from './shared';
 
 @ng.Component({
     selector: 'pbcat-step',
