@@ -1,9 +1,8 @@
-﻿import * as ng from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PbcatService } from './shared';
-// import { PbcatStep, ParticipantType } from './shared';
+import { PbcatService, PbcatStep, PbcatItem, ParticipantType, PbcatPedestrianInfo } from './shared';
 
-@ng.Component({
+@Component({
     selector: 'pbcat-master',
     template: require('./pbcat-master.component.html')
 })
@@ -12,23 +11,25 @@ export class PbcatMasterComponent {
     private paramsSub: any;
     private hsmvReportNumber: number;
     private stepNumber: number;
-    // private participantType: ParticipantType = ParticipantType.Pedestrian; // bicyclist not implemented in prototype
+    private participantType: ParticipantType;
 
     // state props
-    // private hsmvReportNumberDisplay: string;
-    // private stepHistory: PbcatStep[] = [];
-    // private currentStep: PbcatStep;
-    // private previousStep: PbcatStep;
-    // private nextStep: PbcatStep;
-    // private autoAdvance: boolean = true;
-    // private showSummary: boolean = false;
-    // private showReturnToSummary: boolean = false;
-    // private flowComplete: boolean = false;
+    private pedInfo: PbcatPedestrianInfo;
+    private stepHistory: PbcatStep[] = [];
+    private currentStep: PbcatStep;
+    private previousStep: PbcatStep;
+    private nextStep: PbcatStep;
+    private autoAdvance: boolean = true;
+    private showSummary: boolean = false;
+    private showReturnToSummary: boolean = false;
+    private flowComplete: boolean = false;
 
     constructor(
         private router: Router,
         private activatedRoute: ActivatedRoute,
-        private pbcatService: PbcatService) { }
+        private pbcatService: PbcatService) {
+        this.participantType = ParticipantType.Pedestrian; // bicyclist not implemented in prototype
+    }
 
     ngOnInit() {
         // subscribe to params
@@ -43,8 +44,75 @@ export class PbcatMasterComponent {
     }
 
     processParams(params: any) {
-        this.hsmvReportNumber = +params['hsmvReportNumber'];
-        this.stepNumber = +params['stepNumber'];
+        let hsmvReportNumber = +params['hsmvReportNumber'];
+        this.loadCrash(hsmvReportNumber);
+
+        if (params['stepNumber'] === undefined) {
+            this.showSummary = true;
+        } else {
+            let stepNumber = +params['stepNumber'];
+            this.loadStep(stepNumber);
+        }
+    }
+
+    loadCrash(hsmvReportNumber: number) {
+        this.pedInfo = this.pbcatService.getPbcatPedestrianInfo(hsmvReportNumber);
+        this.hsmvReportNumber = hsmvReportNumber;
+    }
+
+    loadStep(stepNumber: number) {
+        if (this.stepNumber === undefined || stepNumber - this.stepNumber === 1) {
+            // if step number is one greater than the last, ask the service for the next step
+            this.currentStep = this.pbcatService.getPedestrianNextStep(this.pedInfo);
+            this.stepHistory.push(this.currentStep);
+        }
+        else if (stepNumber > 0 && stepNumber <= this.stepHistory.length) {
+            // if step number already exists in stepHistory, just grab that step
+            this.currentStep = this.stepHistory[stepNumber - 1];
+        }
+        this.stepNumber = stepNumber;
+    }
+
+    selectItem(pbcatItem: PbcatItem) {
+        console.log(this.currentStep.infoAttr);
+        switch (this.currentStep.infoAttr) {
+            case "pedestrianPositionCd":
+                this.pedInfo.pedestrianPositionCd = pbcatItem.value;
+                break;
+            case "motoristDirTravelCd":
+                this.pedInfo.motoristDirTravelCd = pbcatItem.value;
+                break;
+            case "motoristManeuverCd":
+                this.pedInfo.motoristManeuverCd = pbcatItem.value;
+                break;
+            case "legOfIntrsectCd":
+                this.pedInfo.legOfIntrsectCd = pbcatItem.value;
+                break;
+            case "pedestrianMovementCd":
+                this.pedInfo.pedestrianMovementCd = pbcatItem.value;
+                break;
+            case "unusualCircumstancesCd":
+                this.pedInfo.unusualCircumstancesCd = pbcatItem.value;
+                break;
+            case "unusualVehicleTypeOrActionCd":
+                this.pedInfo.unusualVehicleTypeOrActionCd = pbcatItem.value;
+                break;
+            case "unusualPedActionCd":
+                this.pedInfo.unusualPedActionCd = pbcatItem.value;
+                break;
+            case "typicalPedActionCd":
+                this.pedInfo.typicalPedActionCd = pbcatItem.value;
+                break;
+            case "crossingRoadwayCd":
+                this.pedInfo.crossingRoadwayCd = pbcatItem.value;
+                break;
+            case "turnMergeCd":
+                this.pedInfo.turnMergeCd = pbcatItem.value;
+                break;
+            default:
+                break;
+        }
+        this.proceed();
     }
 
     nextStepNumber(): number {

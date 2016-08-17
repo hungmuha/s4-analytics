@@ -1,4 +1,15 @@
-﻿<!-- todo: header -->
-<div>PBCAT / {{hsmvReportNumber}}</div>
-<router-outlet></router-outlet>
-<!-- todo: navigation and footer -->
+﻿<div>(PBCAT Header)</div>
+<pbcat-step
+    *ngIf="!showSummary"
+    [hsmvReportNumber]="hsmvReportNumber"
+    [stepNumber]="stepNumber"
+    [step]="currentStep"
+    (selectItem)="selectItem($event)">
+</pbcat-step>
+<pbcat-summary
+    *ngIf="showSummary"
+    [hsmvReportNumber]="hsmvReportNumber">
+</pbcat-summary>
+<pre>currentStep: {{this.currentStep | json}}</pre>
+<pre>pedInfo: {{this.pedInfo | json}}</pre>
+<div>(PBCAT Footer)</div>

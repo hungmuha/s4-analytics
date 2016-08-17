@@ -42,37 +42,37 @@ export class PbcatService {
         let step: PbcatStep;
 
         if (pedInfo.pedestrianPositionCd === undefined) {
-            step = new PbcatStep(1, 'Where did the crash occur?', 'pedestrianPositionCd');
+            step = new PbcatStep('Where did the crash occur?', 'pedestrianPositionCd');
         }
         else if (pedInfo.motoristDirTravelCd === undefined) {
-            step = new PbcatStep(2, 'What was the position of the pedestrian when struck?', 'motoristDirTravelCd');
+            step = new PbcatStep('What was the position of the pedestrian when struck?', 'motoristDirTravelCd');
         }
         else if (pedInfo.motoristManeuverCd === undefined) {
-            step = new PbcatStep(3, 'Question 3', 'motoristManeuverCd');
+            step = new PbcatStep('Question 3', 'motoristManeuverCd');
         }
         else if (pedInfo.legOfIntrsectCd === undefined) {
-            step = new PbcatStep(4, 'Question 4', 'legOfIntrsectCd');
+            step = new PbcatStep('Question 4', 'legOfIntrsectCd');
         }
         else if (pedInfo.pedestrianMovementCd === undefined) {
-            step = new PbcatStep(5, 'Question 5', 'pedestrianMovementCd');
+            step = new PbcatStep('Question 5', 'pedestrianMovementCd');
         }
         else if (pedInfo.unusualCircumstancesCd === undefined) {
-            step = new PbcatStep(6, 'Question 6', 'unusualCircumstancesCd');
+            step = new PbcatStep('Question 6', 'unusualCircumstancesCd');
         }
         else if (pedInfo.unusualVehicleTypeOrActionCd === undefined) {
-            step = new PbcatStep(7, 'Question 7', 'unusualVehicleTypeOrActionCd');
+            step = new PbcatStep('Question 7', 'unusualVehicleTypeOrActionCd');
         }
         else if (pedInfo.unusualPedActionCd === undefined) {
-            step = new PbcatStep(8, 'Question 8', 'unusualPedActionCd');
+            step = new PbcatStep('Question 8', 'unusualPedActionCd');
         }
         else if (pedInfo.typicalPedActionCd === undefined) {
-            step = new PbcatStep(9, 'Question 9', 'typicalPedActionCd');
+            step = new PbcatStep('Question 9', 'typicalPedActionCd');
         }
         else if (pedInfo.crossingRoadwayCd === undefined) {
-            step = new PbcatStep(10, 'Question 10', 'crossingRoadwayCd');
+            step = new PbcatStep('Question 10', 'crossingRoadwayCd');
         }
         else if (pedInfo.turnMergeCd === undefined) {
-            step = new PbcatStep(11, 'Question 11', 'turnMergeCd');
+            step = new PbcatStep('Question 11', 'turnMergeCd');
         }
 
         step.items = [1, 2, 3, 4].map(i => new PbcatItem(i, i, `Option ${i}`));
