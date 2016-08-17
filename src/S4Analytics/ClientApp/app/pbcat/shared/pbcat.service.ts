@@ -1,5 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import { PbcatPedestrianInfo } from './pbcat-ped.model';
+import { PbcatPedestrianInfo } from './pbcat-ped-info.model';
 import { PbcatCrashType } from './pbcat-crash-type.model';
 import { PbcatStep } from './pbcat-step.model';
 import { PbcatItem } from './pbcat-item.model';

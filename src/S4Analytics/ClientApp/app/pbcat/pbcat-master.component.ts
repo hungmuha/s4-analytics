@@ -1,7 +1,5 @@
 ﻿import * as ng from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PbcatStepComponent } from './pbcat-step.component';
-import { PbcatSummaryComponent } from './pbcat-summary.component';
 import { PbcatService, PbcatStep, ParticipantType } from './shared';
 
 @ng.Component({
@@ -44,29 +42,8 @@ export class PbcatMasterComponent {
     }
 
     processParams(params: any) {
-        let invalidParams = false;
-
-        let hsmvReportNumber = params['hsmvReportNumber'];
-        this.hsmvReportNumber = Number(hsmvReportNumber);
-        if (isNaN(this.hsmvReportNumber)) {
-            invalidParams = true;
-        }
-
-        let stepNumber = params['stepNumber'];
-        if (stepNumber === undefined) {
-            this.showSummary = true;
-        }
-        else {
-            this.stepNumber = Number(stepNumber);
-            if (isNaN(this.stepNumber)) {
-                invalidParams = true;
-            }
-        }
-
-        if (invalidParams) {
-            // go home for now
-            this.router.navigate(['home']);
-        }
+        this.hsmvReportNumber = +params['hsmvReportNumber'];
+        this.stepNumber = +params['stepNumber'];
     }
 
     nextStepNumber(): number {
