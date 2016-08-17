@@ -4,18 +4,14 @@ import 'bootstrap';
 import 'reflect-metadata';
 import './site.css';
 
-import { bootstrap } from '@angular/platform-browser-dynamic';
-import { FormBuilder } from '@angular/common';
-import { provideRouter } from '@angular/router';
-import { HTTP_PROVIDERS } from '@angular/http';
-import { App } from './app/app';
-import { appRoutes } from './routes';
+// Import the browser platform with a compiler
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-bootstrap(App, [
-    ...HTTP_PROVIDERS,
-    FormBuilder,
-    provideRouter(appRoutes)
-]);
+// Import the app module
+import { AppModule } from './app/app.module';
+
+// Compile and launch the app module
+platformBrowserDynamic().bootstrapModule(AppModule);
 
 // Basic hot reloading support. Automatically reloads and restarts the Angular 2 app each time
 // you modify source files. This will not preserve any application state other than the URL.

@@ -5,15 +5,12 @@ import { PbcatSummaryComponent } from './pbcat-summary.component';
 import { PbcatService, PbcatStep, ParticipantType } from './shared';
 
 @ng.Component({
-    selector: 'pbcat',
-    template: require('./pbcat.component.html'),
-    directives: [PbcatStepComponent, PbcatSummaryComponent],
-    providers: [PbcatService]
+    selector: 'pbcat-master',
+    template: require('./pbcat-master.component.html')
 })
-export class PbcatComponent {
+export class PbcatMasterComponent {
     // url parameter-driven props
     private paramsSub: any;
-    private params: { [key: string]: any };
     private hsmvReportNumber: number;
     private stepNumber: number;
     private participantType: ParticipantType = ParticipantType.Pedestrian; // bicyclist not implemented in prototype
