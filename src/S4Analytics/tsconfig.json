@@ -17,6 +17,7 @@ http://www.typescriptlang.org/docs/handbook/tsconfig-json.html.
     "skipLibCheck": true
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "wwwroot"
   ]
 }
