@@ -1,15 +1,20 @@
-﻿<div>(PBCAT Header)</div>
-<pbcat-step
-    *ngIf="!showSummary"
-    [hsmvReportNumber]="hsmvReportNumber"
-    [stepNumber]="stepNumber"
-    [step]="currentStep"
-    (selectItem)="selectItem($event)">
-</pbcat-step>
-<pbcat-summary
-    *ngIf="showSummary"
-    [hsmvReportNumber]="hsmvReportNumber">
-</pbcat-summary>
-<pre>currentStep: {{this.currentStep | json}}</pre>
-<pre>pedInfo: {{this.pedInfo | json}}</pre>
-<div>(PBCAT Footer)</div>
+﻿<div *ngIf="routeError">ERROR</div>
+<div *ngIf="!routeError">
+    <div>(PBCAT Header)</div>
+    <pbcat-step *ngIf="!showSummary()"
+                [hsmvReportNumber]="hsmvReportNumber"
+                [stepNumber]="stepNumber"
+                [step]="currentStep()"
+                (selectItem)="selectItem($event)">
+    </pbcat-step>
+    <pbcat-summary *ngIf="showSummary()"
+                   [hsmvReportNumber]="hsmvReportNumber"
+                   [stepHistory]="stepHistory()">
+    </pbcat-summary>
+    <div *ngIf="showSummary()">
+        <button (click)="saveAndClose()">Save and Close</button>
+        <button (click)="saveAndNext()">Save and Next</button>
+    </div>
+    <pre>{{this.pbcatFlow | json}}</pre>
+    <div>(PBCAT Footer)</div>
+</div>

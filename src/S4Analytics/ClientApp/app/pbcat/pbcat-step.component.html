@@ -2,6 +2,6 @@
     {{hsmvReportNumber}} / Step {{stepNumber}}<br/>
     <div>{{step.title}}</div>
     <span *ngFor="let item of step.items">
-        <button (click)="makeSelection(item)">{{item.title}}</button>
+        <button (click)="makeSelection(item)" [disabled]="item.notImplemented">{{item.title}}</button>
     </span>
 </div>

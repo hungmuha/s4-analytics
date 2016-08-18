@@ -8,6 +8,6 @@
         public description: string = undefined,
         public imageUrl: string = undefined,
         public selected: boolean = false) {
-        this.notImplemented = true;
+        this.notImplemented = false;
     }
 }
