@@ -1,29 +1,21 @@
-﻿import * as ng from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PbcatService } from './shared';
-// import { PbcatStep, ParticipantType } from './shared';
+import {
+    PbcatService,
+    PbcatFlow,
+    PbcatItem
+} from './shared';
 
-@ng.Component({
+@Component({
     selector: 'pbcat-master',
     template: require('./pbcat-master.component.html')
 })
 export class PbcatMasterComponent {
-    // url parameter-driven props
     private paramsSub: any;
     private hsmvReportNumber: number;
     private stepNumber: number;
-    // private participantType: ParticipantType = ParticipantType.Pedestrian; // bicyclist not implemented in prototype
-
-    // state props
-    // private hsmvReportNumberDisplay: string;
-    // private stepHistory: PbcatStep[] = [];
-    // private currentStep: PbcatStep;
-    // private previousStep: PbcatStep;
-    // private nextStep: PbcatStep;
-    // private autoAdvance: boolean = true;
-    // private showSummary: boolean = false;
-    // private showReturnToSummary: boolean = false;
-    // private flowComplete: boolean = false;
+    private pbcatFlow: PbcatFlow;
+    private routeError: boolean = false;
 
     constructor(
         private router: Router,
@@ -45,36 +37,57 @@ export class PbcatMasterComponent {
     processParams(params: any) {
         this.hsmvReportNumber = +params['hsmvReportNumber'];
         this.stepNumber = +params['stepNumber'];
+        if (this.stepNumber) {
+            this.pbcatFlow = this.pbcatService.getPbcatFlowAtStep(this.hsmvReportNumber, this.stepNumber);
+        }
+        else {
+            this.pbcatFlow = this.pbcatService.getPbcatFlowAtSummary(this.hsmvReportNumber);
+        }
+        this.routeError = !this.pbcatFlow.hasValidState;
     }
 
-    nextStepNumber(): number {
-        return this.stepNumber + 1;
+    showSummary() {
+        return this.pbcatFlow.showSummary;
+    }
+
+    currentStep() {
+        return this.pbcatFlow.currentStep;
+    }
+
+    stepHistory() {
+        return this.pbcatFlow.stepHistory;
+    }
+
+    selectItem(pbcatItem: PbcatItem) {
+        this.pbcatFlow.selectItemForCurrentStep(pbcatItem);
+        this.proceed();
     }
 
     back() {
-        // load the previous step in stepHistory
+        let previousStepNumber = this.stepNumber - 1;
+        this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', previousStepNumber]);
     }
 
     proceed() {
-        this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', this.nextStepNumber()]);
-        // determine which step to show next, based on the selected item
-        // if the user had navigated back and the next step differs from the
-        // next step in stepHistory, clear all remaining items in stepHistory
-        // and add the next step to stepHistory. set flowComplete to false
-        // unless we are actually done. set currentStep, nextStep, and previousStep.
-
-        // if we are done, set flowComplete and move to the summary instead.
+        let nextStepNumber = this.stepNumber + 1;
+        if (nextStepNumber <= 11) {
+            this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', nextStepNumber]);
+        }
+        else {
+            this.goToSummary();
+        }
     }
 
-    returnToSummary() {
-        // if flowComplete is true, go to the summary
+    goToSummary() {
+        this.router.navigate(['pbcat', this.hsmvReportNumber, 'summary']);
     }
 
     saveAndClose() {
-        // determine the type, save it, and close the window?
+        this.pbcatFlow.saveAndComplete();
     }
 
     saveAndNext() {
-        // determine the type, save it, and load another crash report
+        let hsmvReportNumber = this.pbcatFlow.saveAndNext();
+        this.router.navigate(['pbcat', hsmvReportNumber, 'step', 1]);
     }
 }

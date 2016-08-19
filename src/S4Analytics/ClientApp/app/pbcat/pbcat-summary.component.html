@@ -1,1 +1,8 @@
-﻿Summary
+﻿<div>
+    {{hsmvReportNumber}} / Summary
+</div>
+<div *ngFor="let step of stepHistory; let i=index">
+    <a [routerLink]="['/pbcat', hsmvReportNumber, 'step', i + 1]">
+        <b>{{step.title}}</b>: {{step.selectedItem.title}}<br />
+    </a>
+</div>

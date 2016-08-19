@@ -1,9 +1,11 @@
-﻿import * as ng from '@angular/core';
+﻿import { Component, Input } from '@angular/core';
+import { PbcatStep } from './shared';
 
-@ng.Component({
+@Component({
     selector: 'pbcat-summary',
     template: require('./pbcat-summary.component.html')
 })
 export class PbcatSummaryComponent {
-
+    @Input() hsmvReportNumber: number;
+    @Input() stepHistory: PbcatStep[];
 }

@@ -1,37 +1,23 @@
-﻿import * as ng from '@angular/core';
+﻿import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PbcatService } from './shared';
+import { PbcatService, PbcatStep, PbcatItem } from './shared';
 
-@ng.Component({
+@Component({
     selector: 'pbcat-step',
     template: require('./pbcat-step.component.html')
 })
 export class PbcatStepComponent {
-    // url parameter-driven props
-    private paramsSub: any;
-    private hsmvReportNumber: number;
-    private stepNumber: number;
+    @Input() hsmvReportNumber: number;
+    @Input() step: PbcatStep;
+    @Input() stepNumber: number;
+    @Output() selectItem = new EventEmitter<PbcatItem>();
 
     constructor(
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private pbcatService: PbcatService) { }
 
-    ngOnInit() {
-        // subscribe to params
-        this.paramsSub = this.activatedRoute.params.subscribe(
-            params => this.processParams(params)
-        );
+    makeSelection(item: PbcatItem) {
+        this.selectItem.emit(item);
     }
-
-    ngOnDestroy() {
-        // unsubscribe from params
-        this.paramsSub.unsubscribe();
-    }
-
-    processParams(params: any) {
-        this.hsmvReportNumber = +params['hsmvReportNumber'];
-        this.stepNumber = +params['stepNumber'];
-    }
-
 }
