@@ -2,6 +2,7 @@
 import { PbcatStep } from './pbcat-step.model';
 import { PbcatItem } from './pbcat-item.model';
 import { PbcatCrashType } from './pbcat-crash-type.model';
+import { Observable } from 'rxjs/Observable';
 
 class PbcatData {
 
@@ -49,7 +50,7 @@ export class PbcatFlow {
     private pedInfo: PbcatPedestrianInfo;
     private currentStepIndex: number = -1;
 
-    constructor(public hsmvReportNumber: number) {
+    constructor(private pbcatConfig: Observable<any>, public hsmvReportNumber: number) {
         this.pedInfo = PbcatData.getPbcatPedestrianInfo(hsmvReportNumber);
     }
 

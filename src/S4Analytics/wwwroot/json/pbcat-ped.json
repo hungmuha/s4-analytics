@@ -1,0 +1,31 @@
+﻿{
+  "1": {
+    "title": "Where did the crash occur?",
+    "items": [
+      {
+        "title": "Intersection",
+        "description": "The crash occurred within the intersection proper or within the crosswalk area. Note: Unsignalized driveways are considered to be non-intersection locations.",
+        "image": "images/pbcat/bike_1_Intersection.png"
+      },
+      {
+        "title": "Non-Intersection Location",
+        "description": "The crash occurred outside the intersection proper or crosswalk area and was not related to the presence of any intersection.",
+        "image": "images/pbcat/bike_1_NonIntersection.png"
+      },
+      {
+        "title": "Non-Roadway Location",
+        "description": "The crash occurred off the street network (e.g., parking lots, driveways, alleys, trails, and other open areas). Note: crashes occurring on paved shoulders, bike lanes, sidewalks, or driveway crossings are considered to be \"roadway\" crashes and should not be placed in the non-roadway classification.",
+        "image": "images/pbcat/bike_1_NonRoad.png"
+      },
+      {
+        "title": "Intersection-Related",
+        "description": "The crash occurred outside the intersection proper or crosswalk area but was related to the presence of the intersection (e.g., the result of queuing traffic).",
+        "image": "images/pbcat/bike_1_IntersectionRelated.png"
+      },
+      {
+        "title": "Unknown/Insufficient Information",
+        "description": "There is insufficient information to determine where the crash occurred."
+      }
+    ]
+  }
+}
