@@ -5,16 +5,6 @@ import { PbcatFlow } from './pbcat-flow.model';
 export class PbcatService {
     private flow: PbcatFlow;
 
-    private getPbcatFlow(hsmvReportNumber: number): PbcatFlow {
-        let isNewFlow =
-            this.flow === undefined ||
-            this.flow.hsmvReportNumber !== hsmvReportNumber;
-        let flow = isNewFlow
-            ? new PbcatFlow(hsmvReportNumber)
-            : this.flow;
-        return flow;
-    }
-
     getPbcatFlowAtSummary(hsmvReportNumber: number): PbcatFlow {
         this.flow = this.getPbcatFlow(hsmvReportNumber);
         this.flow.goToSummary();
@@ -25,5 +15,15 @@ export class PbcatService {
         this.flow = this.getPbcatFlow(hsmvReportNumber);
         this.flow.goToStepNumber(stepNumber);
         return this.flow;
+    }
+
+    private getPbcatFlow(hsmvReportNumber: number): PbcatFlow {
+        let isNewFlow =
+            this.flow === undefined ||
+            this.flow.hsmvReportNumber !== hsmvReportNumber;
+        let flow = isNewFlow
+            ? new PbcatFlow(hsmvReportNumber)
+            : this.flow;
+        return flow;
     }
 }

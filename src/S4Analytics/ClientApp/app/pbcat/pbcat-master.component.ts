@@ -3,10 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
     PbcatService,
     PbcatFlow,
-    PbcatStep,
-    PbcatItem,
-    ParticipantType,
-    PbcatPedestrianInfo
+    PbcatItem
 } from './shared';
 
 @Component({

@@ -1,5 +1,4 @@
-﻿import { ParticipantType } from './pbcat.enums';
-import { PbcatPedestrianInfo } from './pbcat-ped-info.model';
+﻿import { PbcatPedestrianInfo } from './pbcat-ped-info.model';
 import { PbcatStep } from './pbcat-step.model';
 import { PbcatItem } from './pbcat-item.model';
 import { PbcatCrashType } from './pbcat-crash-type.model';
@@ -38,9 +37,6 @@ class PbcatData {
 }
 
 export class PbcatFlow {
-    private participantType: ParticipantType = ParticipantType.Pedestrian;
-    private pedInfo: PbcatPedestrianInfo;
-    private currentStepIndex: number = -1;
     public stepHistory: PbcatStep[] = [];
     public currentStep: PbcatStep;
     public previousStep: PbcatStep;
@@ -50,6 +46,8 @@ export class PbcatFlow {
     public isFinalStep: boolean = false;
     public isFlowComplete: boolean = false;
     public hasValidState: boolean = true;
+    private pedInfo: PbcatPedestrianInfo;
+    private currentStepIndex: number = -1;
 
     constructor(public hsmvReportNumber: number) {
         this.pedInfo = PbcatData.getPbcatPedestrianInfo(hsmvReportNumber);
