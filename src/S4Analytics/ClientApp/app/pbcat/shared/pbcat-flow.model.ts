@@ -1,8 +1,9 @@
-﻿import { PbcatPedestrianInfo } from './pbcat-ped-info.model';
+﻿import { Observable } from 'rxjs/Observable';
+import { PbcatPedestrianInfo } from './pbcat-ped-info.model';
 import { PbcatStep } from './pbcat-step.model';
 import { PbcatItem } from './pbcat-item.model';
 import { PbcatCrashType } from './pbcat-crash-type.model';
-import { Observable } from 'rxjs/Observable';
+import { PbcatConfig, PbcatScreenConfig, PbcatItemConfig } from './pbcat-config.d.ts';
 
 class PbcatData {
 
@@ -47,10 +48,9 @@ export class PbcatFlow {
     public isFinalStep: boolean = false;
     public isFlowComplete: boolean = false;
     public hasValidState: boolean = true;
-    private pedInfo: PbcatPedestrianInfo;
     private currentStepIndex: number = -1;
 
-    constructor(private pbcatConfig: Observable<any>, public hsmvReportNumber: number) {
+    constructor(private config: PbcatConfig, public hsmvReportNumber: number) {
         this.pedInfo = PbcatData.getPbcatPedestrianInfo(hsmvReportNumber);
     }
 
@@ -111,104 +111,60 @@ export class PbcatFlow {
         }
     }
 
-    updateInfoForSelectedItem() {
+    getPedInfo() {
         // mock logic to update this.pedInfo ...
-        // does not account for any steps removed from the history
-        let pbcatItem = this.currentStep.selectedItem;
-        switch (this.currentStep.infoAttr) {
-            case "pedestrianPositionCd":
-                this.pedInfo.pedestrianPositionCd = pbcatItem.value;
-                break;
-            case "motoristDirTravelCd":
-                this.pedInfo.motoristDirTravelCd = pbcatItem.value;
-                break;
-            case "motoristManeuverCd":
-                this.pedInfo.motoristManeuverCd = pbcatItem.value;
-                break;
-            case "legOfIntrsectCd":
-                this.pedInfo.legOfIntrsectCd = pbcatItem.value;
-                break;
-            case "pedestrianMovementCd":
-                this.pedInfo.pedestrianMovementCd = pbcatItem.value;
-                break;
-            case "unusualCircumstancesCd":
-                this.pedInfo.unusualCircumstancesCd = pbcatItem.value;
-                break;
-            case "unusualVehicleTypeOrActionCd":
-                this.pedInfo.unusualVehicleTypeOrActionCd = pbcatItem.value;
-                break;
-            case "unusualPedActionCd":
-                this.pedInfo.unusualPedActionCd = pbcatItem.value;
-                break;
-            case "typicalPedActionCd":
-                this.pedInfo.typicalPedActionCd = pbcatItem.value;
-                break;
-            case "crossingRoadwayCd":
-                this.pedInfo.crossingRoadwayCd = pbcatItem.value;
-                break;
-            case "turnMergeCd":
-                this.pedInfo.turnMergeCd = pbcatItem.value;
-                break;
-            default:
-                break;
+        let pedInfo = new PbcatPedestrianInfo();
+        for (let step of this.stepHistory) {
+            if (step.selectedItem !== undefined) {
+                (pedInfo as any)[step.infoAttrName] = step.selectedItem.infoAttrValue;
+            }
         }
+        return pedInfo;
     }
 
     getNextStep(): PbcatStep {
-        let nextStep: PbcatStep;
+        let nextScreenName: string = "1";
+        let nextStep: PbcatStep
 
-        // mock logic that assumes one possible sequence
-        if (this.currentStepIndex === -1) {
-            nextStep = new PbcatStep('Where did the crash occur?', 'pedestrianPositionCd');
+        if (this.currentStepIndex >= 0) {
+            nextScreenName = this.currentStep.selectedItem.nextScreenName;
         }
-        else if (this.currentStepIndex === 0) {
-            nextStep = new PbcatStep('What was the position of the pedestrian when struck?', 'motoristDirTravelCd');
-        }
-        else if (this.currentStepIndex === 1) {
-            nextStep = new PbcatStep('Question 3', 'motoristManeuverCd');
-        }
-        else if (this.currentStepIndex === 2) {
-            nextStep = new PbcatStep('Question 4', 'legOfIntrsectCd');
-        }
-        else if (this.currentStepIndex === 3) {
-            nextStep = new PbcatStep('Question 5', 'pedestrianMovementCd');
-        }
-        else if (this.currentStepIndex === 4) {
-            nextStep = new PbcatStep('Question 6', 'unusualCircumstancesCd');
-        }
-        else if (this.currentStepIndex === 5) {
-            nextStep = new PbcatStep('Question 7', 'unusualVehicleTypeOrActionCd');
-        }
-        else if (this.currentStepIndex === 6) {
-            nextStep = new PbcatStep('Question 8', 'unusualPedActionCd');
-        }
-        else if (this.currentStepIndex === 7) {
-            nextStep = new PbcatStep('Question 9', 'typicalPedActionCd');
-        }
-        else if (this.currentStepIndex === 8) {
-            nextStep = new PbcatStep('Question 10', 'crossingRoadwayCd');
-        }
-        else if (this.currentStepIndex === 9) {
-            nextStep = new PbcatStep('Question 11', 'turnMergeCd');
+        let nextScreenConfig: PbcatScreenConfig;
+        // todo: eliminate this magic string
+        if (nextScreenName !== 'END') {
+            nextScreenConfig = this.config[nextScreenName];
         }
 
-        if (nextStep === undefined) {
+        if (nextScreenConfig === undefined) {
             this.isFlowComplete = true;
             this.isFinalStep = true;
         }
         else {
-            // add four mock items
-            nextStep.items = [1, 2, 3, 4].map(i => new PbcatItem(i, i, `Option ${i}`));
+            // todo: set selected parameter of PbcatItem
+            nextStep = new PbcatStep(nextScreenConfig.title, nextScreenConfig.infoAttrName);
+            nextStep.items = nextScreenConfig.items.map((item, index) =>
+                new PbcatItem(
+                    index,
+                    item.infoAttrValue,
+                    item.title,
+                    item.nextScreenName,
+                    item.description,
+                    item.imageUrl,
+                    false)
+            );
         }
+
         return nextStep;
     }
 
     saveAndComplete() {
-        PbcatData.savePbcatPedestrianInfo(this.hsmvReportNumber, this.pedInfo);
+        let pedInfo = this.getPedInfo();
+        PbcatData.savePbcatPedestrianInfo(this.hsmvReportNumber, pedInfo);
     }
 
     saveAndNext(): number {
-        let nextHsmvNumber = PbcatData.savePbcatPedestrianInfo(this.hsmvReportNumber, this.pedInfo, true);
+        let pedInfo = this.getPedInfo();
+        let nextHsmvNumber = PbcatData.savePbcatPedestrianInfo(this.hsmvReportNumber, pedInfo, true);
         return nextHsmvNumber;
     }
 }

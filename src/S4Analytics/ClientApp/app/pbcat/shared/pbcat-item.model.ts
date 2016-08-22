@@ -3,11 +3,12 @@
 
     constructor(
         public index: number,
-        public value: any,
+        public infoAttrValue: any,
         public title: string,
-        public description: string = undefined,
-        public imageUrl: string = undefined,
-        public selected: boolean = false) {
-        this.notImplemented = false;
+        public nextScreenName?: string,
+        public description?: string,
+        public imageUrl?: string,
+        public selected?: boolean) {
+        this.notImplemented = nextScreenName === undefined;
     }
 }

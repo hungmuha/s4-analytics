@@ -1,74 +1,68 @@
 ﻿import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-    PbcatService,
-    PbcatFlow,
-    PbcatItem
-} from './shared';
+import { Subscription } from 'rxjs/Subscription';
+import { PbcatService, PbcatFlow, PbcatItem } from './shared';
 
 @Component({
     selector: 'pbcat-master',
     template: require('./pbcat-master.component.html')
 })
 export class PbcatMasterComponent {
-    private paramsSub: any;
+    private paramSub: Subscription;
     private hsmvReportNumber: number;
     private stepNumber: number;
-    private pbcatFlow: PbcatFlow;
-    private routeError: boolean = false;
+    private flow: PbcatFlow;
 
     constructor(
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private pbcatService: PbcatService) { }
 
-    ngOnInit() {
+    ngOnInit(): void {
         // subscribe to params
-        this.paramsSub = this.activatedRoute.params.subscribe(
+        this.paramSub = this.activatedRoute.params.subscribe(
             params => this.processParams(params)
         );
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         // unsubscribe from params
-        this.paramsSub.unsubscribe();
+        this.paramSub.unsubscribe();
     }
 
-    processParams(params: any) {
+    private processParams(params: {[key: string]: string}): void {
         this.hsmvReportNumber = +params['hsmvReportNumber'];
         this.stepNumber = +params['stepNumber'];
-        if (this.stepNumber) {
-            this.pbcatFlow = this.pbcatService.getPbcatFlowAtStep(this.hsmvReportNumber, this.stepNumber);
-        }
-        else {
-            this.pbcatFlow = this.pbcatService.getPbcatFlowAtSummary(this.hsmvReportNumber);
-        }
-        this.routeError = !this.pbcatFlow.hasValidState;
+        this.pbcatService.configure(
+            () => this.getPbcatFlow()
+        );
     }
 
-    showSummary() {
-        return this.pbcatFlow.showSummary;
+    private getPbcatFlow(): void {
+        this.flow = this.stepNumber
+            ? this.pbcatService.getPbcatFlowAtStep(this.hsmvReportNumber, this.stepNumber)
+            : this.pbcatService.getPbcatFlowAtSummary(this.hsmvReportNumber);
     }
 
-    currentStep() {
-        return this.pbcatFlow.currentStep;
+    ready(): boolean {
+        return this.flow && this.flow.hasValidState;
     }
 
-    stepHistory() {
-        return this.pbcatFlow.stepHistory;
+    routeError(): boolean {
+        return this.flow && !this.flow.hasValidState;
     }
 
-    selectItem(pbcatItem: PbcatItem) {
-        this.pbcatFlow.selectItemForCurrentStep(pbcatItem);
+    selectItem(pbcatItem: PbcatItem): void {
+        this.flow.selectItemForCurrentStep(pbcatItem);
         this.proceed();
     }
 
-    back() {
+    back(): void {
         let previousStepNumber = this.stepNumber - 1;
         this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', previousStepNumber]);
     }
 
-    proceed() {
+    proceed(): void {
         let nextStepNumber = this.stepNumber + 1;
         if (nextStepNumber <= 11) {
             this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', nextStepNumber]);
@@ -78,16 +72,16 @@ export class PbcatMasterComponent {
         }
     }
 
-    goToSummary() {
+    goToSummary(): void {
         this.router.navigate(['pbcat', this.hsmvReportNumber, 'summary']);
     }
 
-    saveAndClose() {
-        this.pbcatFlow.saveAndComplete();
+    saveAndClose(): void {
+        this.flow.saveAndComplete();
     }
 
-    saveAndNext() {
-        let hsmvReportNumber = this.pbcatFlow.saveAndNext();
+    saveAndNext(): void {
+        let hsmvReportNumber = this.flow.saveAndNext();
         this.router.navigate(['pbcat', hsmvReportNumber, 'step', 1]);
     }
 }

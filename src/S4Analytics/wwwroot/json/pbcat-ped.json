@@ -1,30 +1,447 @@
 ﻿{
   "1": {
     "title": "Where did the crash occur?",
+    "infoAttrName": "crashLocationCd",
     "items": [
       {
         "title": "Intersection",
-        "description": "The crash occurred within the intersection proper or within the crosswalk area. Note: Unsignalized driveways are considered to be non-intersection locations.",
-        "image": "images/pbcat/bike_1_Intersection.png"
+        "infoAttrValue": 1,
+        "description": "The crash occurred within the intersection proper or within the crosswalk area. Note: Driveways controlled by signals or signs should be coded as Intersections. Uncontrolled driveways should be coded as Non-Intersection Locations.",
+        "imageUrl": "images/pbcat/ped_1_IntersectionRelated.png",
+        "nextScreenName": "24"
       },
       {
         "title": "Non-Intersection Location",
-        "description": "The crash occurred outside the intersection proper or crosswalk area and was not related to the presence of any intersection.",
-        "image": "images/pbcat/bike_1_NonIntersection.png"
+        "infoAttrValue": 2,
+        "description": "The crash occured on or along the roadway and more than 15 m (50 ft) away from an intersection.",
+        "imageUrl": "images/pbcat/ped_1_NonIntersection.png"
       },
       {
         "title": "Non-Roadway Location",
-        "description": "The crash occurred off the street network (e.g., parking lots, driveways, alleys, trails, and other open areas). Note: crashes occurring on paved shoulders, bike lanes, sidewalks, or driveway crossings are considered to be \"roadway\" crashes and should not be placed in the non-roadway classification.",
-        "image": "images/pbcat/bike_1_NonRoad.png"
+        "infoAttrValue": 3,
+        "description": "The crash occurred off the roadway, including parking lots, driveways, private roads, yards, alleys, and other open areas. Note: Crashes occurring on paved shoulders, sidewalks, or driveway crossings are considered to be \"roadway\" crashes and should not be placed in the Non-Roadway classification.",
+        "imageUrl": "images/pbcat/ped_1_NonRoad.png"
       },
       {
         "title": "Intersection-Related",
-        "description": "The crash occurred outside the intersection proper or crosswalk area but was related to the presence of the intersection (e.g., the result of queuing traffic).",
-        "image": "images/pbcat/bike_1_IntersectionRelated.png"
+        "infoAttrValue": 4,
+        "description": "The crash occurred outside the intersection crosswalk area but within 15 m (50 ft) of the intersection.",
+        "imageUrl": "images/pbcat/ped_1_Intersection.png"
       },
       {
         "title": "Unknown/Insufficient Information",
+        "infoAttrValue": 9,
         "description": "There is insufficient information to determine where the crash occurred."
+      }
+    ]
+  },
+  "2": {
+    "title": "The crash was the result of which of the following unusual circumstances:",
+    "infoAttrName": "unusualCircumstancesCd",
+    "items": [
+      {
+        "title": "Assault with Vehicle",
+        "infoAttrValue": 1,
+        "description": "The driver intentionally struck the pedestrian with the vehicle."
+      },
+      {
+        "title": "Dispute-Related",
+        "infoAttrValue": 2,
+        "description": "The pedestrian was struck by a vehicle during a domestic altercation or other dispute."
+      },
+      {
+        "title": "Pedestrian on Vehicle",
+        "infoAttrValue": 3,
+        "description": "The pedestrian was sitting on, leaning against, or clinging to a vehicle which began to move or was moving."
+      },
+      {
+        "title": "Vehicle-Vehicle/Object",
+        "infoAttrValue": 4,
+        "description": "The pedestrian was struck as a result of a prior vehicle-into-vehicle or vehicle-into-object crash."
+      },
+      {
+        "title": "Other Unusual Circumstances",
+        "infoAttrValue": 7,
+        "description": "The crash involved other unusual circumstances, such as a pedestrian being struck by falling cargo or a loose wheel."
+      },
+      {
+        "title": "None of the Above",
+        "infoAttrValue": 8,
+        "description": "The crash did not involve any of the unusual circumstances described.",
+        "nextScreenName": "3"
+      },
+      {
+        "title": "Motor Vehicle Loss of Control",
+        "infoAttrValue": 5,
+        "description": "Vehicle lost control due to mechanical failure, surface conditions, driver error or impairment."
+      },
+      {
+        "title": "Pedestrian Loss of Control",
+        "infoAttrValue": 6,
+        "description": "The pedestrian stumbled, fell, or rolled into path of vehicle due to surface conditions, impairment or other mishap."
+      }
+    ]
+  },
+  "24": {
+    "title": "What was the position of the pedestrian when struck?",
+    "infoAttrName": "pedestrianPositionCd",
+    "items": [
+      {
+        "title": "Within intersection proper ",
+        "infoAttrValue": 1
+      },
+      {
+        "title": "Within a crosswalk, marked or unmarked",
+        "infoAttrValue": 2,
+        "nextScreenName": "Q1"
+      },
+      {
+        "title": "On a roadway, in a travel lane",
+        "infoAttrValue": 3
+      },
+      {
+        "title": "On a roadway, in a paved shoulder, bike lane, or parking lane",
+        "infoAttrValue": 4
+      },
+      {
+        "title": "On a sidewalk, shared use path, or driveway crossing",
+        "infoAttrValue": 5
+      },
+      {
+        "title": "Other road right-of-way (unpaved shoulder, etc.)",
+        "infoAttrValue": 6
+      },
+      {
+        "title": "Other / unknown",
+        "infoAttrValue": 9
+      }
+    ]
+  },
+  "3": {
+    "title": "The crash involved which of the following vehicle types or vehicle actions:",
+    "infoAttrName": "unusualVehicleTypeOrActionCd",
+    "items": [
+      {
+        "title": "Backing Vehicle",
+        "infoAttrValue": 1,
+        "description": "The pedestrian was struck by a vehicle that was backing with a driver at the controls.",
+        "imageUrl": "images/pbcat/ped_3_BackingVehicle.png"
+      },
+      {
+        "title": "Driverless Vehicle",
+        "infoAttrValue": 2,
+        "description": "The pedestrian was struck by a vehicle that was moving without a driver at the controls, or that was set in motion by the actions of a child.",
+        "imageUrl": "images/pbcat/ped_3_DriverlessVehicle.png"
+      },
+      {
+        "title": "Disabled Vehicle-Related",
+        "infoAttrValue": 3,
+        "description": "The pedestrian was struck while near or next to a disabled vehicle (including a vehicle that had been in a crash) or while walking to or from a disabled vehicle. Note: Crashes involving pedestrians standing near tow trucks responding to the disabled vehicle are also included in this crash type.",
+        "imageUrl": "images/pbcat/ped_3_DisabledVehicle.png"
+      },
+      {
+        "title": "Emergency Vehicle-Related",
+        "infoAttrValue": 4,
+        "description": "The pedestrian was struck while near an active emergency vehicle, by an active emergency vehicle, or by a vehicle being pursued.",
+        "imageUrl": "images/pbcat/ped_3_EmergencyVehicle.png"
+      },
+      {
+        "title": "Play Vehicle",
+        "infoAttrValue": 5,
+        "description": "The pedestrian was struck while riding a play vehicle that was not a bicycle (e.g., skates, scooter, wagon, sled, etc.)",
+        "imageUrl": "images/pbcat/ped_3_PlayVehicle.png"
+      },
+      {
+        "title": "None of the Above",
+        "infoAttrValue": 6,
+        "description": "The crash did not involve any of the unusual vehicle types or vehicle actions described.",
+        "nextScreenName": "4"
+      }
+    ]
+  },
+  "4": {
+    "title": "The pedestrian was struck while performing which of the following actions:",
+    "infoAttrName": "unusualPedActionCd",
+    "items": [
+      {
+        "title": "Playing, Working, or Lying in Roadway",
+        "infoAttrValue": 1,
+        "description": "Playing, working, or lying in the roadway.",
+        "imageUrl": "images/pbcat/ped_4_PlayingWorking.png"
+      },
+      {
+        "title": "Entering/Exiting Parked Vehicle",
+        "infoAttrValue": 2,
+        "description": "The pedestrian was in the process of getting into or out of a stopped or parked vehicle. Note: Does not include crashes involving pedestrian crossing or other movements that occurred after the pedestrian exited the vehicle.",
+        "imageUrl": "images/pbcat/ped_4_ExitingParkedVehicle.png"
+      },
+      {
+        "title": "Mailbox-Related",
+        "infoAttrValue": 3,
+        "description": "Going to or from or standing at a mailbox or newspaper box.",
+        "imageUrl": "images/pbcat/ped_4_MailboxRelated.png"
+      },
+      {
+        "title": "Commercial Bus-Related",
+        "infoAttrValue": 4,
+        "description": "Crossing in front of a commercial bus stopped at a marked bus stop.",
+        "imageUrl": "images/pbcat/ped_4_CommercialBusRelated.png"
+      },
+      {
+        "title": "School Bus-Related",
+        "infoAttrValue": 5,
+        "description": "Going to or from or waiting at a school bus or school bus stop.",
+        "imageUrl": "images/pbcat/ped_4_SchoolBusRelated.png"
+      },
+      {
+        "title": "Ice-Cream/Vendor Truck-Related",
+        "infoAttrValue": 6,
+        "description": "Going to or from an ice-cream truck or other type of vehicle vending from the curb or roadside.",
+        "imageUrl": "images/pbcat/ped_4_VendorTruckRelated.png"
+      },
+      {
+        "title": "None of the Above",
+        "infoAttrValue": 7,
+        "description": "The pedestrian was not performing any of the unusual actions described.",
+        "nextScreenName": "6"
+      }
+    ]
+  },
+  "6": {
+    "title": "Which of the following best describes the pedestrian action at the time of the crash?",
+    "infoAttrName": "typicalPedActionCd",
+    "items": [
+      {
+        "title": "Waiting to Cross",
+        "infoAttrValue": 1,
+        "description": "The pedestrian was standing near the curb or roadway edge and waiting to cross the roadway.",
+        "imageUrl": "images/pbcat/ped_6_WaitingToCross.png"
+      },
+      {
+        "title": "Crossing the Roadway or In the Roadway",
+        "infoAttrValue": 2,
+        "description": "The pedestrian was crossing the roadway or in the roadway.",
+        "imageUrl": "images/pbcat/ped_6_CrossingTheRoadway.png",
+        "nextScreenName": "6B"
+      },
+      {
+        "title": "Walking Along Roadway",
+        "infoAttrValue": 3,
+        "description": "The pedestrian was walking along the roadway on the edge of a travel lane, on a paved or unpaved shoulder, grassy right-of-way or sidewalk.",
+        "imageUrl": "images/pbcat/ped_6_WalkingAlongRoadway.png"
+      },
+      {
+        "title": "Crossing a Driveway",
+        "infoAttrValue": 4,
+        "description": "The pedestrian was crossing a driveway intersection on a sidewalk crossing, shared use path, shoulder, or edge of the travel lane.",
+        "imageUrl": "images/pbcat/ped_6_CrossingDrivewayIntersection.png"
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": 6,
+        "description": "The actions of the pedestrian at the time of the crash cannot be determined."
+      }
+    ]
+  },
+  "6B": {
+    "title": "Which of the following best describes the circumstances of the crash?",
+    "infoAttrName": "crossingRoadwayCd",
+    "items": [
+      {
+        "title": "Multiple Threat",
+        "infoAttrValue": 1,
+        "description": "The pedestrian entered the traffic lane in front of stopped or slowing traffic and was struck by a vehicle traveling in the same direction as the stopped or slowing traffic.",
+        "imageUrl": "images/pbcat/ped_6B_MultipleThreat.png"
+      },
+      {
+        "title": "Turn/Merge",
+        "infoAttrValue": 2,
+        "description": "The pedestrian was struck by a vehicle preparing to turn or merge, actually turning or merging, or just completing a turn or merge maneuver.",
+        "imageUrl": "images/pbcat/ped_6B_TurnMerge.png",
+        "nextScreenName": "6B2"
+      },
+      {
+        "title": "Trapped",
+        "infoAttrValue": 3,
+        "description": "The pedestrian was struck while crossing at a signalized intersection when the light changed and traffic started moving.",
+        "imageUrl": "images/pbcat/ped_6B_Trapped.png"
+      },
+      {
+        "title": "Dash",
+        "infoAttrValue": 4,
+        "description": "The pedestrian ran into the roadway and was struck by a vehicle whose view of the pedestrian was not obstructed.",
+        "imageUrl": "images/pbcat/ped_6B_Dash.png"
+      },
+      {
+        "title": "Dart-Out",
+        "infoAttrValue": 5,
+        "description": "The pedestrian walked or ran into the roadway and was struck by a motorist whose view of the pedestrian was blocked until an instant before impact.",
+        "imageUrl": "images/pbcat/ped_6B_DartOut.png"
+      },
+      {
+        "title": "None of The Above",
+        "infoAttrValue": 6,
+        "description": "The crash does not conform to any of the situations described."
+      }
+    ]
+  },
+  "6B2": {
+    "title": "Which of the following best describes the circumstances of the crash?",
+    "infoAttrName": "turnMergeCd",
+    "items": [
+      {
+        "title": "Right Turn - Parallel Paths",
+        "infoAttrValue": 3,
+        "description": "The motorist was initially traveling on a parallel path with the pedestrian before making a right turn and striking the individual.",
+        "imageUrl": "images/pbcat/ped_6B2_RightTurnParallelPaths.png"
+      },
+      {
+        "title": "Right Turn - Perpendicular Paths",
+        "infoAttrValue": 4,
+        "description": "The motorist was initially traveling on a crossing path with the pedestrian before making a right turn and striking the individual.",
+        "imageUrl": "images/pbcat/ped_6B2_RightTurnPerpendicularPaths.png"
+      },
+      {
+        "title": "Left Turn - Parallel Paths",
+        "infoAttrValue": 1,
+        "description": "The motorist was initially traveling on a parallel path with the pedestrian before making a left turn and striking the individual.",
+        "imageUrl": "images/pbcat/ped_6B2_LeftTurnParallelPaths.png",
+        "nextScreenName": "END"
+      },
+      {
+        "title": "Left Turn - Perpendicular Paths",
+        "infoAttrValue": 2,
+        "description": "The motorist was initially traveling on a crossing path with the pedestrian before making a left turn and striking the individual.",
+        "imageUrl": "images/pbcat/ped_6B2_LeftTurnPerpendicularPaths.png"
+      },
+      {
+        "title": "Turn/Merge - Other/Unknown",
+        "infoAttrValue": 5,
+        "description": "Either the approach paths or turn direction are unknown or do not fit with any of the described circumstances."
+      }
+    ]
+  },
+  "LF": {
+    "title": "Select the scenario that best illustrates the pedestrian's movement when struck.",
+    "infoAttrName": "pedestrianMovementCd",
+    "items": [
+      {
+        "title": "11a",
+        "infoAttrValue": 3,
+        "description": "Pedestrian within crosswalk area, approached from same direction as motorist",
+        "imageUrl": "images/pbcat/ped_LF_11a.png",
+        "nextScreenName": "2"
+      },
+      {
+        "title": "11b",
+        "infoAttrValue": 4,
+        "description": "Pedestrian within crosswalk area, approached from opposite direction as motorist",
+        "imageUrl": "images/pbcat/ped_LF_11b.png"
+      },
+      {
+        "title": "11c",
+        "infoAttrValue": 5,
+        "description": "Pedestrian within crosswalk area, approach direction unknown",
+        "imageUrl": "images/pbcat/ped_LF_11c.png"
+      },
+      {
+        "title": "12a",
+        "infoAttrValue": 8,
+        "description": "Pedestrian outside crosswalk area, approached from same direction as motorist",
+        "imageUrl": "images/pbcat/ped_LF_12a.png"
+      },
+      {
+        "title": "12b",
+        "infoAttrValue": 9,
+        "description": "Pedestrian outside crosswalk area, approached from opposite direction as motorist",
+        "imageUrl": "images/pbcat/ped_LF_12b.png"
+      },
+      {
+        "title": "12c",
+        "infoAttrValue": 10,
+        "description": "Pedestrian outside crosswalk area, approach direction unknown",
+        "imageUrl": "images/pbcat/ped_LF_12c.png"
+      }
+    ]
+  },
+  "Q1": {
+    "title": "Select the motorist's initial direction of travel (before any turns).",
+    "infoAttrName": "motoristDirTravelCd",
+    "items": [
+      {
+        "title": "Northbound",
+        "infoAttrValue": 1,
+        "imageUrl": "images/pbcat/ped_Q1_1.png",
+        "nextScreenName": "Q2"
+      },
+      {
+        "title": "Eastbound",
+        "infoAttrValue": 3,
+        "imageUrl": "images/pbcat/ped_Q1_1.png",
+        "nextScreenName": "Q2"
+      },
+      {
+        "title": "Southbound",
+        "infoAttrValue": 2,
+        "imageUrl": "images/pbcat/ped_Q1_1.png",
+        "nextScreenName": "Q2"
+      },
+      {
+        "title": "Westbound",
+        "infoAttrValue": 4,
+        "imageUrl": "images/pbcat/ped_Q1_1.png",
+        "nextScreenName": "Q2"
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": 9
+      }
+    ]
+  },
+  "Q2": {
+    "title": "Select the motorist's maneuver.",
+    "infoAttrName": "motoristManeuverCd",
+    "items": [
+      {
+        "title": "Left turn",
+        "infoAttrValue": 1,
+        "imageUrl": "images/pbcat/ped_Q2_3.png",
+        "nextScreenName": "Q3C"
+      },
+      {
+        "title": "Straight through",
+        "infoAttrValue": 3,
+        "imageUrl": "images/pbcat/ped_Q2_1.png"
+      },
+      {
+        "title": "Right turn",
+        "infoAttrValue": 2,
+        "imageUrl": "images/pbcat/ped_Q2_2.png"
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": 9
+      }
+    ]
+  },
+  "Q3C": {
+    "title": "Select the leg of the intersection where the crash occurred.",
+    "infoAttrName": "legOfIntrsectCd",
+    "items": [
+      {
+        "title": "Nearside",
+        "infoAttrValue": 2,
+        "imageUrl": "images/pbcat/ped_Q3C_1.png"
+      },
+      {
+        "title": "Farside",
+        "infoAttrValue": 1,
+        "imageUrl": "images/pbcat/ped_Q3C_1.png",
+        "nextScreenName": "LF"
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": 3
       }
     ]
   }

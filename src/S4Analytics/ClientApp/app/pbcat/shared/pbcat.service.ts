@@ -2,15 +2,28 @@
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { PbcatFlow } from './pbcat-flow.model';
+import { PbcatConfig } from './pbcat-config.d.ts';
 
 @Injectable()
 export class PbcatService {
+    private config: PbcatConfig;
     private flow: PbcatFlow;
-    private pbcatConfig: Observable<any>;
 
-    constructor(private http: Http) {
-        this.pbcatConfig = this.http.get('json/pbcat-ped.json')
-            .map(response => response.json());
+    constructor(private http: Http) { }
+
+    configure(onConfigured: () => void) {
+        if (this.config === undefined) {
+            this.http
+                .get('json/pbcat-ped.json')
+                .map(response => response.json())
+                .subscribe(config => {
+                    this.config = config;
+                    onConfigured();
+                });
+        }
+        else {
+            onConfigured();
+        }
     }
 
     getPbcatFlowAtSummary(hsmvReportNumber: number): PbcatFlow {
@@ -30,7 +43,7 @@ export class PbcatService {
             this.flow === undefined ||
             this.flow.hsmvReportNumber !== hsmvReportNumber;
         let flow = isNewFlow
-            ? new PbcatFlow(this.pbcatConfig, hsmvReportNumber)
+            ? new PbcatFlow(this.config, hsmvReportNumber)
             : this.flow;
         return flow;
     }
