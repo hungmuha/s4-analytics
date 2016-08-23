@@ -1,35 +1,61 @@
-﻿<div *ngIf="ready()">
-    <div>(PBCAT Header)</div>
-    <div>
-        Auto advance:
-        <button [disabled]="flow.autoAdvance"
-                [class.inactive-button]="flow.autoAdvance"
-                (click)="toggleAutoAdvance(true)">
-        On</button>
-        <button [disabled]="!flow.autoAdvance"
-                [class.inactive-button]="!flow.autoAdvance"
-                (click)="toggleAutoAdvance(false)">
-        Off</button>
+﻿<template [ngIf]="ready()">
+
+    <div class="row">
+        <div class="col-sm-6">
+            <h4>Pedestrian and Bicyclist Crash Typing</h4>
+        </div>
+        <div class="col-sm-6 text-right">
+            Auto advance:
+            <button [disabled]="flow.autoAdvance"
+                    [class.inactive-button]="flow.autoAdvance"
+                    (click)="toggleAutoAdvance(true)">
+                On
+            </button>
+            <button [disabled]="!flow.autoAdvance"
+                    [class.inactive-button]="!flow.autoAdvance"
+                    (click)="toggleAutoAdvance(false)">
+                Off
+            </button>
+        </div>
     </div>
+
     <pbcat-step *ngIf="!flow.showSummary"
                 [hsmvReportNumber]="hsmvReportNumber"
                 [stepNumber]="stepNumber"
                 [step]="flow.currentStep"
                 (selectItem)="selectItem($event)">
     </pbcat-step>
+
     <pbcat-summary *ngIf="flow.showSummary"
                    [hsmvReportNumber]="hsmvReportNumber"
                    [stepHistory]="flow.stepHistory">
     </pbcat-summary>
-    <div *ngIf="flow.showSummary">
-        <button (click)="saveAndClose()">Save and Close</button>
-        <button (click)="saveAndNext()">Save and Next</button>
+
+    <div class="row">
+        <div class="col-sm-3">
+            <a *ngIf="this.showBackLink()" [routerLink]="backLink().route">
+                Back to<br /><em>{{backLink().title}}</em>
+            </a>
+        </div>
+        <div class="col-sm-3 col-sm-offset-6">
+            <a *ngIf="this.showProceedLink()" [routerLink]="proceedLink().route">
+                Proceed to<br /><em>{{proceedLink().title}}</em>
+            </a>
+            <template [ngIf]="flow.showSummary">
+                <button (click)="saveAndClose()">Save and Close</button>
+                <button (click)="saveAndNext()">Save and Next</button>
+            </template>
+        </div>
     </div>
-    <div>
-        <a *ngIf="this.showBackLink()" [routerLink]="backLink().route">Back to <i>{{backLink().title}}</i></a>
-        <a *ngIf="this.showProceedLink()" [routerLink]="proceedLink().route">Proceed to <i>{{proceedLink().title}}</i></a>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <!--<p>
+                The GeoPlan Center<br />
+                Department of Urban & Regional Planning<br />
+                © University of Florida, Gainesville, FL 32611
+            </p>-->
+        </div>
     </div>
-    <pre>backLink(): {{backLink() | json}}</pre>
-    <pre>proceedLink(): {{proceedLink() | json}}</pre>
-    <div>(PBCAT Footer)</div>
-</div>
+
+</template>

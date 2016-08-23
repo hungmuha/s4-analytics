@@ -9,3 +9,28 @@ body {
 .inactive-button {
     color: gray;
 }
+
+.container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.image-checked {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: green;
+    font-size: 30px;
+    margin: -10px 0 0 -10px;
+    background-color: white;
+}
+
+.list-checked {
+    color: green;
+    font-size: 30px;
+}
+
+.list-unchecked {
+    color: lightgray;
+    font-size: 30px;
+}

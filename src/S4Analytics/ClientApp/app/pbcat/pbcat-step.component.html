@@ -1,10 +1,55 @@
-﻿<div>
-    <div>Crash Report #{{hsmvReportNumber}}</div>
-    <div>Step {{stepNumber}}.</div>
-    <div>{{step.title}}</div>
-    <p *ngFor="let item of step.items">
-        <img *ngIf="item.imageUrl" (click)="makeSelection(item)" [src]="item.imageUrl" /><br />
-        <button (click)="makeSelection(item)" [disabled]="item.notImplemented" [class.inactive-button]="item.notImplemented">{{item.title}}</button><br />
-        <span *ngIf="item.description">{{item.description}}</span>
-    </p>
+﻿<div class="row">
+    <div class="col-sm-12">
+        Crash Report #{{hsmvReportNumber}}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <h3>Step {{stepNumber}}. {{step.title}}</h3>
+    </div>
+</div>
+
+<!-- image-based template -->
+<template [ngIf]="hasImages()">
+    <div class="row" *ngFor="let itemGroup of groupedItems(4)">
+            <div class="col-sm-3" *ngFor="let item of itemGroup">
+                <div class="thumbnail" (click)="makeSelection(item)">
+                    <img *ngIf="item.imageUrl" [src]="item.imageUrl" />
+                    <span *ngIf="item.selected" class="image-checked glyphicon glyphicon-ok-circle"></span>
+                    <h4 *ngIf="!item.notImplemented">
+                        <mark>{{item.title}}</mark>
+                    </h4>
+                    <h4 *ngIf="item.notImplemented">
+                        {{item.title}}
+                    </h4>
+                    <p *ngIf="item.description">{{item.description}}</p>
+                </div>
+            </div>
+    </div>
+</template>
+
+<!-- non-image template -->
+<div class="row">
+    <template [ngIf]="!hasImages()">
+        <div class="col-sm-12" *ngFor="let item of step.items">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 *ngIf="!item.notImplemented" (click)="makeSelection(item)">
+                        <span *ngIf="item.selected" class="list-checked glyphicon glyphicon-ok-circle"></span>
+                        <span *ngIf="!item.selected" class="list-unchecked glyphicon glyphicon-ok-circle"></span>
+                        <mark>{{item.title}}</mark>
+                    </h4>
+                    <h4 *ngIf="item.notImplemented">
+                        <span class="list-unchecked glyphicon glyphicon-ok-circle"></span>
+                        {{item.title}}
+                    </h4>
+                </div>
+            </div>
+            <div *ngIf="item.description" class="row">
+                <div class="col-sm-12">
+                    <p>{{item.description}}</p>
+                </div>
+            </div>
+        </div>
+    </template>
 </div>

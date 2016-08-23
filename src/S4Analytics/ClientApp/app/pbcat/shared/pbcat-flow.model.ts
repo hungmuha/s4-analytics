@@ -100,6 +100,10 @@ export class PbcatFlow {
             this.currentStep.selectedItem.index === item.index;
         this.currentStep.selectedItem = item;
         if (!sameItem) {
+            // set item.selected
+            for (let currItem of this.currentStep.items) {
+                currItem.selected = currItem.index === item.index;
+            }
             // clear the step history after this step
             delete this.nextStep;
             this.stepHistory = this.stepHistory.slice(0, this.currentStepIndex + 1);
