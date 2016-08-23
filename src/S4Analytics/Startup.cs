@@ -21,6 +21,7 @@ namespace S4Analytics
     public class AppOptions
     {
         public string Version { get; set; }
+        public string BaseUrl { get; set; }
     }
 
     public class Startup
@@ -52,8 +53,8 @@ namespace S4Analytics
             });
             services.Configure<AppOptions>(appOptions =>
             {
-                var ver = Configuration["App:Version"];
-                appOptions.Version = ver;
+                appOptions.Version = Configuration["App:Version"];
+                appOptions.BaseUrl = Configuration["BaseUrl"];
             });
 
             // Add repositories.

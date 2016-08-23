@@ -6,6 +6,5 @@ export class PbcatStep {
 
     constructor(
         public title: string,
-        public infoAttr: string,
-        public description: string = undefined) { }
+        public infoAttrName: string) { }
 }

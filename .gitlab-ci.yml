@@ -74,7 +74,7 @@ test:dev:
   - dotnet publish "src\S4Analytics" --no-build --configuration Release --output "%CD%\src\S4Analytics\bin\Release\PublishOutput"
   - msdeploy -verb:sync -source:contentPath="%CD%\src\S4Analytics\bin\Release\PublishOutput" -dest:contentPath="\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%" -skip:Directory="download" -skip:Directory="logs" -skip:File="app_offline.htm"
   - del \\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\app_offline.htm
-  - (echo %CI_BUILD_ID%)>>\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\wwwroot\build # write build number to build file
+  - (echo %CI_BUILD_ID%)>>\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\wwwroot\build.txt # write build number to build file
 
 deploy:dev:
   stage: deploy

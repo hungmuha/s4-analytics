@@ -18,6 +18,8 @@ export class PbcatStepComponent {
         private pbcatService: PbcatService) { }
 
     makeSelection(item: PbcatItem) {
-        this.selectItem.emit(item);
+        if (!item.notImplemented) {
+            this.selectItem.emit(item);
+        }
     }
 }
