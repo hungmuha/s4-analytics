@@ -38,7 +38,7 @@ For a complete list of rules, visit http://palantir.github.io/tslint/rules/.
         "no-shadowed-variable": true,
         "no-unreachable": true,
         "no-unused-expression": true,
-        "no-unused-variable": true,
+        "no-unused-variable": false, // unfortunately tslint can't detect Angular usages
         "no-use-before-declare": true,
         "no-var-keyword": true,
         "switch-default": true,
