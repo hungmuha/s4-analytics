@@ -5,3 +5,7 @@
 body {
     background-color: var(--mainColor);
 }
+
+.inactive-button {
+    color: gray;
+}

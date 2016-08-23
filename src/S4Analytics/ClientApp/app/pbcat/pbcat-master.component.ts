@@ -63,12 +63,12 @@ export class PbcatMasterComponent {
     }
 
     proceed(): void {
-        let nextStepNumber = this.stepNumber + 1;
-        if (nextStepNumber <= 11) {
-            this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', nextStepNumber]);
+        if (this.flow.isFinalStep && this.flow.isFlowComplete) {
+            this.goToSummary();
         }
         else {
-            this.goToSummary();
+            let nextStepNumber = this.stepNumber + 1;
+            this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', nextStepNumber]);
         }
     }
 

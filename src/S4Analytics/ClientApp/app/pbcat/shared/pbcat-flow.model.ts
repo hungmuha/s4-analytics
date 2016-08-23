@@ -51,7 +51,8 @@ export class PbcatFlow {
     private currentStepIndex: number = -1;
 
     constructor(private config: PbcatConfig, public hsmvReportNumber: number) {
-        this.pedInfo = PbcatData.getPbcatPedestrianInfo(hsmvReportNumber);
+        // todo: reconstruct stepHistory for previously typed crashes
+        // this.pedInfo = PbcatData.getPbcatPedestrianInfo(hsmvReportNumber);
     }
 
     // todo: upon item selection, determine next step and populate stepHistory
@@ -112,7 +113,7 @@ export class PbcatFlow {
     }
 
     getPedInfo() {
-        // mock logic to update this.pedInfo ...
+        // mock logic to create pedInfo ...
         let pedInfo = new PbcatPedestrianInfo();
         for (let step of this.stepHistory) {
             if (step.selectedItem !== undefined) {
