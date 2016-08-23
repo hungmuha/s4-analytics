@@ -1,7 +1,10 @@
 ﻿<div>
-    {{hsmvReportNumber}} / Step {{stepNumber}}<br/>
+    <div>Crash Report #{{hsmvReportNumber}}</div>
+    <div>Step {{stepNumber}}.</div>
     <div>{{step.title}}</div>
-    <span *ngFor="let item of step.items">
-        <button (click)="makeSelection(item)" [disabled]="item.notImplemented" [class.inactive-button]="item.notImplemented">{{item.title}}</button>
-    </span>
+    <p *ngFor="let item of step.items">
+        <img *ngIf="item.imageUrl" (click)="makeSelection(item)" [src]="item.imageUrl" /><br />
+        <button (click)="makeSelection(item)" [disabled]="item.notImplemented" [class.inactive-button]="item.notImplemented">{{item.title}}</button><br />
+        <span *ngIf="item.description">{{item.description}}</span>
+    </p>
 </div>

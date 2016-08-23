@@ -1,6 +1,16 @@
-﻿<div *ngIf="routeError()">ERROR</div>
-<div *ngIf="ready()">
+﻿<div *ngIf="ready()">
     <div>(PBCAT Header)</div>
+    <div>
+        Auto advance:
+        <button [disabled]="flow.autoAdvance"
+                [class.inactive-button]="flow.autoAdvance"
+                (click)="toggleAutoAdvance(true)">
+        On</button>
+        <button [disabled]="!flow.autoAdvance"
+                [class.inactive-button]="!flow.autoAdvance"
+                (click)="toggleAutoAdvance(false)">
+        Off</button>
+    </div>
     <pbcat-step *ngIf="!flow.showSummary"
                 [hsmvReportNumber]="hsmvReportNumber"
                 [stepNumber]="stepNumber"
@@ -15,6 +25,11 @@
         <button (click)="saveAndClose()">Save and Close</button>
         <button (click)="saveAndNext()">Save and Next</button>
     </div>
-    <pre>{{flow | json}}</pre>
+    <div>
+        <a *ngIf="this.showBackLink()" [routerLink]="backLink().route">Back to <i>{{backLink().title}}</i></a>
+        <a *ngIf="this.showProceedLink()" [routerLink]="proceedLink().route">Proceed to <i>{{proceedLink().title}}</i></a>
+    </div>
+    <pre>backLink(): {{backLink() | json}}</pre>
+    <pre>proceedLink(): {{proceedLink() | json}}</pre>
     <div>(PBCAT Footer)</div>
 </div>

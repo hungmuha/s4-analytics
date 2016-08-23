@@ -13,5 +13,5 @@ export interface PbcatScreenConfig {
 }
 
 export interface PbcatConfig {
-    [screenName: string]: PbcatScreenConfig
+    [screenName: string]: PbcatScreenConfig;
 }

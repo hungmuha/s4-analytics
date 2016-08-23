@@ -26,6 +26,10 @@ export class PbcatService {
         }
     }
 
+    clear() {
+        delete this.flow;
+    }
+
     getPbcatFlowAtSummary(hsmvReportNumber: number): PbcatFlow {
         this.flow = this.getPbcatFlow(hsmvReportNumber);
         this.flow.goToSummary();

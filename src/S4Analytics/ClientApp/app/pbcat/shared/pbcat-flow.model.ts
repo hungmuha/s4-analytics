@@ -18,6 +18,7 @@ class PbcatData {
         getNextCrash: boolean = false): number {
         // POST /api/pbcat/ped
         //  PUT /api/pbcat/ped/:hsmvRptNr
+        // mock get the actual next hsmv report number
         return getNextCrash ? hsmvReportNumber + 1 : undefined;
     }
 
@@ -125,7 +126,7 @@ export class PbcatFlow {
 
     getNextStep(): PbcatStep {
         let nextScreenName: string = "1";
-        let nextStep: PbcatStep
+        let nextStep: PbcatStep;
 
         if (this.currentStepIndex >= 0) {
             nextScreenName = this.currentStep.selectedItem.nextScreenName;

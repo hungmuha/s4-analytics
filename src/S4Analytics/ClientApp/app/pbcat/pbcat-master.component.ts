@@ -3,6 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { PbcatService, PbcatFlow, PbcatItem } from './shared';
 
+class NavLink {
+    constructor(
+        public title: string,
+        public route: any[]) { }
+}
+
 @Component({
     selector: 'pbcat-master',
     template: require('./pbcat-master.component.html')
@@ -42,45 +48,79 @@ export class PbcatMasterComponent {
         this.flow = this.stepNumber
             ? this.pbcatService.getPbcatFlowAtStep(this.hsmvReportNumber, this.stepNumber)
             : this.pbcatService.getPbcatFlowAtSummary(this.hsmvReportNumber);
+        if (!this.flow.hasValidState) {
+            // ERROR
+            delete this.flow;
+            this.pbcatService.clear();
+            this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', 1]);
+        }
     }
 
-    ready(): boolean {
+    private toggleAutoAdvance(autoAdvance: boolean) {
+        this.flow.autoAdvance = autoAdvance;
+    }
+
+    private ready(): boolean {
         return this.flow && this.flow.hasValidState;
     }
 
-    routeError(): boolean {
-        return this.flow && !this.flow.hasValidState;
-    }
-
-    selectItem(pbcatItem: PbcatItem): void {
+    private selectItem(pbcatItem: PbcatItem): void {
         this.flow.selectItemForCurrentStep(pbcatItem);
-        this.proceed();
-    }
-
-    back(): void {
-        let previousStepNumber = this.stepNumber - 1;
-        this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', previousStepNumber]);
-    }
-
-    proceed(): void {
-        if (this.flow.isFinalStep && this.flow.isFlowComplete) {
-            this.goToSummary();
-        }
-        else {
-            let nextStepNumber = this.stepNumber + 1;
-            this.router.navigate(['pbcat', this.hsmvReportNumber, 'step', nextStepNumber]);
+        if (this.flow.autoAdvance) {
+            this.proceed();
         }
     }
 
-    goToSummary(): void {
-        this.router.navigate(['pbcat', this.hsmvReportNumber, 'summary']);
+    private showBackLink(): boolean {
+        return this.flow.previousStep !== undefined;
     }
 
-    saveAndClose(): void {
+    private showProceedLink(): boolean {
+        return (!this.flow.showSummary && this.flow.isFinalStep && this.flow.isFlowComplete) || this.flow.nextStep !== undefined;
+    }
+
+    private backLink(): NavLink {
+        let navLink: NavLink;
+        if (this.showBackLink()) {
+            let previousStepNumber = this.stepNumber ? this.stepNumber - 1 : this.flow.stepHistory.length;
+            navLink = new NavLink(
+                this.flow.previousStep.title,
+                ['/pbcat', this.hsmvReportNumber, 'step', previousStepNumber]);
+        }
+        return navLink;
+    }
+
+    private proceedLink(): NavLink {
+        let navLink: NavLink;
+        if (this.showProceedLink()) {
+            if (this.flow.isFinalStep) {
+                navLink = new NavLink(
+                    "Summary",
+                    ['/pbcat', this.hsmvReportNumber, 'summary']
+                );
+            }
+            else {
+                let nextStepNumber = this.stepNumber + 1;
+                navLink = new NavLink(
+                    this.flow.nextStep.title,
+                    ['/pbcat', this.hsmvReportNumber, 'step', nextStepNumber]);
+            }
+        }
+        return navLink;
+    }
+
+    private proceed(): void {
+        let navLink = this.proceedLink();
+        if (navLink !== undefined) {
+            this.router.navigate(navLink.route);
+        }
+    }
+
+    private saveAndClose(): void {
         this.flow.saveAndComplete();
     }
 
-    saveAndNext(): void {
+    private saveAndNext(): void {
         let hsmvReportNumber = this.flow.saveAndNext();
         this.router.navigate(['pbcat', hsmvReportNumber, 'step', 1]);
     }
