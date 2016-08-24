@@ -46,8 +46,10 @@ export class PbcatService {
         let isNewFlow =
             this.flow === undefined ||
             this.flow.hsmvReportNumber !== hsmvReportNumber;
+        // don't forget the user's auto-advance setting
+        let autoAdvance = this.flow ? this.flow.autoAdvance : true;
         let flow = isNewFlow
-            ? new PbcatFlow(this.config, hsmvReportNumber)
+            ? new PbcatFlow(this.config, hsmvReportNumber, autoAdvance)
             : this.flow;
         return flow;
     }

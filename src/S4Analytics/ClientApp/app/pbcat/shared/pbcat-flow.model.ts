@@ -44,14 +44,16 @@ export class PbcatFlow {
     public currentStep: PbcatStep;
     public previousStep: PbcatStep;
     public nextStep: PbcatStep;
-    public autoAdvance: boolean = true;
     public showSummary: boolean = false;
     public isFinalStep: boolean = false;
     public isFlowComplete: boolean = false;
     public hasValidState: boolean = true;
     private currentStepIndex: number = -1;
 
-    constructor(private config: PbcatConfig, public hsmvReportNumber: number) {
+    constructor(
+        private config: PbcatConfig,
+        public hsmvReportNumber: number,
+        public autoAdvance: boolean) {
         // todo: reconstruct stepHistory for previously typed crashes
         // this.pedInfo = PbcatData.getPbcatPedestrianInfo(hsmvReportNumber);
     }
@@ -100,6 +102,10 @@ export class PbcatFlow {
             this.currentStep.selectedItem.index === item.index;
         this.currentStep.selectedItem = item;
         if (!sameItem) {
+            // set item.selected
+            for (let currItem of this.currentStep.items) {
+                currItem.selected = currItem.index === item.index;
+            }
             // clear the step history after this step
             delete this.nextStep;
             this.stepHistory = this.stepHistory.slice(0, this.currentStepIndex + 1);
@@ -143,7 +149,7 @@ export class PbcatFlow {
         }
         else {
             // todo: set selected parameter of PbcatItem
-            nextStep = new PbcatStep(nextScreenConfig.title, nextScreenConfig.infoAttrName);
+            nextStep = new PbcatStep(nextScreenConfig.title, nextScreenConfig.description, nextScreenConfig.infoAttrName);
             nextStep.items = nextScreenConfig.items.map((item, index) =>
                 new PbcatItem(
                     index,

@@ -8,6 +8,7 @@
 
 export interface PbcatScreenConfig {
     title: string;
+    description: string;
     infoAttrName: string;
     items: PbcatItemConfig[];
 }

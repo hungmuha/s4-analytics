@@ -1,6 +1,7 @@
 ﻿{
   "1": {
-    "title": "Where did the crash occur?",
+    "title": "Crash Location",
+    "description": "Where did the crash occur?",
     "infoAttrName": "crashLocationCd",
     "items": [
       {
@@ -36,7 +37,8 @@
     ]
   },
   "2": {
-    "title": "The crash was the result of which of the following unusual circumstances:",
+    "title": "Unusual Circumstances",
+    "description": "The crash was the result of which of the following unusual circumstances:",
     "infoAttrName": "unusualCircumstancesCd",
     "items": [
       {
@@ -60,6 +62,16 @@
         "description": "The pedestrian was struck as a result of a prior vehicle-into-vehicle or vehicle-into-object crash."
       },
       {
+        "title": "Motor Vehicle Loss of Control",
+        "infoAttrValue": 5,
+        "description": "Vehicle lost control due to mechanical failure, surface conditions, driver error or impairment."
+      },
+      {
+        "title": "Pedestrian Loss of Control",
+        "infoAttrValue": 6,
+        "description": "The pedestrian stumbled, fell, or rolled into path of vehicle due to surface conditions, impairment or other mishap."
+      },
+      {
         "title": "Other Unusual Circumstances",
         "infoAttrValue": 7,
         "description": "The crash involved other unusual circumstances, such as a pedestrian being struck by falling cargo or a loose wheel."
@@ -69,21 +81,12 @@
         "infoAttrValue": 8,
         "description": "The crash did not involve any of the unusual circumstances described.",
         "nextScreenName": "3"
-      },
-      {
-        "title": "Motor Vehicle Loss of Control",
-        "infoAttrValue": 5,
-        "description": "Vehicle lost control due to mechanical failure, surface conditions, driver error or impairment."
-      },
-      {
-        "title": "Pedestrian Loss of Control",
-        "infoAttrValue": 6,
-        "description": "The pedestrian stumbled, fell, or rolled into path of vehicle due to surface conditions, impairment or other mishap."
       }
     ]
   },
   "24": {
-    "title": "What was the position of the pedestrian when struck?",
+    "title": "Pedestrian Position",
+    "description": "What was the position of the pedestrian when struck?",
     "infoAttrName": "pedestrianPositionCd",
     "items": [
       {
@@ -118,7 +121,8 @@
     ]
   },
   "3": {
-    "title": "The crash involved which of the following vehicle types or vehicle actions:",
+    "title": "Unusual Vehicle Type or Action",
+    "description": "The crash involved which of the following vehicle types or vehicle actions:",
     "infoAttrName": "unusualVehicleTypeOrActionCd",
     "items": [
       {
@@ -160,7 +164,8 @@
     ]
   },
   "4": {
-    "title": "The pedestrian was struck while performing which of the following actions:",
+    "title": "Unusual Pedestrian Action",
+    "description": "The pedestrian was struck while performing which of the following actions:",
     "infoAttrName": "unusualPedActionCd",
     "items": [
       {
@@ -208,7 +213,8 @@
     ]
   },
   "6": {
-    "title": "Which of the following best describes the pedestrian action at the time of the crash?",
+    "title": "Typical Pedestrian Action",
+    "description": "Which of the following best describes the pedestrian action at the time of the crash?",
     "infoAttrName": "typicalPedActionCd",
     "items": [
       {
@@ -244,7 +250,8 @@
     ]
   },
   "6B": {
-    "title": "Which of the following best describes the circumstances of the crash?",
+    "title": "Crossing Circumstances",
+    "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "crossingRoadwayCd",
     "items": [
       {
@@ -286,7 +293,8 @@
     ]
   },
   "6B2": {
-    "title": "Which of the following best describes the circumstances of the crash?",
+    "title": "Turn/Merge Circumstances",
+    "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "turnMergeCd",
     "items": [
       {
@@ -322,7 +330,8 @@
     ]
   },
   "LF": {
-    "title": "Select the scenario that best illustrates the pedestrian's movement when struck.",
+    "title": "Pedestrian Movement",
+    "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
     "items": [
       {
@@ -365,7 +374,8 @@
     ]
   },
   "Q1": {
-    "title": "Select the motorist's initial direction of travel (before any turns).",
+    "title": "Motorist Direction of Travel",
+    "description": "Select the motorist's initial direction of travel (before any turns).",
     "infoAttrName": "motoristDirTravelCd",
     "items": [
       {
@@ -399,7 +409,8 @@
     ]
   },
   "Q2": {
-    "title": "Select the motorist's maneuver.",
+    "title": "Motorist Maneuver",
+    "description": "Select the motorist's maneuver.",
     "infoAttrName": "motoristManeuverCd",
     "items": [
       {
@@ -425,7 +436,8 @@
     ]
   },
   "Q3C": {
-    "title": "Select the leg of the intersection where the crash occurred.",
+    "title": "Leg of Intersection",
+    "description": "Select the leg of the intersection where the crash occurred.",
     "infoAttrName": "legOfIntrsectCd",
     "items": [
       {

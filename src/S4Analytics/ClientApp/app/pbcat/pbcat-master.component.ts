@@ -67,7 +67,8 @@ export class PbcatMasterComponent {
     private selectItem(pbcatItem: PbcatItem): void {
         this.flow.selectItemForCurrentStep(pbcatItem);
         if (this.flow.autoAdvance) {
-            this.proceed();
+            // a tiny delay to give visual confirmation of selected item
+            setTimeout(() => this.proceed(), 300);
         }
     }
 
@@ -76,7 +77,14 @@ export class PbcatMasterComponent {
     }
 
     private showProceedLink(): boolean {
-        return (!this.flow.showSummary && this.flow.isFinalStep && this.flow.isFlowComplete) || this.flow.nextStep !== undefined;
+        // this logic is questionable ...
+        // the proceed link appears on the summary page
+        // if the user clicks the return to summary link
+        return !this.flow.showSummary && ((this.flow.isFinalStep && this.flow.isFlowComplete) || this.flow.nextStep !== undefined);
+    }
+
+    private showSummaryLink(): boolean {
+        return this.flow.isFlowComplete && !this.flow.showSummary;
     }
 
     private backLink(): NavLink {
@@ -84,7 +92,7 @@ export class PbcatMasterComponent {
         if (this.showBackLink()) {
             let previousStepNumber = this.stepNumber ? this.stepNumber - 1 : this.flow.stepHistory.length;
             navLink = new NavLink(
-                this.flow.previousStep.title,
+                `${previousStepNumber}. ${this.flow.previousStep.title}`,
                 ['/pbcat', this.hsmvReportNumber, 'step', previousStepNumber]);
         }
         return navLink;
@@ -102,11 +110,15 @@ export class PbcatMasterComponent {
             else {
                 let nextStepNumber = this.stepNumber + 1;
                 navLink = new NavLink(
-                    this.flow.nextStep.title,
+                    `${nextStepNumber}. ${this.flow.nextStep.title}`,
                     ['/pbcat', this.hsmvReportNumber, 'step', nextStepNumber]);
             }
         }
         return navLink;
+    }
+
+    private summaryRoute(): any[] {
+        return ['/pbcat', this.hsmvReportNumber, 'summary'];
     }
 
     private proceed(): void {

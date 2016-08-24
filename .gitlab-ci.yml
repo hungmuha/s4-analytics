@@ -19,7 +19,6 @@ cache:
 
 stages:
   - build
-  - test
   - deploy
 
 .build:all: &build_script
@@ -58,7 +57,9 @@ build:others:
   - release
   <<: *build_script
 
-test:dev:
+# tests currently disabled because there are none written
+# but the test stage adds at least a minute to the build time
+.test:dev:
   stage: test
   # master and feature branches only
   except:

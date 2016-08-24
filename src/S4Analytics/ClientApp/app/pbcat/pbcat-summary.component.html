@@ -1,8 +1,20 @@
-﻿<div>
-    {{hsmvReportNumber}} / Summary
+﻿<div class="row">
+    <div class="col-sm-12">
+        Crash Report #{{hsmvReportNumber}}
+    </div>
 </div>
-<div *ngFor="let step of stepHistory; let i=index">
-    <a [routerLink]="['/pbcat', hsmvReportNumber, 'step', i + 1]">
-        <b>{{step.title}}</b>: {{step.selectedItem.title}}<br />
-    </a>
+<div class="row">
+    <div class="col-sm-12">
+        <h3>Summary</h3>
+    </div>
+</div>
+
+<div class="row" *ngFor="let step of stepHistory; let i=index">
+    <div class="col-sm-12">
+        <p>
+            <a [routerLink]="['/pbcat', hsmvReportNumber, 'step', i + 1]">
+                {{i+1}}. <b>{{step.title}}</b> {{step.selectedItem.title}}
+            </a>
+        </p>
+    </div>
 </div>
