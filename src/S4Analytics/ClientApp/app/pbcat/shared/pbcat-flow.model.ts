@@ -147,7 +147,7 @@ export class PbcatFlow {
         }
         else {
             // todo: set selected parameter of PbcatItem
-            nextStep = new PbcatStep(nextScreenConfig.title, nextScreenConfig.infoAttrName);
+            nextStep = new PbcatStep(nextScreenConfig.title, nextScreenConfig.description, nextScreenConfig.infoAttrName);
             nextStep.items = nextScreenConfig.items.map((item, index) =>
                 new PbcatItem(
                     index,

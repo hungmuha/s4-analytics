@@ -15,22 +15,54 @@ body {
     margin-bottom: 20px;
 }
 
-.image-checked {
+.pbcat-implemented {
+    background-color: aliceblue;
+}
+
+.pbcat-nav-row {
+    margin-top: 15px;
+}
+
+.pbcat-nav-icon {
+    font-size: 30px;
+    vertical-align: middle;
+}
+
+.pbcat-nav-link {
+    vertical-align: middle;
+}
+
+.pbcat-image-checked {
     position: absolute;
-    top: 0;
-    right: 0;
-    color: green;
-    font-size: 30px;
-    margin: -10px 0 0 -10px;
     background-color: white;
-}
-
-.list-checked {
     color: green;
     font-size: 30px;
+    top: -10px;
+    right: 0;
 }
 
-.list-unchecked {
-    color: lightgray;
+.pbcat-list-check {
     font-size: 30px;
+    vertical-align: middle;
+    color: lightgray;
+    margin: 0;
+    float: left;
+}
+
+.pbcat-list-check.checked {
+    color: green;
+}
+
+.pbcat-list-text {
+    vertical-align: middle;
+    margin-left: 40px;
+}
+
+.thumbnail:hover {
+  background-color: #efefef !important;
+  cursor: pointer;
+}
+
+.thumbnail {
+    padding: 10px 10px 4px 10px !important;
 }
