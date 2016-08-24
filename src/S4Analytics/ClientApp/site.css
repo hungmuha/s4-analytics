@@ -43,7 +43,6 @@ body {
 
 .pbcat-list-check {
     font-size: 30px;
-    vertical-align: middle;
     color: lightgray;
     margin: 0;
     float: left;
@@ -59,10 +58,10 @@ body {
 }
 
 .thumbnail:hover {
-  background-color: #efefef !important;
-  cursor: pointer;
+    background-color: #efefef !important;
+    cursor: pointer;
 }
 
 .thumbnail {
-    padding: 10px 10px 4px 10px !important;
+    padding: 10px 10px 4px !important;
 }
