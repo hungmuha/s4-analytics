@@ -44,14 +44,16 @@ export class PbcatFlow {
     public currentStep: PbcatStep;
     public previousStep: PbcatStep;
     public nextStep: PbcatStep;
-    public autoAdvance: boolean = true;
     public showSummary: boolean = false;
     public isFinalStep: boolean = false;
     public isFlowComplete: boolean = false;
     public hasValidState: boolean = true;
     private currentStepIndex: number = -1;
 
-    constructor(private config: PbcatConfig, public hsmvReportNumber: number) {
+    constructor(
+        private config: PbcatConfig,
+        public hsmvReportNumber: number,
+        public autoAdvance: boolean) {
         // todo: reconstruct stepHistory for previously typed crashes
         // this.pedInfo = PbcatData.getPbcatPedestrianInfo(hsmvReportNumber);
     }
