@@ -23,22 +23,6 @@ export class PbcatStepComponent {
         }
     }
 
-    groupedItems(groupCount: number): PbcatItem[][] {
-        let groupedItems: PbcatItem[][] = [];
-        let currGroup: PbcatItem[] = [];
-        for (let item of this.step.items) {
-            currGroup.push(item);
-            if (currGroup.length === groupCount) {
-                groupedItems.push(currGroup.map(item => item));
-                currGroup = [];
-            }
-        }
-        if (currGroup.length > 0) {
-            groupedItems.push(currGroup.map(item => item));
-        }
-        return groupedItems;
-    }
-
     hasImages(): boolean {
         return this.step.items[0].imageUrl !== undefined;
     }

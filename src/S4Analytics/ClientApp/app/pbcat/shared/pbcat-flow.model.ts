@@ -2,42 +2,7 @@
 import { PbcatPedestrianInfo } from './pbcat-ped-info.model';
 import { PbcatStep } from './pbcat-step.model';
 import { PbcatItem } from './pbcat-item.model';
-import { PbcatCrashType } from './pbcat-crash-type.model';
 import { PbcatConfig, PbcatScreenConfig, PbcatItemConfig } from './pbcat-config.d.ts';
-
-class PbcatData {
-
-    static getPbcatPedestrianInfo(hsmvReportNumber: number): PbcatPedestrianInfo {
-        // GET /api/pbcat/ped/:hsmvRptNr
-        return new PbcatPedestrianInfo();
-    }
-
-    static savePbcatPedestrianInfo(
-        hsmvReportNumber: number,
-        pedInfo: PbcatPedestrianInfo,
-        getNextCrash: boolean = false): number {
-        // POST /api/pbcat/ped
-        //  PUT /api/pbcat/ped/:hsmvRptNr
-        // mock get the actual next hsmv report number
-        return getNextCrash ? hsmvReportNumber + 1 : undefined;
-    }
-
-    static deletePbcatPedestrianInfo(hsmvReportNumber: number): void {
-        //  DELETE /api/pbcat/ped/:hsmvRptNr
-    }
-
-    static calculatePedestrianCrashType(pedInfo: PbcatPedestrianInfo): PbcatCrashType {
-        // GET /api/pbcat/ped/crashtype
-        let crashType = new PbcatCrashType();
-        crashType.crashTypeNbr = 781;
-        crashType.crashTypeDesc = "Motorist Left Turn - Parallel Paths";
-        crashType.crashGroupNbr = 790;
-        crashType.crashGroupDesc = "Crossing Roadway - Vehicle Turning";
-        crashType.crashTypeExpanded = 12781;
-        crashType.crashGroupExpanded = 12790;
-        return crashType;
-    }
-}
 
 export class PbcatFlow {
     public stepHistory: PbcatStep[] = [];
@@ -54,8 +19,18 @@ export class PbcatFlow {
         private config: PbcatConfig,
         public hsmvReportNumber: number,
         public autoAdvance: boolean) {
-        // todo: reconstruct stepHistory for previously typed crashes
-        // this.pedInfo = PbcatData.getPbcatPedestrianInfo(hsmvReportNumber);
+    }
+
+    get currentStepNumber(): number {
+        return this.currentStepIndex + 1;
+    }
+
+    get previousStepNumber(): number {
+        return this.previousStep ? this.currentStepNumber - 1 : undefined;
+    }
+
+    get nextStepNumber(): number {
+        return this.nextStep ? this.currentStepNumber + 1 : undefined;
     }
 
     // todo: upon item selection, determine next step and populate stepHistory
@@ -165,14 +140,12 @@ export class PbcatFlow {
         return nextStep;
     }
 
-    saveAndComplete() {
-        let pedInfo = this.getPedInfo();
-        PbcatData.savePbcatPedestrianInfo(this.hsmvReportNumber, pedInfo);
+    get canProceed() {
+         // this logic is questionable ...
+        return !this.showSummary && ((this.isFinalStep && this.isFlowComplete) || this.nextStep !== undefined);
     }
 
-    saveAndNext(): number {
-        let pedInfo = this.getPedInfo();
-        let nextHsmvNumber = PbcatData.savePbcatPedestrianInfo(this.hsmvReportNumber, pedInfo, true);
-        return nextHsmvNumber;
-    }
+    get canGoBack() { return this.previousStep !== undefined; }
+
+    get canReturnToSummary() { return this.isFlowComplete && !this.showSummary; }
 }
