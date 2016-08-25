@@ -9,79 +9,83 @@ For a complete list of rules, visit http://palantir.github.io/tslint/rules/.
 */
 
 {
-    "rules": {
-        // TypeScript-specific rules
-        "member-ordering": [true, { "order": "fields-first" }],
-        "no-internal-module": true,
-        "no-namespace": [
-            true,
-             "allow-declarations"
-        ],
-        "no-reference": true,
-        "typedef-whitespace": [
-            true,
-            {
-                "call-signature": "nospace",
-                "index-signature": "nospace",
-                "parameter": "nospace",
-                "property-declaration": "nospace",
-                "variable-declaration": "nospace"
-            }
-        ],
+  "rules": {
+    // TypeScript-specific rules
+    "member-ordering": [
+      true,
+      { "order": "fields-first" }
+    ],
+    "no-internal-module": true,
+    "no-namespace": [
+      true,
+      "allow-declarations"
+    ],
+    "no-reference": true,
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      }
+    ],
 
-        // Functionality
-        "curly": true,
-        "no-duplicate-variable": true,
-        "no-eval": true,
-        "no-invalid-this": true,
-        "no-null-keyword": true,
-        "no-shadowed-variable": true,
-        "no-unreachable": true,
-        "no-unused-expression": true,
-        "no-unused-variable": false, // unfortunately tslint can't detect Angular usages
-        "no-use-before-declare": true,
-        "no-var-keyword": true,
-        "switch-default": true,
-        "use-isnan": true,
-        "triple-equals": [
-            true,
-            "allow-null-check"
-        ],
+    // Functionality
+    "curly": true,
+    "no-duplicate-variable": true,
+    "no-eval": true,
+    "no-invalid-this": true,
+    "no-null-keyword": true,
+    "no-shadowed-variable": true,
+    "no-unreachable": true,
+    "no-unused-expression": true,
+    "no-unused-variable": false, // unfortunately tslint can't detect Angular usages
+    "no-use-before-declare": true,
+    "no-var-keyword": true,
+    "switch-default": true,
+    "use-isnan": true,
+    "triple-equals": [
+      true,
+      "allow-null-check"
+    ],
 
-        // Maintainability
-        "indent": [
-            true,
-            "spaces"
-        ],
-        "no-trailing-whitespace": true,
+    // Maintainability
+    "indent": [
+      true,
+      "spaces"
+    ],
+    "no-trailing-whitespace": true,
 
-        // Style
-        "class-name": true,
-        "comment-format": [
-            true,
-            "check-space"
-        ],
-        "no-angle-bracket-type-assertion": true,
-        "one-line": [
-            true,
-            "check-open-brace",
-            "check-whitespace"
-        ],
-        "semicolon": [
-            true,
-            "always"
-        ],
-        "variable-name": [
-            true,
-            "ban-keywords"
-        ],
-        "whitespace": [
-            true,
-            "check-branch",
-            "check-decl",
-            "check-operator",
-            "check-separator",
-            "check-type"
-        ]
-    }
+    // Style
+    "class-name": true,
+    "comment-format": [
+      true,
+      "check-space"
+    ],
+    "no-angle-bracket-type-assertion": true,
+    "one-line": [
+      true,
+      "check-open-brace",
+      "check-whitespace"
+    ],
+    "semicolon": [
+      true,
+      "always"
+    ],
+    "variable-name": [
+      true,
+      "ban-keywords"
+    ],
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-separator",
+      "check-type"
+    ],
+    "quotemark": [ true, "single", "avoid-escape" ]
+  }
 }

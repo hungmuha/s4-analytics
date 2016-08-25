@@ -381,26 +381,26 @@
       {
         "title": "Northbound",
         "infoAttrValue": 1,
-        "imageUrl": "images/pbcat/ped_Q1_1.png",
+        "imageUrl": "images/pbcat/ped_Q1_NorthBound.png",
         "nextScreenName": "Q2"
       },
       {
         "title": "Eastbound",
         "infoAttrValue": 3,
-        "imageUrl": "images/pbcat/ped_Q1_1.png",
+        "imageUrl": "images/pbcat/ped_Q1_EastBound.png",
         "nextScreenName": "Q2"
       },
       {
         "title": "Southbound",
         "infoAttrValue": 2,
-        "imageUrl": "images/pbcat/ped_Q1_1.png",
+        "imageUrl": "images/pbcat/ped_Q1_SouthBound.png",
         "nextScreenName": "Q2"
       },
       {
         "title": "Westbound",
         "infoAttrValue": 4,
-        "imageUrl": "images/pbcat/ped_Q1_1.png",
-        "nextScreenName": "Q2"
+        "imageUrl": "images/pbcat/ped_Q1_WestBound.png",
+        "nextScreenName": "END"
       },
       {
         "title": "Unknown",
@@ -443,12 +443,12 @@
       {
         "title": "Nearside",
         "infoAttrValue": 2,
-        "imageUrl": "images/pbcat/ped_Q3C_1.png"
+        "imageUrl": "images/pbcat/ped_Q3C_NearSide.png"
       },
       {
         "title": "Farside",
         "infoAttrValue": 1,
-        "imageUrl": "images/pbcat/ped_Q3C_1.png",
+        "imageUrl": "images/pbcat/ped_Q3C_FarSide.png",
         "nextScreenName": "LF"
       },
       {

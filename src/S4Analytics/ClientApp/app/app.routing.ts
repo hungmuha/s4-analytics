@@ -1,10 +1,11 @@
 import { Routes, RouterModule } from '@angular/router';
+import { IndexComponent } from './index.component';
 import { ErrorComponent } from './error.component';
 
 const appRoutes: Routes = [
-    { path: '', redirectTo: 'pbcat/12345678/step/1', pathMatch: 'full' },
+    { path: '', component: IndexComponent, pathMatch: 'full' },
     { path: 'error', component: ErrorComponent },
-    { path: '**', redirectTo: 'pbcat/12345678/step/1' }
+    { path: '**', redirectTo: '' }
 ];
 
 export const appRoutingProviders: any[] = [];

@@ -1,55 +1,57 @@
-﻿<template [ngIf]="ready()">
+﻿<template [ngIf]="ready">
 
     <div class="row">
         <div class="col-sm-6">
-            <h4>Pedestrian and Bicyclist Crash Typing</h4>
+            <h4>{{pageTitle}}</h4>
         </div>
         <div class="col-sm-6 text-right">
             Auto advance:
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-default"
-                        [class.active]="flow.autoAdvance"
-                        (click)="toggleAutoAdvance(true)">
+                        [class.active]="autoAdvance"
+                        (click)="autoAdvance=true">
                     On
                 </button>
                 <button type="button" class="btn btn-default"
-                        [class.active]="!flow.autoAdvance"
-                        (click)="toggleAutoAdvance(false)">
+                        [class.active]="!autoAdvance"
+                        (click)="autoAdvance=false">
                     Off
                 </button>
             </div>
         </div>
     </div>
 
-    <pbcat-step *ngIf="!flow.showSummary"
+    <pbcat-step *ngIf="!showSummary"
                 [hsmvReportNumber]="hsmvReportNumber"
-                [stepNumber]="stepNumber"
-                [step]="flow.currentStep"
+                [stepNumber]="currentStepNumber"
+                [step]="currentStep"
                 (selectItem)="selectItem($event)">
     </pbcat-step>
 
-    <pbcat-summary *ngIf="flow.showSummary"
+    <pbcat-summary *ngIf="showSummary"
                    [hsmvReportNumber]="hsmvReportNumber"
-                   [stepHistory]="flow.stepHistory">
+                   [stepHistory]="stepHistory"
+                   [crashType]="crashType"
+                   (jumpBackToStep)="jumpBackToStep($event)">
     </pbcat-summary>
 
     <div class="row">
         <div class="col-sm-12">
             <nav>
                 <ul class="pager">
-                    <li class="previous" *ngIf="showBackLink()">
-                        <a [routerLink]="backLink().route">&larr; Back to <em>{{backLink().title}}</em></a>
+                    <li class="previous" *ngIf="showBackLink">
+                        <a [routerLink]="backLinkRoute">&larr; Back to <em>{{backLinkText}}</em></a>
                     </li>
-                    <li *ngIf="showSummaryLink()">
-                        <a [routerLink]="summaryRoute()">Return to Summary</a>
+                    <li *ngIf="showSummaryLink">
+                        <a [routerLink]="summaryRoute">Return to Summary</a>
                     </li>
-                    <li class="next" *ngIf="showProceedLink()">
-                        <a [routerLink]="proceedLink().route">Proceed to <em>{{proceedLink().title}}</em> &rarr;</a>
+                    <li class="next" *ngIf="showProceedLink">
+                        <a [routerLink]="proceedLinkRoute">Proceed to <em>{{proceedLinkText}}</em> &rarr;</a>
                     </li>
-                    <li class="next" *ngIf="flow.showSummary">
+                    <li class="next" *ngIf="showSummary">
                         <a href="javascript:void(0);" (click)="saveAndNext()">Save and Next &rarr;</a>
                     </li>
-                    <li class="next" *ngIf="flow.showSummary">
+                    <li class="next" *ngIf="showSummary">
                         <a href="javascript:void(0);" (click)="saveAndClose()">Save and Close</a>
                     </li>
                 </ul>
