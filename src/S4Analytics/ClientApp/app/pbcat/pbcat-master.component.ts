@@ -10,6 +10,7 @@ import { PbcatService, PbcatFlow, PbcatItem, PbcatCrashType, PbcatPedestrianInfo
 export class PbcatMasterComponent {
     private _paramSub: Subscription;
     private _flow: PbcatFlow;
+    private crashType: PbcatCrashType;
 
     constructor(
         private router: Router,
@@ -44,6 +45,9 @@ export class PbcatMasterComponent {
             // ERROR
             this.pbcatService.reset();
             this.router.navigate(['pbcat', hsmvReportNumber, 'step', 1]);
+        }
+        if (!stepNumber) {
+            this.crashType = this.pbcatService.calculatePedestrianCrashType(this._flow.pedInfo);
         }
     }
 
@@ -88,7 +92,9 @@ export class PbcatMasterComponent {
     }
 
     private get proceedLinkText(): string {
-        return `${this._flow.nextStepNumber}. ${this._flow.nextStep.title}`;
+        return this._flow.isFinalStep
+            ? "Summary"
+            : `${this._flow.nextStepNumber}. ${this._flow.nextStep.title}`;
     }
 
     private get backLinkRoute(): any[] {
@@ -112,13 +118,11 @@ export class PbcatMasterComponent {
     }
 
     private saveAndClose(): void {
-        let pedInfo = this._flow.getPedInfo();
-        this.pbcatService.savePbcatPedestrianInfo(this.hsmvReportNumber, pedInfo);
+        this.pbcatService.savePbcatPedestrianInfo(this.hsmvReportNumber, this._flow.pedInfo);
     }
 
     private saveAndNext(): void {
-        let pedInfo = this._flow.getPedInfo();
-        let nextHsmvNumber = this.pbcatService.savePbcatPedestrianInfo(this.hsmvReportNumber, pedInfo, true);
+        let nextHsmvNumber = this.pbcatService.savePbcatPedestrianInfo(this.hsmvReportNumber, this._flow.pedInfo, true);
         this.router.navigate(['pbcat', nextHsmvNumber, 'step', 1]);
     }
 }

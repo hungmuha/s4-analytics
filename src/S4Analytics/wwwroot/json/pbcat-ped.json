@@ -400,7 +400,7 @@
         "title": "Westbound",
         "infoAttrValue": 4,
         "imageUrl": "images/pbcat/ped_Q1_1.png",
-        "nextScreenName": "Q2"
+        "nextScreenName": "END"
       },
       {
         "title": "Unknown",

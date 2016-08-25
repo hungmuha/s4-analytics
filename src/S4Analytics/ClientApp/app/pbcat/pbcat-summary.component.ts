@@ -1,5 +1,5 @@
 ﻿import { Component, Input } from '@angular/core';
-import { PbcatStep } from './shared';
+import { PbcatStep, PbcatCrashType } from './shared';
 
 @Component({
     selector: 'pbcat-summary',
@@ -8,4 +8,5 @@ import { PbcatStep } from './shared';
 export class PbcatSummaryComponent {
     @Input() hsmvReportNumber: number;
     @Input() stepHistory: PbcatStep[];
+    @Input() crashType: PbcatCrashType;
 }

@@ -6,11 +6,7 @@ import { PbcatConfig, PbcatScreenConfig, PbcatItemConfig } from './pbcat-config.
 
 export class PbcatFlow {
     public stepHistory: PbcatStep[] = [];
-    public currentStep: PbcatStep;
-    public previousStep: PbcatStep;
-    public nextStep: PbcatStep;
     public showSummary: boolean = false;
-    public isFinalStep: boolean = false;
     public isFlowComplete: boolean = false;
     public hasValidState: boolean = true;
     private currentStepIndex: number = -1;
@@ -19,6 +15,22 @@ export class PbcatFlow {
         private config: PbcatConfig,
         public hsmvReportNumber: number,
         public autoAdvance: boolean) {
+    }
+
+    get isFinalStep(): boolean {
+        return this.isFlowComplete && this.currentStepIndex === this.stepHistory.length - 1;
+    }
+
+    get currentStep(): PbcatStep {
+        return this.stepHistory[this.currentStepIndex];
+    }
+
+    get previousStep(): PbcatStep {
+        return this.stepHistory[this.currentStepIndex-1];
+    }
+
+    get nextStep(): PbcatStep {
+        return this.stepHistory[this.currentStepIndex + 1];
     }
 
     get currentStepNumber(): number {
@@ -33,68 +45,17 @@ export class PbcatFlow {
         return this.nextStep ? this.currentStepNumber + 1 : undefined;
     }
 
-    // todo: upon item selection, determine next step and populate stepHistory
-
-    goToStepNumber(stepNumber: number) {
-        this.showSummary = false;
-        if (stepNumber === 1 && this.stepHistory.length === 0) {
-            let nextStep = this.getNextStep();
-            if (nextStep) {
-                this.nextStep = nextStep;
-                this.stepHistory.push(nextStep);
-            }
-            else {
-                this.hasValidState = false;
-            }
-        }
-        let stepExists = stepNumber > 0 && stepNumber <= this.stepHistory.length;
-        if (stepExists) {
-            let stepIndex = stepNumber - 1; // stepNumber is 1-based
-            this.currentStepIndex = stepIndex;
-            this.previousStep = this.stepHistory[stepIndex - 1];
-            this.currentStep = this.stepHistory[stepIndex];
-            this.nextStep = this.stepHistory[stepIndex + 1];
-            this.isFinalStep = !this.nextStep && this.isFlowComplete;
-        }
-        else {
-            this.hasValidState = false;
-        }
+    get canProceed(): boolean {
+        return !this.showSummary && this.currentStep && this.currentStep.selectedItem !== undefined;
     }
 
-    goToSummary() {
-        if (this.isFlowComplete) {
-            this.showSummary = true;
-        }
-        else {
-            this.hasValidState = false;
-        }
+    get canGoBack(): boolean { return this.previousStep !== undefined; }
+
+    get canReturnToSummary(): boolean {
+        return this.isFlowComplete && !this.showSummary && !this.isFinalStep;
     }
 
-    selectItemForCurrentStep(item: PbcatItem) {
-        // set the selected item and queue up the next step
-        let sameItem =
-            this.currentStep.selectedItem &&
-            this.currentStep.selectedItem.index === item.index;
-        this.currentStep.selectedItem = item;
-        if (!sameItem) {
-            // set item.selected
-            for (let currItem of this.currentStep.items) {
-                currItem.selected = currItem.index === item.index;
-            }
-            // clear the step history after this step
-            delete this.nextStep;
-            this.stepHistory = this.stepHistory.slice(0, this.currentStepIndex + 1);
-            this.isFlowComplete = false;
-            // get the next step
-            let nextStep = this.getNextStep();
-            if (nextStep) {
-                this.nextStep = nextStep;
-                this.stepHistory.push(nextStep);
-            }
-        }
-    }
-
-    getPedInfo() {
+    get pedInfo(): PbcatPedestrianInfo {
         // mock logic to create pedInfo ...
         let pedInfo = new PbcatPedestrianInfo();
         for (let step of this.stepHistory) {
@@ -105,47 +66,86 @@ export class PbcatFlow {
         return pedInfo;
     }
 
-    getNextStep(): PbcatStep {
-        let nextScreenName: string = "1";
-        let nextStep: PbcatStep;
+    goToStep(stepNumber: number) {
+        this.showSummary = false;
+        let stepIndex = stepNumber - 1; // stepNumber is 1-based
+        let isNewFlow = stepIndex === 0 && this.stepHistory.length === 0;
+        let stepExists = stepIndex >= 0 && stepIndex < this.stepHistory.length;
+        this.currentStepIndex = stepIndex;
 
-        if (this.currentStepIndex >= 0) {
-            nextScreenName = this.currentStep.selectedItem.nextScreenName;
+        if (isNewFlow) {
+            let currentStep = this.getFirstStep();
+            this.stepHistory.push(currentStep);
         }
-        let nextScreenConfig: PbcatScreenConfig;
-        // todo: eliminate this magic string
-        if (nextScreenName !== 'END') {
-            nextScreenConfig = this.config[nextScreenName];
+        else if (!stepExists) {
+            this.hasValidState = false;
         }
+    }
 
-        if (nextScreenConfig === undefined) {
-            this.isFlowComplete = true;
-            this.isFinalStep = true;
+    goToSummary() {
+        this.showSummary = true;
+        if (this.isFlowComplete) {
+            this.currentStepIndex = this.stepHistory.length; // summary isn't actually in the stepHistory
         }
         else {
-            // todo: set selected parameter of PbcatItem
-            nextStep = new PbcatStep(nextScreenConfig.title, nextScreenConfig.description, nextScreenConfig.infoAttrName);
-            nextStep.items = nextScreenConfig.items.map((item, index) =>
+            this.hasValidState = false;
+        }
+    }
+
+    selectItemForCurrentStep(item: PbcatItem) {
+        let isCurrentSelectedItem = this.currentStep.selectedItem === item;
+
+        if (!isCurrentSelectedItem) {
+            // select the item
+            this.currentStep.selectedItem = item;
+            // clear the step history after this step
+            this.stepHistory = this.stepHistory.slice(0, this.currentStepIndex + 1);
+            // queue up the next step
+            let nextStep = this.calculateNextStep();
+            if (nextStep) {
+                this.isFlowComplete = false;
+                this.stepHistory.push(nextStep);
+            }
+            else {
+                this.isFlowComplete = true;
+            }
+        }
+    }
+
+    private getFirstStep(): PbcatStep {
+        let screenName = "1";
+        let screenConfig = this.config[screenName];
+        let step = new PbcatStep(screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
+        step.items = screenConfig.items.map((item, index) =>
+            new PbcatItem(
+                index, item.infoAttrValue, item.title,
+                item.nextScreenName, item.description,
+                item.imageUrl, false)
+        );
+        return step;
+    }
+
+    private calculateNextStep(): PbcatStep {
+        let screenName: string;
+        let step: PbcatStep;
+        let screenConfig: PbcatScreenConfig;
+
+        if (this.currentStep) {
+            screenName = this.currentStep.selectedItem.nextScreenName;
+        }
+        if (screenName !== 'END') {
+            screenConfig = this.config[screenName];
+        }
+        if (screenConfig) {
+            step = new PbcatStep(screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
+            step.items = screenConfig.items.map((item, index) =>
                 new PbcatItem(
-                    index,
-                    item.infoAttrValue,
-                    item.title,
-                    item.nextScreenName,
-                    item.description,
-                    item.imageUrl,
-                    false)
+                    index, item.infoAttrValue, item.title,
+                    item.nextScreenName, item.description,
+                    item.imageUrl, false)
             );
         }
 
-        return nextStep;
+        return step;
     }
-
-    get canProceed() {
-         // this logic is questionable ...
-        return !this.showSummary && ((this.isFinalStep && this.isFlowComplete) || this.nextStep !== undefined);
-    }
-
-    get canGoBack() { return this.previousStep !== undefined; }
-
-    get canReturnToSummary() { return this.isFlowComplete && !this.showSummary; }
 }

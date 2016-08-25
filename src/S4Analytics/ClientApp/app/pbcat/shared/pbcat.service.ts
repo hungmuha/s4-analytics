@@ -73,7 +73,7 @@ export class PbcatService {
 
     getPbcatFlowAtStep(hsmvReportNumber: number, stepNumber: number): PbcatFlow {
         this.flow = this.getPbcatFlow(hsmvReportNumber);
-        this.flow.goToStepNumber(stepNumber);
+        this.flow.goToStep(stepNumber);
         return this.flow;
     }
 
