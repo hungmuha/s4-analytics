@@ -31,7 +31,8 @@
     <pbcat-summary *ngIf="showSummary"
                    [hsmvReportNumber]="hsmvReportNumber"
                    [stepHistory]="stepHistory"
-                   [crashType]="crashType">
+                   [crashType]="crashType"
+                   (jumpBackToStep)="jumpBackToStep($event)">
     </pbcat-summary>
 
     <div class="row">

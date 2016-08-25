@@ -1,4 +1,4 @@
-﻿import { Component, Input } from '@angular/core';
+﻿import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { PbcatStep, PbcatCrashType } from './shared';
 
 @Component({
@@ -9,4 +9,9 @@ export class PbcatSummaryComponent {
     @Input() hsmvReportNumber: number;
     @Input() stepHistory: PbcatStep[];
     @Input() crashType: PbcatCrashType;
+    @Output() jumpBackToStep = new EventEmitter<number>();
+
+    private jumpBack(stepNumber: number) {
+        this.jumpBackToStep.emit(stepNumber);
+    }
 }

@@ -1,10 +1,11 @@
 ﻿import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import { ParticipantType } from './pbcat.enums';
 import { PbcatFlow } from './pbcat-flow.model';
 import { PbcatConfig } from './pbcat-config.d.ts';
 import { PbcatCrashType } from './pbcat-crash-type.model';
-import { PbcatPedestrianInfo } from './pbcat-ped-info.model';
+import { PbcatInfo, PbcatBicyclistInfo, PbcatPedestrianInfo } from './pbcat-info.model';
 
 @Injectable()
 export class PbcatService {
@@ -13,13 +14,18 @@ export class PbcatService {
 
     constructor(private http: Http) { }
 
-    configure(onConfigured: () => void) {
-        if (this.config === undefined) {
+    configure(participantType: ParticipantType, onConfigured: () => void) {
+        let jsonUrl = participantType === ParticipantType.Pedestrian
+            ? 'json/pbcat-ped.json'
+            : 'json/pbcat-bike.json';
+        if (this.config === undefined ||
+            this.config.participantType !== participantType) {
             this.http
-                .get('json/pbcat-ped.json')
+                .get(jsonUrl)
                 .map(response => response.json())
                 .subscribe(config => {
                     this.config = config;
+                    this.config.participantType = participantType;
                     onConfigured();
                 });
         }
@@ -32,28 +38,32 @@ export class PbcatService {
         delete this.flow;
     }
 
-    getPbcatPedestrianInfo(hsmvReportNumber: number): PbcatPedestrianInfo {
-        // GET /api/pbcat/ped/:hsmvRptNr
+    getPbcatInfo(hsmvReportNumber: number): PbcatInfo {
+        // GET /api/pbcat/:bikeOrPed/:hsmvRptNr
         // todo: reconstruct stepHistory for previously typed crashes
-        return new PbcatPedestrianInfo();
+        return this.config.participantType === ParticipantType.Pedestrian
+            ? new PbcatPedestrianInfo()
+            : new PbcatBicyclistInfo();
     }
 
-    savePbcatPedestrianInfo(
+    savePbcatInfo(
         hsmvReportNumber: number,
-        pedInfo: PbcatPedestrianInfo,
-        getNextCrash: boolean = false): number {
-        // POST /api/pbcat/ped
-        //  PUT /api/pbcat/ped/:hsmvRptNr
+        pbcatInfo: PbcatInfo,
+        getNextCrash: boolean = false): [ParticipantType, number] {
+        // POST /api/pbcat/:bikeOrPed
+        //  PUT /api/pbcat/:bikeOrPed/:hsmvRptNr
         // mock get the actual next hsmv report number
-        return getNextCrash ? hsmvReportNumber + 1 : undefined;
+        if (getNextCrash) {
+            return [this.config.participantType, getNextCrash ? hsmvReportNumber + 1 : undefined];
+        }
     }
 
-    deletePbcatPedestrianInfo(hsmvReportNumber: number): void {
-        //  DELETE /api/pbcat/ped/:hsmvRptNr
+    deletePbcatInfo(hsmvReportNumber: number): void {
+        //  DELETE /api/pbcat/:bikeOrPed/:hsmvRptNr
     }
 
-    calculatePedestrianCrashType(pedInfo: PbcatPedestrianInfo): PbcatCrashType {
-        // GET /api/pbcat/ped/crashtype
+    calculateCrashType(pbcatInfo: PbcatInfo): PbcatCrashType {
+        // GET /api/pbcat/:bikeOrPed/crashtype
         // mock crash type
         let crashType = new PbcatCrashType();
         crashType.crashTypeNbr = 781;

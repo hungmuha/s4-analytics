@@ -1,12 +1,12 @@
 ﻿import { Observable } from 'rxjs/Observable';
-import { PbcatPedestrianInfo } from './pbcat-ped-info.model';
+import { ParticipantType } from './pbcat.enums';
+import { PbcatInfo, PbcatPedestrianInfo, PbcatBicyclistInfo } from './pbcat-info.model';
 import { PbcatStep } from './pbcat-step.model';
 import { PbcatItem } from './pbcat-item.model';
 import { PbcatConfig, PbcatScreenConfig, PbcatItemConfig } from './pbcat-config.d.ts';
 
 export class PbcatFlow {
     public stepHistory: PbcatStep[] = [];
-    public showSummary: boolean = false;
     public isFlowComplete: boolean = false;
     public hasValidState: boolean = true;
     private currentStepIndex: number = -1;
@@ -17,8 +17,16 @@ export class PbcatFlow {
         public autoAdvance: boolean) {
     }
 
+    get participantType(): ParticipantType {
+        return this.config.participantType;
+    }
+
     get isFinalStep(): boolean {
         return this.isFlowComplete && this.currentStepIndex === this.stepHistory.length - 1;
+    }
+
+    get showSummary(): boolean {
+        return this.currentStepIndex === this.stepHistory.length;
     }
 
     get currentStep(): PbcatStep {
@@ -55,19 +63,20 @@ export class PbcatFlow {
         return this.isFlowComplete && !this.showSummary && !this.isFinalStep;
     }
 
-    get pedInfo(): PbcatPedestrianInfo {
-        // mock logic to create pedInfo ...
-        let pedInfo = new PbcatPedestrianInfo();
+    get pbcatInfo(): PbcatInfo {
+        // mock logic to create pbcatInfo ...
+        let info = this.config.participantType === ParticipantType.Pedestrian
+            ? new PbcatPedestrianInfo()
+            : new PbcatBicyclistInfo();
         for (let step of this.stepHistory) {
             if (step.selectedItem !== undefined) {
-                (pedInfo as any)[step.infoAttrName] = step.selectedItem.infoAttrValue;
+                (info as any)[step.infoAttrName] = step.selectedItem.infoAttrValue;
             }
         }
-        return pedInfo;
+        return info;
     }
 
     goToStep(stepNumber: number) {
-        this.showSummary = false;
         let stepIndex = stepNumber - 1; // stepNumber is 1-based
         let isNewFlow = stepIndex === 0 && this.stepHistory.length === 0;
         let stepExists = stepIndex >= 0 && stepIndex < this.stepHistory.length;
@@ -83,7 +92,6 @@ export class PbcatFlow {
     }
 
     goToSummary() {
-        this.showSummary = true;
         if (this.isFlowComplete) {
             this.currentStepIndex = this.stepHistory.length; // summary isn't actually in the stepHistory
         }

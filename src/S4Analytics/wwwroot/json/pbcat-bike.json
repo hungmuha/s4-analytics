@@ -1,0 +1,103 @@
+﻿{
+  "1": {
+    "title": "Crash Location",
+    "description": "Where did the crash occur?",
+    "infoAttrName": "crashLocationCd",
+    "items": [
+      {
+        "title": "Intersection",
+        "infoAttrValue": 1,
+        "description": "The crash occurred within the intersection proper or within the crosswalk area. Note: Unsignalized driveways are considered to be non-intersection locations.",
+        "imageUrl": "images/pbcat/bike_1_Intersection.png",
+        "nextScreenName": "2"
+      },
+      {
+        "title": "Non-Intersection Location",
+        "infoAttrValue": 3,
+        "description": "The crash occurred outside the intersection proper or crosswalk area and was not related to the presence of any intersection.",
+        "imageUrl": "images/pbcat/bike_1_NonIntersection.png"
+      },
+      {
+        "title": "Non-Roadway Location",
+        "infoAttrValue": 4,
+        "description": "The crash occurred off the street network (e.g., parking lots, driveways, alleys, trails, and other open areas). Note: crashes occurring on paved shoulders, bike lanes, sidewalks, or driveway crossings are considered to be \"roadway\" crashes and should not be placed in the non-roadway classification.",
+        "imageUrl": "images/pbcat/bike_1_NonRoad.png"
+      },
+      {
+        "title": "Intersection-Related",
+        "infoAttrValue": 2,
+        "description": "The crash occurred outside the intersection proper or crosswalk area but was related to the presence of the intersection (e.g., the result of queuing traffic).",
+        "imageUrl": "images/pbcat/bike_1_IntersectionRelated.png"
+      },
+      {
+        "title": "Unknown/Insufficient Information",
+        "infoAttrValue": 5,
+        "description": "There is insufficient information to determine where the crash occurred."
+      }
+    ]
+  },
+  "2": {
+    "title": "Bicyclist Position",
+    "description": "What was the initial position of the bicyclist?",
+    "infoAttrName": "bicyclistPositionCd",
+    "items": [
+      {
+        "title": "On a roadway, in a shared travel lane",
+        "infoAttrValue": 1,
+        "nextScreenName": "3"
+      },
+      {
+        "title": "On a roadway, in a bicycle lane or on a paved shoulder",
+        "infoAttrValue": 2
+      },
+      {
+        "title": "On a sidewalk, crosswalk, or driveway crossing",
+        "infoAttrValue": 3
+      },
+      {
+        "title": "On a separate bicycle/multi-use path",
+        "infoAttrValue": 4
+      },
+      {
+        "title": "On a driveway or alley",
+        "infoAttrValue": 5
+      },
+      {
+        "title": "Other non-roadway  areas (parking lot, open areas, etc.)",
+        "infoAttrValue": 6
+      },
+      {
+        "title": "Other (e.g., unpaved shoulder, worn path, etc.)",
+        "infoAttrValue": 8
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": 9
+      }
+    ]
+  },
+  "3": {
+    "title": "Bicyclist Direction of Travel",
+    "description": "In what direction was the bicyclist initially traveling prior to being struck or prior to making any turns which caused the crash?",
+    "infoAttrName": "bicyclistDirCd",
+    "items": [
+      {
+        "title": "With traffic",
+        "infoAttrValue": 1,
+        "nextScreenName": "END"
+      },
+      {
+        "title": "Facing traffic",
+        "infoAttrValue": 2
+      },
+      {
+        "title": "Not applicable (e.g., exiting a driveway, in a parking lot, or other non-roadway area)",
+        "infoAttrValue": 3
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": 9
+      }
+    ]
+  }
+}

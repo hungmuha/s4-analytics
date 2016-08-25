@@ -1,4 +1,6 @@
-﻿export interface PbcatItemConfig {
+﻿import { ParticipantType } from './pbcat.enums';
+
+export interface PbcatItemConfig {
     title: string;
     infoAttrValue: number;
     description?: string;
@@ -14,5 +16,6 @@ export interface PbcatScreenConfig {
 }
 
 export interface PbcatConfig {
+    participantType: ParticipantType;
     [screenName: string]: PbcatScreenConfig;
 }

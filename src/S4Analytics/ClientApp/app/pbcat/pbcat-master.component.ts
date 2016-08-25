@@ -1,7 +1,10 @@
 ﻿import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
-import { PbcatService, PbcatFlow, PbcatItem, PbcatCrashType, PbcatPedestrianInfo } from './shared';
+import {
+    PbcatService, PbcatFlow, PbcatItem,
+    PbcatCrashType, ParticipantType
+} from './shared';
 
 @Component({
     selector: 'pbcat-master',
@@ -30,9 +33,12 @@ export class PbcatMasterComponent {
     }
 
     private processParams(params: any): void {
+        let bikeOrPed = params['bikeOrPed'];
         let hsmvReportNumber = +params['hsmvReportNumber'];
         let stepNumber = +params['stepNumber'];
+        let participantType = this.getParticipantType(bikeOrPed);
         this.pbcatService.configure(
+            participantType,
             () => this.getPbcatFlow(hsmvReportNumber, stepNumber)
         );
     }
@@ -42,13 +48,16 @@ export class PbcatMasterComponent {
             ? this.pbcatService.getPbcatFlowAtStep(hsmvReportNumber, stepNumber)
             : this.pbcatService.getPbcatFlowAtSummary(hsmvReportNumber);
         if (!this._flow.hasValidState) {
-            // ERROR
-            this.pbcatService.reset();
-            this.router.navigate(['pbcat', hsmvReportNumber, 'step', 1]);
+            this.notFound(hsmvReportNumber);
         }
         if (!stepNumber) {
-            this.crashType = this.pbcatService.calculatePedestrianCrashType(this._flow.pedInfo);
+            this.crashType = this.pbcatService.calculateCrashType(this._flow.pbcatInfo);
         }
+    }
+
+    private notFound(hsmvReportNumber: number) {
+        // fake 404 page
+        this.router.navigate(['404']);
     }
 
     private get ready(): boolean { return this._flow && this._flow.hasValidState; }
@@ -98,17 +107,20 @@ export class PbcatMasterComponent {
     }
 
     private get backLinkRoute(): any[] {
-        return ['/pbcat', this._flow.hsmvReportNumber, 'step', this._flow.previousStepNumber];
+        let bikeOrPed = this.getBikeOrPed(this._flow.participantType);
+        return ['/pbcat', bikeOrPed, this._flow.hsmvReportNumber, 'step', this._flow.previousStepNumber];
     }
 
     private get proceedLinkRoute(): any[] {
+        let bikeOrPed = this.getBikeOrPed(this._flow.participantType);
         return this._flow.isFinalStep
-            ? ['/pbcat', this.hsmvReportNumber, 'summary']
-            : ['/pbcat', this._flow.hsmvReportNumber, 'step', this._flow.nextStepNumber];
+            ? ['/pbcat', bikeOrPed, this.hsmvReportNumber, 'summary']
+            : ['/pbcat', bikeOrPed, this._flow.hsmvReportNumber, 'step', this._flow.nextStepNumber];
     }
 
     private get summaryRoute(): any[] {
-        return ['/pbcat', this.hsmvReportNumber, 'summary'];
+        let bikeOrPed = this.getBikeOrPed(this._flow.participantType);
+        return ['/pbcat', bikeOrPed, this.hsmvReportNumber, 'summary'];
     }
 
     private proceed(): void {
@@ -117,12 +129,34 @@ export class PbcatMasterComponent {
         }
     }
 
+    private jumpBackToStep(stepNumber: number) {
+        let bikeOrPed = this.getBikeOrPed(this._flow.participantType);
+        let route = ['/pbcat', bikeOrPed, this._flow.hsmvReportNumber, 'step', stepNumber];
+        this.router.navigate(route);
+    }
+
     private saveAndClose(): void {
-        this.pbcatService.savePbcatPedestrianInfo(this.hsmvReportNumber, this._flow.pedInfo);
+        this.pbcatService.savePbcatInfo(this.hsmvReportNumber, this._flow.pbcatInfo);
     }
 
     private saveAndNext(): void {
-        let nextHsmvNumber = this.pbcatService.savePbcatPedestrianInfo(this.hsmvReportNumber, this._flow.pedInfo, true);
-        this.router.navigate(['pbcat', nextHsmvNumber, 'step', 1]);
+        let nextHsmvNumber: number;
+        let participantType: ParticipantType;
+        [participantType, nextHsmvNumber] = this.pbcatService.savePbcatInfo(
+            this.hsmvReportNumber, this._flow.pbcatInfo, true);
+        let bikeOrPed = this.getBikeOrPed(participantType);
+        this.router.navigate(['/pbcat', bikeOrPed, nextHsmvNumber, 'step', 1]);
+    }
+
+    private getBikeOrPed(participantType: ParticipantType) {
+        return participantType === ParticipantType.Pedestrian
+            ? "ped"
+            : "bike";
+    }
+
+    private getParticipantType(bikeOrPed: string) {
+        return bikeOrPed === "ped"
+            ? ParticipantType.Pedestrian
+            : ParticipantType.Bicyclist;
     }
 }
