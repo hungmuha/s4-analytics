@@ -67,9 +67,9 @@ export class PbcatService {
         // mock crash type
         let crashType = new PbcatCrashType();
         crashType.crashTypeNbr = 781;
-        crashType.crashTypeDesc = "Motorist Left Turn - Parallel Paths";
+        crashType.crashTypeDesc = 'Motorist Left Turn - Parallel Paths';
         crashType.crashGroupNbr = 790;
-        crashType.crashGroupDesc = "Crossing Roadway - Vehicle Turning";
+        crashType.crashGroupDesc = 'Crossing Roadway - Vehicle Turning';
         crashType.crashTypeExpanded = 12781;
         crashType.crashGroupExpanded = 12790;
         return crashType;

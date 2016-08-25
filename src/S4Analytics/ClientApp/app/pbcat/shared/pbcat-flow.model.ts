@@ -34,7 +34,7 @@ export class PbcatFlow {
     }
 
     get previousStep(): PbcatStep {
-        return this.stepHistory[this.currentStepIndex-1];
+        return this.stepHistory[this.currentStepIndex - 1];
     }
 
     get nextStep(): PbcatStep {
@@ -121,7 +121,7 @@ export class PbcatFlow {
     }
 
     private getFirstStep(): PbcatStep {
-        let screenName = "1";
+        let screenName = '1';
         let screenConfig = this.config[screenName];
         let step = new PbcatStep(screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
         step.items = screenConfig.items.map((item, index) =>

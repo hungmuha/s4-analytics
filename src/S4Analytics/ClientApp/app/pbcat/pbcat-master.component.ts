@@ -60,6 +60,12 @@ export class PbcatMasterComponent {
         this.router.navigate(['404']);
     }
 
+    private get pageTitle(): string {
+        return this._flow.participantType === ParticipantType.Pedestrian
+            ? 'Pedestrian Crash Typing'
+            : 'Bicyclist Crash Typing';
+    }
+
     private get ready(): boolean { return this._flow && this._flow.hasValidState; }
 
     private get autoAdvance() { return this._flow.autoAdvance; }
@@ -102,7 +108,7 @@ export class PbcatMasterComponent {
 
     private get proceedLinkText(): string {
         return this._flow.isFinalStep
-            ? "Summary"
+            ? 'Summary'
             : `${this._flow.nextStepNumber}. ${this._flow.nextStep.title}`;
     }
 
@@ -150,12 +156,12 @@ export class PbcatMasterComponent {
 
     private getBikeOrPed(participantType: ParticipantType) {
         return participantType === ParticipantType.Pedestrian
-            ? "ped"
-            : "bike";
+            ? 'ped'
+            : 'bike';
     }
 
     private getParticipantType(bikeOrPed: string) {
-        return bikeOrPed === "ped"
+        return bikeOrPed === 'ped'
             ? ParticipantType.Pedestrian
             : ParticipantType.Bicyclist;
     }
