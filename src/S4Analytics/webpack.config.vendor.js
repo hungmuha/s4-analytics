@@ -2,7 +2,9 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var extractCSS = new ExtractTextPlugin('vendor.css');
-var isDevelopment = process.env.ASPNETCORE_ENVIRONMENT === 'Development';
+var isDevelopment =
+    process.env.ASPNETCORE_ENVIRONMENT === 'Local' ||
+    process.env.ASPNETCORE_ENVIRONMENT === 'Development';
 
 module.exports = {
     resolve: {
@@ -16,10 +18,6 @@ module.exports = {
     },
     entry: {
         vendor: [
-            'bootstrap',
-            'bootstrap/dist/css/bootstrap.css',
-            'es6-shim',
-            'jquery',
             '@angular/common',
             '@angular/compiler',
             '@angular/core',
@@ -28,6 +26,15 @@ module.exports = {
             '@angular/platform-browser-dynamic',
             '@angular/router',
             '@angular/platform-server',
+            '@ngrx/store',
+            '@ngrx/core',
+            'bootstrap',
+            'bootstrap/dist/css/bootstrap.css',
+            'es6-shim',
+            'jquery',
+            'reflect-metadata',
+            'rxjs',
+            'zone.js'
         ]
     },
     output: {
