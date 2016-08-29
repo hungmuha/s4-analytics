@@ -1,8 +1,8 @@
-﻿import { PbcatItem } from './pbcat-item.model';
+﻿import { PbcatItem } from './pbcat-item';
 
 export class PbcatStep {
     items: PbcatItem[];
-    _selectedItem: PbcatItem;
+    private _selectedItem: PbcatItem;
 
     constructor(
         public title: string,

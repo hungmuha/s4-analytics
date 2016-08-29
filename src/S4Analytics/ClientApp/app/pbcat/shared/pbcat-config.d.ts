@@ -16,6 +16,5 @@ export interface PbcatScreenConfig {
 }
 
 export interface PbcatConfig {
-    participantType: ParticipantType;
     [screenName: string]: PbcatScreenConfig;
 }

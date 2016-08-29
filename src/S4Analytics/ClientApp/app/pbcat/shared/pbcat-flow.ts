@@ -1,8 +1,8 @@
 ﻿import { Observable } from 'rxjs/Observable';
 import { ParticipantType } from './pbcat.enums';
-import { PbcatInfo, PbcatPedestrianInfo, PbcatBicyclistInfo } from './pbcat-info.model';
-import { PbcatStep } from './pbcat-step.model';
-import { PbcatItem } from './pbcat-item.model';
+import { PbcatInfo, PbcatPedestrianInfo, PbcatBicyclistInfo } from './pbcat-info';
+import { PbcatStep } from './pbcat-step';
+import { PbcatItem } from './pbcat-item';
 import { PbcatConfig, PbcatScreenConfig, PbcatItemConfig } from './pbcat-config.d.ts';
 
 export class PbcatFlow {
@@ -13,12 +13,9 @@ export class PbcatFlow {
 
     constructor(
         private config: PbcatConfig,
+        public participantType: ParticipantType,
         public hsmvReportNumber: number,
         public autoAdvance: boolean) {
-    }
-
-    get participantType(): ParticipantType {
-        return this.config.participantType;
     }
 
     get isFinalStep(): boolean {
@@ -65,7 +62,7 @@ export class PbcatFlow {
 
     get pbcatInfo(): PbcatInfo {
         // mock logic to create pbcatInfo ...
-        let info = this.config.participantType === ParticipantType.Pedestrian
+        let info = this.participantType === ParticipantType.Pedestrian
             ? new PbcatPedestrianInfo()
             : new PbcatBicyclistInfo();
         for (let step of this.stepHistory) {

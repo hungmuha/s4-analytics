@@ -4,6 +4,7 @@ import { HttpModule, JsonpModule } from '@angular/http';
 import { routing, appRoutingProviders } from './app.routing';
 import { AppComponent } from './app.component';
 import { PbcatModule } from './pbcat/pbcat.module';
+import { AppState } from './app.state';
 
 @NgModule({
     imports: [
@@ -14,7 +15,7 @@ import { PbcatModule } from './pbcat/pbcat.module';
         routing
     ],
     declarations: [AppComponent],
-    providers: [appRoutingProviders],
+    providers: [AppState, appRoutingProviders],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
