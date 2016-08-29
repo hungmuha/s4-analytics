@@ -26,8 +26,6 @@ module.exports = {
             '@angular/platform-browser-dynamic',
             '@angular/router',
             '@angular/platform-server',
-            '@ngrx/store',
-            '@ngrx/core',
             'bootstrap',
             'bootstrap/dist/css/bootstrap.css',
             'es6-shim',
