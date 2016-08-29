@@ -5,6 +5,7 @@ import { routing } from './pbcat.routing';
 import { PbcatMasterComponent } from './pbcat-master.component';
 import { PbcatStepComponent } from './pbcat-step.component';
 import { PbcatSummaryComponent } from './pbcat-summary.component';
+import { PbcatResolve } from './shared';
 
 @NgModule({
     imports: [
@@ -17,7 +18,8 @@ import { PbcatSummaryComponent } from './pbcat-summary.component';
         PbcatMasterComponent
     ],
     providers: [
-        PbcatService
+        PbcatService,
+        PbcatResolve
     ]
 })
 export class PbcatModule { }

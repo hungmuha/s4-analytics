@@ -1,7 +1,7 @@
-﻿import { ParticipantType } from './pbcat.enums';
+﻿import { FlowType } from './pbcat-flow';
 
 export class PbcatCrashType {
-    participantType: ParticipantType;
+    flowType: FlowType;
     crashTypeNbr: number;
     crashTypeDesc: string;
     crashGroupNbr: number;

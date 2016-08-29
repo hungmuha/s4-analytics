@@ -1,4 +1,4 @@
-﻿import { ParticipantType } from './pbcat.enums';
+﻿import { FlowType } from './pbcat-flow';
 
 export interface PbcatItemConfig {
     title: string;

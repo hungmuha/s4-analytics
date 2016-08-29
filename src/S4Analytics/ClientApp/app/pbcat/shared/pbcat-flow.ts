@@ -1,9 +1,13 @@
 ﻿import { Observable } from 'rxjs/Observable';
-import { ParticipantType } from './pbcat.enums';
 import { PbcatInfo, PbcatPedestrianInfo, PbcatBicyclistInfo } from './pbcat-info';
 import { PbcatStep } from './pbcat-step';
 import { PbcatItem } from './pbcat-item';
 import { PbcatConfig, PbcatScreenConfig, PbcatItemConfig } from './pbcat-config.d.ts';
+
+export enum FlowType {
+    Bicyclist,
+    Pedestrian
+}
 
 export class PbcatFlow {
     public stepHistory: PbcatStep[] = [];
@@ -13,7 +17,7 @@ export class PbcatFlow {
 
     constructor(
         private config: PbcatConfig,
-        public participantType: ParticipantType,
+        public flowType: FlowType,
         public hsmvReportNumber: number,
         public autoAdvance: boolean) {
     }
@@ -62,7 +66,7 @@ export class PbcatFlow {
 
     get pbcatInfo(): PbcatInfo {
         // mock logic to create pbcatInfo ...
-        let info = this.participantType === ParticipantType.Pedestrian
+        let info = this.flowType === FlowType.Pedestrian
             ? new PbcatPedestrianInfo()
             : new PbcatBicyclistInfo();
         for (let step of this.stepHistory) {

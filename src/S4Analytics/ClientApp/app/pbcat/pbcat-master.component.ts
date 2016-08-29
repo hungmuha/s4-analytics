@@ -1,10 +1,9 @@
 ﻿import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
-import { AppState } from '../app.state.ts';
+import { Router } from '@angular/router';
+import { AppState } from '../app.state';
 import {
     PbcatService, PbcatFlow, PbcatItem,
-    PbcatCrashType, ParticipantType, PbcatState
+    PbcatCrashType, FlowType, PbcatState
 } from './shared';
 
 @Component({
@@ -12,70 +11,17 @@ import {
     template: require('./pbcat-master.component.html')
 })
 export class PbcatMasterComponent {
-    private paramSub: Subscription;
     private state: PbcatState;
 
     constructor(
         private router: Router,
-        private activatedRoute: ActivatedRoute,
         private appState: AppState,
         private pbcatService: PbcatService) {
         this.state = appState.pbcatState;
     }
 
-    ngOnInit(): void {
-        // subscribe to params
-        this.paramSub = this.activatedRoute.params.subscribe(
-            params => this.processParams(params)
-        );
-    }
-
-    ngOnDestroy(): void {
-        // unsubscribe from params
-        this.paramSub.unsubscribe();
-    }
-
-    private processParams(params: any): void {
-        let bikeOrPed = params['bikeOrPed'];
-        let hsmvReportNumber = +params['hsmvReportNumber'];
-        let stepNumber = +params['stepNumber'];
-        let participantType = this.getParticipantType(bikeOrPed);
-        this.pbcatService
-            .getConfiguration(participantType)
-            .then(config => this.state.config = config)
-            .then(() => this.getPbcatFlow(participantType, hsmvReportNumber, stepNumber));
-    }
-
-    private getPbcatFlow(participantType: ParticipantType, hsmvReportNumber: number, stepNumber: number): void {
-        let isSameFlow = this.state.flow && this.state.flow.hsmvReportNumber === hsmvReportNumber;
-        // migrate the auto-advance setting to the new flow
-        let autoAdvance = this.state.flow ? this.state.flow.autoAdvance : true;
-        this.state.flow = isSameFlow
-            ? this.state.flow
-            : new PbcatFlow(this.state.config, participantType, hsmvReportNumber, autoAdvance);
-        if (stepNumber) {
-            this.state.flow.goToStep(stepNumber);
-        }
-        else {
-            this.state.flow.goToSummary();
-        }
-        if (!this.state.flow.hasValidState) {
-            this.notFound(hsmvReportNumber);
-        }
-        if (!stepNumber) {
-            this.pbcatService
-                .calculateCrashType(this.state.flow.pbcatInfo)
-                .then(crashType => this.state.crashType = crashType);
-        }
-    }
-
-    private notFound(hsmvReportNumber: number) {
-        // fake 404 page
-        this.router.navigate(['404']);
-    }
-
     private get pageTitle(): string {
-        return this.state.flow.participantType === ParticipantType.Pedestrian
+        return this.state.flow.flowType === FlowType.Pedestrian
             ? 'Pedestrian Crash Typing'
             : 'Bicyclist Crash Typing';
     }
@@ -129,19 +75,19 @@ export class PbcatMasterComponent {
     }
 
     private get backLinkRoute(): any[] {
-        let bikeOrPed = this.getBikeOrPed(this.state.flow.participantType);
+        let bikeOrPed = this.getBikeOrPed(this.state.flow.flowType);
         return ['/pbcat', bikeOrPed, this.state.flow.hsmvReportNumber, 'step', this.state.flow.previousStepNumber];
     }
 
     private get proceedLinkRoute(): any[] {
-        let bikeOrPed = this.getBikeOrPed(this.state.flow.participantType);
+        let bikeOrPed = this.getBikeOrPed(this.state.flow.flowType);
         return this.state.flow.isFinalStep
             ? ['/pbcat', bikeOrPed, this.hsmvReportNumber, 'summary']
             : ['/pbcat', bikeOrPed, this.state.flow.hsmvReportNumber, 'step', this.state.flow.nextStepNumber];
     }
 
     private get summaryRoute(): any[] {
-        let bikeOrPed = this.getBikeOrPed(this.state.flow.participantType);
+        let bikeOrPed = this.getBikeOrPed(this.state.flow.flowType);
         return ['/pbcat', bikeOrPed, this.hsmvReportNumber, 'summary'];
     }
 
@@ -152,24 +98,24 @@ export class PbcatMasterComponent {
     }
 
     private jumpBackToStep(stepNumber: number) {
-        let bikeOrPed = this.getBikeOrPed(this.state.flow.participantType);
+        let bikeOrPed = this.getBikeOrPed(this.state.flow.flowType);
         let route = ['/pbcat', bikeOrPed, this.state.flow.hsmvReportNumber, 'step', stepNumber];
         this.router.navigate(route);
     }
 
     private saveAndClose(): void {
         this.pbcatService.savePbcatInfo(
-            this.state.flow.participantType,
+            this.state.flow.flowType,
             this.state.flow.hsmvReportNumber,
             this.state.flow.pbcatInfo);
     }
 
     private saveAndNext(): void {
         let nextHsmvNumber: number;
-        let participantType: ParticipantType;
+        let flowType: FlowType;
         this.pbcatService
             .savePbcatInfo(
-                this.state.flow.participantType,
+                this.state.flow.flowType,
                 this.hsmvReportNumber,
                 this.state.flow.pbcatInfo,
                 true)
@@ -177,15 +123,9 @@ export class PbcatMasterComponent {
                 this.router.navigate(['/pbcat', this.getBikeOrPed(partType), nextNum, 'step', 1]));
     }
 
-    private getBikeOrPed(participantType: ParticipantType) {
-        return participantType === ParticipantType.Pedestrian
+    private getBikeOrPed(flowType: FlowType) {
+        return flowType === FlowType.Pedestrian
             ? 'ped'
             : 'bike';
-    }
-
-    private getParticipantType(bikeOrPed: string) {
-        return bikeOrPed === 'ped'
-            ? ParticipantType.Pedestrian
-            : ParticipantType.Bicyclist;
     }
 }

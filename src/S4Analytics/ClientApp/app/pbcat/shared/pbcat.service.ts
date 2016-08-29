@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
-import { ParticipantType } from './pbcat.enums';
+import { FlowType } from './pbcat-flow';
 import { PbcatConfig } from './pbcat-config.d.ts';
 import { PbcatCrashType } from './pbcat-crash-type';
 import { PbcatInfo, PbcatBicyclistInfo, PbcatPedestrianInfo } from './pbcat-info';
@@ -17,48 +17,48 @@ export class PbcatService {
         // todo: implement error handling
     }
 
-    getConfiguration(participantType: ParticipantType): Promise<PbcatConfig> {
+    getConfiguration(flowType: FlowType): Promise<PbcatConfig> {
         // return ped config if it was previously cached
-        if (participantType === ParticipantType.Pedestrian && this.cachedPedConfig !== undefined) {
+        if (flowType === FlowType.Pedestrian && this.cachedPedConfig !== undefined) {
             return Promise.resolve(this.cachedPedConfig);
         }
         // return bike config if it was previously cached
-        else if (participantType === ParticipantType.Bicyclist && this.cachedBikeConfig !== undefined) {
+        else if (flowType === FlowType.Bicyclist && this.cachedBikeConfig !== undefined) {
             return Promise.resolve(this.cachedBikeConfig);
         }
         // otherwise retrieve the config from the server and cache it
         else {
-            let jsonUrl = participantType === ParticipantType.Pedestrian
+            let jsonUrl = flowType === FlowType.Pedestrian
                 ? 'json/pbcat-ped.json'
                 : 'json/pbcat-bike.json';
             return this.http
                 .get(jsonUrl)
                 .toPromise()
                 .then(response => response.json() as PbcatConfig)
-                .then(config => this.cacheConfig(participantType, config))
+                .then(config => this.cacheConfig(flowType, config))
                 .catch(this.handleError);
         }
     }
 
-    getPbcatInfo(participantType: ParticipantType, hsmvReportNumber: number): Promise<PbcatInfo> {
+    getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<PbcatInfo> {
         // GET /api/pbcat/:bikeOrPed/:hsmvRptNr
         // todo: reconstruct stepHistory for previously typed crashes
-        let info = participantType === ParticipantType.Pedestrian
+        let info = flowType === FlowType.Pedestrian
             ? new PbcatPedestrianInfo()
             : new PbcatBicyclistInfo();
         return Promise.resolve(info);
     }
 
     savePbcatInfo(
-        participantType: ParticipantType,
+        flowType: FlowType,
         hsmvReportNumber: number,
         pbcatInfo: PbcatInfo,
-        getNextCrash: boolean = false): Promise<[ParticipantType, number]> {
+        getNextCrash: boolean = false): Promise<[FlowType, number]> {
         // POST /api/pbcat/:bikeOrPed
         //  PUT /api/pbcat/:bikeOrPed/:hsmvRptNr
         // mock get the actual next hsmv report number
         if (getNextCrash) {
-            let retVal = [participantType, getNextCrash ? hsmvReportNumber + 1 : undefined];
+            let retVal = [flowType, getNextCrash ? hsmvReportNumber + 1 : undefined];
             return Promise.resolve(retVal);
         }
     }
@@ -81,11 +81,11 @@ export class PbcatService {
         return Promise.resolve(crashType);
     }
 
-    private cacheConfig(participantType: ParticipantType, config: PbcatConfig): PbcatConfig {
-        if (participantType === ParticipantType.Pedestrian) {
+    private cacheConfig(flowType: FlowType, config: PbcatConfig): PbcatConfig {
+        if (flowType === FlowType.Pedestrian) {
             this.cachedPedConfig = config;
         }
-        else if (participantType === ParticipantType.Bicyclist) {
+        else if (flowType === FlowType.Bicyclist) {
             this.cachedBikeConfig = config;
         }
         // this method is used in a promise chain so it must return a PbcatConfig
