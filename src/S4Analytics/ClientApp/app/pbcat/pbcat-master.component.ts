@@ -173,8 +173,8 @@ export class PbcatMasterComponent {
                 this.hsmvReportNumber,
                 this.state.flow.pbcatInfo,
                 true)
-            .then(([participantType, nextHsmvNumber]) =>
-                this.router.navigate(['/pbcat', this.getBikeOrPed(participantType), nextHsmvNumber, 'step', 1]));
+            .then(([partType, nextNum]) =>
+                this.router.navigate(['/pbcat', this.getBikeOrPed(partType), nextNum, 'step', 1]));
     }
 
     private getBikeOrPed(participantType: ParticipantType) {
