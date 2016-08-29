@@ -1,4 +1,4 @@
-﻿import { FlowType } from './pbcat-flow';
+﻿import { FlowType } from './pbcat.state';
 
 export interface PbcatItemConfig {
     title: string;

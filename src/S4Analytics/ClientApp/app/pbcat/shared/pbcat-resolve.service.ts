@@ -1,12 +1,12 @@
 ﻿import { Injectable } from '@angular/core';
 import { Router, Resolve, ActivatedRouteSnapshot } from '@angular/router';
 import { AppState } from '../../app.state';
-import { PbcatState } from './pbcat.state';
 import { PbcatService } from './pbcat.service';
-import { PbcatFlow, FlowType } from './pbcat-flow';
+import { PbcatState, FlowType } from './pbcat.state';
+import { PbcatConfig } from './pbcat-config';
 
 @Injectable()
-export class PbcatResolve implements Resolve<PbcatFlow> {
+export class PbcatResolveService implements Resolve<PbcatState> {
     private state: PbcatState;
 
     constructor(
@@ -23,38 +23,37 @@ export class PbcatResolve implements Resolve<PbcatFlow> {
         let flowType = this.getFlowType(bikeOrPed);
         return this.pbcatService
             .getConfiguration(flowType)
-            .then(config => this.state.config = config)
-            .then(() => this.loadPbcatFlow(flowType, hsmvReportNumber, stepNumber))
+            .then(config => this.loadPbcatFlow(config, flowType, hsmvReportNumber, stepNumber))
             .catch(this.notFound);
+    }
+
+    private loadPbcatFlow(config: PbcatConfig, flowType: FlowType, hsmvReportNumber: number, stepNumber: number): void {
+        let isSameFlow = this.state && this.state.hsmvReportNumber === hsmvReportNumber;
+        // migrate the auto-advance setting to the new flow
+        let autoAdvance = this.state ? this.state.autoAdvance : true;
+        if (!isSameFlow) {
+            this.state.resetFlow(config, flowType, hsmvReportNumber, autoAdvance);
+        }
+        if (stepNumber) {
+            this.state.goToStep(stepNumber);
+        }
+        else {
+            this.state.goToSummary();
+        }
+        if (!this.state.hasValidState) {
+            this.notFound();
+        }
+        if (!stepNumber) {
+            this.pbcatService
+                .calculateCrashType(this.state.pbcatInfo)
+                .then(crashType => this.state.crashType = crashType);
+        }
     }
 
     private getFlowType(bikeOrPed: string) {
         return bikeOrPed === 'ped'
             ? FlowType.Pedestrian
             : FlowType.Bicyclist;
-    }
-
-    private loadPbcatFlow(flowType: FlowType, hsmvReportNumber: number, stepNumber: number): void {
-        let isSameFlow = this.state.flow && this.state.flow.hsmvReportNumber === hsmvReportNumber;
-        // migrate the auto-advance setting to the new flow
-        let autoAdvance = this.state.flow ? this.state.flow.autoAdvance : true;
-        this.state.flow = isSameFlow
-            ? this.state.flow
-            : new PbcatFlow(this.state.config, flowType, hsmvReportNumber, autoAdvance);
-        if (stepNumber) {
-            this.state.flow.goToStep(stepNumber);
-        }
-        else {
-            this.state.flow.goToSummary();
-        }
-        if (!this.state.flow.hasValidState) {
-            this.notFound();
-        }
-        if (!stepNumber) {
-            this.pbcatService
-                .calculateCrashType(this.state.flow.pbcatInfo)
-                .then(crashType => this.state.crashType = crashType);
-        }
     }
 
     private notFound() {
