@@ -15,6 +15,13 @@ export class PbcatState {
     private config: PbcatConfig;
     private currentStepIndex: number = -1;
 
+    // property backing fields
+    private _stepHistory: PbcatStep[] = [];
+    private _isFlowComplete: boolean = false;
+    private _hasValidState: boolean = true;
+    private _flowType: FlowType;
+    private _hsmvReportNumber: number;
+
     resetFlow(
         config: PbcatConfig,
         flowType: FlowType,
@@ -27,19 +34,14 @@ export class PbcatState {
         this.currentStepIndex = -1;
     }
 
-    private _stepHistory: PbcatStep[] = [];
     get stepHistory() { return this._stepHistory; }
 
-    private _isFlowComplete: boolean = false;
     get isFlowComplete() { return this._isFlowComplete; }
 
-    private _hasValidState: boolean = true;
     get hasValidState() { return this._hasValidState; }
 
-    private _flowType: FlowType;
     get flowType() { return this._flowType; }
 
-    private _hsmvReportNumber: number;
     get hsmvReportNumber() { return this._hsmvReportNumber; }
 
     get isFinalStep(): boolean {
