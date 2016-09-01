@@ -9,8 +9,8 @@ namespace S4Analytics.Models
     public interface IPbcatPedRepository
     {
         PBCATPedestrianInfo Find(int hsmvRptNbr);
-        PBCATPedestrianInfo Add(int hsmvRptNbr, PBCATPedestrianInfo pedInfo);
-        void Update(int hsmvRptNbr, PBCATPedestrianInfo pedInfo);
+        PBCATPedestrianInfo Add(int hsmvRptNbr, PBCATPedestrianInfo pedInfo, CrashTypePedestrian crashType);
+        void Update(int hsmvRptNbr, PBCATPedestrianInfo pedInfo, CrashTypePedestrian crashType);
         void Remove(int hsmvRptNbr);
         CrashTypePedestrian GetCrashType(PBCATPedestrianInfo pedInfo);
         bool HsmvNumberExists(int hsmvRptNbr);

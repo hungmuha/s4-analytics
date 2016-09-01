@@ -55,6 +55,7 @@ namespace S4Analytics.Controllers
 
             var hsmvRptNbr = pedInfoWrapper.HsmvReportNumber;
             var pedInfo = pedInfoWrapper.PedestrianInfo;
+            var crashType = pedInfoWrapper.PedestrianCrashType;
 
             var hsmvNumberExists = pedInfoItems.HsmvNumberExists(hsmvRptNbr);
             if (!hsmvNumberExists)
@@ -62,8 +63,8 @@ namespace S4Analytics.Controllers
                 return NotFound();
             }
 
-            pedInfoItems.Add(hsmvRptNbr, pedInfo);
-            return CreatedAtRoute("GetPedestrianInfo", new { hsmvRptNbr }, pedInfo);
+            pedInfoItems.Add(hsmvRptNbr, pedInfo, crashType);
+            return CreatedAtRoute("GetPedestrianInfo", new { hsmvRptNbr }, pedInfoWrapper);
         }
 
         /// <summary>
@@ -71,12 +72,15 @@ namespace S4Analytics.Controllers
         /// Update an existing PBCAT_PED record in the database.
         /// </summary>
         [HttpPut("ped/{hsmvRptNbr}")]
-        public IActionResult UpdatePedestrianInfo(int hsmvRptNbr, [FromBody] PBCATPedestrianInfo pedInfo)
+        public IActionResult UpdatePedestrianInfo(int hsmvRptNbr, [FromBody] PedestrianInfoWrapper pedInfoWrapper)
         {
-            if (pedInfo == null)
+            if (pedInfoWrapper == null)
             {
                 return BadRequest();
             }
+
+            var pedInfo = pedInfoWrapper.PedestrianInfo;
+            var crashType = pedInfoWrapper.PedestrianCrashType;
 
             var existingPedInfo = pedInfoItems.Find(hsmvRptNbr);
             if (existingPedInfo == null)
@@ -84,7 +88,7 @@ namespace S4Analytics.Controllers
                 return NotFound();
             }
 
-            pedInfoItems.Update(hsmvRptNbr, pedInfo);
+            pedInfoItems.Update(hsmvRptNbr, pedInfo, crashType);
             return new NoContentResult();
         }
 

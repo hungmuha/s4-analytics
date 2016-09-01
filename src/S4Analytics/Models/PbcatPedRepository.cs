@@ -21,12 +21,12 @@ namespace S4Analytics.Models
             return new PBCATPedestrianInfo();
         }
 
-        public PBCATPedestrianInfo Add(int hsmvRptNbr, PBCATPedestrianInfo pedInfo)
+        public PBCATPedestrianInfo Add(int hsmvRptNbr, PBCATPedestrianInfo pedInfo, CrashTypePedestrian crashType)
         {
             return pedInfo;
         }
 
-        public void Update(int hsmvRptNbr, PBCATPedestrianInfo pedInfo) {
+        public void Update(int hsmvRptNbr, PBCATPedestrianInfo pedInfo, CrashTypePedestrian crashType) {
 
         }
 
