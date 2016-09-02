@@ -21,11 +21,15 @@ export class PbcatState {
     private _hasValidState: boolean = true;
     private _flowType: FlowType;
     private _hsmvReportNumber: number;
+    private _pbcatInfo: PbcatInfo;
+    private _exists: boolean;
 
     resetFlow(
         config: PbcatConfig,
         flowType: FlowType,
         hsmvReportNumber: number,
+        pbcatInfo: PbcatInfo,
+        exists: boolean,
         autoAdvance: boolean) {
         this.autoAdvance = autoAdvance;
         this.crashType = undefined;
@@ -36,6 +40,8 @@ export class PbcatState {
         this._hasValidState = true;
         this._flowType = flowType;
         this._hsmvReportNumber = hsmvReportNumber;
+        this._pbcatInfo = pbcatInfo;
+        this._exists = exists;
     }
 
     get stepHistory() { return this._stepHistory; }
@@ -90,11 +96,13 @@ export class PbcatState {
         return this._isFlowComplete && !this.showSummary && !this.isFinalStep;
     }
 
+    get exists(): boolean {
+        return this._exists;
+    }
+
     get pbcatInfo(): PbcatInfo {
-        // mock logic to create pbcatInfo ...
-        let info = this._flowType === FlowType.Pedestrian
-            ? new PbcatPedestrianInfo()
-            : new PbcatBicyclistInfo();
+         let info = this._pbcatInfo;
+        // mock logic to update pbcatInfo ...
         for (let step of this._stepHistory) {
             if (step.selectedItem !== undefined) {
                 (info as any)[step.infoAttrName] = step.selectedItem.infoAttrValue;

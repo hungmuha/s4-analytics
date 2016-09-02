@@ -104,23 +104,43 @@ export class PbcatMasterComponent {
     }
 
     private saveAndClose(): void {
-        this.pbcatService.savePbcatInfo(
-            this.state.flowType,
-            this.state.hsmvReportNumber,
-            this.state.pbcatInfo);
+        if (this.state.exists) {
+            this.pbcatService.updatePbcatInfo(
+                this.state.flowType,
+                this.state.hsmvReportNumber,
+                this.state.pbcatInfo,
+                this.state.crashType);
+        }
+        else {
+            this.pbcatService.createPbcatInfo(
+                this.state.flowType,
+                this.state.hsmvReportNumber,
+                this.state.pbcatInfo,
+                this.state.crashType);
+        }
     }
 
     private saveAndNext(): void {
         let nextHsmvNumber: number;
-        let flowType: FlowType;
-        this.pbcatService
-            .savePbcatInfo(
+        let promise: Promise<[FlowType, number]>;
+        if (this.state.exists) {
+            promise = this.pbcatService.updatePbcatInfo(
                 this.state.flowType,
                 this.hsmvReportNumber,
                 this.state.pbcatInfo,
-                true)
-            .then(([partType, nextNum]) =>
-                this.router.navigate(['/pbcat', this.getBikeOrPed(partType), nextNum, 'step', 1]));
+                this.state.crashType,
+                true);
+        }
+        else {
+            promise = this.pbcatService.createPbcatInfo(
+                this.state.flowType,
+                this.hsmvReportNumber,
+                this.state.pbcatInfo,
+                this.state.crashType,
+                true);
+        }
+        promise.then(([flowType, nextNum]) =>
+            this.router.navigate(['/pbcat', this.getBikeOrPed(flowType), nextNum, 'step', 1]));
     }
 
     private getBikeOrPed(flowType: FlowType) {
