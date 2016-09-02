@@ -28,7 +28,7 @@ export class PbcatResolveService implements Resolve<PbcatState> {
             .then(c => config = c)
             .then(() => this.loadPbcatInfo(flowType, hsmvReportNumber))
             .then(([pbcatInfo, exists]) => this.loadPbcatFlow(config, flowType, hsmvReportNumber, pbcatInfo, exists, stepNumber))
-            .catch(this.notFound);
+            .catch(() => this.notFound());
     }
 
     private loadPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<[PbcatInfo, boolean]> {
