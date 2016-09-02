@@ -6,6 +6,22 @@ import { PbcatConfig } from './pbcat-config.d.ts';
 import { PbcatCrashType } from './pbcat-crash-type';
 import { PbcatInfo, PbcatBicyclistInfo, PbcatPedestrianInfo } from './pbcat-info';
 
+class PedestrianInfoWrapper {
+    constructor(
+        public hsmvReportNumber: number,
+        public pedestrianInfo: PbcatPedestrianInfo,
+        public pedestrianCrashType: PbcatCrashType
+    ) { }
+}
+
+class BicyclistInfoWrapper {
+    constructor(
+        public hsmvReportNumber: number,
+        public bicyclistInfo: PbcatBicyclistInfo,
+        public bicyclistCrashType: PbcatCrashType
+    ) { }
+}
+
 @Injectable()
 export class PbcatService {
     private cachedPedConfig: PbcatConfig;
@@ -13,8 +29,12 @@ export class PbcatService {
 
     constructor(private http: Http) { }
 
-    handleError() {
-        // todo: implement error handling
+    handleError(error: any): Promise<void> {
+        // super generic error handling
+        let errMsg = (error.message) ? error.message :
+            error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+        console.error(errMsg); // log to console
+        return Promise.reject(errMsg);
     }
 
     getConfiguration(flowType: FlowType): Promise<PbcatConfig> {
@@ -40,45 +60,98 @@ export class PbcatService {
         }
     }
 
-    getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<PbcatInfo> {
-        // GET /api/pbcat/:bikeOrPed/:hsmvRptNr
-        // todo: reconstruct stepHistory for previously typed crashes
-        let info = flowType === FlowType.Pedestrian
-            ? new PbcatPedestrianInfo()
-            : new PbcatBicyclistInfo();
-        return Promise.resolve(info);
-    }
-
-    savePbcatInfo(
-        flowType: FlowType,
-        hsmvReportNumber: number,
-        pbcatInfo: PbcatInfo,
-        getNextCrash: boolean = false): Promise<[FlowType, number]> {
-        // POST /api/pbcat/:bikeOrPed
-        //  PUT /api/pbcat/:bikeOrPed/:hsmvRptNr
-        // mock get the actual next hsmv report number
-        if (getNextCrash) {
-            let retVal = [flowType, getNextCrash ? hsmvReportNumber + 1 : undefined];
-            return Promise.resolve(retVal);
+    pbcatInfoError(flowType: FlowType, error: any): Promise<any> {
+        // if no record was found, create an empty one
+        if (error.status === 404) {
+            let exists = false;
+            return Promise.resolve(
+                flowType === FlowType.Pedestrian
+                    ? [new PbcatPedestrianInfo(), exists]
+                    : [new PbcatBicyclistInfo(), exists]
+            );
+        }
+        else {
+            return this.handleError(error);
         }
     }
 
-    deletePbcatInfo(hsmvReportNumber: number): Promise<void> {
-        //  DELETE /api/pbcat/:bikeOrPed/:hsmvRptNr
-        return Promise.resolve();
+    getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<[PbcatInfo, boolean]> {
+        // GET /api/pbcat/:bikeOrPed/:hsmvRptNr
+        let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let url = `/api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
+        let exists = true;
+        return this.http
+            .get(url)
+            .toPromise()
+            .then(response => [response.json() as PbcatInfo, exists])
+            .catch(error => this.pbcatInfoError(flowType, error));
+        // todo: reconstruct stepHistory for previously typed crashes
     }
 
-    calculateCrashType(pbcatInfo: PbcatInfo): Promise<PbcatCrashType> {
-        // GET /api/pbcat/:bikeOrPed/crashtype
-        // mock crash type
-        let crashType = new PbcatCrashType();
-        crashType.crashTypeNbr = 781;
-        crashType.crashTypeDesc = 'Motorist Left Turn - Parallel Paths';
-        crashType.crashGroupNbr = 790;
-        crashType.crashGroupDesc = 'Crossing Roadway - Vehicle Turning';
-        crashType.crashTypeExpanded = 12781;
-        crashType.crashGroupExpanded = 12790;
-        return Promise.resolve(crashType);
+    createPbcatInfo(
+        flowType: FlowType,
+        hsmvReportNumber: number,
+        pbcatInfo: PbcatInfo,
+        crashType: PbcatCrashType,
+        getNextCrash: boolean = false): Promise<[FlowType, number]> {
+        // POST /api/pbcat/:bikeOrPed
+        let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let url = `/api/pbcat/${bikeOrPed}`;
+        let wrapper = flowType === FlowType.Pedestrian
+            ? new PedestrianInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatPedestrianInfo, crashType)
+            : new BicyclistInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatBicyclistInfo, crashType);
+        // todo: get the actual next report info
+        let nextFlowType = getNextCrash ? FlowType.Pedestrian : undefined;
+        let nextHsmvNumber = getNextCrash ? hsmvReportNumber + 1 : undefined;
+        return this.http
+            .post(url, wrapper)
+            .toPromise()
+            .then(response => [nextFlowType, nextHsmvNumber])
+            .catch(this.handleError);
+    }
+
+    updatePbcatInfo(
+        flowType: FlowType,
+        hsmvReportNumber: number,
+        pbcatInfo: PbcatInfo,
+        crashType: PbcatCrashType,
+        getNextCrash: boolean = false): Promise<[FlowType, number]> {
+        // PUT /api/pbcat/:bikeOrPed/:hsmvRptNr
+        let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let url = `/api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
+        let wrapper = flowType === FlowType.Pedestrian
+            ? new PedestrianInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatPedestrianInfo, crashType)
+            : new BicyclistInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatBicyclistInfo, crashType);
+        // todo: get the actual next report info
+        let nextFlowType = getNextCrash ? FlowType.Pedestrian : undefined;
+        let nextHsmvNumber = getNextCrash ? hsmvReportNumber + 1 : undefined;
+        return this.http
+            .put(url, wrapper)
+            .toPromise()
+            .then(response => [nextFlowType, nextHsmvNumber])
+            .catch(this.handleError);
+    }
+
+    deletePbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<void> {
+        //  DELETE /api/pbcat/:bikeOrPed/:hsmvRptNr
+        let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let url = `/api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
+        return this.http
+            .delete(url)
+            .toPromise()
+            .then(response => undefined)
+            .catch(this.handleError);
+    }
+
+    calculateCrashType(flowType: FlowType, pbcatInfo: PbcatInfo): Promise<PbcatCrashType> {
+        // POST /api/pbcat/:bikeOrPed/crashtype
+        let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let url = `/api/pbcat/${bikeOrPed}/crashtype`;
+        return this.http
+            .post(url, pbcatInfo)
+            .toPromise()
+            .then(response => response.json() as PbcatCrashType)
+            .catch(this.handleError);
     }
 
     private cacheConfig(flowType: FlowType, config: PbcatConfig): PbcatConfig {

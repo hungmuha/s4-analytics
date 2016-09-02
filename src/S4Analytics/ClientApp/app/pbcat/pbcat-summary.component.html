@@ -1,23 +1,25 @@
-﻿<div class="row">
-    <div class="col-sm-12">
-        Crash Report #{{hsmvReportNumber}}
+﻿<template [ngIf]="ready">
+    <div class="row">
+        <div class="col-sm-12">
+            Crash Report #{{hsmvReportNumber}}
+        </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-sm-12">
-        <h3>The crash has been typed as:</h3>
-        <h4>{{crashType.crashTypeDesc}}</h4>
-        <p>Summary</p>
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>The crash has been typed as:</h3>
+            <h4>{{crashType.crashTypeDesc}}</h4>
+            <p>Summary</p>
+        </div>
     </div>
-</div>
 
-<div class="row" *ngFor="let step of stepHistory; let i=index">
-    <div class="col-sm-12">
-        <p>
-            <a href="javascript:void(0);" (click)="jumpBack(i+1)">
-                {{i+1}}. <b>{{step.title}}</b> {{step.selectedItem.title}}
-            </a>
-        </p>
+    <div class="row" *ngFor="let step of stepHistory; let i=index">
+        <div class="col-sm-12">
+            <p>
+                <a href="javascript:void(0);" (click)="jumpBack(i+1)">
+                    {{i+1}}. <b>{{step.title}}</b> {{step.selectedItem.title}}
+                </a>
+            </p>
+        </div>
     </div>
-</div>
+</template>

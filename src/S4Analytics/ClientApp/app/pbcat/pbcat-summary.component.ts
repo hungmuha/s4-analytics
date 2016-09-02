@@ -14,4 +14,8 @@ export class PbcatSummaryComponent {
     private jumpBack(stepNumber: number) {
         this.jumpBackToStep.emit(stepNumber);
     }
+
+    private get ready() {
+        return this.crashType !== undefined;
+    }
 }
