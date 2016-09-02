@@ -143,6 +143,7 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = lastUpdateUserId;
                         cmd.ExecuteNonQuery();
                     }
+                    UpdateCrashReport(conn, hsmvRptNbr);
                     trans.Commit();
                 }
             }
@@ -238,6 +239,7 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
                         cmd.ExecuteNonQuery();
                     }
+                    UpdateCrashReport(conn, hsmvRptNbr);
                     trans.Commit();
                 }
             }
@@ -256,6 +258,7 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
                         cmd.ExecuteNonQuery();
                     }
+                    UpdateCrashReport(conn, hsmvRptNbr);
                     trans.Commit();
                 }
             }
@@ -285,6 +288,28 @@ namespace S4Analytics.Models
                 }
             }
             return ct > 0;
+        }
+
+        private void UpdateCrashReport(OracleConnection conn, int hsmvRptNbr)
+        {
+            var cmdText = @"UPDATE fact_crash_evt c
+                SET key_bike_ped_crash_type = (
+                  SELECT t.id
+                  FROM bike_ped_crash_type t
+                  INNER JOIN bike_ped_crash_grp g
+                    ON g.id = t.crash_grp_id
+                    AND g.bike_or_ped = 'P'
+                  INNER JOIN pbcat_ped p
+                    ON p.crash_type_nbr = t.crash_type_nbr
+                    AND p.crash_grp_nbr = g.crash_grp_nbr
+                  WHERE p.hsmv_rpt_nbr = c.hsmv_rpt_nbr
+                )
+                WHERE c.hsmv_rpt_Nbr = :hsmvRptNbr";
+            using (var cmd = new OracleCommand(cmdText, conn) { BindByName = true })
+            {
+                cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }
