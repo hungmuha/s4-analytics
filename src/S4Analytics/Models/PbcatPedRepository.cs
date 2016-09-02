@@ -108,7 +108,7 @@ namespace S4Analytics.Models
                 conn.Open();
                 using (var trans = conn.BeginTransaction())
                 {
-                    using (var cmd = new OracleCommand(cmdText, conn))
+                    using (var cmd = new OracleCommand(cmdText, conn) { BindByName = true })
                     {
                         cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
                         cmd.Parameters.Add("backingVehicleCd", OracleDbType.Decimal).Value = pedInfo.BackingVehicleCd;
@@ -134,10 +134,10 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("unusualVehicleTypeOrActionCd", OracleDbType.Decimal).Value = pedInfo.UnusualVehicleTypeOrActionCd;
                         cmd.Parameters.Add("waitingToCrossCd", OracleDbType.Decimal).Value = pedInfo.WaitingToCrossCd;
                         cmd.Parameters.Add("walkingAlongRoadwayCd", OracleDbType.Decimal).Value = pedInfo.WalkingAlongRoadwayCd;
-                        cmd.Parameters.Add("crashGroupNbr", OracleDbType.Decimal).Value = crashGroupNbr;
                         cmd.Parameters.Add("crashTypeNbr", OracleDbType.Decimal).Value = crashTypeNbr;
-                        cmd.Parameters.Add("crashGroupExpanded", OracleDbType.Decimal).Value = crashGroupExpanded;
+                        cmd.Parameters.Add("crashGroupNbr", OracleDbType.Decimal).Value = crashGroupNbr;
                         cmd.Parameters.Add("crashTypeExpanded", OracleDbType.Decimal).Value = crashTypeExpanded;
+                        cmd.Parameters.Add("crashGroupExpanded", OracleDbType.Decimal).Value = crashGroupExpanded;
                         cmd.Parameters.Add("enablePedestrianLocationOption", OracleDbType.Decimal).Value = enablePedestrianLocationOption;
                         cmd.Parameters.Add("enableGroupTyping", OracleDbType.Decimal).Value = enableGroupTyping;
                         cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = lastUpdateUserId;
@@ -203,7 +203,7 @@ namespace S4Analytics.Models
                 conn.Open();
                 using (var trans = conn.BeginTransaction())
                 {
-                    using (var cmd = new OracleCommand(cmdText, conn))
+                    using (var cmd = new OracleCommand(cmdText, conn) { BindByName = true })
                     {
                         cmd.Parameters.Add("backingVehicleCd", OracleDbType.Decimal).Value = pedInfo.BackingVehicleCd;
                         cmd.Parameters.Add("crashLocationCd", OracleDbType.Decimal).Value = pedInfo.CrashLocationCd;
@@ -228,10 +228,10 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("unusualVehicleTypeOrActionCd", OracleDbType.Decimal).Value = pedInfo.UnusualVehicleTypeOrActionCd;
                         cmd.Parameters.Add("waitingToCrossCd", OracleDbType.Decimal).Value = pedInfo.WaitingToCrossCd;
                         cmd.Parameters.Add("walkingAlongRoadwayCd", OracleDbType.Decimal).Value = pedInfo.WalkingAlongRoadwayCd;
-                        cmd.Parameters.Add("crashGroupNbr", OracleDbType.Decimal).Value = crashGroupNbr;
                         cmd.Parameters.Add("crashTypeNbr", OracleDbType.Decimal).Value = crashTypeNbr;
-                        cmd.Parameters.Add("crashGroupExpanded", OracleDbType.Decimal).Value = crashGroupExpanded;
+                        cmd.Parameters.Add("crashGroupNbr", OracleDbType.Decimal).Value = crashGroupNbr;
                         cmd.Parameters.Add("crashTypeExpanded", OracleDbType.Decimal).Value = crashTypeExpanded;
+                        cmd.Parameters.Add("crashGroupExpanded", OracleDbType.Decimal).Value = crashGroupExpanded;
                         cmd.Parameters.Add("enablePedestrianLocationOption", OracleDbType.Decimal).Value = enablePedestrianLocationOption;
                         cmd.Parameters.Add("enableGroupTyping", OracleDbType.Decimal).Value = enableGroupTyping;
                         cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = lastUpdateUserId;
@@ -251,7 +251,7 @@ namespace S4Analytics.Models
                 conn.Open();
                 using (var trans = conn.BeginTransaction())
                 {
-                    using (var cmd = new OracleCommand(cmdText, conn))
+                    using (var cmd = new OracleCommand(cmdText, conn) { BindByName = true })
                     {
                         cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
                         cmd.ExecuteNonQuery();
@@ -278,7 +278,7 @@ namespace S4Analytics.Models
             using (var conn = new OracleConnection(_warehouseConnStr))
             {
                 conn.Open();
-                using (var cmd = new OracleCommand(cmdText, conn))
+                using (var cmd = new OracleCommand(cmdText, conn) { BindByName = true })
                 {
                     cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
                     ct = Convert.ToInt32(cmd.ExecuteScalar());
