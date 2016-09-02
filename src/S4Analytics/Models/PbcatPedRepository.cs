@@ -26,7 +26,7 @@ namespace S4Analytics.Models
                 non_roadway_loc_cd, other_ped_action_cd, ped_dir_travel_cd, ped_failure_to_yield_cd,
                 ped_in_roadway_cd, ped_movement_cd, ped_position_cd, right_turn_on_red_cd, turn_merge_cd,
                 typical_ped_action_cd, unusual_circumstances_cd, unusual_ped_action_cd, unusual_veh_type_cd,
-                waiting_to_cross_cd, walking_along_roadway_cd
+                waiting_to_cross_cd, walking_along_roadway_cd, ped_loc_option_enabled, group_typing_enabled
                 FROM pbcat_ped WHERE hsmv_rpt_nbr = {0}", hsmvRptNbr);
             var da = new OracleDataAdapter(cmdText, _warehouseConnStr);
             var ds = new DataSet();
@@ -37,50 +37,72 @@ namespace S4Analytics.Models
             {
                 var dr = dt.Rows[0];
                 info = new PBCATPedestrianInfo();
-                info.BackingVehicleCd = ConvertToEnum(dr["backing_veh_cd"], BackingVehicleLocation.NotSpecified);
-                info.CrashLocationCd = ConvertToEnum(dr["crash_location_cd"], CrashLocationPed.NotSpecified);
-                info.CrossingDrivewayCd = ConvertToEnum(dr["crossing_driveway_cd"], CrossingDrivewayOrAlleyCircumstances.NotSpecified);
-                info.CrossingRoadwayCd = ConvertToEnum(dr["crossing_roadway_cd"], CrossingRoadwayCircumstances.NotSpecified);
-                info.FailureToYieldCd = ConvertToEnum(dr["failure_to_yield_cd"], FailureToYield.NotSpecified);
-                info.LegOfIntrsectCd = ConvertToEnum(dr["leg_of_intrsect_cd"], LegOfIntersection.NotSpecified);
-                info.MotoristDirTravelCd = ConvertToEnum(dr["motorist_dir_travel_cd"], DirectionOfTravel.NotSpecified);
-                info.MotoristManeuverCd = ConvertToEnum(dr["motorist_maneuver_cd"], MotoristManeuver.NotSpecified);
-                info.NonRoadwayLocationCd = ConvertToEnum(dr["non_roadway_loc_cd"], NonRoadwayLocation.NotSpecified);
-                info.OtherPedActionCd = ConvertToEnum(dr["other_ped_action_cd"], OtherPedAction.NotSpecified);
-                info.PedestrianDirTravelCd = ConvertToEnum(dr["ped_dir_travel_cd"], DirectionOfTravel.NotSpecified);
-                info.PedestrianFailedToYieldCd = ConvertToEnum(dr["ped_failure_to_yield_cd"], PedFailedToYield.NotSpecified);
-                info.PedestrianInRoadwayCd = ConvertToEnum(dr["ped_in_roadway_cd"], PedActionInRoadway.NotSpecified);
-                info.PedestrianMovementCd = ConvertToEnum(dr["ped_movement_cd"], PedMovementScenario.NotSpecified);
-                info.PedestrianPositionCd = ConvertToEnum(dr["ped_position_cd"], PedPosition.NotSpecified);
-                info.RightTurnOnRedCd = ConvertToEnum(dr["right_turn_on_red_cd"], TurningRightOnRed.NotSpecified);
-                info.TurnMergeCd = ConvertToEnum(dr["turn_merge_cd"], TurnMergeCircumstances.NotSpecified);
-                info.TypicalPedActionCd = ConvertToEnum(dr["typical_ped_action_cd"], TypicalPedAction.NotSpecified);
-                info.UnusualCircumstancesCd = ConvertToEnum(dr["unusual_circumstances_cd"], UnusualCircumstancesPed.NotSpecified);
-                info.UnusualPedActionCd = ConvertToEnum(dr["unusual_ped_action_cd"], UnusualPedAction.NotSpecified);
-                info.UnusualVehicleTypeOrActionCd = ConvertToEnum(dr["unusual_veh_type_cd"], UnusualVehicleTypeOrAction.NotSpecified);
-                info.WaitingToCrossCd = ConvertToEnum(dr["waiting_to_cross_cd"], WaitingToCrossVehicleMovement.NotSpecified);
-                info.WalkingAlongRoadwayCd = ConvertToEnum(dr["walking_along_roadway_cd"], WalkingAlongRoadwayCircumstances.NotSpecified);
+                info.BackingVehicleCd = Utils.ConvertToEnum<BackingVehicleLocation>(dr.Field<decimal>("backing_veh_cd"));
+                info.CrashLocationCd = Utils.ConvertToEnum<CrashLocationPed>(dr.Field<decimal>("crash_location_cd"));
+                info.CrossingDrivewayCd = Utils.ConvertToEnum<CrossingDrivewayOrAlleyCircumstances>(dr.Field<decimal>("crossing_driveway_cd"));
+                info.CrossingRoadwayCd = Utils.ConvertToEnum<CrossingRoadwayCircumstances>(dr.Field<decimal>("crossing_roadway_cd"));
+                info.FailureToYieldCd = Utils.ConvertToEnum<FailureToYield>(dr.Field<decimal>("failure_to_yield_cd"));
+                info.LegOfIntrsectCd = Utils.ConvertToEnum<LegOfIntersection>(dr.Field<decimal>("leg_of_intrsect_cd"));
+                info.MotoristDirTravelCd = Utils.ConvertToEnum<DirectionOfTravel>(dr.Field<decimal>("motorist_dir_travel_cd"));
+                info.MotoristManeuverCd = Utils.ConvertToEnum<MotoristManeuver>(dr.Field<decimal>("motorist_maneuver_cd"));
+                info.NonRoadwayLocationCd = Utils.ConvertToEnum<NonRoadwayLocation>(dr.Field<decimal>("non_roadway_loc_cd"));
+                info.OtherPedActionCd = Utils.ConvertToEnum<OtherPedAction>(dr.Field<decimal>("other_ped_action_cd"));
+                info.PedestrianDirTravelCd = Utils.ConvertToEnum<DirectionOfTravel>(dr.Field<decimal>("ped_dir_travel_cd"));
+                info.PedestrianFailedToYieldCd = Utils.ConvertToEnum<PedFailedToYield>(dr.Field<decimal>("ped_failure_to_yield_cd"));
+                info.PedestrianInRoadwayCd = Utils.ConvertToEnum<PedActionInRoadway>(dr.Field<decimal>("ped_in_roadway_cd"));
+                info.PedestrianMovementCd = Utils.ConvertToEnum<PedMovementScenario>(dr.Field<decimal>("ped_movement_cd"));
+                info.PedestrianPositionCd = Utils.ConvertToEnum<PedPosition>(dr.Field<decimal>("ped_position_cd"));
+                info.RightTurnOnRedCd = Utils.ConvertToEnum<TurningRightOnRed>(dr.Field<decimal>("right_turn_on_red_cd"));
+                info.TurnMergeCd = Utils.ConvertToEnum<TurnMergeCircumstances>(dr.Field<decimal>("turn_merge_cd"));
+                info.TypicalPedActionCd = Utils.ConvertToEnum<TypicalPedAction>(dr.Field<decimal>("typical_ped_action_cd"));
+                info.UnusualCircumstancesCd = Utils.ConvertToEnum<UnusualCircumstancesPed>(dr.Field<decimal>("unusual_circumstances_cd"));
+                info.UnusualPedActionCd = Utils.ConvertToEnum<UnusualPedAction>(dr.Field<decimal>("unusual_ped_action_cd"));
+                info.UnusualVehicleTypeOrActionCd = Utils.ConvertToEnum<UnusualVehicleTypeOrAction>(dr.Field<decimal>("unusual_veh_type_cd"));
+                info.WaitingToCrossCd = Utils.ConvertToEnum<WaitingToCrossVehicleMovement>(dr.Field<decimal>("waiting_to_cross_cd"));
+                info.WalkingAlongRoadwayCd = Utils.ConvertToEnum<WalkingAlongRoadwayCircumstances>(dr.Field<decimal>("walking_along_roadway_cd"));
+                info.EnablePedestrianLocationOption = dr.Field<decimal>("ped_loc_option_enabled") != 0;
+                info.EnableGroupTyping = dr.Field<decimal>("group_typing_enabled") != 0;
             }
             return info;
         }
 
         public void Add(int hsmvRptNbr, PBCATPedestrianInfo pedInfo, CrashTypePedestrian crashType)
         {
+            // todo: user real user id
+            var lastUpdateUserId = "pbcat";
+
+            // convert some values to int
+            int crashGroupNbr;
+            int crashTypeNbr;
+            int crashGroupExpanded;
+            int crashTypeExpanded;
+            int.TryParse(crashType.CrashGroupNbr, out crashGroupNbr);
+            int.TryParse(crashType.CrashTypeNbr, out crashTypeNbr);
+            int.TryParse(crashType.CrashGroupExpanded, out crashGroupExpanded);
+            int.TryParse(crashType.CrashTypeExpanded, out crashTypeExpanded);
+            int enableGroupTyping = pedInfo.EnableGroupTyping ? 1 : 0;
+            int enablePedestrianLocationOption = pedInfo.EnablePedestrianLocationOption ? 1 : 0;
+
             var cmdText = @"INSERT INTO pbcat_ped (
                 hsmv_rpt_nbr, backing_veh_cd, crash_location_cd, crossing_driveway_cd, crossing_roadway_cd,
                 failure_to_yield_cd, leg_of_intrsect_cd, motorist_dir_travel_cd, motorist_maneuver_cd,
                 non_roadway_loc_cd, other_ped_action_cd, ped_dir_travel_cd, ped_failure_to_yield_cd,
                 ped_in_roadway_cd, ped_movement_cd, ped_position_cd, right_turn_on_red_cd, turn_merge_cd,
                 typical_ped_action_cd, unusual_circumstances_cd, unusual_ped_action_cd, unusual_veh_type_cd,
-                waiting_to_cross_cd, walking_along_roadway_cd
+                waiting_to_cross_cd, walking_along_roadway_cd, crash_type_nbr, crash_grp_nbr,
+                crash_type_expanded, crash_grp_expanded, ped_loc_option_enabled, group_typing_enabled,
+                last_updt_user_id
             ) VALUES (
                 :hsmvRptNbr, :backingVehicleCd, :crashLocationCd, :crossingDrivewayCd, :crossingRoadwayCd,
                 :failureToYieldCd, :legOfIntrsectCd, :motoristDirTravelCd, :motoristManeuverCd,
                 :nonRoadwayLocationCd, :otherPedActionCd, :pedestrianDirTravelCd, :pedestrianFailedToYieldCd,
                 :pedestrianInRoadwayCd, :pedestrianMovementCd, :pedestrianPositionCd, :rightTurnOnRedCd,
                 :turnMergeCd, :typicalPedActionCd, :unusualCircumstancesCd, :unusualPedActionCd,
-                :unusualVehicleTypeOrActionCd, :waitingToCrossCd, :walkingAlongRoadwayCd
+                :unusualVehicleTypeOrActionCd, :waitingToCrossCd, :walkingAlongRoadwayCd, :crashTypeNbr,
+                :crashGroupNbr, :crashTypeExpanded, :crashGroupExpanded, :enablePedestrianLocationOption,
+                :enableGroupTyping, :lastUpdateUserId
             )";
+
             using (var conn = new OracleConnection(_warehouseConnStr))
             {
                 conn.Open();
@@ -112,6 +134,13 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("unusualVehicleTypeOrActionCd", OracleDbType.Decimal).Value = pedInfo.UnusualVehicleTypeOrActionCd;
                         cmd.Parameters.Add("waitingToCrossCd", OracleDbType.Decimal).Value = pedInfo.WaitingToCrossCd;
                         cmd.Parameters.Add("walkingAlongRoadwayCd", OracleDbType.Decimal).Value = pedInfo.WalkingAlongRoadwayCd;
+                        cmd.Parameters.Add("crashGroupNbr", OracleDbType.Decimal).Value = crashGroupNbr;
+                        cmd.Parameters.Add("crashTypeNbr", OracleDbType.Decimal).Value = crashTypeNbr;
+                        cmd.Parameters.Add("crashGroupExpanded", OracleDbType.Decimal).Value = crashGroupExpanded;
+                        cmd.Parameters.Add("crashTypeExpanded", OracleDbType.Decimal).Value = crashTypeExpanded;
+                        cmd.Parameters.Add("enablePedestrianLocationOption", OracleDbType.Decimal).Value = enablePedestrianLocationOption;
+                        cmd.Parameters.Add("enableGroupTyping", OracleDbType.Decimal).Value = enableGroupTyping;
+                        cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = lastUpdateUserId;
                         cmd.ExecuteNonQuery();
                     }
                     trans.Commit();
@@ -121,6 +150,21 @@ namespace S4Analytics.Models
 
         public void Update(int hsmvRptNbr, PBCATPedestrianInfo pedInfo, CrashTypePedestrian crashType)
         {
+            // todo: user real user id
+            var lastUpdateUserId = "pbcat";
+
+            // convert some values to int
+            int crashGroupNbr;
+            int crashTypeNbr;
+            int crashGroupExpanded;
+            int crashTypeExpanded;
+            int.TryParse(crashType.CrashGroupNbr, out crashGroupNbr);
+            int.TryParse(crashType.CrashTypeNbr, out crashTypeNbr);
+            int.TryParse(crashType.CrashGroupExpanded, out crashGroupExpanded);
+            int.TryParse(crashType.CrashTypeExpanded, out crashTypeExpanded);
+            int enableGroupTyping = pedInfo.EnableGroupTyping ? 1 : 0;
+            int enablePedestrianLocationOption = pedInfo.EnablePedestrianLocationOption ? 1 : 0;
+
             var cmdText = @"UPDATE pbcat_ped SET
                 backing_veh_cd = :backingVehicleCd,
                 crash_location_cd = :crashLocationCd,
@@ -144,8 +188,16 @@ namespace S4Analytics.Models
                 unusual_ped_action_cd = :unusualPedActionCd,
                 unusual_veh_type_cd = :unusualVehicleTypeOrActionCd,
                 waiting_to_cross_cd = :waitingToCrossCd,
-                walking_along_roadway_cd = :walkingAlongRoadwayCd
+                walking_along_roadway_cd = :walkingAlongRoadwayCd,
+                crash_type_nbr = :crashTypeNbr,
+                crash_grp_nbr = :crashGroupNbr,
+                crash_type_expanded = :crashTypeExpanded,
+                crash_grp_expanded = :crashGroupExpanded,
+                ped_loc_option_enabled = :enablePedestrianLocationOption,
+                group_typing_enabled = :enableGroupTyping,
+                last_updt_user_id = :lastUpdateUserId
             WHERE hsmv_rpt_nbr = :hsmvRptNbr";
+
             using (var conn = new OracleConnection(_warehouseConnStr))
             {
                 conn.Open();
@@ -176,6 +228,13 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("unusualVehicleTypeOrActionCd", OracleDbType.Decimal).Value = pedInfo.UnusualVehicleTypeOrActionCd;
                         cmd.Parameters.Add("waitingToCrossCd", OracleDbType.Decimal).Value = pedInfo.WaitingToCrossCd;
                         cmd.Parameters.Add("walkingAlongRoadwayCd", OracleDbType.Decimal).Value = pedInfo.WalkingAlongRoadwayCd;
+                        cmd.Parameters.Add("crashGroupNbr", OracleDbType.Decimal).Value = crashGroupNbr;
+                        cmd.Parameters.Add("crashTypeNbr", OracleDbType.Decimal).Value = crashTypeNbr;
+                        cmd.Parameters.Add("crashGroupExpanded", OracleDbType.Decimal).Value = crashGroupExpanded;
+                        cmd.Parameters.Add("crashTypeExpanded", OracleDbType.Decimal).Value = crashTypeExpanded;
+                        cmd.Parameters.Add("enablePedestrianLocationOption", OracleDbType.Decimal).Value = enablePedestrianLocationOption;
+                        cmd.Parameters.Add("enableGroupTyping", OracleDbType.Decimal).Value = enableGroupTyping;
+                        cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = lastUpdateUserId;
                         cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
                         cmd.ExecuteNonQuery();
                     }
@@ -226,21 +285,6 @@ namespace S4Analytics.Models
                 }
             }
             return ct > 0;
-        }
-
-        /// <summary>
-        /// Convert a numeric value from the database to an enum value.
-        /// </summary>
-        /// <typeparam name="T">Enum type</typeparam>
-        /// <param name="dbValue">Numeric value from the database</param>
-        /// <param name="defaultValue">Default enum value to use if database value is DBNull</param>
-        /// <returns></returns>
-        private T ConvertToEnum<T>(object dbValue, T defaultValue) where T : struct, IConvertible
-        {
-            if (!typeof(T).IsEnum) { throw new ArgumentException("T must be an enumeration."); }
-            return dbValue == DBNull.Value
-                ? defaultValue
-                : (T)(object)Convert.ToInt32(dbValue);
         }
     }
 }
