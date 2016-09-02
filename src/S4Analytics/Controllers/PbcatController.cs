@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
@@ -18,12 +19,12 @@ namespace S4Analytics.Controllers
     [Route("api/[controller]")]
     public class PbcatController : Controller
     {
-        public PbcatController(IPbcatPedRepository pbcatItems)
+        public PbcatController(IPbcatPedRepository pedRepo)
         {
-            pedInfoItems = pbcatItems;
+            PedRepo = pedRepo;
         }
 
-        public IPbcatPedRepository pedInfoItems { get; set; }
+        public IPbcatPedRepository PedRepo { get; set; }
 
         /// <summary>
         /// GET /api/pbcat/ped/:hsmvRptNbr
@@ -32,7 +33,7 @@ namespace S4Analytics.Controllers
         [HttpGet("ped/{hsmvRptNbr}", Name = "GetPedestrianInfo")]
         public IActionResult GetPedestrianInfo(int hsmvRptNbr)
         {
-            var pedInfo = pedInfoItems.Find(hsmvRptNbr);
+            var pedInfo = PedRepo.Find(hsmvRptNbr);
             if (pedInfo == null)
             {
                 return NotFound();
@@ -57,13 +58,21 @@ namespace S4Analytics.Controllers
             var pedInfo = pedInfoWrapper.PedestrianInfo;
             var crashType = pedInfoWrapper.PedestrianCrashType;
 
-            var hsmvNumberExists = pedInfoItems.HsmvNumberExists(hsmvRptNbr);
-            if (!hsmvNumberExists)
+            // crash report must exist
+            var crashReportExists = PedRepo.CrashReportExists(hsmvRptNbr);
+            if (!crashReportExists)
             {
                 return NotFound();
             }
 
-            pedInfoItems.Add(hsmvRptNbr, pedInfo, crashType);
+            // ped info must not exist
+            var existingPedInfo = PedRepo.Find(hsmvRptNbr);
+            if (existingPedInfo != null)
+            {
+                return StatusCode((int)HttpStatusCode.Conflict);
+            }
+
+            PedRepo.Add(hsmvRptNbr, pedInfo, crashType);
             return CreatedAtRoute("GetPedestrianInfo", new { hsmvRptNbr }, pedInfoWrapper);
         }
 
@@ -82,13 +91,13 @@ namespace S4Analytics.Controllers
             var pedInfo = pedInfoWrapper.PedestrianInfo;
             var crashType = pedInfoWrapper.PedestrianCrashType;
 
-            var existingPedInfo = pedInfoItems.Find(hsmvRptNbr);
+            var existingPedInfo = PedRepo.Find(hsmvRptNbr);
             if (existingPedInfo == null)
             {
                 return NotFound();
             }
 
-            pedInfoItems.Update(hsmvRptNbr, pedInfo, crashType);
+            PedRepo.Update(hsmvRptNbr, pedInfo, crashType);
             return new NoContentResult();
         }
 
@@ -99,13 +108,13 @@ namespace S4Analytics.Controllers
         [HttpDelete("ped/{hsmvRptNbr}")]
         public IActionResult DeletePedestrianInfo(int hsmvRptNbr)
         {
-            var pedInfo = pedInfoItems.Find(hsmvRptNbr);
+            var pedInfo = PedRepo.Find(hsmvRptNbr);
             if (pedInfo == null)
             {
                 return NotFound();
             }
 
-            pedInfoItems.Remove(hsmvRptNbr);
+            PedRepo.Remove(hsmvRptNbr);
             return new NoContentResult();
         }
 
@@ -122,12 +131,7 @@ namespace S4Analytics.Controllers
                 return BadRequest();
             }
 
-            var crashType = pedInfoItems.GetCrashType(pedInfo);
-            if (crashType == null)
-            {
-                return NotFound();
-            }
-
+            var crashType = PedRepo.GetCrashType(pedInfo);
             return CreatedAtRoute("CalculatePedestrianCrashType", crashType);
         }
     }

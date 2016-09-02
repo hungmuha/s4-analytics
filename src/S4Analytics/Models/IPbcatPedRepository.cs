@@ -13,6 +13,6 @@ namespace S4Analytics.Models
         void Update(int hsmvRptNbr, PBCATPedestrianInfo pedInfo, CrashTypePedestrian crashType);
         void Remove(int hsmvRptNbr);
         CrashTypePedestrian GetCrashType(PBCATPedestrianInfo pedInfo);
-        bool HsmvNumberExists(int hsmvRptNbr);
+        bool CrashReportExists(int hsmvRptNbr);
     }
 }
