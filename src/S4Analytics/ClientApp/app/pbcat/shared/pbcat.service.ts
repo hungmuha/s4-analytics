@@ -76,9 +76,9 @@ export class PbcatService {
     }
 
     getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<[PbcatInfo, boolean]> {
-        // GET /api/pbcat/:bikeOrPed/:hsmvRptNr
+        // GET api/pbcat/:bikeOrPed/:hsmvRptNr
         let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
-        let url = `/api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
+        let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
         let exists = true;
         return this.http
             .get(url)
@@ -94,9 +94,9 @@ export class PbcatService {
         pbcatInfo: PbcatInfo,
         crashType: PbcatCrashType,
         getNextCrash: boolean = false): Promise<[FlowType, number]> {
-        // POST /api/pbcat/:bikeOrPed
+        // POST api/pbcat/:bikeOrPed
         let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
-        let url = `/api/pbcat/${bikeOrPed}`;
+        let url = `api/pbcat/${bikeOrPed}`;
         let wrapper = flowType === FlowType.Pedestrian
             ? new PedestrianInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatPedestrianInfo, crashType)
             : new BicyclistInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatBicyclistInfo, crashType);
@@ -116,9 +116,9 @@ export class PbcatService {
         pbcatInfo: PbcatInfo,
         crashType: PbcatCrashType,
         getNextCrash: boolean = false): Promise<[FlowType, number]> {
-        // PUT /api/pbcat/:bikeOrPed/:hsmvRptNr
+        // PUT api/pbcat/:bikeOrPed/:hsmvRptNr
         let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
-        let url = `/api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
+        let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
         let wrapper = flowType === FlowType.Pedestrian
             ? new PedestrianInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatPedestrianInfo, crashType)
             : new BicyclistInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatBicyclistInfo, crashType);
@@ -133,9 +133,9 @@ export class PbcatService {
     }
 
     deletePbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<void> {
-        //  DELETE /api/pbcat/:bikeOrPed/:hsmvRptNr
+        //  DELETE api/pbcat/:bikeOrPed/:hsmvRptNr
         let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
-        let url = `/api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
+        let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
         return this.http
             .delete(url)
             .toPromise()
@@ -144,9 +144,9 @@ export class PbcatService {
     }
 
     calculateCrashType(flowType: FlowType, pbcatInfo: PbcatInfo): Promise<PbcatCrashType> {
-        // POST /api/pbcat/:bikeOrPed/crashtype
+        // POST api/pbcat/:bikeOrPed/crashtype
         let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
-        let url = `/api/pbcat/${bikeOrPed}/crashtype`;
+        let url = `api/pbcat/${bikeOrPed}/crashtype`;
         return this.http
             .post(url, pbcatInfo)
             .toPromise()
