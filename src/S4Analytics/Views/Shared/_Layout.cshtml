@@ -1,5 +1,5 @@
 ﻿@using Microsoft.Extensions.Options
-@inject IOptions<AppOptions> appOptions
+@inject IOptions<ClientOptions> clientOptions
 
 <!DOCTYPE html>
 <html>
@@ -7,7 +7,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Signal Four Analytics</title>
-        <base href="@appOptions.Value.BaseUrl" />
+        <base href="@clientOptions.Value.BaseUrl" />
         <link rel="stylesheet" href="~/dist/vendor.css" asp-append-version="true" />
         <link rel="stylesheet" href="~/dist/styles.css" asp-append-version="true" />
     </head>

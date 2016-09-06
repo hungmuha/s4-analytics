@@ -1,9 +1,9 @@
 ﻿<div class="container" *ngIf="ready">
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <h4>{{pageTitle}}</h4>
         </div>
-        <div class="col-sm-6 text-right">
+        <div class="col-sm-4 text-center">
             Auto advance:
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-default"
@@ -14,6 +14,21 @@
                 <button type="button" class="btn btn-default"
                         [class.active]="!autoAdvance"
                         (click)="autoAdvance=false">
+                    Off
+                </button>
+            </div>
+        </div>
+        <div class="col-sm-4 text-right">
+            Crash report viewer:
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default"
+                        [class.active]="showReportViewer"
+                        (click)="showReportViewer=true">
+                    On
+                </button>
+                <button type="button" class="btn btn-default"
+                        [class.active]="!showReportViewer"
+                        (click)="showReportViewer=false">
                     Off
                 </button>
             </div>

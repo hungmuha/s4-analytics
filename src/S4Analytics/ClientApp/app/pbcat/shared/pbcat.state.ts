@@ -12,6 +12,8 @@ export enum FlowType {
 export class PbcatState {
     autoAdvance: boolean = true;
     crashType: PbcatCrashType;
+    showReportViewer: boolean = false;
+    reportViewerWindow: Window;
     private config: PbcatConfig;
     private currentStepIndex: number = -1;
 
@@ -30,8 +32,10 @@ export class PbcatState {
         hsmvReportNumber: number,
         pbcatInfo: PbcatInfo,
         exists: boolean,
-        autoAdvance: boolean) {
+        autoAdvance: boolean,
+        showReportViewer: boolean) {
         this.autoAdvance = autoAdvance;
+        this.showReportViewer = showReportViewer;
         this.crashType = undefined;
         this.config = config;
         this.currentStepIndex = -1;
