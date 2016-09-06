@@ -12,16 +12,19 @@ using S4Analytics.Models;
 
 namespace S4Analytics
 {
-    public class DbOptions
+    public class ServerOptions
     {
         public string WarehouseConnStr { get; set; }
         public string SpatialConnStr { get; set; }
     }
 
-    public class AppOptions
+    public class ClientOptions
     {
+        // Members of this class are exposed via REST API to the Angular app.
+        // Don't include anything sensitive here, especially passwords.
         public string Version { get; set; }
         public string BaseUrl { get; set; }
+        public string SilverlightBaseUrl { get; set; }
     }
 
     public class Startup
@@ -46,19 +49,19 @@ namespace S4Analytics
             services.AddOptions();
 
             // Add configurations.
-            services.Configure<DbOptions>(dbOptions =>
+            services.Configure<ServerOptions>(serverOptions =>
             {
-                dbOptions.WarehouseConnStr = Configuration.GetConnectionString("Warehouse");
-                dbOptions.SpatialConnStr = Configuration.GetConnectionString("Spatial");
+                serverOptions.WarehouseConnStr = Configuration.GetConnectionString("Warehouse");
+                serverOptions.SpatialConnStr = Configuration.GetConnectionString("Spatial");
             });
-            services.Configure<AppOptions>(appOptions =>
+            services.Configure<ClientOptions>(clientOptions =>
             {
-                appOptions.Version = Configuration["App:Version"];
-                appOptions.BaseUrl = Configuration["BaseUrl"];
+                clientOptions.Version = Configuration["Version"];
+                clientOptions.BaseUrl = Configuration["BaseUrl"];
+                clientOptions.SilverlightBaseUrl = Configuration["SilverlightBaseUrl"];
             });
 
             // Add repositories.
-            services.AddSingleton<IAgencyRepository, AgencyRepository>();
             services.AddSingleton<IPbcatPedRepository, PbcatPedRepository>();
         }
 

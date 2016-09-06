@@ -48,8 +48,9 @@ export class PbcatResolveService implements Resolve<PbcatState> {
         let isSameFlow = this.state && this.state.hsmvReportNumber === hsmvReportNumber;
         // migrate the auto-advance setting to the new flow
         let autoAdvance = this.state ? this.state.autoAdvance : true;
+        let showReportViewer = this.state ? this.state.showReportViewer : false;
         if (!isSameFlow) {
-            this.state.resetFlow(config, flowType, hsmvReportNumber, pbcatInfo, exists, autoAdvance);
+            this.state.resetFlow(config, flowType, hsmvReportNumber, pbcatInfo, exists, autoAdvance, showReportViewer);
         }
         if (stepNumber) {
             this.state.goToStep(stepNumber);

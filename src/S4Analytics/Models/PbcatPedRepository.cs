@@ -13,9 +13,9 @@ namespace S4Analytics.Models
     {
         private string _warehouseConnStr;
 
-        public PbcatPedRepository(IOptions<DbOptions> dbOptions)
+        public PbcatPedRepository(IOptions<ServerOptions> serverOptions)
         {
-            _warehouseConnStr = dbOptions.Value.WarehouseConnStr;
+            _warehouseConnStr = serverOptions.Value.WarehouseConnStr;
         }
 
         public PBCATPedestrianInfo Find(int hsmvRptNbr)

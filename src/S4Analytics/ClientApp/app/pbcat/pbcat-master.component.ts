@@ -26,11 +26,41 @@ export class PbcatMasterComponent {
             : 'Bicyclist Crash Typing';
     }
 
+    private launchReportViewer() {
+        if (this.state.reportViewerWindow && !this.state.reportViewerWindow.closed) {
+            this.state.reportViewerWindow.location.href = `/pbcat/viewer/${this.hsmvReportNumber}`;
+        }
+        else {
+            this.state.reportViewerWindow = window.open(`/pbcat/viewer/${this.hsmvReportNumber}`, 'crashReportWindow');
+        }
+    }
+
+    private closeReportViewer() {
+        if (this.state.reportViewerWindow && this.state.reportViewerWindow.close) {
+            this.state.reportViewerWindow.close();
+        }
+        this.state.reportViewerWindow = undefined;
+    }
+
     private get ready(): boolean { return this.state && this.state.hasValidState; }
 
     private get autoAdvance() { return this.state.autoAdvance; }
 
     private set autoAdvance(value: boolean) { this.state.autoAdvance = value; }
+
+    private get showReportViewer() { return this.state.showReportViewer; }
+
+    private set showReportViewer(value: boolean) {
+        if (this.state.showReportViewer !== value) {
+            this.state.showReportViewer = value;
+            if (value) {
+                this.launchReportViewer();
+            }
+            else {
+                this.closeReportViewer();
+            }
+        }
+    }
 
     private get hsmvReportNumber() { return this.state.hsmvReportNumber; }
 
