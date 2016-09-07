@@ -101,8 +101,8 @@ export class PbcatService {
             ? new PedestrianInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatPedestrianInfo, crashType)
             : new BicyclistInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatBicyclistInfo, crashType);
         // todo: get the actual next report info
-        let nextFlowType = getNextCrash ? FlowType.Pedestrian : undefined;
-        let nextHsmvNumber = getNextCrash ? hsmvReportNumber + 1 : undefined;
+        let nextFlowType: FlowType = undefined;
+        let nextHsmvNumber: number = undefined;
         return this.http
             .post(url, wrapper)
             .toPromise()
@@ -123,8 +123,8 @@ export class PbcatService {
             ? new PedestrianInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatPedestrianInfo, crashType)
             : new BicyclistInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatBicyclistInfo, crashType);
         // todo: get the actual next report info
-        let nextFlowType = getNextCrash ? FlowType.Pedestrian : undefined;
-        let nextHsmvNumber = getNextCrash ? hsmvReportNumber + 1 : undefined;
+        let nextFlowType: FlowType = undefined;
+        let nextHsmvNumber: number = undefined;
         return this.http
             .put(url, wrapper)
             .toPromise()

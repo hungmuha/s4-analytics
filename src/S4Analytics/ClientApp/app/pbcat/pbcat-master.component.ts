@@ -44,6 +44,10 @@ export class PbcatMasterComponent {
 
     private get ready(): boolean { return this.state && this.state.hasValidState; }
 
+    private get isSaved(): boolean { return this.state.isSaved; }
+
+    private get nextCrashExists(): boolean { return this.state.isSaved && this.state.nextHsmvNumber !== undefined; }
+
     private get autoAdvance() { return this.state.autoAdvance; }
 
     private set autoAdvance(value: boolean) { this.state.autoAdvance = value; }
@@ -133,44 +137,34 @@ export class PbcatMasterComponent {
         this.router.navigate(route);
     }
 
-    private saveAndClose(): void {
+    private handleSaved(flowType: FlowType, nextHsmvNumber: number) {
+        this.state.isSaved = true;
+        this.state.nextHsmvNumber = nextHsmvNumber;
+    }
+
+    private get advanceToNextRoute(): any[] {
+        return ['/pbcat', this.getBikeOrPed(this.state.nextFlowType), this.state.nextHsmvNumber, 'step', 1];
+    }
+
+    private acceptAndSave(): void {
         if (this.state.exists) {
             this.pbcatService.updatePbcatInfo(
                 this.state.flowType,
                 this.state.hsmvReportNumber,
                 this.state.pbcatInfo,
-                this.state.crashType);
+                this.state.crashType,
+                true)
+                .then(([flowType, nextHsmvNumber]) => this.handleSaved(flowType, nextHsmvNumber));
         }
         else {
             this.pbcatService.createPbcatInfo(
                 this.state.flowType,
                 this.state.hsmvReportNumber,
                 this.state.pbcatInfo,
-                this.state.crashType);
-        }
-    }
-
-    private saveAndNext(): void {
-        let nextHsmvNumber: number;
-        let promise: Promise<[FlowType, number]>;
-        if (this.state.exists) {
-            promise = this.pbcatService.updatePbcatInfo(
-                this.state.flowType,
-                this.hsmvReportNumber,
-                this.state.pbcatInfo,
                 this.state.crashType,
-                true);
+                true)
+                .then(([flowType, nextHsmvNumber]) => this.handleSaved(flowType, nextHsmvNumber));
         }
-        else {
-            promise = this.pbcatService.createPbcatInfo(
-                this.state.flowType,
-                this.hsmvReportNumber,
-                this.state.pbcatInfo,
-                this.state.crashType,
-                true);
-        }
-        promise.then(([flowType, nextNum]) =>
-            this.router.navigate(['/pbcat', this.getBikeOrPed(flowType), nextNum, 'step', 1]));
     }
 
     private getBikeOrPed(flowType: FlowType) {

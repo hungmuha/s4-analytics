@@ -14,6 +14,9 @@ export class PbcatState {
     crashType: PbcatCrashType;
     showReportViewer: boolean = false;
     reportViewerWindow: Window;
+    isSaved: boolean = false;
+    nextFlowType: FlowType;
+    nextHsmvNumber: number;
     private config: PbcatConfig;
     private currentStepIndex: number = -1;
 
@@ -39,6 +42,9 @@ export class PbcatState {
         this.crashType = undefined;
         this.config = config;
         this.currentStepIndex = -1;
+        this.isSaved = false;
+        this.nextFlowType = undefined;
+        this.nextHsmvNumber = undefined;
         this._stepHistory = [];
         this._isFlowComplete = false;
         this._hasValidState = true;

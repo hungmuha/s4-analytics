@@ -9,10 +9,13 @@ export class PbcatSummaryComponent {
     @Input() hsmvReportNumber: number;
     @Input() stepHistory: PbcatStep[];
     @Input() crashType: PbcatCrashType;
+    @Input() isSaved: boolean;
     @Output() jumpBackToStep = new EventEmitter<number>();
 
     private jumpBack(stepNumber: number) {
-        this.jumpBackToStep.emit(stepNumber);
+        if (!this.isSaved) {
+            this.jumpBackToStep.emit(stepNumber);
+        }
     }
 
     private get ready() {

@@ -46,6 +46,7 @@
                    [hsmvReportNumber]="hsmvReportNumber"
                    [stepHistory]="stepHistory"
                    [crashType]="crashType"
+                   [isSaved]="isSaved"
                    (jumpBackToStep)="jumpBackToStep($event)">
     </pbcat-summary>
 
@@ -53,8 +54,9 @@
         <div class="col-sm-12">
             <nav>
                 <ul class="pager">
-                    <li class="previous" *ngIf="showBackLink">
-                        <a [routerLink]="backLinkRoute">&larr; Back to <em>{{backLinkText}}</em></a>
+                    <li class="previous" *ngIf="showBackLink" [class.disabled]="isSaved">
+                        <a *ngIf="!isSaved" [routerLink]="backLinkRoute">&larr; Back to <em>{{backLinkText}}</em></a>
+                        <a *ngIf="isSaved" href="javascript:void(0);">&larr; Back to <em>{{backLinkText}}</em></a>
                     </li>
                     <li *ngIf="showSummaryLink">
                         <a [routerLink]="summaryRoute">Return to Summary</a>
@@ -62,11 +64,12 @@
                     <li class="next" *ngIf="showProceedLink">
                         <a [routerLink]="proceedLinkRoute">Proceed to <em>{{proceedLinkText}}</em> &rarr;</a>
                     </li>
-                    <li class="next" *ngIf="showSummary">
-                        <a href="javascript:void(0);" (click)="saveAndNext()">Save and Next &rarr;</a>
+                    <li [class.disabled]="!nextCrashExists" class="next" *ngIf="showSummary">
+                        <a *ngIf="nextCrashExists" [routerLink]="advanceToNextRoute">Next Crash&rarr;</a>
+                        <a *ngIf="!nextCrashExists" href="javascript:void(0)">Next Crash&rarr;</a>
                     </li>
-                    <li class="next" *ngIf="showSummary">
-                        <a href="javascript:void(0);" (click)="saveAndClose()">Save and Close</a>
+                    <li [class.disabled]="isSaved" class="next" *ngIf="showSummary">
+                        <a href="javascript:void(0);" (click)="acceptAndSave()">Accept and Save</a>
                     </li>
                 </ul>
             </nav>
