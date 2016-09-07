@@ -4,6 +4,12 @@ import { SafeResourceUrl, DomSanitizationService } from '@angular/platform-brows
 import { Subscription } from 'rxjs/Subscription';
 import { AppState } from '../app.state';
 
+// This component should not be necessary, but IE exhibits some
+// buggy behavior when programatically controlling a child window
+// that initially contains a PDF, as opposed to an HTML document.
+// A simple IFRAME works around that buggy behavior and provides
+// a cleaner URL to boot.
+
 @Component({
     selector: 'pbcat-viewer',
     template: require('./pbcat-viewer.component.html')
