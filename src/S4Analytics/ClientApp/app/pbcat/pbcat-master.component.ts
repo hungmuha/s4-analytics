@@ -2,8 +2,8 @@
 import { Router } from '@angular/router';
 import { AppState } from '../app.state';
 import {
-    PbcatService, PbcatItem,
-    PbcatCrashType, FlowType, PbcatState
+    PbcatService, PbcatItem, PbcatCrashType,
+    PbcatFlow, FlowType, PbcatState
 } from './shared';
 
 @Component({
@@ -20,8 +20,10 @@ export class PbcatMasterComponent {
         this.state = appState.pbcatState;
     }
 
+    private get flow(): PbcatFlow { return this.state.flow; }
+
     private get pageTitle(): string {
-        return this.state.flowType === FlowType.Pedestrian
+        return this.flow.flowType === FlowType.Pedestrian
             ? 'Pedestrian Crash Typing'
             : 'Bicyclist Crash Typing';
     }
@@ -42,11 +44,31 @@ export class PbcatMasterComponent {
         this.state.reportViewerWindow = undefined;
     }
 
-    private get ready(): boolean { return this.state && this.state.hasValidState; }
+    private get isSaved(): boolean { return this.flow.isSaved; }
 
-    private get isSaved(): boolean { return this.state.isSaved; }
+    private get hsmvReportNumber() { return this.flow.hsmvReportNumber; }
 
-    private get nextCrashExists(): boolean { return this.state.isSaved && this.state.nextHsmvNumber !== undefined; }
+    private get showSummary() { return this.flow.showSummary; }
+
+    private get currentStepNumber() { return this.flow.currentStepNumber; }
+
+    private get currentStep() { return this.flow.currentStep; }
+
+    private get stepHistory() { return this.flow.stepHistory; }
+
+    private get crashType() { return this.flow.crashType; }
+
+    private get canGoBack(): boolean { return this.flow.canGoBack; }
+
+    private get canProceed(): boolean { return this.flow.canProceed; }
+
+    private get canReturnToSummary(): boolean { return this.flow.canReturnToSummary; }
+
+    private get ready(): boolean {
+        return this.flow && this.flow.hasValidState;
+    }
+
+    private get nextCrashExists(): boolean { return this.flow.isSaved && this.state.nextHsmvNumber !== undefined; }
 
     private get autoAdvance() { return this.state.autoAdvance; }
 
@@ -66,62 +88,38 @@ export class PbcatMasterComponent {
         }
     }
 
-    private get hsmvReportNumber() { return this.state.hsmvReportNumber; }
-
-    private get showSummary() { return this.state.showSummary; }
-
-    private get currentStepNumber() { return this.state.currentStepNumber; }
-
-    private get currentStep() { return this.state.currentStep; }
-
-    private get stepHistory() { return this.state.stepHistory; }
-
-    private get crashType() { return this.state.crashType; }
-
     private selectItem(pbcatItem: PbcatItem): void {
-        this.state.selectItemForCurrentStep(pbcatItem);
+        this.flow.selectItemForCurrentStep(pbcatItem);
         if (this.autoAdvance) {
             // a 300ms delay to give visual confirmation of selected item
             setTimeout(() => this.proceed(), 300);
         }
     }
 
-    private get showBackLink(): boolean {
-        return this.state.canGoBack;
-    }
-
-    private get showProceedLink(): boolean {
-        return this.state.canProceed;
-    }
-
-    private get showSummaryLink(): boolean {
-        return this.state.canReturnToSummary;
-    }
-
     private get backLinkText(): string {
-        return `${this.state.previousStepNumber}. ${this.state.previousStep.title}`;
+        return `${this.flow.previousStepNumber}. ${this.flow.previousStep.title}`;
     }
 
     private get proceedLinkText(): string {
-        return this.state.isFinalStep
+        return this.flow.isFinalStep
             ? 'Summary'
-            : `${this.state.nextStepNumber}. ${this.state.nextStep.title}`;
+            : `${this.flow.nextStepNumber}. ${this.flow.nextStep.title}`;
     }
 
     private get backLinkRoute(): any[] {
-        let bikeOrPed = this.getBikeOrPed(this.state.flowType);
-        return ['/pbcat', bikeOrPed, this.state.hsmvReportNumber, 'step', this.state.previousStepNumber];
+        let bikeOrPed = this.getBikeOrPed(this.flow.flowType);
+        return ['/pbcat', bikeOrPed, this.flow.hsmvReportNumber, 'step', this.flow.previousStepNumber];
     }
 
     private get proceedLinkRoute(): any[] {
-        let bikeOrPed = this.getBikeOrPed(this.state.flowType);
-        return this.state.isFinalStep
+        let bikeOrPed = this.getBikeOrPed(this.flow.flowType);
+        return this.flow.isFinalStep
             ? ['/pbcat', bikeOrPed, this.hsmvReportNumber, 'summary']
-            : ['/pbcat', bikeOrPed, this.state.hsmvReportNumber, 'step', this.state.nextStepNumber];
+            : ['/pbcat', bikeOrPed, this.flow.hsmvReportNumber, 'step', this.flow.nextStepNumber];
     }
 
     private get summaryRoute(): any[] {
-        let bikeOrPed = this.getBikeOrPed(this.state.flowType);
+        let bikeOrPed = this.getBikeOrPed(this.flow.flowType);
         return ['/pbcat', bikeOrPed, this.hsmvReportNumber, 'summary'];
     }
 
@@ -132,13 +130,13 @@ export class PbcatMasterComponent {
     }
 
     private jumpBackToStep(stepNumber: number) {
-        let bikeOrPed = this.getBikeOrPed(this.state.flowType);
-        let route = ['/pbcat', bikeOrPed, this.state.hsmvReportNumber, 'step', stepNumber];
+        let bikeOrPed = this.getBikeOrPed(this.flow.flowType);
+        let route = ['/pbcat', bikeOrPed, this.flow.hsmvReportNumber, 'step', stepNumber];
         this.router.navigate(route);
     }
 
     private handleSaved(flowType: FlowType, nextHsmvNumber: number) {
-        this.state.isSaved = true;
+        this.flow.isSaved = true;
         this.state.nextHsmvNumber = nextHsmvNumber;
     }
 
@@ -147,22 +145,12 @@ export class PbcatMasterComponent {
     }
 
     private acceptAndSave(): void {
-        if (this.state.exists) {
-            this.pbcatService.updatePbcatInfo(
-                this.state.flowType,
-                this.state.hsmvReportNumber,
-                this.state.pbcatInfo,
-                this.state.crashType,
-                true)
+        if (this.flow.typingExists) {
+            this.pbcatService.updatePbcatInfo(this.flow)
                 .then(([flowType, nextHsmvNumber]) => this.handleSaved(flowType, nextHsmvNumber));
         }
         else {
-            this.pbcatService.createPbcatInfo(
-                this.state.flowType,
-                this.state.hsmvReportNumber,
-                this.state.pbcatInfo,
-                this.state.crashType,
-                true)
+            this.pbcatService.createPbcatInfo(this.flow)
                 .then(([flowType, nextHsmvNumber]) => this.handleSaved(flowType, nextHsmvNumber));
         }
     }

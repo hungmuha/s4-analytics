@@ -2,7 +2,8 @@
 import { Router, Resolve, ActivatedRouteSnapshot } from '@angular/router';
 import { AppState } from '../../app.state';
 import { PbcatService } from './pbcat.service';
-import { PbcatState, FlowType } from './pbcat.state';
+import { PbcatState } from './pbcat.state';
+import { PbcatFlow, FlowType } from './pbcat-flow';
 import { PbcatInfo } from './pbcat-info';
 import { PbcatConfig } from './pbcat-config';
 
@@ -14,7 +15,7 @@ export class PbcatResolveService implements Resolve<PbcatState> {
         private pbcatService: PbcatService,
         private router: Router,
         private appState: AppState) {
-        this.state = appState.pbcatState;
+        this.state = this.appState.pbcatState;
     }
 
     resolve(route: ActivatedRouteSnapshot): Promise<void> {
@@ -28,13 +29,13 @@ export class PbcatResolveService implements Resolve<PbcatState> {
             .then(c => config = c)
             .then(() => this.loadPbcatInfo(flowType, hsmvReportNumber))
             .then(([pbcatInfo, exists]) => this.loadPbcatFlow(config, flowType, hsmvReportNumber, pbcatInfo, exists, stepNumber))
-            .catch(() => this.notFound());
+            .catch(() => this.onError());
     }
 
     private loadPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<[PbcatInfo, boolean]> {
-        let isSameFlow = this.state && this.state.hsmvReportNumber === hsmvReportNumber;
+        let isSameFlow = this.state.flow && this.state.flow.hsmvReportNumber === hsmvReportNumber;
         return isSameFlow
-            ? Promise.resolve([this.state.pbcatInfo, this.state.exists])
+            ? Promise.resolve([this.state.flow.pbcatInfo, this.state.flow.typingExists])
             : this.pbcatService.getPbcatInfo(flowType, hsmvReportNumber);
     }
 
@@ -44,27 +45,25 @@ export class PbcatResolveService implements Resolve<PbcatState> {
         hsmvReportNumber: number,
         pbcatInfo: PbcatInfo,
         exists: boolean,
-        stepNumber: number): Promise<any> {
-        let isSameFlow = this.state && this.state.hsmvReportNumber === hsmvReportNumber;
-        // migrate the auto-advance setting to the new flow
-        let autoAdvance = this.state ? this.state.autoAdvance : true;
-        let showReportViewer = this.state ? this.state.showReportViewer : false;
+        stepNumber: number): Promise<any>
+    {
+        let isSameFlow = this.state.flow && this.state.flow.hsmvReportNumber === hsmvReportNumber;
         if (!isSameFlow) {
-            this.state.resetFlow(config, flowType, hsmvReportNumber, pbcatInfo, exists, autoAdvance, showReportViewer);
+            this.state.flow = new PbcatFlow(flowType, hsmvReportNumber, exists, pbcatInfo, config);
         }
         if (stepNumber) {
-            this.state.goToStep(stepNumber);
+            this.state.flow.goToStep(stepNumber);
         }
         else {
-            this.state.goToSummary();
+            this.state.flow.goToSummary();
         }
-        if (!this.state.hasValidState) {
-            this.notFound();
+        if (!this.state.flow.hasValidState) {
+            // todo: do something
         }
         if (!stepNumber) {
             return this.pbcatService
-                .calculateCrashType(flowType, this.state.pbcatInfo)
-                .then(crashType => this.state.crashType = crashType);
+                .calculateCrashType(flowType, this.state.flow.pbcatInfo)
+                .then(crashType => this.state.flow.crashType = crashType);
         }
         else {
             return Promise.resolve();
@@ -77,8 +76,7 @@ export class PbcatResolveService implements Resolve<PbcatState> {
             : FlowType.Bicyclist;
     }
 
-    private notFound() {
-        // fake 404 page
-        this.router.navigate(['404']);
+    private onError() {
+        // todo: do something
     }
 }

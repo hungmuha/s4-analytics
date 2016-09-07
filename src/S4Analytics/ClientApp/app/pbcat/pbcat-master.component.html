@@ -54,14 +54,14 @@
         <div class="col-sm-12">
             <nav>
                 <ul class="pager">
-                    <li class="previous" *ngIf="showBackLink" [class.disabled]="isSaved">
+                    <li class="previous" *ngIf="canGoBack" [class.disabled]="isSaved">
                         <a *ngIf="!isSaved" [routerLink]="backLinkRoute">&larr; Back to <em>{{backLinkText}}</em></a>
                         <a *ngIf="isSaved" href="javascript:void(0);">&larr; Back to <em>{{backLinkText}}</em></a>
                     </li>
-                    <li *ngIf="showSummaryLink">
+                    <li *ngIf="canReturnToSummary">
                         <a [routerLink]="summaryRoute">Return to Summary</a>
                     </li>
-                    <li class="next" *ngIf="showProceedLink">
+                    <li class="next" *ngIf="canProceed">
                         <a [routerLink]="proceedLinkRoute">Proceed to <em>{{proceedLinkText}}</em> &rarr;</a>
                     </li>
                     <li [class.disabled]="!nextCrashExists" class="next" *ngIf="showSummary">

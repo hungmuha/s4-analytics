@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
-import { FlowType } from './pbcat.state';
+import { PbcatFlow, FlowType } from './pbcat-flow';
 import { PbcatConfig } from './pbcat-config.d.ts';
 import { PbcatCrashType } from './pbcat-crash-type';
 import { PbcatInfo, PbcatBicyclistInfo, PbcatPedestrianInfo } from './pbcat-info';
@@ -88,18 +88,13 @@ export class PbcatService {
         // todo: reconstruct stepHistory for previously typed crashes
     }
 
-    createPbcatInfo(
-        flowType: FlowType,
-        hsmvReportNumber: number,
-        pbcatInfo: PbcatInfo,
-        crashType: PbcatCrashType,
-        getNextCrash: boolean = false): Promise<[FlowType, number]> {
+    createPbcatInfo(flow: PbcatFlow): Promise<[FlowType, number]> {
         // POST api/pbcat/:bikeOrPed
-        let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let bikeOrPed = flow.flowType === FlowType.Pedestrian ? 'ped' : 'bike';
         let url = `api/pbcat/${bikeOrPed}`;
-        let wrapper = flowType === FlowType.Pedestrian
-            ? new PedestrianInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatPedestrianInfo, crashType)
-            : new BicyclistInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatBicyclistInfo, crashType);
+        let wrapper = flow.flowType === FlowType.Pedestrian
+            ? new PedestrianInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatPedestrianInfo, flow.crashType)
+            : new BicyclistInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatBicyclistInfo, flow.crashType);
         // todo: get the actual next report info
         let nextFlowType: FlowType = undefined;
         let nextHsmvNumber: number = undefined;
@@ -110,18 +105,13 @@ export class PbcatService {
             .catch(this.handleError);
     }
 
-    updatePbcatInfo(
-        flowType: FlowType,
-        hsmvReportNumber: number,
-        pbcatInfo: PbcatInfo,
-        crashType: PbcatCrashType,
-        getNextCrash: boolean = false): Promise<[FlowType, number]> {
+    updatePbcatInfo(flow: PbcatFlow): Promise<[FlowType, number]> {
         // PUT api/pbcat/:bikeOrPed/:hsmvRptNr
-        let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
-        let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
-        let wrapper = flowType === FlowType.Pedestrian
-            ? new PedestrianInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatPedestrianInfo, crashType)
-            : new BicyclistInfoWrapper(hsmvReportNumber, pbcatInfo as PbcatBicyclistInfo, crashType);
+        let bikeOrPed = flow.flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let url = `api/pbcat/${bikeOrPed}/${flow.hsmvReportNumber}`;
+        let wrapper = flow.flowType === FlowType.Pedestrian
+            ? new PedestrianInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatPedestrianInfo, flow.crashType)
+            : new BicyclistInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatBicyclistInfo, flow.crashType);
         // todo: get the actual next report info
         let nextFlowType: FlowType = undefined;
         let nextHsmvNumber: number = undefined;
