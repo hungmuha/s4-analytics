@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace S4Analytics.Models
 {
-    public class Utils
+    public abstract class S4Repository
     {
         /// <summary>
         /// Convert a numeric value from the database to an enum value.
@@ -14,7 +14,7 @@ namespace S4Analytics.Models
         /// <typeparam name="T">Enum type</typeparam>
         /// <param name="dbValue">Numeric value from the database</param>
         /// <returns></returns>
-        static public T ConvertToEnum<T>(decimal dbValue) where T : struct, IConvertible
+        protected T ConvertToEnum<T>(decimal dbValue) where T : struct, IConvertible
         {
             if (!typeof(T).IsEnum) { throw new ArgumentException("T must be an enumeration."); }
             return (T)(object)Convert.ToInt32(dbValue);
@@ -27,7 +27,7 @@ namespace S4Analytics.Models
         /// <param name="dbValue">Numeric value from the database</param>
         /// <param name="defaultValue">Default enum value to use if database value is DBNull</param>
         /// <returns></returns>
-        static public T ConvertToEnumX<T>(decimal? dbValue, T defaultValue) where T : struct, IConvertible
+        protected T ConvertToEnumX<T>(decimal? dbValue, T defaultValue) where T : struct, IConvertible
         {
             if (!typeof(T).IsEnum) { throw new ArgumentException("T must be an enumeration."); }
             return dbValue == null

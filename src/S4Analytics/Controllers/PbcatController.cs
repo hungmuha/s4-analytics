@@ -17,7 +17,7 @@ namespace S4Analytics.Controllers
     }
 
     [Route("api/[controller]")]
-    public class PbcatController : Controller
+    public class PbcatController : S4Controller
     {
         public PbcatController(IPbcatPedRepository pedRepo)
         {
@@ -39,7 +39,8 @@ namespace S4Analytics.Controllers
                 return NotFound();
             }
 
-            return new ObjectResult(pedInfo);
+            var data = AjaxSafeData(pedInfo);
+            return new ObjectResult(data);
         }
 
         /// <summary>
@@ -73,7 +74,8 @@ namespace S4Analytics.Controllers
             }
 
             PedRepo.Add(hsmvRptNbr, pedInfo, crashType);
-            return CreatedAtRoute("GetPedestrianInfo", new { hsmvRptNbr }, pedInfoWrapper);
+            var data = AjaxSafeData(pedInfoWrapper);
+            return CreatedAtRoute("GetPedestrianInfo", new { hsmvRptNbr }, data);
         }
 
         /// <summary>
@@ -132,7 +134,8 @@ namespace S4Analytics.Controllers
             }
 
             var crashType = PedRepo.GetCrashType(pedInfo);
-            return CreatedAtRoute("CalculatePedestrianCrashType", crashType);
+            var data = AjaxSafeData(crashType);
+            return CreatedAtRoute("CalculatePedestrianCrashType", data);
         }
     }
 }

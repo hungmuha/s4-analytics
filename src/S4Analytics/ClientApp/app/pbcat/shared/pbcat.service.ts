@@ -1,6 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import 'rxjs/add/operator/toPromise';
+import { Http, Response } from '@angular/http';
+import '../../rxjs-operators';
+import { Observable } from 'rxjs/Observable';
 import { PbcatFlow, FlowType } from './pbcat-flow';
 import { PbcatConfig } from './pbcat-config.d.ts';
 import { PbcatCrashType } from './pbcat-crash-type';
@@ -29,22 +30,23 @@ export class PbcatService {
 
     constructor(private http: Http) { }
 
-    handleError(error: any): Promise<void> {
-        // super generic error handling
+    private handleError(error: any) {
+        // In a real world app, we might use a remote logging infrastructure
+        // We'd also dig deeper into the error to get a better message
         let errMsg = (error.message) ? error.message :
             error.status ? `${error.status} - ${error.statusText}` : 'Server error';
-        console.error(errMsg); // log to console
-        return Promise.reject(errMsg);
+        console.error(errMsg); // log to console instead
+        return Observable.throw(errMsg);
     }
 
-    getConfiguration(flowType: FlowType): Promise<PbcatConfig> {
+    getConfiguration(flowType: FlowType): Observable<PbcatConfig> | PbcatConfig {
         // return ped config if it was previously cached
         if (flowType === FlowType.Pedestrian && this.cachedPedConfig !== undefined) {
-            return Promise.resolve(this.cachedPedConfig);
+            return Observable.of(this.cachedPedConfig);
         }
         // return bike config if it was previously cached
         else if (flowType === FlowType.Bicyclist && this.cachedBikeConfig !== undefined) {
-            return Promise.resolve(this.cachedBikeConfig);
+            return this.cachedBikeConfig;
         }
         // otherwise retrieve the config from the server and cache it
         else {
@@ -53,9 +55,8 @@ export class PbcatService {
                 : 'json/pbcat-bike.json';
             return this.http
                 .get(jsonUrl)
-                .toPromise()
-                .then(response => response.json() as PbcatConfig)
-                .then(config => this.cacheConfig(flowType, config))
+                .map(this.extractData)
+                .map(config => this.cacheConfig(flowType, <PbcatConfig>config))
                 .catch(this.handleError);
         }
     }
@@ -70,9 +71,9 @@ export class PbcatService {
                     : [new PbcatBicyclistInfo(), exists]
             );
         }
-        else {
-            return this.handleError(error);
-        }
+        //else {
+        //    return this.handleError(error);
+        //}
     }
 
     getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<[PbcatInfo, boolean]> {
@@ -83,7 +84,7 @@ export class PbcatService {
         return this.http
             .get(url)
             .toPromise()
-            .then(response => [response.json() as PbcatInfo, exists])
+            .then(response => [<PbcatInfo>this.extractData(response), exists])
             .catch(error => this.pbcatInfoError(flowType, error));
         // todo: reconstruct stepHistory for previously typed crashes
     }
@@ -140,8 +141,13 @@ export class PbcatService {
         return this.http
             .post(url, pbcatInfo)
             .toPromise()
-            .then(response => response.json() as PbcatCrashType)
+            .then(response => this.extractData(response) as PbcatCrashType)
             .catch(this.handleError);
+    }
+
+    private extractData(response: Response): any {
+        let body = response.json();
+        return body.data || body || { };
     }
 
     private cacheConfig(flowType: FlowType, config: PbcatConfig): PbcatConfig {

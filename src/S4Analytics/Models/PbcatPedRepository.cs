@@ -9,7 +9,7 @@ using Lib.PBCAT;
 
 namespace S4Analytics.Models
 {
-    public class PbcatPedRepository : IPbcatPedRepository
+    public class PbcatPedRepository : S4Repository, IPbcatPedRepository
     {
         private string _warehouseConnStr;
 
@@ -37,29 +37,29 @@ namespace S4Analytics.Models
             {
                 var dr = dt.Rows[0];
                 info = new PBCATPedestrianInfo();
-                info.BackingVehicleCd = Utils.ConvertToEnum<BackingVehicleLocation>(dr.Field<decimal>("backing_veh_cd"));
-                info.CrashLocationCd = Utils.ConvertToEnum<CrashLocationPed>(dr.Field<decimal>("crash_location_cd"));
-                info.CrossingDrivewayCd = Utils.ConvertToEnum<CrossingDrivewayOrAlleyCircumstances>(dr.Field<decimal>("crossing_driveway_cd"));
-                info.CrossingRoadwayCd = Utils.ConvertToEnum<CrossingRoadwayCircumstances>(dr.Field<decimal>("crossing_roadway_cd"));
-                info.FailureToYieldCd = Utils.ConvertToEnum<FailureToYield>(dr.Field<decimal>("failure_to_yield_cd"));
-                info.LegOfIntrsectCd = Utils.ConvertToEnum<LegOfIntersection>(dr.Field<decimal>("leg_of_intrsect_cd"));
-                info.MotoristDirTravelCd = Utils.ConvertToEnum<DirectionOfTravel>(dr.Field<decimal>("motorist_dir_travel_cd"));
-                info.MotoristManeuverCd = Utils.ConvertToEnum<MotoristManeuver>(dr.Field<decimal>("motorist_maneuver_cd"));
-                info.NonRoadwayLocationCd = Utils.ConvertToEnum<NonRoadwayLocation>(dr.Field<decimal>("non_roadway_loc_cd"));
-                info.OtherPedActionCd = Utils.ConvertToEnum<OtherPedAction>(dr.Field<decimal>("other_ped_action_cd"));
-                info.PedestrianDirTravelCd = Utils.ConvertToEnum<DirectionOfTravel>(dr.Field<decimal>("ped_dir_travel_cd"));
-                info.PedestrianFailedToYieldCd = Utils.ConvertToEnum<PedFailedToYield>(dr.Field<decimal>("ped_failure_to_yield_cd"));
-                info.PedestrianInRoadwayCd = Utils.ConvertToEnum<PedActionInRoadway>(dr.Field<decimal>("ped_in_roadway_cd"));
-                info.PedestrianMovementCd = Utils.ConvertToEnum<PedMovementScenario>(dr.Field<decimal>("ped_movement_cd"));
-                info.PedestrianPositionCd = Utils.ConvertToEnum<PedPosition>(dr.Field<decimal>("ped_position_cd"));
-                info.RightTurnOnRedCd = Utils.ConvertToEnum<TurningRightOnRed>(dr.Field<decimal>("right_turn_on_red_cd"));
-                info.TurnMergeCd = Utils.ConvertToEnum<TurnMergeCircumstances>(dr.Field<decimal>("turn_merge_cd"));
-                info.TypicalPedActionCd = Utils.ConvertToEnum<TypicalPedAction>(dr.Field<decimal>("typical_ped_action_cd"));
-                info.UnusualCircumstancesCd = Utils.ConvertToEnum<UnusualCircumstancesPed>(dr.Field<decimal>("unusual_circumstances_cd"));
-                info.UnusualPedActionCd = Utils.ConvertToEnum<UnusualPedAction>(dr.Field<decimal>("unusual_ped_action_cd"));
-                info.UnusualVehicleTypeOrActionCd = Utils.ConvertToEnum<UnusualVehicleTypeOrAction>(dr.Field<decimal>("unusual_veh_type_cd"));
-                info.WaitingToCrossCd = Utils.ConvertToEnum<WaitingToCrossVehicleMovement>(dr.Field<decimal>("waiting_to_cross_cd"));
-                info.WalkingAlongRoadwayCd = Utils.ConvertToEnum<WalkingAlongRoadwayCircumstances>(dr.Field<decimal>("walking_along_roadway_cd"));
+                info.BackingVehicleCd = ConvertToEnum<BackingVehicleLocation>(dr.Field<decimal>("backing_veh_cd"));
+                info.CrashLocationCd = ConvertToEnum<CrashLocationPed>(dr.Field<decimal>("crash_location_cd"));
+                info.CrossingDrivewayCd = ConvertToEnum<CrossingDrivewayOrAlleyCircumstances>(dr.Field<decimal>("crossing_driveway_cd"));
+                info.CrossingRoadwayCd = ConvertToEnum<CrossingRoadwayCircumstances>(dr.Field<decimal>("crossing_roadway_cd"));
+                info.FailureToYieldCd = ConvertToEnum<FailureToYield>(dr.Field<decimal>("failure_to_yield_cd"));
+                info.LegOfIntrsectCd = ConvertToEnum<LegOfIntersection>(dr.Field<decimal>("leg_of_intrsect_cd"));
+                info.MotoristDirTravelCd = ConvertToEnum<DirectionOfTravel>(dr.Field<decimal>("motorist_dir_travel_cd"));
+                info.MotoristManeuverCd = ConvertToEnum<MotoristManeuver>(dr.Field<decimal>("motorist_maneuver_cd"));
+                info.NonRoadwayLocationCd = ConvertToEnum<NonRoadwayLocation>(dr.Field<decimal>("non_roadway_loc_cd"));
+                info.OtherPedActionCd = ConvertToEnum<OtherPedAction>(dr.Field<decimal>("other_ped_action_cd"));
+                info.PedestrianDirTravelCd = ConvertToEnum<DirectionOfTravel>(dr.Field<decimal>("ped_dir_travel_cd"));
+                info.PedestrianFailedToYieldCd = ConvertToEnum<PedFailedToYield>(dr.Field<decimal>("ped_failure_to_yield_cd"));
+                info.PedestrianInRoadwayCd = ConvertToEnum<PedActionInRoadway>(dr.Field<decimal>("ped_in_roadway_cd"));
+                info.PedestrianMovementCd = ConvertToEnum<PedMovementScenario>(dr.Field<decimal>("ped_movement_cd"));
+                info.PedestrianPositionCd = ConvertToEnum<PedPosition>(dr.Field<decimal>("ped_position_cd"));
+                info.RightTurnOnRedCd = ConvertToEnum<TurningRightOnRed>(dr.Field<decimal>("right_turn_on_red_cd"));
+                info.TurnMergeCd = ConvertToEnum<TurnMergeCircumstances>(dr.Field<decimal>("turn_merge_cd"));
+                info.TypicalPedActionCd = ConvertToEnum<TypicalPedAction>(dr.Field<decimal>("typical_ped_action_cd"));
+                info.UnusualCircumstancesCd = ConvertToEnum<UnusualCircumstancesPed>(dr.Field<decimal>("unusual_circumstances_cd"));
+                info.UnusualPedActionCd = ConvertToEnum<UnusualPedAction>(dr.Field<decimal>("unusual_ped_action_cd"));
+                info.UnusualVehicleTypeOrActionCd = ConvertToEnum<UnusualVehicleTypeOrAction>(dr.Field<decimal>("unusual_veh_type_cd"));
+                info.WaitingToCrossCd = ConvertToEnum<WaitingToCrossVehicleMovement>(dr.Field<decimal>("waiting_to_cross_cd"));
+                info.WalkingAlongRoadwayCd = ConvertToEnum<WalkingAlongRoadwayCircumstances>(dr.Field<decimal>("walking_along_roadway_cd"));
                 info.EnablePedestrianLocationOption = dr.Field<decimal>("ped_loc_option_enabled") != 0;
                 info.EnableGroupTyping = dr.Field<decimal>("group_typing_enabled") != 0;
             }
