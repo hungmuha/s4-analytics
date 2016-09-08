@@ -47,9 +47,7 @@ export class PbcatResolveService implements Resolve<PbcatState> {
         hsmvReportNumber: number,
         pbcatInfo: PbcatInfo,
         exists: boolean,
-        stepNumber: number): Observable<any>
-    {
-        // THIS METHOD IS WEIRD
+        stepNumber: number): Observable<any> {
 
         let isSameFlow = this.state.flow && this.state.flow.hsmvReportNumber === hsmvReportNumber;
         if (!isSameFlow) {
@@ -64,8 +62,8 @@ export class PbcatResolveService implements Resolve<PbcatState> {
         }
 
         if (!this.state.flow.hasValidState) {
-            // flow has invalid state, so raise an error
-            return Observable.throw('Flow has invalid state.');
+            // todo: show some kind of 404 page
+            return Observable.throw('404 Not Found');
         }
         else if (stepNumber) {
             // nothing more to do; return an empty observable
