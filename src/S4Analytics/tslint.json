@@ -64,7 +64,7 @@ For a complete list of rules, visit http://palantir.github.io/tslint/rules/.
       true,
       "check-space"
     ],
-    "no-angle-bracket-type-assertion": false,
+    "no-angle-bracket-type-assertion": true,
     "one-line": [
       true,
       "check-open-brace",

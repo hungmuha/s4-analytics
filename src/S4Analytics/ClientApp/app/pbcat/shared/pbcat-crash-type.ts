@@ -1,4 +1,4 @@
-﻿import { FlowType } from './pbcat.state';
+﻿import { FlowType } from './pbcat-flow';
 
 export class PbcatCrashType {
     flowType: FlowType;

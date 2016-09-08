@@ -1,7 +1,9 @@
 ﻿import { Injectable } from '@angular/core';
 import { Router, Resolve, ActivatedRouteSnapshot } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import '../../rxjs-operators';
 import { AppState } from '../../app.state';
-import { PbcatService } from './pbcat.service';
+import { PbcatService, PbcatInfoWithExists } from './pbcat.service';
 import { PbcatState } from './pbcat.state';
 import { PbcatFlow, FlowType } from './pbcat-flow';
 import { PbcatInfo } from './pbcat-info';
@@ -18,7 +20,7 @@ export class PbcatResolveService implements Resolve<PbcatState> {
         this.state = this.appState.pbcatState;
     }
 
-    resolve(route: ActivatedRouteSnapshot): Promise<void> {
+    resolve(route: ActivatedRouteSnapshot): Observable<void> {
         let bikeOrPed = route.params['bikeOrPed'];
         let hsmvReportNumber = +route.params['hsmvReportNumber'];
         let stepNumber = +route.params['stepNumber'];
@@ -26,16 +28,16 @@ export class PbcatResolveService implements Resolve<PbcatState> {
         let config: PbcatConfig;
         return this.pbcatService
             .getConfiguration(flowType)
-            .then(c => config = c)
-            .then(() => this.loadPbcatInfo(flowType, hsmvReportNumber))
-            .then(([pbcatInfo, exists]) => this.loadPbcatFlow(config, flowType, hsmvReportNumber, pbcatInfo, exists, stepNumber))
-            .catch(() => this.onError());
+            .do(cfg => config = cfg)
+            .switchMap(() => this.loadPbcatInfo(flowType, hsmvReportNumber))
+            .switchMap(p => this.loadPbcatFlow(config, flowType, hsmvReportNumber, p.pbcatInfo, p.exists, stepNumber))
+            .catch(this.handleError);
     }
 
-    private loadPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<[PbcatInfo, boolean]> {
+    private loadPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Observable<PbcatInfoWithExists> {
         let isSameFlow = this.state.flow && this.state.flow.hsmvReportNumber === hsmvReportNumber;
         return isSameFlow
-            ? Promise.resolve([this.state.flow.pbcatInfo, this.state.flow.typingExists])
+            ? Observable.of<PbcatInfoWithExists>(new PbcatInfoWithExists(this.state.flow.pbcatInfo, this.state.flow.typingExists))
             : this.pbcatService.getPbcatInfo(flowType, hsmvReportNumber);
     }
 
@@ -45,28 +47,35 @@ export class PbcatResolveService implements Resolve<PbcatState> {
         hsmvReportNumber: number,
         pbcatInfo: PbcatInfo,
         exists: boolean,
-        stepNumber: number): Promise<any>
+        stepNumber: number): Observable<any>
     {
+        // THIS METHOD IS WEIRD
+
         let isSameFlow = this.state.flow && this.state.flow.hsmvReportNumber === hsmvReportNumber;
         if (!isSameFlow) {
             this.state.flow = new PbcatFlow(flowType, hsmvReportNumber, exists, pbcatInfo, config);
         }
+
         if (stepNumber) {
             this.state.flow.goToStep(stepNumber);
         }
         else {
             this.state.flow.goToSummary();
         }
+
         if (!this.state.flow.hasValidState) {
-            // todo: do something
+            // flow has invalid state, so raise an error
+            return Observable.throw('Flow has invalid state.');
         }
-        if (!stepNumber) {
-            return this.pbcatService
-                .calculateCrashType(flowType, this.state.flow.pbcatInfo)
-                .then(crashType => this.state.flow.crashType = crashType);
+        else if (stepNumber) {
+            // nothing more to do; return an empty observable
+            return Observable.of(undefined);
         }
         else {
-            return Promise.resolve();
+            // we're at the summary page, so get the crash type
+            return this.pbcatService
+                .calculateCrashType(flowType, this.state.flow.pbcatInfo)
+                .do(crashType => this.state.flow.crashType = crashType);
         }
     }
 
@@ -76,7 +85,12 @@ export class PbcatResolveService implements Resolve<PbcatState> {
             : FlowType.Bicyclist;
     }
 
-    private onError() {
-        // todo: do something
+    private handleError(error: any) {
+        // In a real world app, we might use a remote logging infrastructure
+        // We'd also dig deeper into the error to get a better message
+        let errMsg = (error.message) ? error.message :
+            error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+        console.error(errMsg); // log to console instead
+        return Observable.throw(errMsg);
     }
 }

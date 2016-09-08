@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import '../../rxjs-operators';
 import { Observable } from 'rxjs/Observable';
+import '../../rxjs-operators';
 import { PbcatFlow, FlowType } from './pbcat-flow';
 import { PbcatConfig } from './pbcat-config.d.ts';
 import { PbcatCrashType } from './pbcat-crash-type';
@@ -23,6 +23,18 @@ class BicyclistInfoWrapper {
     ) { }
 }
 
+export class NextCrashInfo {
+    constructor(
+        public hsmvReportNumber: number,
+        public flowType: FlowType) { }
+}
+
+export class PbcatInfoWithExists {
+    constructor(
+        public pbcatInfo: PbcatInfo,
+        public exists: boolean) { }
+}
+
 @Injectable()
 export class PbcatService {
     private cachedPedConfig: PbcatConfig;
@@ -39,14 +51,14 @@ export class PbcatService {
         return Observable.throw(errMsg);
     }
 
-    getConfiguration(flowType: FlowType): Observable<PbcatConfig> | PbcatConfig {
+    getConfiguration(flowType: FlowType): Observable<PbcatConfig> {
         // return ped config if it was previously cached
         if (flowType === FlowType.Pedestrian && this.cachedPedConfig !== undefined) {
             return Observable.of(this.cachedPedConfig);
         }
         // return bike config if it was previously cached
         else if (flowType === FlowType.Bicyclist && this.cachedBikeConfig !== undefined) {
-            return this.cachedBikeConfig;
+            return Observable.of(this.cachedBikeConfig);
         }
         // otherwise retrieve the config from the server and cache it
         else {
@@ -55,41 +67,39 @@ export class PbcatService {
                 : 'json/pbcat-bike.json';
             return this.http
                 .get(jsonUrl)
-                .map(this.extractData)
-                .map(config => this.cacheConfig(flowType, <PbcatConfig>config))
+                .map(response => this.extractData<PbcatConfig>(response))
+                .do(config => this.cacheConfig(flowType, config))
                 .catch(this.handleError);
         }
     }
 
-    pbcatInfoError(flowType: FlowType, error: any): Promise<any> {
+    pbcatInfoError(flowType: FlowType, error: any): Observable<any> {
         // if no record was found, create an empty one
         if (error.status === 404) {
-            let exists = false;
-            return Promise.resolve(
+            return Observable.of(
                 flowType === FlowType.Pedestrian
-                    ? [new PbcatPedestrianInfo(), exists]
-                    : [new PbcatBicyclistInfo(), exists]
+                    ? new PbcatInfoWithExists(new PbcatPedestrianInfo(), false)
+                    : new PbcatInfoWithExists(new PbcatBicyclistInfo(), false)
             );
         }
-        //else {
-        //    return this.handleError(error);
-        //}
+        else {
+            return this.handleError(error);
+        }
     }
 
-    getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<[PbcatInfo, boolean]> {
+    getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Observable<PbcatInfoWithExists> {
         // GET api/pbcat/:bikeOrPed/:hsmvRptNr
         let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
         let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
-        let exists = true;
         return this.http
             .get(url)
-            .toPromise()
-            .then(response => [<PbcatInfo>this.extractData(response), exists])
+            .map(response => this.extractData<PbcatInfo>(response))
+            .map(data => new PbcatInfoWithExists(data, true))
             .catch(error => this.pbcatInfoError(flowType, error));
         // todo: reconstruct stepHistory for previously typed crashes
     }
 
-    createPbcatInfo(flow: PbcatFlow): Promise<[FlowType, number]> {
+    createPbcatInfo(flow: PbcatFlow): Observable<NextCrashInfo> {
         // POST api/pbcat/:bikeOrPed
         let bikeOrPed = flow.flowType === FlowType.Pedestrian ? 'ped' : 'bike';
         let url = `api/pbcat/${bikeOrPed}`;
@@ -101,12 +111,11 @@ export class PbcatService {
         let nextHsmvNumber: number = undefined;
         return this.http
             .post(url, wrapper)
-            .toPromise()
-            .then(response => [nextFlowType, nextHsmvNumber])
+            .map(response => new NextCrashInfo(nextHsmvNumber, nextFlowType))
             .catch(this.handleError);
     }
 
-    updatePbcatInfo(flow: PbcatFlow): Promise<[FlowType, number]> {
+    updatePbcatInfo(flow: PbcatFlow): Observable<NextCrashInfo> {
         // PUT api/pbcat/:bikeOrPed/:hsmvRptNr
         let bikeOrPed = flow.flowType === FlowType.Pedestrian ? 'ped' : 'bike';
         let url = `api/pbcat/${bikeOrPed}/${flow.hsmvReportNumber}`;
@@ -118,46 +127,32 @@ export class PbcatService {
         let nextHsmvNumber: number = undefined;
         return this.http
             .put(url, wrapper)
-            .toPromise()
-            .then(response => [nextFlowType, nextHsmvNumber])
+            .map(response => new NextCrashInfo(nextHsmvNumber, nextFlowType))
             .catch(this.handleError);
     }
 
-    deletePbcatInfo(flowType: FlowType, hsmvReportNumber: number): Promise<void> {
-        //  DELETE api/pbcat/:bikeOrPed/:hsmvRptNr
-        let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
-        let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
-        return this.http
-            .delete(url)
-            .toPromise()
-            .then(response => undefined)
-            .catch(this.handleError);
-    }
-
-    calculateCrashType(flowType: FlowType, pbcatInfo: PbcatInfo): Promise<PbcatCrashType> {
+    calculateCrashType(flowType: FlowType, pbcatInfo: PbcatInfo): Observable<PbcatCrashType> {
         // POST api/pbcat/:bikeOrPed/crashtype
         let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
         let url = `api/pbcat/${bikeOrPed}/crashtype`;
         return this.http
             .post(url, pbcatInfo)
-            .toPromise()
-            .then(response => this.extractData(response) as PbcatCrashType)
+            .map(response => this.extractData<PbcatCrashType>(response))
             .catch(this.handleError);
     }
 
-    private extractData(response: Response): any {
+    private extractData<T>(response: Response): T {
         let body = response.json();
-        return body.data || body || { };
+        let data = body.data || body || {};
+        return data as T;
     }
 
-    private cacheConfig(flowType: FlowType, config: PbcatConfig): PbcatConfig {
+    private cacheConfig(flowType: FlowType, config: PbcatConfig) {
         if (flowType === FlowType.Pedestrian) {
             this.cachedPedConfig = config;
         }
         else if (flowType === FlowType.Bicyclist) {
             this.cachedBikeConfig = config;
         }
-        // this method is used in a promise chain so it must return a PbcatConfig
-        return config;
     }
 }

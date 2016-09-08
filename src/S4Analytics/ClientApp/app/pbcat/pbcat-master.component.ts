@@ -1,5 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AppState } from '../app.state';
 import {
     PbcatService, PbcatItem, PbcatCrashType,
@@ -15,6 +15,7 @@ export class PbcatMasterComponent {
 
     constructor(
         private router: Router,
+        private route: ActivatedRoute,
         private appState: AppState,
         private pbcatService: PbcatService) {
         this.state = appState.pbcatState;
@@ -147,11 +148,11 @@ export class PbcatMasterComponent {
     private acceptAndSave(): void {
         if (this.flow.typingExists) {
             this.pbcatService.updatePbcatInfo(this.flow)
-                .then(([flowType, nextHsmvNumber]) => this.handleSaved(flowType, nextHsmvNumber));
+                .subscribe(nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber));
         }
         else {
             this.pbcatService.createPbcatInfo(this.flow)
-                .then(([flowType, nextHsmvNumber]) => this.handleSaved(flowType, nextHsmvNumber));
+                .subscribe(nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber));
         }
     }
 
