@@ -1,5 +1,6 @@
 ﻿import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs/Subscription';
 import { AppState } from '../app.state';
 import {
     PbcatService, PbcatItem, PbcatCrashType,
@@ -11,6 +12,9 @@ import {
     template: require('./pbcat-master.component.html')
 })
 export class PbcatMasterComponent {
+    private routeSub: Subscription;
+    private crashTypeSub: Subscription;
+    private saveSub: Subscription;
     private state: PbcatState;
 
     constructor(
@@ -19,6 +23,29 @@ export class PbcatMasterComponent {
         private appState: AppState,
         private pbcatService: PbcatService) {
         this.state = appState.pbcatState;
+    }
+
+    ngOnInit() {
+        this.routeSub = this.route.data.subscribe(data => this.handleRouteData(data));
+    }
+
+    ngOnDestroy() {
+        this.routeSub.unsubscribe();
+        if (this.crashTypeSub) {
+            this.crashTypeSub.unsubscribe();
+        }
+        if (this.saveSub) {
+            this.saveSub.unsubscribe();
+        }
+    }
+
+    private handleRouteData(data: {[name: string]: any}) {
+        this.state.flow = data['PbcatResolveService'] as PbcatFlow;
+        if (this.state.flow.showSummary) {
+            this.crashTypeSub = this.pbcatService
+                .calculateCrashType(this.state.flow.flowType, this.state.flow.pbcatInfo)
+                .subscribe(crashType => this.state.flow.crashType = crashType);
+        }
     }
 
     private get flow(): PbcatFlow { return this.state.flow; }
@@ -147,11 +174,11 @@ export class PbcatMasterComponent {
 
     private acceptAndSave(): void {
         if (this.flow.typingExists) {
-            this.pbcatService.updatePbcatInfo(this.flow)
+            this.saveSub = this.pbcatService.updatePbcatInfo(this.flow)
                 .subscribe(nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber));
         }
         else {
-            this.pbcatService.createPbcatInfo(this.flow)
+            this.saveSub = this.pbcatService.createPbcatInfo(this.flow)
                 .subscribe(nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber));
         }
     }

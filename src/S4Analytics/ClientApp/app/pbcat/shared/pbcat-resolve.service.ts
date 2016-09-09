@@ -10,70 +10,50 @@ import { PbcatInfo } from './pbcat-info';
 import { PbcatConfig } from './pbcat-config';
 
 @Injectable()
-export class PbcatResolveService implements Resolve<PbcatState> {
-    private state: PbcatState;
+export class PbcatResolveService implements Resolve<void> {
+    private currentFlow: PbcatFlow;
+    private isSameFlow: boolean;
 
     constructor(
         private pbcatService: PbcatService,
         private router: Router,
-        private appState: AppState) {
-        this.state = this.appState.pbcatState;
-    }
+        private appState: AppState) { }
 
-    resolve(route: ActivatedRouteSnapshot): Observable<void> {
+    resolve(route: ActivatedRouteSnapshot): Observable<PbcatFlow> {
         let bikeOrPed = route.params['bikeOrPed'];
         let hsmvReportNumber = +route.params['hsmvReportNumber'];
         let stepNumber = +route.params['stepNumber'];
         let flowType = this.getFlowType(bikeOrPed);
         let config: PbcatConfig;
-        return this.pbcatService
-            .getConfiguration(flowType)
-            .do(cfg => config = cfg)
-            .switchMap(() => this.loadPbcatInfo(flowType, hsmvReportNumber))
-            .switchMap(p => this.loadPbcatFlow(config, flowType, hsmvReportNumber, p.pbcatInfo, p.exists, stepNumber))
-            .catch(this.handleError);
-    }
-
-    private loadPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Observable<PbcatInfoWithExists> {
-        let isSameFlow = this.state.flow && this.state.flow.hsmvReportNumber === hsmvReportNumber;
-        return isSameFlow
-            ? Observable.of<PbcatInfoWithExists>(new PbcatInfoWithExists(this.state.flow.pbcatInfo, this.state.flow.typingExists))
-            : this.pbcatService.getPbcatInfo(flowType, hsmvReportNumber);
-    }
-
-    private loadPbcatFlow(
-        config: PbcatConfig,
-        flowType: FlowType,
-        hsmvReportNumber: number,
-        pbcatInfo: PbcatInfo,
-        exists: boolean,
-        stepNumber: number): Observable<any> {
-
-        let isSameFlow = this.state.flow && this.state.flow.hsmvReportNumber === hsmvReportNumber;
-        if (!isSameFlow) {
-            this.state.flow = new PbcatFlow(flowType, hsmvReportNumber, exists, pbcatInfo, config);
+        this.currentFlow = this.appState.pbcatState.flow;
+        this.isSameFlow = this.currentFlow && this.currentFlow.hsmvReportNumber === hsmvReportNumber;
+        if (this.isSameFlow) {
+            return this.goToStepOrSummary(this.currentFlow, stepNumber);
         }
+        else {
+            return this.pbcatService.getConfiguration(flowType)
+                .do(cfg => config = cfg)
+                .switchMap(() => this.pbcatService.getPbcatInfo(flowType, hsmvReportNumber))
+                .map(p => new PbcatFlow(flowType, hsmvReportNumber, p.exists, p.pbcatInfo, config))
+                .switchMap(flow => this.goToStepOrSummary(flow, stepNumber))
+                .catch(this.handleError);
+        }
+    }
 
+    private goToStepOrSummary(flow: PbcatFlow, stepNumber?: number): Observable<PbcatFlow> {
         if (stepNumber) {
-            this.state.flow.goToStep(stepNumber);
+            flow.goToStep(stepNumber);
         }
         else {
-            this.state.flow.goToSummary();
+            flow.goToSummary();
         }
 
-        if (!this.state.flow.hasValidState) {
-            // todo: show some kind of 404 page
-            return Observable.throw('404 Not Found');
-        }
-        else if (stepNumber) {
-            // nothing more to do; return an empty observable
-            return Observable.of(undefined);
+        if (flow.hasValidState) {
+            return Observable.of<PbcatFlow>(flow);
         }
         else {
-            // we're at the summary page, so get the crash type
-            return this.pbcatService
-                .calculateCrashType(flowType, this.state.flow.pbcatInfo)
-                .do(crashType => this.state.flow.crashType = crashType);
+            // todo: show some kind of 404 page
+            return Observable.throw<PbcatFlow>('404 Not Found');
         }
     }
 
