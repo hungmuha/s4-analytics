@@ -2,6 +2,7 @@
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { AppState } from '../app.state';
+import { AlertType } from '../alert-type';
 import {
     PbcatService, PbcatItem, PbcatCrashType,
     PbcatFlow, FlowType, PbcatState
@@ -12,10 +13,16 @@ import {
     template: require('./pbcat-master.component.html')
 })
 export class PbcatMasterComponent {
+    private state: PbcatState;
     private routeSub: Subscription;
     private crashTypeSub: Subscription;
     private saveSub: Subscription;
-    private state: PbcatState;
+
+    private AlertType = AlertType; // capture the enum for the template to use
+    private alertHeading: string;
+    private alertMessage: string;
+    private alertType: AlertType;
+    private alertVisible: boolean = false;
 
     constructor(
         private router: Router,
@@ -26,7 +33,9 @@ export class PbcatMasterComponent {
     }
 
     ngOnInit() {
-        this.routeSub = this.route.data.subscribe(data => this.handleRouteData(data));
+        this.routeSub = this.route.data.subscribe(
+            data => this.handleRouteData(data),
+            err => this.displayAlert('Error', err, AlertType.Danger));
     }
 
     ngOnDestroy() {
@@ -39,12 +48,26 @@ export class PbcatMasterComponent {
         }
     }
 
+    private displayAlert(heading: string, message: string, type: AlertType) {
+        this.alertHeading = heading;
+        this.alertMessage = message;
+        this.alertType = type;
+        this.alertVisible = true;
+    }
+
+    private dismissAlert() {
+        this.alertVisible = false;
+    }
+
     private handleRouteData(data: {[name: string]: any}) {
         this.state.flow = data['PbcatResolveService'] as PbcatFlow;
         if (this.state.flow.showSummary) {
             this.crashTypeSub = this.pbcatService
                 .calculateCrashType(this.state.flow.flowType, this.state.flow.pbcatInfo)
-                .subscribe(crashType => this.state.flow.crashType = crashType);
+                .subscribe(
+                    crashType => this.state.flow.crashType = crashType,
+                    err => this.displayAlert('Error', err, AlertType.Danger)
+                );
         }
     }
 
@@ -171,11 +194,17 @@ export class PbcatMasterComponent {
     private acceptAndSave(): void {
         if (this.flow.typingExists) {
             this.saveSub = this.pbcatService.updatePbcatInfo(this.flow)
-                .subscribe(nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber));
+                .subscribe(
+                    nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber),
+                    err => this.displayAlert('Error', err, AlertType.Danger)
+                );
         }
         else {
             this.saveSub = this.pbcatService.createPbcatInfo(this.flow)
-                .subscribe(nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber));
+                .subscribe(
+                    nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber),
+                    err => this.displayAlert('Error', err, AlertType.Danger)
+                );
         }
     }
 }

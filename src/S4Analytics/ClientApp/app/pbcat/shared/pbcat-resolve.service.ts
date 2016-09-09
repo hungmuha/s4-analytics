@@ -27,7 +27,8 @@ export class PbcatResolveService implements Resolve<void> {
         this.currentFlow = this.appState.pbcatState.flow;
         this.isSameFlow = this.currentFlow && this.currentFlow.hsmvReportNumber === hsmvReportNumber;
         if (this.isSameFlow) {
-            return this.goToStepOrSummary(this.currentFlow, stepNumber);
+            return this.goToStepOrSummary(this.currentFlow, stepNumber)
+                .catch(this.handleError);
         }
         else {
             return this.pbcatService.getConfiguration(flowType)
@@ -52,15 +53,18 @@ export class PbcatResolveService implements Resolve<void> {
         }
         else {
             // todo: show some kind of 404 page
-            return Observable.throw<PbcatFlow>('404 Not Found');
+            return this.handleError('404 Not Found');
         }
     }
-    
+
     private handleError(error: any) {
         // In a real world app, we might use a remote logging infrastructure
         // We'd also dig deeper into the error to get a better message
-        let errMsg = (error.message) ? error.message :
-            error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+        let errMsg = (error.message)
+            ? error.message
+            : error.status
+                ? `${error.status} - ${error.statusText}`
+                : error;
         console.error(errMsg); // log to console instead
         return Observable.throw(errMsg);
     }

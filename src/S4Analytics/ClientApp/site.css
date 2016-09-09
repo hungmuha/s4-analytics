@@ -10,9 +10,18 @@ body {
     color: gray;
 }
 
+.hidden {
+    display: none;
+}
+
 .container {
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+.pbcat-alert {
+    margin-top: 20px;
+    margin-bottom: 0 !important;
 }
 
 .pbcat-implemented {
