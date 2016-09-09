@@ -80,7 +80,7 @@ export class PbcatService {
 
     getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Observable<PbcatInfoWithExists> {
         // GET api/pbcat/:bikeOrPed/:hsmvRptNr
-        let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let bikeOrPed = this.getBikeOrPed(flowType);
         let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
         return this.http
             .get(url)
@@ -92,7 +92,7 @@ export class PbcatService {
 
     createPbcatInfo(flow: PbcatFlow): Observable<NextCrashInfo> {
         // POST api/pbcat/:bikeOrPed
-        let bikeOrPed = flow.flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let bikeOrPed = this.getBikeOrPed(flow.flowType);
         let url = `api/pbcat/${bikeOrPed}`;
         let wrapper = flow.flowType === FlowType.Pedestrian
             ? new PedestrianInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatPedestrianInfo, flow.crashType)
@@ -108,7 +108,7 @@ export class PbcatService {
 
     updatePbcatInfo(flow: PbcatFlow): Observable<NextCrashInfo> {
         // PUT api/pbcat/:bikeOrPed/:hsmvRptNr
-        let bikeOrPed = flow.flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let bikeOrPed = this.getBikeOrPed(flow.flowType);
         let url = `api/pbcat/${bikeOrPed}/${flow.hsmvReportNumber}`;
         let wrapper = flow.flowType === FlowType.Pedestrian
             ? new PedestrianInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatPedestrianInfo, flow.crashType)
@@ -124,12 +124,21 @@ export class PbcatService {
 
     calculateCrashType(flowType: FlowType, pbcatInfo: PbcatInfo): Observable<PbcatCrashType> {
         // POST api/pbcat/:bikeOrPed/crashtype
-        let bikeOrPed = flowType === FlowType.Pedestrian ? 'ped' : 'bike';
+        let bikeOrPed = this.getBikeOrPed(flowType);
         let url = `api/pbcat/${bikeOrPed}/crashtype`;
         return this.http
             .post(url, pbcatInfo)
             .map(response => this.extractData<PbcatCrashType>(response))
             .catch(this.handleError);
+    }
+
+    private getBikeOrPed(flowType: FlowType): string {
+        if (flowType === FlowType.Pedestrian) {
+            return 'ped';
+        }
+        else if (flowType === FlowType.Bicyclist) {
+            return 'bike';
+        }
     }
 
     private handleError(error: any) {

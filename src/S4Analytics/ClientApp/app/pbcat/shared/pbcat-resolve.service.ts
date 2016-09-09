@@ -20,10 +20,9 @@ export class PbcatResolveService implements Resolve<void> {
         private appState: AppState) { }
 
     resolve(route: ActivatedRouteSnapshot): Observable<PbcatFlow> {
-        let bikeOrPed = route.params['bikeOrPed'];
         let hsmvReportNumber = +route.params['hsmvReportNumber'];
         let stepNumber = +route.params['stepNumber'];
-        let flowType = this.getFlowType(bikeOrPed);
+        let flowType = FlowType.Pedestrian; // todo: set dynamically
         let config: PbcatConfig;
         this.currentFlow = this.appState.pbcatState.flow;
         this.isSameFlow = this.currentFlow && this.currentFlow.hsmvReportNumber === hsmvReportNumber;
@@ -56,13 +55,7 @@ export class PbcatResolveService implements Resolve<void> {
             return Observable.throw<PbcatFlow>('404 Not Found');
         }
     }
-
-    private getFlowType(bikeOrPed: string) {
-        return bikeOrPed === 'ped'
-            ? FlowType.Pedestrian
-            : FlowType.Bicyclist;
-    }
-
+    
     private handleError(error: any) {
         // In a real world app, we might use a remote logging infrastructure
         // We'd also dig deeper into the error to get a better message

@@ -135,20 +135,17 @@ export class PbcatMasterComponent {
     }
 
     private get backLinkRoute(): any[] {
-        let bikeOrPed = this.getBikeOrPed(this.flow.flowType);
-        return ['/pbcat', bikeOrPed, this.flow.hsmvReportNumber, 'step', this.flow.previousStepNumber];
+        return ['/pbcat', this.flow.hsmvReportNumber, 'step', this.flow.previousStepNumber];
     }
 
     private get proceedLinkRoute(): any[] {
-        let bikeOrPed = this.getBikeOrPed(this.flow.flowType);
         return this.flow.isFinalStep
-            ? ['/pbcat', bikeOrPed, this.hsmvReportNumber, 'summary']
-            : ['/pbcat', bikeOrPed, this.flow.hsmvReportNumber, 'step', this.flow.nextStepNumber];
+            ? ['/pbcat', this.hsmvReportNumber, 'summary']
+            : ['/pbcat', this.flow.hsmvReportNumber, 'step', this.flow.nextStepNumber];
     }
 
     private get summaryRoute(): any[] {
-        let bikeOrPed = this.getBikeOrPed(this.flow.flowType);
-        return ['/pbcat', bikeOrPed, this.hsmvReportNumber, 'summary'];
+        return ['/pbcat', this.hsmvReportNumber, 'summary'];
     }
 
     private proceed(): void {
@@ -158,8 +155,7 @@ export class PbcatMasterComponent {
     }
 
     private jumpBackToStep(stepNumber: number) {
-        let bikeOrPed = this.getBikeOrPed(this.flow.flowType);
-        let route = ['/pbcat', bikeOrPed, this.flow.hsmvReportNumber, 'step', stepNumber];
+        let route = ['/pbcat', this.flow.hsmvReportNumber, 'step', stepNumber];
         this.router.navigate(route);
     }
 
@@ -169,7 +165,7 @@ export class PbcatMasterComponent {
     }
 
     private get advanceToNextRoute(): any[] {
-        return ['/pbcat', this.getBikeOrPed(this.state.nextFlowType), this.state.nextHsmvNumber, 'step', 1];
+        return ['/pbcat', this.state.nextHsmvNumber, 'step', 1];
     }
 
     private acceptAndSave(): void {
@@ -181,11 +177,5 @@ export class PbcatMasterComponent {
             this.saveSub = this.pbcatService.createPbcatInfo(this.flow)
                 .subscribe(nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber));
         }
-    }
-
-    private getBikeOrPed(flowType: FlowType) {
-        return flowType === FlowType.Pedestrian
-            ? 'ped'
-            : 'bike';
     }
 }

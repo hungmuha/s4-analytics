@@ -5,12 +5,12 @@ import { PbcatResolveService } from './shared';
 
 const pbcatRoutes: Routes = [
     {
-        path: 'pbcat/:bikeOrPed/:hsmvReportNumber/step/:stepNumber',
+        path: 'pbcat/:hsmvReportNumber/step/:stepNumber',
         component: PbcatMasterComponent,
         resolve: { PbcatResolveService }
     },
     {
-        path: 'pbcat/:bikeOrPed/:hsmvReportNumber/summary',
+        path: 'pbcat/:hsmvReportNumber/summary',
         component: PbcatMasterComponent,
         resolve: { PbcatResolveService }
     },
