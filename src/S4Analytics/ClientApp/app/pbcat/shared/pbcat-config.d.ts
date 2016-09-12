@@ -1,17 +1,25 @@
-﻿import { FlowType } from './pbcat.state';
-
-export interface PbcatItemConfig {
+﻿export interface PbcatItemConfig {
     title: string;
-    infoAttrValue: number;
+    enumValue: string;
     description?: string;
+    subHeading?: string;
+
+    // all but one screen have 0-1 image per item
     imageUrl?: string;
-    nextScreenName?: string;
+
+    // bike screen 6 has multiple images per item
+    imageUrls?: string[];
+
+    // the next screen may be fixed for a given item, or it may depend
+    // on what option was selected on screen 1 (crash location)
+    nextScreenName?: string | {[crashLocation: string]: string};
 }
 
 export interface PbcatScreenConfig {
     title: string;
     description: string;
     infoAttrName: string;
+    enumName: string;
     items: PbcatItemConfig[];
 }
 

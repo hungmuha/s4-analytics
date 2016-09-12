@@ -24,10 +24,6 @@ body {
     margin-bottom: 0 !important;
 }
 
-.pbcat-implemented {
-    background-color: aliceblue;
-}
-
 .pbcat-nav-row {
     margin-top: 15px;
 }
@@ -85,6 +81,10 @@ body {
 
 .thumbnail {
     padding: 10px 10px 4px !important;
+}
+
+.thumbnail img:not(:first-child) {
+    padding-top: 10px;
 }
 
 .pbcat-viewer {

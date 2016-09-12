@@ -18,12 +18,11 @@ export class PbcatStepComponent {
         private pbcatService: PbcatService) { }
 
     makeSelection(item: PbcatItem) {
-        if (!item.notImplemented) {
-            this.selectItem.emit(item);
-        }
+        this.selectItem.emit(item);
     }
 
     hasImages(): boolean {
-        return this.step.items[0].imageUrl !== undefined;
+        let imageUrls = this.step.items[0].imageUrls;
+        return imageUrls !== undefined && imageUrls.length > 0;
     }
 }
