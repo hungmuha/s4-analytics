@@ -3,39 +3,38 @@
     "title": "Crash Location",
     "description": "Where did the crash occur?",
     "infoAttrName": "crashLocationCd",
-    "enumName": "CrashLocationPed",
     "items": [
       {
         "title": "Intersection",
-        "enumValue": "Intersection",
+        "infoAttrValue": "Intersection",
         "description": "The crash occurred within the intersection proper or within the crosswalk area. Note: Driveways controlled by signals or signs should be coded as Intersections. Uncontrolled driveways should be coded as Non-Intersection Locations.",
         "imageUrl": "images/pbcat/ped_1_IntersectionRelated.png",
         "nextScreenName": "1A"
       },
       {
         "title": "Intersection-Related",
-        "enumValue": "IntersectionRelated",
+        "infoAttrValue": "IntersectionRelated",
         "description": "The crash occurred outside the intersection crosswalk area but within 15 m (50 ft) of the intersection.",
         "imageUrl": "images/pbcat/ped_1_Intersection.png",
         "nextScreenName": "1A"
       },
       {
         "title": "Non-Intersection Location",
-        "enumValue": "NonIntersectionLocation",
+        "infoAttrValue": "NonIntersectionLocation",
         "description": "The crash occured on or along the roadway and more than 15 m (50 ft) away from an intersection.",
         "imageUrl": "images/pbcat/ped_1_NonIntersection.png",
         "nextScreenName": "1B"
       },
       {
         "title": "Non-Roadway Location",
-        "enumValue": "NonRoadwayLocation",
+        "infoAttrValue": "NonRoadwayLocation",
         "description": "The crash occurred off the roadway, including parking lots, driveways, private roads, yards, alleys, and other open areas. Note: Crashes occurring on paved shoulders, sidewalks, or driveway crossings are considered to be \"roadway\" crashes and should not be placed in the Non-Roadway classification.",
         "imageUrl": "images/pbcat/ped_1_NonRoad.png",
         "nextScreenName": "1C"
       },
       {
         "title": "Unknown/Insufficient Information",
-        "enumValue": "UnknownOrInsufficientInformation",
+        "infoAttrValue": "UnknownOrInsufficientInformation",
         "description": "There is insufficient information to determine where the crash occurred.",
         "nextScreenName": "1A"
       }
@@ -45,46 +44,45 @@
     "title": "Unusual Circumstances",
     "description": "The crash was the result of which of the following unusual circumstances:",
     "infoAttrName": "unusualCircumstancesCd",
-    "enumName": "UnusualCircumstancesPed",
     "items": [
       {
         "title": "Assault with Vehicle",
-        "enumValue": "AssaultWithVehicle",
+        "infoAttrValue": "AssaultWithVehicle",
         "description": "The driver intentionally struck the pedestrian with the vehicle."
       },
       {
         "title": "Dispute-Related",
-        "enumValue": "DisputeRelated",
+        "infoAttrValue": "DisputeRelated",
         "description": "The pedestrian was struck by a vehicle during a domestic altercation or other dispute."
       },
       {
         "title": "Pedestrian on Vehicle",
-        "enumValue": "PedestrianOnVehicle",
+        "infoAttrValue": "PedestrianOnVehicle",
         "description": "The pedestrian was sitting on, leaning against, or clinging to a vehicle which began to move or was moving."
       },
       {
         "title": "Vehicle-Vehicle/Object",
-        "enumValue": "VehicleVehicleOrVehicleObject",
+        "infoAttrValue": "VehicleVehicleOrVehicleObject",
         "description": "The pedestrian was struck as a result of a prior vehicle-into-vehicle or vehicle-into-object crash."
       },
       {
         "title": "Motor Vehicle Loss of Control",
-        "enumValue": "VehicleLossOfControl",
+        "infoAttrValue": "VehicleLossOfControl",
         "description": "Vehicle lost control due to mechanical failure, surface conditions, driver error or impairment."
       },
       {
         "title": "Pedestrian Loss of Control",
-        "enumValue": "PedestrianLossOfControl",
+        "infoAttrValue": "PedestrianLossOfControl",
         "description": "The pedestrian stumbled, fell, or rolled into path of vehicle due to surface conditions, impairment or other mishap."
       },
       {
         "title": "Other Unusual Circumstances",
-        "enumValue": "OtherUnusualCircumstances",
+        "infoAttrValue": "OtherUnusualCircumstances",
         "description": "The crash involved other unusual circumstances, such as a pedestrian being struck by falling cargo or a loose wheel."
       },
       {
         "title": "None of the Above",
-        "enumValue": "NoneOfTheAbove",
+        "infoAttrValue": "NoneOfTheAbove",
         "description": "The crash did not involve any of the unusual circumstances described.",
         "nextScreenName": "3"
       }
@@ -94,41 +92,40 @@
     "title": "Pedestrian Position - Intersection Or Intersection-Related",
     "description": "What was the position of the pedestrian when struck?",
     "infoAttrName": "pedestrianPositionCd",
-    "enumName": "PedPosition",
     "items": [
       {
         "title": "Within intersection proper ",
-        "enumValue": "WithinIntersection",
+        "infoAttrValue": "WithinIntersection",
         "nextScreenName": "Q1"
       },
       {
         "title": "Within a crosswalk, marked or unmarked",
-        "enumValue": "WithinCrosswalk",
+        "infoAttrValue": "WithinCrosswalk",
         "nextScreenName": "Q1"
       },
       {
         "title": "On a roadway, in a travel lane",
-        "enumValue": "OnRoadwayInTravelLane",
+        "infoAttrValue": "OnRoadwayInTravelLane",
         "nextScreenName": "Q1"
       },
       {
         "title": "On a roadway, in a paved shoulder, bike lane, or parking lane",
-        "enumValue": "OnRoadwayPavedShoulderBikeLaneOrParkingLane",
+        "infoAttrValue": "OnRoadwayPavedShoulderBikeLaneOrParkingLane",
         "nextScreenName": "Q1"
       },
       {
         "title": "On a sidewalk, shared use path, or driveway crossing",
-        "enumValue": "OnSidewalkSharedUsePathOrDrivewayCrossing",
+        "infoAttrValue": "OnSidewalkSharedUsePathOrDrivewayCrossing",
         "nextScreenName": "Q1"
       },
       {
         "title": "Other road right-of-way (unpaved shoulder, etc.)",
-        "enumValue": "OtherRoadRightOfWay",
+        "infoAttrValue": "OtherRoadRightOfWay",
         "nextScreenName": "Q1"
       },
       {
         "title": "Other / unknown",
-        "enumValue": "OtherOrUnknown",
+        "infoAttrValue": "OtherOrUnknown",
         "nextScreenName": "Q1"
       }
     ]
@@ -137,36 +134,35 @@
     "title": "Pedestrian Position - Non-Intersection",
     "description": "What was the position of the pedestrian when struck?",
     "infoAttrName": "pedestrianPositionCd",
-    "enumName": "PedPosition",
     "items": [
       {
         "title": "Within a crosswalk, marked or unmarked",
-        "enumValue": "WithinCrosswalk",
+        "infoAttrValue": "WithinCrosswalk",
         "nextScreenName": "2"
       },
       {
         "title": "On a roadway, in a travel lane",
-        "enumValue": "OnRoadwayInTravelLane",
+        "infoAttrValue": "OnRoadwayInTravelLane",
         "nextScreenName": "2"
       },
       {
         "title": "On a roadway, in a paved shoulder, bike lane, or parking lane",
-        "enumValue": "OnRoadwayPavedShoulderBikeLaneOrParkingLane",
+        "infoAttrValue": "OnRoadwayPavedShoulderBikeLaneOrParkingLane",
         "nextScreenName": "2"
       },
       {
         "title": "On a sidewalk, multi-use path, or driveway crossing",
-        "enumValue": "OnSidewalkSharedUsePathOrDrivewayCrossing",
+        "infoAttrValue": "OnSidewalkSharedUsePathOrDrivewayCrossing",
         "nextScreenName": "2"
       },
       {
         "title": "Other road right-of-way (unpaved shoulder, etc.)",
-        "enumValue": "OtherRoadRightOfWay",
+        "infoAttrValue": "OtherRoadRightOfWay",
         "nextScreenName": "2"
       },
       {
         "title": "Other / unknown",
-        "enumValue": "OtherOrUnknown",
+        "infoAttrValue": "OtherOrUnknown",
         "nextScreenName": "2"
       }
     ]
@@ -175,21 +171,20 @@
     "title": "Pedestrian Position - Non-Roadway",
     "description": "What was the position of the pedestrian when struck?",
     "infoAttrName": "pedestrianPositionCd",
-    "enumName": "PedPosition",
     "items": [
       {
         "title": "On a driveway or alley",
-        "enumValue": "OnDrivewayOrAlley",
+        "infoAttrValue": "OnDrivewayOrAlley",
         "nextScreenName": "2"
       },
       {
         "title": "Other non-roadway areas  ( parking lot, non-right-of-way sidewalk or multi-use path, yard, open areas, etc.)",
-        "enumValue": "ParkingLotOrOtherNonRoadwayArea",
+        "infoAttrValue": "ParkingLotOrOtherNonRoadwayArea",
         "nextScreenName": "2"
       },
       {
         "title": "Unknown",
-        "enumValue": "OtherOrUnknown",
+        "infoAttrValue": "OtherOrUnknown",
         "nextScreenName": "2"
       }
     ]
@@ -198,11 +193,10 @@
     "title": "Unusual Vehicle Type or Action",
     "description": "The crash involved which of the following vehicle types or vehicle actions:",
     "infoAttrName": "unusualVehicleTypeOrActionCd",
-    "enumName": "UnusualVehicleTypeOrAction",
     "items": [
       {
         "title": "Backing Vehicle",
-        "enumValue": "BackingVehicle",
+        "infoAttrValue": "BackingVehicle",
         "description": "The pedestrian was struck by a vehicle that was backing with a driver at the controls.",
         "imageUrl": "images/pbcat/ped_3_BackingVehicle.png",
         "nextScreenName": {
@@ -214,31 +208,31 @@
       },
       {
         "title": "Driverless Vehicle",
-        "enumValue": "DriverlessVehicle",
+        "infoAttrValue": "DriverlessVehicle",
         "description": "The pedestrian was struck by a vehicle that was moving without a driver at the controls, or that was set in motion by the actions of a child.",
         "imageUrl": "images/pbcat/ped_3_DriverlessVehicle.png"
       },
       {
         "title": "Disabled Vehicle-Related",
-        "enumValue": "DisabledVehicleRelated",
+        "infoAttrValue": "DisabledVehicleRelated",
         "description": "The pedestrian was struck while near or next to a disabled vehicle (including a vehicle that had been in a crash) or while walking to or from a disabled vehicle. Note: Crashes involving pedestrians standing near tow trucks responding to the disabled vehicle are also included in this crash type.",
         "imageUrl": "images/pbcat/ped_3_DisabledVehicle.png"
       },
       {
         "title": "Emergency Vehicle-Related",
-        "enumValue": "EmergencyVehicleRelated",
+        "infoAttrValue": "EmergencyVehicleRelated",
         "description": "The pedestrian was struck while near an active emergency vehicle, by an active emergency vehicle, or by a vehicle being pursued.",
         "imageUrl": "images/pbcat/ped_3_EmergencyVehicle.png"
       },
       {
         "title": "Play Vehicle",
-        "enumValue": "PlayVehicle",
+        "infoAttrValue": "PlayVehicle",
         "description": "The pedestrian was struck while riding a play vehicle that was not a bicycle (e.g., skates, scooter, wagon, sled, etc.)",
         "imageUrl": "images/pbcat/ped_3_PlayVehicle.png"
       },
       {
         "title": "None of the Above",
-        "enumValue": "NoneOfTheAbove",
+        "infoAttrValue": "NoneOfTheAbove",
         "description": "The crash did not involve any of the unusual vehicle types or vehicle actions described.",
         "nextScreenName": {
           "Intersection": "4",
@@ -253,15 +247,14 @@
     "title": "Backing Vehicle",
     "description": "Where did the backing vehicle strike the pedestrian?",
     "infoAttrName": "backingVehicleCd",
-    "enumName": "BackingVehicleLocation",
     "items": [
       {
         "title": "At the intersection of a driveway and sidewalk/walkway",
-        "enumValue": "IntersectionOfDrivewayAndWalkway"
+        "infoAttrValue": "IntersectionOfDrivewayAndWalkway"
       },
       {
         "title": "In the roadway",
-        "enumValue": "InRoadway"
+        "infoAttrValue": "InRoadway"
       }
     ]
   },
@@ -269,19 +262,18 @@
     "title": "Backing Vehicle - Non-Roadway",
     "description": "Where did the backing vehicle strike the pedestrian?",
     "infoAttrName": "backingVehicleCd",
-    "enumName": "BackingVehicleLocation",
     "items": [
       {
         "title": "In a driveway or alley",
-        "enumValue": "InDriveway"
+        "infoAttrValue": "InDriveway"
       },
       {
         "title": "In a parking lot",
-        "enumValue": "InParkingLot"
+        "infoAttrValue": "InParkingLot"
       },
       {
         "title": "Other/Unknown",
-        "enumValue": "OtherOrUnknown"
+        "infoAttrValue": "OtherOrUnknown"
       }
     ]
   },
@@ -289,48 +281,47 @@
     "title": "Unusual Pedestrian Action",
     "description": "The pedestrian was struck while performing which of the following actions:",
     "infoAttrName": "unusualPedActionCd",
-    "enumName": "UnusualPedAction",
     "items": [
       {
         "title": "Playing, Working, or Lying in Roadway",
-        "enumValue": "PlayingWorkingLyingInRoadway",
+        "infoAttrValue": "PlayingWorkingLyingInRoadway",
         "description": "Playing, working, or lying in the roadway.",
         "imageUrl": "images/pbcat/ped_4_PlayingWorking.png",
         "nextScreenName": "4A"
       },
       {
         "title": "Entering/Exiting Parked Vehicle",
-        "enumValue": "EnteringExitingParkedVehicle",
+        "infoAttrValue": "EnteringExitingParkedVehicle",
         "description": "The pedestrian was in the process of getting into or out of a stopped or parked vehicle. Note: Does not include crashes involving pedestrian crossing or other movements that occurred after the pedestrian exited the vehicle.",
         "imageUrl": "images/pbcat/ped_4_ExitingParkedVehicle.png"
       },
       {
         "title": "Mailbox-Related",
-        "enumValue": "MailboxRelated",
+        "infoAttrValue": "MailboxRelated",
         "description": "Going to or from or standing at a mailbox or newspaper box.",
         "imageUrl": "images/pbcat/ped_4_MailboxRelated.png"
       },
       {
         "title": "Commercial Bus-Related",
-        "enumValue": "CommercialBusRelated",
+        "infoAttrValue": "CommercialBusRelated",
         "description": "Crossing in front of a commercial bus stopped at a marked bus stop.",
         "imageUrl": "images/pbcat/ped_4_CommercialBusRelated.png"
       },
       {
         "title": "School Bus-Related",
-        "enumValue": "SchoolBusRelated",
+        "infoAttrValue": "SchoolBusRelated",
         "description": "Going to or from or waiting at a school bus or school bus stop.",
         "imageUrl": "images/pbcat/ped_4_SchoolBusRelated.png"
       },
       {
         "title": "Ice-Cream/Vendor Truck-Related",
-        "enumValue": "IceCreamOrVendorTruckRelated",
+        "infoAttrValue": "IceCreamOrVendorTruckRelated",
         "description": "Going to or from an ice-cream truck or other type of vehicle vending from the curb or roadside.",
         "imageUrl": "images/pbcat/ped_4_VendorTruckRelated.png"
       },
       {
         "title": "None of the Above",
-        "enumValue": "NoneOfTheAbove",
+        "infoAttrValue": "NoneOfTheAbove",
         "description": "The pedestrian was not performing any of the unusual actions described.",
         "nextScreenName": {
           "Intersection": "6",
@@ -344,23 +335,22 @@
     "title": "Working/Playing/Lying in Roadway",
     "description": "Which of the following was the pedestrian doing when struck?",
     "infoAttrName": "pedestrianInRoadwayCd",
-    "enumName": "PedActionInRoadway",
     "items": [
       {
         "title": "Working in Roadway",
-        "enumValue": "Working",
+        "infoAttrValue": "Working",
         "description": "The pedestrian was working in the roadway when struck.",
         "imageUrl": "images/pbcat/ped_4A_WorkingInRoadway.png"
       },
       {
         "title": "Playing in Roadway",
-        "enumValue": "Playing",
+        "infoAttrValue": "Playing",
         "description": "The pedestrian was playing in the roadway when struck.",
         "imageUrl": "images/pbcat/ped_4A_PlayingInRoadway.png"
       },
       {
         "title": "Lying in Roadway",
-        "enumValue": "Lying",
+        "infoAttrValue": "Lying",
         "description": "The pedestrian was lying in the roadway when struck.",
         "imageUrl": "images/pbcat/ped_4A_LyingInRoadway.png"
       }
@@ -370,17 +360,16 @@
     "title": "Non-Roadway Crash",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "nonRoadwayLocationCd",
-    "enumName": "NonRoadwayLocation",
     "items": [
       {
         "title": "Parking Lot",
-        "enumValue": "ParkingLot",
+        "infoAttrValue": "ParkingLot",
         "description": "The motor vehicle struck a pedestrian in a parking lot.",
         "imageUrl": "images/pbcat/ped_5_ParkingLot.png"
       },
       {
         "title": "Other Circumstances",
-        "enumValue": "OtherOrUnknown",
+        "infoAttrValue": "OtherOrUnknown",
         "description": "There were other or unknown circumstances surrounding the crash."
       }
     ]
@@ -389,39 +378,38 @@
     "title": "Typical Pedestrian Action - Intersection",
     "description": "Which of the following best describes the pedestrian action at the time of the crash?",
     "infoAttrName": "typicalPedActionCd",
-    "enumName": "TypicalPedAction",
     "items": [
       {
         "title": "Waiting to Cross",
-        "enumValue": "WaitingToCross",
+        "infoAttrValue": "WaitingToCross",
         "description": "The pedestrian was standing near the curb or roadway edge and waiting to cross the roadway.",
         "imageUrl": "images/pbcat/ped_6_WaitingToCross.png",
         "nextScreenName": "6A"
       },
       {
         "title": "Crossing the Roadway or In the Roadway",
-        "enumValue": "CrossingOrInRoadway",
+        "infoAttrValue": "CrossingOrInRoadway",
         "description": "The pedestrian was crossing the roadway or in the roadway.",
         "imageUrl": "images/pbcat/ped_6_CrossingTheRoadway.png",
         "nextScreenName": "6B"
       },
       {
         "title": "Walking Along Roadway",
-        "enumValue": "WalkingAlongRoadway",
+        "infoAttrValue": "WalkingAlongRoadway",
         "description": "The pedestrian was walking along the roadway on the edge of a travel lane, on a paved or unpaved shoulder, grassy right-of-way or sidewalk.",
         "imageUrl": "images/pbcat/ped_6_WalkingAlongRoadway.png",
         "nextScreenName": "6D"
       },
       {
         "title": "Crossing a Driveway",
-        "enumValue": "CrossingDriveway",
+        "infoAttrValue": "CrossingDriveway",
         "description": "The pedestrian was crossing a driveway intersection on a sidewalk crossing, shared use path, shoulder, or edge of the travel lane.",
         "imageUrl": "images/pbcat/ped_6_CrossingDrivewayIntersection.png",
         "nextScreenName": "7E"
       },
       {
         "title": "Unknown",
-        "enumValue": "OtherOrUnknown",
+        "infoAttrValue": "OtherOrUnknown",
         "description": "The actions of the pedestrian at the time of the crash cannot be determined."
       }
     ]
@@ -430,19 +418,18 @@
     "title": "Waiting To Cross - Intersection",
     "description": "The motor vehicle was:",
     "infoAttrName": "waitingToCrossCd",
-    "enumName": "WaitingToCrossVehicleMovement",
     "items": [
       {
         "title": "Turning",
-        "enumValue": "Turning"
+        "infoAttrValue": "Turning"
       },
       {
         "title": "Not turning",
-        "enumValue": "NotTurning"
+        "infoAttrValue": "NotTurning"
       },
       {
         "title": "There is insufficient information to determine if the vehicle was turning at the time of the crash.",
-        "enumValue": "InsufficientInformation"
+        "infoAttrValue": "InsufficientInformation"
       }
     ]
   },
@@ -450,42 +437,41 @@
     "title": "Crossing/In Roadway - Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "crossingRoadwayCd",
-    "enumName": "CrossingRoadwayCircumstances",
     "items": [
       {
         "title": "Multiple Threat",
-        "enumValue": "MultipleThreat",
+        "infoAttrValue": "MultipleThreat",
         "description": "The pedestrian entered the traffic lane in front of stopped or slowing traffic and was struck by a vehicle traveling in the same direction as the stopped or slowing traffic.",
         "imageUrl": "images/pbcat/ped_6B_MultipleThreat.png"
       },
       {
         "title": "Turn/Merge",
-        "enumValue": "TurnMerge",
+        "infoAttrValue": "TurnMerge",
         "description": "The pedestrian was struck by a vehicle preparing to turn or merge, actually turning or merging, or just completing a turn or merge maneuver.",
         "imageUrl": "images/pbcat/ped_6B_TurnMerge.png",
         "nextScreenName": "6B2"
       },
       {
         "title": "Trapped",
-        "enumValue": "Trapped",
+        "infoAttrValue": "Trapped",
         "description": "The pedestrian was struck while crossing at a signalized intersection when the light changed and traffic started moving.",
         "imageUrl": "images/pbcat/ped_6B_Trapped.png"
       },
       {
         "title": "Dash",
-        "enumValue": "Dash",
+        "infoAttrValue": "Dash",
         "description": "The pedestrian ran into the roadway and was struck by a vehicle whose view of the pedestrian was not obstructed.",
         "imageUrl": "images/pbcat/ped_6B_Dash.png"
       },
       {
         "title": "Dart-Out",
-        "enumValue": "DartOut",
+        "infoAttrValue": "DartOut",
         "description": "The pedestrian walked or ran into the roadway and was struck by a motorist whose view of the pedestrian was blocked until an instant before impact.",
         "imageUrl": "images/pbcat/ped_6B_DartOut.png"
       },
       {
         "title": "None of The Above",
-        "enumValue": "NoneOfTheAbove",
+        "infoAttrValue": "NoneOfTheAbove",
         "description": "The crash does not conform to any of the situations described.",
         "nextScreenName": "6B1"
       }
@@ -495,23 +481,22 @@
     "title": "Failure To Yield - Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "failureToYieldCd",
-    "enumName": "FailureToYield",
     "items": [
       {
         "title": "Pedestrian Failed to Yield",
-        "enumValue": "Pedestrian",
+        "infoAttrValue": "Pedestrian",
         "description": "The pedestrian failed to yield to the motorist.",
         "imageUrl": "images/pbcat/ped_6B1_PedestrianFailedToYield.png"
       },
       {
         "title": "Motorist Failed to Yield",
-        "enumValue": "Motorist",
+        "infoAttrValue": "Motorist",
         "description": "The motorist failed to yield to the pedestrian.",
         "imageUrl": "images/pbcat/ped_6B1_MotoristFailedToYield.png"
       },
       {
         "title": "Other/Unknown",
-        "enumValue": "OtherOrCannotBeDetermined",
+        "infoAttrValue": "OtherOrCannotBeDetermined",
         "description": "The crash does not conform to either of the actions described or it cannot be determined who failed to yield.",
         "nextScreenName": "6C"
       }
@@ -521,23 +506,22 @@
     "title": "Pedestrian Failure To Yield - Intersection",
     "description": "Which of the following best describes the pedestrian action?",
     "infoAttrName": "pedestrianFailedToYieldCd",
-    "enumName": "PedFailedToYield",
     "items": [
       {
         "title": "The pedestrian walked into (i.e., struck) the vehicle.",
-        "enumValue": "WalkedIntoVehicle"
+        "infoAttrValue": "WalkedIntoVehicle"
       },
       {
         "title": "The pedestrian misjudged the gap available for crossing the roadway.",
-        "enumValue": "MisjudgedGapAvailableForCrossing"
+        "infoAttrValue": "MisjudgedGapAvailableForCrossing"
       },
       {
         "title": "The pedestrian stepped into the travel lane and was instantaneously struck.",
-        "enumValue": "SteppedIntoTravelLaneAndWasStruck"
+        "infoAttrValue": "SteppedIntoTravelLaneAndWasStruck"
       },
       {
         "title": "The crash does not conform to any of the circumstances described.",
-        "enumValue": "DoesNotConformToAnyOfTheCircumstancesDescribed"
+        "infoAttrValue": "DoesNotConformToAnyOfTheCircumstancesDescribed"
       }
     ]
   },
@@ -545,37 +529,36 @@
     "title": "Turn/Merge - Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "turnMergeCd",
-    "enumName": "TurnMergeCircumstances",
     "items": [
       {
         "title": "Right Turn - Parallel Paths",
-        "enumValue": "RightTurnParallelPaths",
+        "infoAttrValue": "RightTurnParallelPaths",
         "description": "The motorist was initially traveling on a parallel path with the pedestrian before making a right turn and striking the individual.",
         "imageUrl": "images/pbcat/ped_6B2_RightTurnParallelPaths.png",
         "nextScreenName": "6B2A"
       },
       {
         "title": "Right Turn - Perpendicular Paths",
-        "enumValue": "RightTurnPerpendicularPaths",
+        "infoAttrValue": "RightTurnPerpendicularPaths",
         "description": "The motorist was initially traveling on a crossing path with the pedestrian before making a right turn and striking the individual.",
         "imageUrl": "images/pbcat/ped_6B2_RightTurnPerpendicularPaths.png",
         "nextScreenName": "6B3A"
       },
       {
         "title": "Left Turn - Parallel Paths",
-        "enumValue": "LeftTurnParallelPaths",
+        "infoAttrValue": "LeftTurnParallelPaths",
         "description": "The motorist was initially traveling on a parallel path with the pedestrian before making a left turn and striking the individual.",
         "imageUrl": "images/pbcat/ped_6B2_LeftTurnParallelPaths.png"
       },
       {
         "title": "Left Turn - Perpendicular Paths",
-        "enumValue": "LeftTurnPerpendicularPaths",
+        "infoAttrValue": "LeftTurnPerpendicularPaths",
         "description": "The motorist was initially traveling on a crossing path with the pedestrian before making a left turn and striking the individual.",
         "imageUrl": "images/pbcat/ped_6B2_LeftTurnPerpendicularPaths.png"
       },
       {
         "title": "Turn/Merge - Other/Unknown",
-        "enumValue": "OtherCircumstances",
+        "infoAttrValue": "OtherCircumstances",
         "description": "Either the approach paths or turn direction are unknown or do not fit with any of the described circumstances."
       }
     ]
@@ -584,15 +567,14 @@
     "title": "Right Turn On Red - Parallel Paths",
     "description": "Was the motorist making a right turn on red?",
     "infoAttrName": "rightTurnOnRedCd",
-    "enumName": "TurningRightOnRed",
     "items": [
       {
         "title": "Yes",
-        "enumValue": "Yes"
+        "infoAttrValue": "Yes"
       },
       {
         "title": "No or Unknown",
-        "enumValue": "NoOrUnknown"
+        "infoAttrValue": "NoOrUnknown"
       }
     ]
   },
@@ -600,15 +582,14 @@
     "title": "Right Turn On Red - Perpendicular Paths",
     "description": "Was the motorist making a right turn on red?",
     "infoAttrName": "rightTurnOnRedCd",
-    "enumName": "TurningRightOnRed",
     "items": [
       {
         "title": "Yes",
-        "enumValue": "Yes"
+        "infoAttrValue": "Yes"
       },
       {
         "title": "No or Unknown",
-        "enumValue": "NoOrUnknown"
+        "infoAttrValue": "NoOrUnknown"
       }
     ]
   },
@@ -616,16 +597,15 @@
     "title": "Other Action - Intersection",
     "description": "Which of the following circumstances apply?",
     "infoAttrName": "otherPedActionCd",
-    "enumName": "OtherPedAction",
     "items": [
       {
         "title": "Standing in Roadway",
-        "enumValue": "StandingInRoadway",
+        "infoAttrValue": "StandingInRoadway",
         "description": "The pedestrian was standing in the roadway prior to the crash."
       },
       {
         "title": "Walking in Roadway",
-        "enumValue": "WalkingInRoadway",
+        "infoAttrValue": "WalkingInRoadway",
         "description": "The pedestrian was walking in the roadway prior to the crash."
       }
     ]
@@ -634,27 +614,26 @@
     "title": "Walking Along Roadway - Intersection",
     "description": "The pedestrian was:",
     "infoAttrName": "walkingAlongRoadwayCd",
-    "enumName": "WalkingAlongRoadwayCircumstances",
     "items": [
       {
         "title": "Walking/running with traffic and was struck from behind.",
-        "enumValue": "WithTrafficStruckFromBehind"
+        "infoAttrValue": "WithTrafficStruckFromBehind"
       },
       {
         "title": "Walking/running with traffic and was struck from the front.",
-        "enumValue": "WithTrafficStruckFromFront"
+        "infoAttrValue": "WithTrafficStruckFromFront"
       },
       {
         "title": "Walking/running against traffic and was struck from behind.",
-        "enumValue": "AgainstTrafficStruckFromBehind"
+        "infoAttrValue": "AgainstTrafficStruckFromBehind"
       },
       {
         "title": "Walking/running against traffic and was struck from the front.",
-        "enumValue": "AgainstTrafficStruckFromFront"
+        "infoAttrValue": "AgainstTrafficStruckFromFront"
       },
       {
         "title": "There is insufficient information to determine either the position or direction of the pedestrian at the time of the crash.",
-        "enumValue": "InsufficientInformation"
+        "infoAttrValue": "InsufficientInformation"
       }
     ]
   },
@@ -662,45 +641,44 @@
     "title": "Typical Pedestrian Action - Non-Intersection",
     "description": "Which of the following best describes the pedestrian action at the time of the crash?",
     "infoAttrName": "typicalPedActionCd",
-    "enumName": "TypicalPedAction",
     "items": [
       {
         "title": "Walking Along Roadway",
-        "enumValue": "WalkingAlongRoadway",
+        "infoAttrValue": "WalkingAlongRoadway",
         "description": "The pedestrian was walking along the roadway on the edge of a travel lane, on a paved or unpaved shoulder, grassy right-of-way, or sidewalk.",
         "imageUrl": "images/pbcat/ped_7_WalkingAlongRoadway.png",
         "nextScreenName": "7A"
       },
       {
         "title": "Waiting to Cross",
-        "enumValue": "WaitingToCross",
+        "infoAttrValue": "WaitingToCross",
         "description": "The pedestrian was standing near the curb or roadway edge and waiting to cross the roadway.",
         "imageUrl": "images/pbcat/ped_7_WaitingToCross.png",
         "nextScreenName": "7B"
       },
       {
         "title": "Crossing an Expressway",
-        "enumValue": "CrossingExpressway",
+        "infoAttrValue": "CrossingExpressway",
         "description": "The pedestrian was crossing a limited access expressway or expressway ramp.",
         "imageUrl": "images/pbcat/ped_7_CrossingAnExpressway.png"
       },
       {
         "title": "Crossing the Roadway or In the Roadway",
-        "enumValue": "CrossingOrInRoadway",
+        "infoAttrValue": "CrossingOrInRoadway",
         "description": "The pedestrian was crossing or in a roadway that is not an expressway.",
         "imageUrl": "images/pbcat/ped_7_CrossingTheRoadway.png",
         "nextScreenName": "7C"
       },
       {
         "title": "Crossing a Driveway ",
-        "enumValue": "CrossingDriveway",
+        "infoAttrValue": "CrossingDriveway",
         "description": "The pedestrian was crossing a driveway on a sidewalk crossing, shared use path, shoulder, or edge of the travel lane.",
         "imageUrl": "images/pbcat/ped_7_CrossingDrivewayIntersect.png",
         "nextScreenName": "7E"
       },
       {
         "title": "Unknown",
-        "enumValue": "OtherOrUnknown",
+        "infoAttrValue": "OtherOrUnknown",
         "description": "The actions of the pedestrian at the time of the crash cannot be determined."
       }
     ]
@@ -709,27 +687,26 @@
     "title": "Walking Along Roadway - Non-Intersection",
     "description": "The pedestrian was:",
     "infoAttrName": "walkingAlongRoadwayCd",
-    "enumName": "WalkingAlongRoadwayCircumstances",
     "items": [
       {
         "title": "Walking/running with traffic and was struck from behind.",
-        "enumValue": "WithTrafficStruckFromBehind"
+        "infoAttrValue": "WithTrafficStruckFromBehind"
       },
       {
         "title": "Walking/running with traffic and was struck from the front.",
-        "enumValue": "WithTrafficStruckFromFront"
+        "infoAttrValue": "WithTrafficStruckFromFront"
       },
       {
         "title": "Walking/running against traffic and was struck from behind.",
-        "enumValue": "AgainstTrafficStruckFromBehind"
+        "infoAttrValue": "AgainstTrafficStruckFromBehind"
       },
       {
         "title": "Walking/running against traffic and was struck from the front.",
-        "enumValue": "AgainstTrafficStruckFromFront"
+        "infoAttrValue": "AgainstTrafficStruckFromFront"
       },
       {
         "title": "There is insufficient information to determine either the position or direction of the pedestrian at the time of the crash.",
-        "enumValue": "InsufficientInformation"
+        "infoAttrValue": "InsufficientInformation"
       }
     ]
   },
@@ -737,19 +714,18 @@
     "title": "Waiting To Cross - Non-Intersection",
     "description": "The motor vehicle was:",
     "infoAttrName": "waitingToCrossCd",
-    "enumName": "WaitingToCrossVehicleMovement",
     "items": [
       {
         "title": "Turning",
-        "enumValue": "Turning"
+        "infoAttrValue": "Turning"
       },
       {
         "title": "Not turning",
-        "enumValue": "NotTurning"
+        "infoAttrValue": "NotTurning"
       },
       {
         "title": "There is insufficient information to determine if the vehicle was turning at the time of the crash.",
-        "enumValue": "InsufficientInformation"
+        "infoAttrValue": "InsufficientInformation"
       }
     ]
   },
@@ -757,42 +733,41 @@
     "title": "Crossing/In Roadway - Non-Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "crossingRoadwayCd",
-    "enumName": "CrossingRoadwayCircumstances",
     "items": [
       {
         "title": "Multiple Threat",
-        "enumValue": "MultipleThreat",
+        "infoAttrValue": "MultipleThreat",
         "description": "The pedestrian entered the traffic lane in front of stopped or slowing traffic and was struck by a vehicle traveling in the same direction as the stopped or slowing traffic.",
         "imageUrl": "images/pbcat/ped_7C_MultipleThreat.png"
       },
       {
         "title": "Turn/Merge",
-        "enumValue": "TurnMerge",
+        "infoAttrValue": "TurnMerge",
         "description": "The pedestrian was struck by a vehicle preparing to turn or merge, actually turning or merging, or just completing a turn or merge maneuver.",
         "imageUrl": "images/pbcat/ped_7C_TurnMerge.png",
         "nextScreenName": "7C2"
       },
       {
         "title": "Trapped",
-        "enumValue": "Trapped",
+        "infoAttrValue": "Trapped",
         "description": "The pedestrian was struck while crossing at a signalized midblock crossing when the light changed and traffic started moving.",
         "imageUrl": "images/pbcat/ped_7C_Trapped.png"
       },
       {
         "title": "Dash",
-        "enumValue": "Dash",
+        "infoAttrValue": "Dash",
         "description": "The pedestrian ran into the roadway and was struck by a vehicle whose view of the pedestrian was not obstructed.",
         "imageUrl": "images/pbcat/ped_7C_Dash.png"
       },
       {
         "title": "Dart-Out",
-        "enumValue": "DartOut",
+        "infoAttrValue": "DartOut",
         "description": "The pedestrian walked or ran into the roadway and was struck by a motorist whose view of the pedestrian was blocked until an instant before impact.",
         "imageUrl": "images/pbcat/ped_7C_DartOut.png"
       },
       {
         "title": "None of The Above",
-        "enumValue": "NoneOfTheAbove",
+        "infoAttrValue": "NoneOfTheAbove",
         "description": "The crash does not conform to any of the situations described.",
         "nextScreenName": "7C1"
       }
@@ -802,23 +777,22 @@
     "title": "Failure To Yield - Non-Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "failureToYieldCd",
-    "enumName": "FailureToYield",
     "items": [
       {
         "title": "Pedestrian Failed to Yield",
-        "enumValue": "Pedestrian",
+        "infoAttrValue": "Pedestrian",
         "description": "The pedestrian failed to yield to the motorist.",
         "imageUrl": "images/pbcat/ped_7C1_PedestrianFailedToYield.png"
       },
       {
         "title": "Motorist Failed to Yield",
-        "enumValue": "Motorist",
+        "infoAttrValue": "Motorist",
         "description": "The motorist failed to yield to the pedestrian.",
         "imageUrl": "images/pbcat/ped_7C1_MotoristFailedToYield.png"
       },
       {
         "title": "Other",
-        "enumValue": "OtherOrCannotBeDetermined",
+        "infoAttrValue": "OtherOrCannotBeDetermined",
         "description": "The crash does not conform to either of the actions described or it cannot be determined who failed to yield.",
         "nextScreenName": "7D"
       }
@@ -828,23 +802,22 @@
     "title": "Pedestrian Failure To Yield - Non-Intersection",
     "description": "Which of the following best describes the pedestrian action?",
     "infoAttrName": "pedestrianFailedToYieldCd",
-    "enumName": "PedFailedToYield",
     "items": [
       {
         "title": "The pedestrian walked into (i.e., struck) the vehicle.",
-        "enumValue": "WalkedIntoVehicle"
+        "infoAttrValue": "WalkedIntoVehicle"
       },
       {
         "title": "The pedestrian misjudged the gap available for crossing the roadway.",
-        "enumValue": "MisjudgedGapAvailableForCrossing"
+        "infoAttrValue": "MisjudgedGapAvailableForCrossing"
       },
       {
         "title": "The pedestrian stepped into the travel lane and was instantaneously struck.",
-        "enumValue": "SteppedIntoTravelLaneAndWasStruck"
+        "infoAttrValue": "SteppedIntoTravelLaneAndWasStruck"
       },
       {
         "title": "The crash does not conform to any of the circumstances described.",
-        "enumValue": "DoesNotConformToAnyOfTheCircumstancesDescribed"
+        "infoAttrValue": "DoesNotConformToAnyOfTheCircumstancesDescribed"
       }
     ]
   },
@@ -852,35 +825,34 @@
     "title": "Turn/Merge - Non-Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "turnMergeCd",
-    "enumName": "TurnMergeCircumstances",
     "items": [
       {
         "title": "Right Turn - Parallel Paths",
-        "enumValue": "RightTurnParallelPaths",
+        "infoAttrValue": "RightTurnParallelPaths",
         "description": "The motorist was initially travelling on a parallel path with the pedestrian before making a right turn and striking the individual.",
         "imageUrl": "images/pbcat/ped_7C2_RightTurnParallelPaths.png"
       },
       {
         "title": "Right Turn - Perpendicular Paths",
-        "enumValue": "RightTurnPerpendicularPaths",
+        "infoAttrValue": "RightTurnPerpendicularPaths",
         "description": "The motorist was initially travelling on a crossing path with the pedestrian before making a right turn and striking the individual.",
         "imageUrl": "images/pbcat/ped_7C2_RightTurnPerpendicularPaths.png"
       },
       {
         "title": "Left Turn - Parallel Paths",
-        "enumValue": "LeftTurnParallelPaths",
+        "infoAttrValue": "LeftTurnParallelPaths",
         "description": "The motorist was initially traveling on a parallel path with the pedestrian before making a left turn and striking the individual.",
         "imageUrl": "images/pbcat/ped_7C2_LeftTurnParallelPaths.png"
       },
       {
         "title": "Left Turn - Perpendicular Paths",
-        "enumValue": "LeftTurnPerpendicularPaths",
+        "infoAttrValue": "LeftTurnPerpendicularPaths",
         "description": "The motorist was initially traveling on a crossing path with the pedestrian before making a left turn and striking the individual.",
         "imageUrl": "images/pbcat/ped_7C2_LeftTurnPerpendicularPaths.png"
       },
       {
         "title": "Turn/Merge - Other/Unknown",
-        "enumValue": "OtherCircumstances",
+        "infoAttrValue": "OtherCircumstances",
         "description": "Either the approach paths or motorist turn direction are unknown or do not fit with any of the described circumstances."
       }
     ]
@@ -889,21 +861,20 @@
     "title": "Other Action - Non-Intersection",
     "description": "Which of the following circumstances apply?",
     "infoAttrName": "otherPedActionCd",
-    "enumName": "OtherPedAction",
     "items": [
       {
         "title": "Standing in Roadway",
-        "enumValue": "StandingInRoadway",
+        "infoAttrValue": "StandingInRoadway",
         "description": "The pedestrian was standing in the roadway prior to the crash."
       },
       {
         "title": "Walking in Roadway",
-        "enumValue": "WalkingInRoadway",
+        "infoAttrValue": "WalkingInRoadway",
         "description": "The pedestrian was walking in the roadway prior to the crash."
       },
       {
         "title": "Other - Non-Intersection",
-        "enumValue": "Other",
+        "infoAttrValue": "Other",
         "description": "The actions of the pedestrian prior to the crash cannot be determined or it cannot be determined who failed to yield."
       }
     ]
@@ -912,23 +883,22 @@
     "title": "Crossing A Driveway Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "crossingDrivewayCd",
-    "enumName": "CrossingDrivewayOrAlleyCircumstances",
     "items": [
       {
         "title": "Entering a Driveway or Alley",
-        "enumValue": "EnteringDrivewayOrAlley",
+        "infoAttrValue": "EnteringDrivewayOrAlley",
         "description": "The motor vehicle was turning into a driveway or alley and struck the pedestrian on a sidewalk/walkway or driveway crossing.",
         "imageUrl": "images/pbcat/ped_7E_EnteringDrivewayAlley.png"
       },
       {
         "title": "Exiting a Driveway or Alley",
-        "enumValue": "ExitingDrivewayOrAlley",
+        "infoAttrValue": "ExitingDrivewayOrAlley",
         "description": "The motor vehicle was exiting a driveway or alley and struck the pedestrian on a sidewalk/walkway or driveway crossing.",
         "imageUrl": "images/pbcat/ped_7E_ExitingDrivewayAlley.png"
       },
       {
         "title": "Other/Unknown Circumstances",
-        "enumValue": "OtherOrUnknownCircumstances",
+        "infoAttrValue": "OtherOrUnknownCircumstances",
         "description": "The pedestrian was on a driveway intersection when struck but there were other or unknown circumstances surrounding the crash from those described ."
       }
     ]
@@ -937,46 +907,45 @@
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
-    "enumName": "PedMovementScenario",
     "items": [
       {
         "title": "11a",
-        "enumValue": "PedInCrosswalkApproachSameDirection",
+        "infoAttrValue": "PedInCrosswalkApproachSameDirection",
         "description": "Pedestrian within crosswalk area, approached from same direction as motorist",
         "imageUrl": "images/pbcat/ped_LF_11a.png",
         "nextScreenName": "2"
       },
       {
         "title": "11b",
-        "enumValue": "PedInCrosswalkApproachOppositeDirection",
+        "infoAttrValue": "PedInCrosswalkApproachOppositeDirection",
         "description": "Pedestrian within crosswalk area, approached from opposite direction as motorist",
         "imageUrl": "images/pbcat/ped_LF_11b.png",
         "nextScreenName": "2"
       },
       {
         "title": "11c",
-        "enumValue": "PedInCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedInCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian within crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_LF_11c.png",
         "nextScreenName": "2"
       },
       {
         "title": "12a",
-        "enumValue": "PedOutsideCrosswalkApproachSameDirection",
+        "infoAttrValue": "PedOutsideCrosswalkApproachSameDirection",
         "description": "Pedestrian outside crosswalk area, approached from same direction as motorist",
         "imageUrl": "images/pbcat/ped_LF_12a.png",
         "nextScreenName": "2"
       },
       {
         "title": "12b",
-        "enumValue": "PedOutsideCrosswalkApproachOppositeDirection",
+        "infoAttrValue": "PedOutsideCrosswalkApproachOppositeDirection",
         "description": "Pedestrian outside crosswalk area, approached from opposite direction as motorist",
         "imageUrl": "images/pbcat/ped_LF_12b.png",
         "nextScreenName": "2"
       },
       {
         "title": "12c",
-        "enumValue": "PedOutsideCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedOutsideCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian outside crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_LF_12c.png",
         "nextScreenName": "2"
@@ -987,46 +956,45 @@
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
-    "enumName": "PedMovementScenario",
     "items": [
       {
         "title": "9a",
-        "enumValue": "PedInCrosswalkApproachFromMotoristLeft",
+        "infoAttrValue": "PedInCrosswalkApproachFromMotoristLeft",
         "description": "Pedestrian within crosswalk area, traveled from motorist's left",
         "imageUrl": "images/pbcat/ped_LN_9a.png",
         "nextScreenName": "2"
       },
       {
         "title": "9b",
-        "enumValue": "PedInCrosswalkApproachFromMotoristRight",
+        "infoAttrValue": "PedInCrosswalkApproachFromMotoristRight",
         "description": "Pedestrian within crosswalk area, traveled from motorist's right",
         "imageUrl": "images/pbcat/ped_LN_9b.png",
         "nextScreenName": "2"
       },
       {
         "title": "9c",
-        "enumValue": "PedInCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedInCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian within crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_LN_9c.png",
         "nextScreenName": "2"
       },
       {
         "title": "10a",
-        "enumValue": "PedOutsideCrosswalkApproachFromMotoristLeft",
+        "infoAttrValue": "PedOutsideCrosswalkApproachFromMotoristLeft",
         "description": "Pedestrian outside crosswalk area, traveled from motorist's left",
         "imageUrl": "images/pbcat/ped_LN_10a.png",
         "nextScreenName": "2"
       },
       {
         "title": "10b",
-        "enumValue": "PedOutsideCrosswalkApproachFromMotoristRight",
+        "infoAttrValue": "PedOutsideCrosswalkApproachFromMotoristRight",
         "description": "Pedestrian outside crosswalk area, traveled from motorist's right",
         "imageUrl": "images/pbcat/ped_LN_10b.png",
         "nextScreenName": "2"
       },
       {
         "title": "10c",
-        "enumValue": "PedOutsideCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedOutsideCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian outside crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_LN_10c.png",
         "nextScreenName": "2"
@@ -1037,35 +1005,34 @@
     "title": "Motorist Direction of Travel",
     "description": "Select the motorist's initial direction of travel (before any turns).",
     "infoAttrName": "motoristDirTravelCd",
-    "enumName": "DirectionOfTravel",
     "items": [
       {
         "title": "Northbound",
-        "enumValue": "North",
+        "infoAttrValue": "North",
         "imageUrl": "images/pbcat/ped_Q1_NorthBound.png",
         "nextScreenName": "Q2"
       },
       {
         "title": "Eastbound",
-        "enumValue": "South",
+        "infoAttrValue": "South",
         "imageUrl": "images/pbcat/ped_Q1_EastBound.png",
         "nextScreenName": "Q2"
       },
       {
         "title": "Southbound",
-        "enumValue": "East",
+        "infoAttrValue": "East",
         "imageUrl": "images/pbcat/ped_Q1_SouthBound.png",
         "nextScreenName": "Q2"
       },
       {
         "title": "Westbound",
-        "enumValue": "West",
+        "infoAttrValue": "West",
         "imageUrl": "images/pbcat/ped_Q1_WestBound.png",
         "nextScreenName": "Q2"
       },
       {
         "title": "Unknown",
-        "enumValue": "Unknown",
+        "infoAttrValue": "Unknown",
         "nextScreenName": "2"
       }
     ]
@@ -1074,29 +1041,28 @@
     "title": "Motorist Maneuver",
     "description": "Select the motorist's maneuver.",
     "infoAttrName": "motoristManeuverCd",
-    "enumName": "MotoristManeuver",
     "items": [
       {
         "title": "Left turn",
-        "enumValue": "LeftTurn",
+        "infoAttrValue": "LeftTurn",
         "imageUrl": "images/pbcat/ped_Q2_3.png",
         "nextScreenName": "Q3B"
       },
       {
         "title": "Straight through",
-        "enumValue": "StraightThrough",
+        "infoAttrValue": "StraightThrough",
         "imageUrl": "images/pbcat/ped_Q2_1.png",
         "nextScreenName": "Q3A"
       },
       {
         "title": "Right turn",
-        "enumValue": "RightTurn",
+        "infoAttrValue": "RightTurn",
         "imageUrl": "images/pbcat/ped_Q2_2.png",
         "nextScreenName": "Q3C"
       },
       {
         "title": "Unknown",
-        "enumValue": "Unknown",
+        "infoAttrValue": "Unknown",
         "nextScreenName": "2"
       }
     ]
@@ -1105,23 +1071,22 @@
     "title": "Leg of Intersection",
     "description": "Select the leg of the intersection where the crash occurred.",
     "infoAttrName": "legOfIntrsectCd",
-    "enumName": "LegOfIntersection",
     "items": [
       {
         "title": "Nearside",
-        "enumValue": "Nearside",
+        "infoAttrValue": "Nearside",
         "imageUrl": "images/pbcat/ped_Q3A_NearSide.png",
         "nextScreenName": "SN"
       },
       {
         "title": "Farside",
-        "enumValue": "Farside",
+        "infoAttrValue": "Farside",
         "imageUrl": "images/pbcat/ped_Q3A_FarSide.png",
         "nextScreenName": "SF"
       },
       {
         "title": "Unknown",
-        "enumValue": "Unknown",
+        "infoAttrValue": "Unknown",
         "nextScreenName": "2"
       }
     ]
@@ -1130,23 +1095,22 @@
     "title": "Leg of Intersection",
     "description": "Select the leg of the intersection where the crash occurred.",
     "infoAttrName": "legOfIntrsectCd",
-    "enumName": "LegOfIntersection",
     "items": [
       {
         "title": "Nearside",
-        "enumValue": "Nearside",
+        "infoAttrValue": "Nearside",
         "imageUrl": "images/pbcat/ped_Q3B_NearSide.png",
         "nextScreenName": "LN"
       },
       {
         "title": "Farside",
-        "enumValue": "Farside",
+        "infoAttrValue": "Farside",
         "imageUrl": "images/pbcat/ped_Q3B_FarSide.png",
         "nextScreenName": "LF"
       },
       {
         "title": "Unknown",
-        "enumValue": "Unknown",
+        "infoAttrValue": "Unknown",
         "nextScreenName": "2"
       }
     ]
@@ -1155,23 +1119,22 @@
     "title": "Leg of Intersection",
     "description": "Select the leg of the intersection where the crash occurred.",
     "infoAttrName": "legOfIntrsectCd",
-    "enumName": "LegOfIntersection",
     "items": [
       {
         "title": "Nearside",
-        "enumValue": "Nearside",
+        "infoAttrValue": "Nearside",
         "imageUrl": "images/pbcat/ped_Q3C_NearSide.png",
         "nextScreenName": "RN"
       },
       {
         "title": "Farside",
-        "enumValue": "Farside",
+        "infoAttrValue": "Farside",
         "imageUrl": "images/pbcat/ped_Q3C_FarSide.png",
         "nextScreenName": "RF"
       },
       {
         "title": "Unknown",
-        "enumValue": "Unknown",
+        "infoAttrValue": "Unknown",
         "nextScreenName": "2"
       }
     ]
@@ -1180,46 +1143,45 @@
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
-    "enumName": "PedMovementScenario",
     "items": [
       {
         "title": "7a",
-        "enumValue": "PedInCrosswalkApproachSameDirection",
+        "infoAttrValue": "PedInCrosswalkApproachSameDirection",
         "description": "Pedestrian within crosswalk area, approached from same direction as motorist",
         "imageUrl": "images/pbcat/ped_RF_7a.png",
         "nextScreenName": "2"
       },
       {
         "title": "7b",
-        "enumValue": "PedInCrosswalkApproachOppositeDirection",
+        "infoAttrValue": "PedInCrosswalkApproachOppositeDirection",
         "description": "Pedestrian within crosswalk area, approached from opposite direction as motorist",
         "imageUrl": "images/pbcat/ped_RF_7b.png",
         "nextScreenName": "2"
       },
       {
         "title": "7c",
-        "enumValue": "PedInCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedInCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian within crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_RF_7c.png",
         "nextScreenName": "2"
       },
       {
         "title": "8a",
-        "enumValue": "PedOutsideCrosswalkApproachSameDirection",
+        "infoAttrValue": "PedOutsideCrosswalkApproachSameDirection",
         "description": "Pedestrian outside crosswalk area, approached from same direction as motorist",
         "imageUrl": "images/pbcat/ped_RF_8a.png",
         "nextScreenName": "2"
       },
       {
         "title": "8b",
-        "enumValue": "PedOutsideCrosswalkApproachOppositeDirection",
+        "infoAttrValue": "PedOutsideCrosswalkApproachOppositeDirection",
         "description": "Pedestrian outside crosswalk area, approached from opposite direction as motorist",
         "imageUrl": "images/pbcat/ped_RF_8b.png",
         "nextScreenName": "2"
       },
       {
         "title": "8c",
-        "enumValue": "PedOutsideCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedOutsideCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian outside crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_RF_8c.png",
         "nextScreenName": "2"
@@ -1230,46 +1192,45 @@
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
-    "enumName": "PedMovementScenario",
     "items": [
       {
         "title": "5a",
-        "enumValue": "PedInCrosswalkApproachFromMotoristLeft",
+        "infoAttrValue": "PedInCrosswalkApproachFromMotoristLeft",
         "description": "Pedestrian within crosswalk area, traveled from motorist's left",
         "imageUrl": "images/pbcat/ped_RN_5a.png",
         "nextScreenName": "2"
       },
       {
         "title": "5b",
-        "enumValue": "PedInCrosswalkApproachFromMotoristRight",
+        "infoAttrValue": "PedInCrosswalkApproachFromMotoristRight",
         "description": "Pedestrian within crosswalk area, traveled from motorist's right",
         "imageUrl": "images/pbcat/ped_RN_5b.png",
         "nextScreenName": "2"
       },
       {
         "title": "5c",
-        "enumValue": "PedInCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedInCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian within crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_RN_5c.png",
         "nextScreenName": "2"
       },
       {
         "title": "6a",
-        "enumValue": "PedOutsideCrosswalkApproachFromMotoristLeft",
+        "infoAttrValue": "PedOutsideCrosswalkApproachFromMotoristLeft",
         "description": "Pedestrian outside crosswalk area, traveled from motorist's left",
         "imageUrl": "images/pbcat/ped_RN_6a.png",
         "nextScreenName": "2"
       },
       {
         "title": "6b",
-        "enumValue": "PedOutsideCrosswalkApproachFromMotoristRight",
+        "infoAttrValue": "PedOutsideCrosswalkApproachFromMotoristRight",
         "description": "Pedestrian outside crosswalk area, traveled from motorist's right",
         "imageUrl": "images/pbcat/ped_RN_6b.png",
         "nextScreenName": "2"
       },
       {
         "title": "6c",
-        "enumValue": "PedOutsideCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedOutsideCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian outside crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_RN_6c.png",
         "nextScreenName": "2"
@@ -1280,46 +1241,45 @@
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
-    "enumName": "PedMovementScenario",
     "items": [
       {
         "title": "3a",
-        "enumValue": "PedInCrosswalkApproachFromMotoristLeft",
+        "infoAttrValue": "PedInCrosswalkApproachFromMotoristLeft",
         "description": "Pedestrian within crosswalk area, traveled from motorist's left",
         "imageUrl": "images/pbcat/ped_SF_3a.png",
         "nextScreenName": "2"
       },
       {
         "title": "3b",
-        "enumValue": "PedInCrosswalkApproachFromMotoristRight",
+        "infoAttrValue": "PedInCrosswalkApproachFromMotoristRight",
         "description": "Pedestrian within crosswalk area, traveled from motorist's right",
         "imageUrl": "images/pbcat/ped_SF_3b.png",
         "nextScreenName": "2"
       },
       {
         "title": "3c",
-        "enumValue": "PedInCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedInCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian within crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_SF_3c.png",
         "nextScreenName": "2"
       },
       {
         "title": "4a",
-        "enumValue": "PedOutsideCrosswalkApproachFromMotoristLeft",
+        "infoAttrValue": "PedOutsideCrosswalkApproachFromMotoristLeft",
         "description": "Pedestrian outside crosswalk area, traveled from motorist's left",
         "imageUrl": "images/pbcat/ped_SF_4a.png",
         "nextScreenName": "2"
       },
       {
         "title": "4b",
-        "enumValue": "PedOutsideCrosswalkApproachFromMotoristRight",
+        "infoAttrValue": "PedOutsideCrosswalkApproachFromMotoristRight",
         "description": "Pedestrian outside crosswalk area, traveled from motorist's right",
         "imageUrl": "images/pbcat/ped_SF_4b.png",
         "nextScreenName": "2"
       },
       {
         "title": "4c",
-        "enumValue": "PedOutsideCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedOutsideCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian outside crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_SF_4c.png",
         "nextScreenName": "2"
@@ -1330,46 +1290,45 @@
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
-    "enumName": "PedMovementScenario",
     "items": [
       {
         "title": "1a",
-        "enumValue": "PedInCrosswalkApproachFromMotoristLeft",
+        "infoAttrValue": "PedInCrosswalkApproachFromMotoristLeft",
         "description": "Pedestrian within crosswalk area, traveled from motorist's left",
         "imageUrl": "images/pbcat/ped_SN_1a.png",
         "nextScreenName": "2"
       },
       {
         "title": "1b",
-        "enumValue": "PedInCrosswalkApproachFromMotoristRight",
+        "infoAttrValue": "PedInCrosswalkApproachFromMotoristRight",
         "description": "Pedestrian within crosswalk area, traveled from motorist's right",
         "imageUrl": "images/pbcat/ped_SN_1b.png",
         "nextScreenName": "2"
       },
       {
         "title": "1c",
-        "enumValue": "PedInCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedInCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian within crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_SN_1c.png",
         "nextScreenName": "2"
       },
       {
         "title": "2a",
-        "enumValue": "PedOutsideCrosswalkApproachFromMotoristLeft",
+        "infoAttrValue": "PedOutsideCrosswalkApproachFromMotoristLeft",
         "description": "Pedestrian outside crosswalk area, traveled from motorist's left",
         "imageUrl": "images/pbcat/ped_SN_2a.png",
         "nextScreenName": "2"
       },
       {
         "title": "2b",
-        "enumValue": "PedOutsideCrosswalkApproachFromMotoristRight",
+        "infoAttrValue": "PedOutsideCrosswalkApproachFromMotoristRight",
         "description": "Pedestrian outside crosswalk area, traveled from motorist's right",
         "imageUrl": "images/pbcat/ped_SN_2b.png",
         "nextScreenName": "2"
       },
       {
         "title": "2c",
-        "enumValue": "PedOutsideCrosswalkApproachDirectionUnknown",
+        "infoAttrValue": "PedOutsideCrosswalkApproachDirectionUnknown",
         "description": "Pedestrian outside crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_SN_2c.png",
         "nextScreenName": "2"

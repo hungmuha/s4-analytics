@@ -7,8 +7,7 @@ export class PbcatStep {
     constructor(
         public title: string,
         public description: string,
-        public infoAttrName: string,
-        public enumName: string) { }
+        public infoAttrName: string) { }
 
     get selectedItem(): PbcatItem {
         return this._selectedItem;

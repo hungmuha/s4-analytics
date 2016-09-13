@@ -2,7 +2,7 @@
 import { PbcatStep } from './pbcat-step';
 import { PbcatItem } from './pbcat-item';
 import { PbcatCrashType } from './pbcat-crash-type';
-import { PbcatConfig, PbcatScreenConfig, PbcatItemConfig } from './pbcat-config.d.ts';
+import { PbcatConfig, PbcatScreenConfig, PbcatItemConfig } from './pbcat-config.d';
 
 export enum FlowType {
     Bicyclist,
@@ -12,19 +12,21 @@ export enum FlowType {
 export class PbcatFlow {
     crashType: PbcatCrashType;
     isSaved: boolean = false;
+    typingExists: boolean = false;
     private _currentStepIndex: number = -1;
     private _stepHistory: PbcatStep[] = [];
     private _isFlowComplete: boolean = false;
     private _hasValidState: boolean = true;
-    private _pbcatInfo: PbcatInfo;
 
     constructor(
         public flowType: FlowType,
         public hsmvReportNumber: number,
-        public typingExists: boolean,
         pbcatInfo: PbcatInfo,
         private config: PbcatConfig) {
-        this._pbcatInfo = pbcatInfo;
+        if (pbcatInfo !== undefined) {
+            this.typingExists = true;
+            this.reconstructStepHistory(pbcatInfo);
+        }
     }
 
     get stepHistory() { return this._stepHistory; }
@@ -76,11 +78,20 @@ export class PbcatFlow {
     }
 
     get pbcatInfo(): PbcatInfo {
-        let info = this._pbcatInfo;
-        // mock logic to update pbcatInfo ...
-        for (let step of this._stepHistory) {
-            if (step.selectedItem !== undefined) {
-                (info as any)[step.infoAttrName] = step.selectedItem.enumValue;
+        let info: PbcatInfo;
+
+        if (this.flowType === FlowType.Pedestrian) {
+            info = new PbcatPedestrianInfo();
+        }
+        else if (this.flowType === FlowType.Bicyclist) {
+            info = new PbcatBicyclistInfo();
+        }
+
+        if (info) {
+            for (let step of this._stepHistory) {
+                if (step.selectedItem !== undefined) {
+                    (info as any)[step.infoAttrName] = step.selectedItem.infoAttrValue;
+                }
             }
         }
         return info;
@@ -130,10 +141,25 @@ export class PbcatFlow {
         }
     }
 
+    private reconstructStepHistory(pbcatInfo: PbcatInfo) {
+        // replay the previous session
+        while (!this._isFlowComplete && this._hasValidState) { // check this._hasValidState for sanity only
+            this.goToStep(this.currentStepNumber + 1);
+            for (let item of this.currentStep.items) {
+                if (item.infoAttrValue === (pbcatInfo as any)[this.currentStep.infoAttrName]) {
+                    this.selectItemForCurrentStep(item);
+                    continue;
+                }
+            }
+        }
+        // then return to step 1
+        this.goToStep(1);
+    }
+
     private getFirstStep(): PbcatStep {
         let screenName = '1';
         let screenConfig = this.config[screenName];
-        let step = new PbcatStep(screenConfig.title, screenConfig.description, screenConfig.infoAttrName, screenConfig.enumName);
+        let step = new PbcatStep(screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
         step.items = screenConfig.items.map((item, index) => this.itemFromItemConfig(item, index, false));
         return step;
     }
@@ -150,7 +176,7 @@ export class PbcatFlow {
             screenConfig = this.config[screenName];
         }
         if (screenConfig) {
-            step = new PbcatStep(screenConfig.title, screenConfig.description, screenConfig.infoAttrName, screenConfig.enumName);
+            step = new PbcatStep(screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
             step.items = screenConfig.items.map((item, index) => this.itemFromItemConfig(item, index, false));
         }
 
@@ -160,7 +186,7 @@ export class PbcatFlow {
     private itemFromItemConfig(itemConfig: PbcatItemConfig, index: number, selected: boolean) {
         return new PbcatItem(
             index,
-            itemConfig.enumValue,
+            itemConfig.infoAttrValue,
             itemConfig.title,
             this.calculateNextScreenName(itemConfig.nextScreenName),
             itemConfig.description,
@@ -169,8 +195,7 @@ export class PbcatFlow {
                 ? itemConfig.imageUrls
                 : itemConfig.imageUrl
                     ? [itemConfig.imageUrl]
-                    : [],
-            selected);
+                    : []);
     }
 
     private calculateNextScreenName(screenName: string | { [crashLocation: string]: string }): string {
@@ -181,7 +206,7 @@ export class PbcatFlow {
         }
         else if (screenName) {
             // determine which crash location was selected in step 1
-            let crashLocation = this.stepHistory[0].selectedItem.enumValue;
+            let crashLocation = this.stepHistory[0].selectedItem.infoAttrValue;
             // get the corresponding next screen name (could be undefined, which indicates the flow is complete)
             nextScreenName = screenName[crashLocation];
         }

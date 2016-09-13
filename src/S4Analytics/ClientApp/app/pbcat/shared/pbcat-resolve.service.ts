@@ -3,7 +3,7 @@ import { Router, Resolve, ActivatedRouteSnapshot } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import '../../rxjs-operators';
 import { AppState } from '../../app.state';
-import { PbcatService, PbcatInfoWithExists } from './pbcat.service';
+import { PbcatService } from './pbcat.service';
 import { PbcatState } from './pbcat.state';
 import { PbcatFlow, FlowType } from './pbcat-flow';
 import { PbcatInfo } from './pbcat-info';
@@ -34,7 +34,7 @@ export class PbcatResolveService implements Resolve<void> {
             return this.pbcatService.getConfiguration(flowType)
                 .do(cfg => config = cfg)
                 .switchMap(() => this.pbcatService.getPbcatInfo(flowType, hsmvReportNumber))
-                .map(p => new PbcatFlow(flowType, hsmvReportNumber, p.exists, p.pbcatInfo, config))
+                .map(pbcatInfo => new PbcatFlow(flowType, hsmvReportNumber, pbcatInfo, config))
                 .switchMap(flow => this.goToStepOrSummary(flow, stepNumber))
                 .catch(this.handleError);
         }

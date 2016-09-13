@@ -1,52 +1,52 @@
 ﻿export abstract class PbcatInfo {
-    rightTurnOnRedCd: number;
+    rightTurnOnRedCd: string;
 }
 
 export class PbcatPedestrianInfo extends PbcatInfo {
-    backingVehicleCd: number;
-    crashLocationCd: number;
-    crossingDrivewayCd: number;
-    crossingRoadwayCd: number;
-    failureToYieldCd: number;
-    legOfIntrsectCd: number;
-    motoristDirTravelCd: number;
-    motoristManeuverCd: number;
-    nonRoadwayLocationCd: number;
-    otherPedActionCd: number;
-    pedestrianDirTravelCd: number;
-    pedestrianFailedToYieldCd: number;
-    pedestrianInRoadwayCd: number;
-    pedestrianMovementCd: number;
-    pedestrianPositionCd: number;
-    turnMergeCd: number;
-    typicalPedActionCd: number;
-    unusualCircumstancesCd: number;
-    unusualPedActionCd: number;
-    unusualVehicleTypeOrActionCd: number;
-    waitingToCrossCd: number;
-    walkingAlongRoadwayCd: number;
+    backingVehicleCd: string;
+    crashLocationCd: string;
+    crossingDrivewayCd: string;
+    crossingRoadwayCd: string;
+    failureToYieldCd: string;
+    legOfIntrsectCd: string;
+    motoristDirTravelCd: string;
+    motoristManeuverCd: string;
+    nonRoadwayLocationCd: string;
+    otherPedActionCd: string;
+    pedestrianDirTravelCd: string;
+    pedestrianFailedToYieldCd: string;
+    pedestrianInRoadwayCd: string;
+    pedestrianMovementCd: string;
+    pedestrianPositionCd: string;
+    turnMergeCd: string;
+    typicalPedActionCd: string;
+    unusualCircumstancesCd: string;
+    unusualPedActionCd: string;
+    unusualVehicleTypeOrActionCd: string;
+    waitingToCrossCd: string;
+    walkingAlongRoadwayCd: string;
 }
 
 export class PbcatBicyclistInfo extends PbcatInfo {
-    bicyclistDirCd: any;
-    bicyclistFailedToClearCd: any;
-    bicyclistOvertakingCd: any;
-    bicyclistPositionCd: any;
-    bicyclistRideOutCd: any;
-    bicyclistTurnedMergedCd: any;
-    crashLocationCd: any;
-    crossingPathsIntrsectCd: any;
-    crossingPathsNonIntrsectCd: any;
-    headOnCrashCd: any;
-    initialApproachPathsCd: any;
-    intentionalCrashCd: any;
-    intrsectCircumstancesCd: any;
-    lossOfControlCd: any;
-    motoristDriveOutCd: any;
-    motoristOvertakingCd: any;
-    motoristTurnedMergedCd: any;
-    parallelPathsCd: any;
-    turningErrorCd: any;
-    typeTrafficControlCd: any;
-    unusualCircumstancesCd: any;
+    bicyclistDirCd: string;
+    bicyclistFailedToClearCd: string;
+    bicyclistOvertakingCd: string;
+    bicyclistPositionCd: string;
+    bicyclistRideOutCd: string;
+    bicyclistTurnedMergedCd: string;
+    crashLocationCd: string;
+    crossingPathsIntrsectCd: string;
+    crossingPathsNonIntrsectCd: string;
+    headOnCrashCd: string;
+    initialApproachPathsCd: string;
+    intentionalCrashCd: string;
+    intrsectCircumstancesCd: string;
+    lossOfControlCd: string;
+    motoristDriveOutCd: string;
+    motoristOvertakingCd: string;
+    motoristTurnedMergedCd: string;
+    parallelPathsCd: string;
+    turningErrorCd: string;
+    typeTrafficControlCd: string;
+    unusualCircumstancesCd: string;
 }
