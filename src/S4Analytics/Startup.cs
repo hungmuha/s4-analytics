@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using S4Analytics.Models;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Converters;
 
 namespace S4Analytics
 {
@@ -46,6 +48,11 @@ namespace S4Analytics
         {
             // Add framework services.
             services.AddMvc();
+            services.Configure<MvcJsonOptions>(jsonOptions =>
+            {
+                // Serialize enums as strings, rather than integers.
+                jsonOptions.SerializerSettings.Converters.Add(new StringEnumConverter());
+            });
             services.AddOptions();
 
             // Add configurations.

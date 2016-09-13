@@ -3,7 +3,7 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import '../../rxjs-operators';
 import { PbcatFlow, FlowType } from './pbcat-flow';
-import { PbcatConfig } from './pbcat-config.d.ts';
+import { PbcatConfig } from './pbcat-config.d';
 import { PbcatCrashType } from './pbcat-crash-type';
 import { PbcatInfo, PbcatBicyclistInfo, PbcatPedestrianInfo } from './pbcat-info';
 
@@ -27,12 +27,6 @@ export class NextCrashInfo {
     constructor(
         public hsmvReportNumber: number,
         public flowType: FlowType) { }
-}
-
-export class PbcatInfoWithExists {
-    constructor(
-        public pbcatInfo: PbcatInfo,
-        public exists: boolean) { }
 }
 
 @Injectable()
@@ -64,30 +58,24 @@ export class PbcatService {
         }
     }
 
-    pbcatInfoError(flowType: FlowType, error: any): Observable<any> {
+    pbcatInfoNotFound(error: any): Observable<any> {
         // if no record was found, create an empty one
         if (error.status === 404) {
-            return Observable.of(
-                flowType === FlowType.Pedestrian
-                    ? new PbcatInfoWithExists(new PbcatPedestrianInfo(), false)
-                    : new PbcatInfoWithExists(new PbcatBicyclistInfo(), false)
-            );
+            return Observable.of(undefined);
         }
         else {
             return this.handleError(error);
         }
     }
 
-    getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Observable<PbcatInfoWithExists> {
+    getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Observable<PbcatInfo> {
         // GET api/pbcat/:bikeOrPed/:hsmvRptNr
         let bikeOrPed = this.getBikeOrPed(flowType);
         let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
         return this.http
             .get(url)
             .map(response => this.extractData<PbcatInfo>(response))
-            .map(data => new PbcatInfoWithExists(data, true))
-            .catch(error => this.pbcatInfoError(flowType, error));
-        // todo: reconstruct stepHistory for previously typed crashes
+            .catch(error => this.pbcatInfoNotFound(error));
     }
 
     createPbcatInfo(flow: PbcatFlow): Observable<NextCrashInfo> {

@@ -1,5 +1,5 @@
-﻿import { FlowType, PbcatFlow } from './pbcat-flow.ts';
-import { PbcatConfig } from './pbcat-config.d.ts';
+﻿import { FlowType, PbcatFlow } from './pbcat-flow';
+import { PbcatConfig } from './pbcat-config.d';
 
 export class PbcatState {
     autoAdvance: boolean = true;

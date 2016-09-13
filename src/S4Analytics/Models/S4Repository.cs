@@ -27,7 +27,7 @@ namespace S4Analytics.Models
         /// <param name="dbValue">Numeric value from the database</param>
         /// <param name="defaultValue">Default enum value to use if database value is DBNull</param>
         /// <returns></returns>
-        protected T ConvertToEnumX<T>(decimal? dbValue, T defaultValue) where T : struct, IConvertible
+        protected T ConvertToEnum<T>(decimal? dbValue, T defaultValue) where T : struct, IConvertible
         {
             if (!typeof(T).IsEnum) { throw new ArgumentException("T must be an enumeration."); }
             return dbValue == null

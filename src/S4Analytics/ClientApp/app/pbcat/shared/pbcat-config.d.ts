@@ -1,6 +1,6 @@
 ﻿export interface PbcatItemConfig {
     title: string;
-    enumValue: string;
+    infoAttrValue: string;
     description?: string;
     subHeading?: string;
 
@@ -19,7 +19,6 @@ export interface PbcatScreenConfig {
     title: string;
     description: string;
     infoAttrName: string;
-    enumName: string;
     items: PbcatItemConfig[];
 }
 
