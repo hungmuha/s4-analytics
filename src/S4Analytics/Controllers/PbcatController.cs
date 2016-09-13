@@ -26,6 +26,18 @@ namespace S4Analytics.Controllers
 
         public IPbcatPedRepository PedRepo { get; set; }
 
+        [HttpGet("{hsmvRptNbr}")]
+        public IActionResult GetParticipantInfo(int hsmvRptNbr)
+        {
+            var info = PedRepo.GetParticipantInfo(hsmvRptNbr);
+            if (info == null)
+            {
+                return NotFound();
+            }
+            var data = AjaxSafeData(info);
+            return new ObjectResult(data);
+        }
+
         /// <summary>
         /// GET /api/pbcat/ped/:hsmvRptNbr
         /// Return an existing PBCAT_PED record from the database given its HSMV report number.

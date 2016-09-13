@@ -5,6 +5,7 @@ import { PbcatCrashType } from './pbcat-crash-type';
 import { PbcatConfig, PbcatScreenConfig, PbcatItemConfig } from './pbcat-config.d';
 
 export enum FlowType {
+    Undetermined,
     Bicyclist,
     Pedestrian
 }

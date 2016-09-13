@@ -1,5 +1,21 @@
-ï»¿{
- "P-1": {
+{
+  "BP": {
+    "title": "Pedestrian or Bicyclist",
+    "description": "The participants listed and/or first harmful event indicate both pedestrian and bicyclist participants for this crash. Which crash typing method do you prefer?",
+    "items": [
+      {
+        "title": "Pedestrian",
+        "infoAttrValue": "Pedestrian",
+        "nextScreenName": "P-1"
+      },
+      {
+        "title": "Bicyclist",
+        "infoAttrValue": "Bicyclist",
+        "nextScreenName": "B-1"
+      }
+    ]
+  },
+  "P-1": {
     "title": "Crash Location",
     "description": "Where did the crash occur?",
     "infoAttrName": "crashLocationCd",
@@ -40,7 +56,7 @@
       }
     ]
   },
- "P-2": {
+  "P-2": {
     "title": "Unusual Circumstances",
     "description": "The crash was the result of which of the following unusual circumstances:",
     "infoAttrName": "unusualCircumstancesCd",
@@ -88,7 +104,7 @@
       }
     ]
   },
- "P-1A": {
+  "P-1A": {
     "title": "Pedestrian Position - Intersection Or Intersection-Related",
     "description": "What was the position of the pedestrian when struck?",
     "infoAttrName": "pedestrianPositionCd",
@@ -130,7 +146,7 @@
       }
     ]
   },
- "P-1B": {
+  "P-1B": {
     "title": "Pedestrian Position - Non-Intersection",
     "description": "What was the position of the pedestrian when struck?",
     "infoAttrName": "pedestrianPositionCd",
@@ -167,7 +183,7 @@
       }
     ]
   },
- "P-1C": {
+  "P-1C": {
     "title": "Pedestrian Position - Non-Roadway",
     "description": "What was the position of the pedestrian when struck?",
     "infoAttrName": "pedestrianPositionCd",
@@ -189,7 +205,7 @@
       }
     ]
   },
- "P-3": {
+  "P-3": {
     "title": "Unusual Vehicle Type or Action",
     "description": "The crash involved which of the following vehicle types or vehicle actions:",
     "infoAttrName": "unusualVehicleTypeOrActionCd",
@@ -243,7 +259,7 @@
       }
     ]
   },
- "P-3A": {
+  "P-3A": {
     "title": "Backing Vehicle",
     "description": "Where did the backing vehicle strike the pedestrian?",
     "infoAttrName": "backingVehicleCd",
@@ -258,7 +274,7 @@
       }
     ]
   },
- "P-3B": {
+  "P-3B": {
     "title": "Backing Vehicle - Non-Roadway",
     "description": "Where did the backing vehicle strike the pedestrian?",
     "infoAttrName": "backingVehicleCd",
@@ -277,7 +293,7 @@
       }
     ]
   },
- "P-4": {
+  "P-4": {
     "title": "Unusual Pedestrian Action",
     "description": "The pedestrian was struck while performing which of the following actions:",
     "infoAttrName": "unusualPedActionCd",
@@ -331,7 +347,7 @@
       }
     ]
   },
- "P-4A": {
+  "P-4A": {
     "title": "Working/Playing/Lying in Roadway",
     "description": "Which of the following was the pedestrian doing when struck?",
     "infoAttrName": "pedestrianInRoadwayCd",
@@ -356,7 +372,7 @@
       }
     ]
   },
- "P-5": {
+  "P-5": {
     "title": "Non-Roadway Crash",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "nonRoadwayLocationCd",
@@ -374,7 +390,7 @@
       }
     ]
   },
- "P-6": {
+  "P-6": {
     "title": "Typical Pedestrian Action - Intersection",
     "description": "Which of the following best describes the pedestrian action at the time of the crash?",
     "infoAttrName": "typicalPedActionCd",
@@ -414,7 +430,7 @@
       }
     ]
   },
- "P-6A": {
+  "P-6A": {
     "title": "Waiting To Cross - Intersection",
     "description": "The motor vehicle was:",
     "infoAttrName": "waitingToCrossCd",
@@ -433,7 +449,7 @@
       }
     ]
   },
- "P-6B": {
+  "P-6B": {
     "title": "Crossing/In Roadway - Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "crossingRoadwayCd",
@@ -477,7 +493,7 @@
       }
     ]
   },
- "P-6B1": {
+  "P-6B1": {
     "title": "Failure To Yield - Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "failureToYieldCd",
@@ -502,7 +518,7 @@
       }
     ]
   },
- "P-6B1A": {
+  "P-6B1A": {
     "title": "Pedestrian Failure To Yield - Intersection",
     "description": "Which of the following best describes the pedestrian action?",
     "infoAttrName": "pedestrianFailedToYieldCd",
@@ -525,7 +541,7 @@
       }
     ]
   },
- "P-6B2": {
+  "P-6B2": {
     "title": "Turn/Merge - Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "turnMergeCd",
@@ -563,7 +579,7 @@
       }
     ]
   },
- "P-6B2A": {
+  "P-6B2A": {
     "title": "Right Turn On Red - Parallel Paths",
     "description": "Was the motorist making a right turn on red?",
     "infoAttrName": "rightTurnOnRedCd",
@@ -578,7 +594,7 @@
       }
     ]
   },
- "P-6B3A": {
+  "P-6B3A": {
     "title": "Right Turn On Red - Perpendicular Paths",
     "description": "Was the motorist making a right turn on red?",
     "infoAttrName": "rightTurnOnRedCd",
@@ -593,7 +609,7 @@
       }
     ]
   },
- "P-6C": {
+  "P-6C": {
     "title": "Other Action - Intersection",
     "description": "Which of the following circumstances apply?",
     "infoAttrName": "otherPedActionCd",
@@ -610,7 +626,7 @@
       }
     ]
   },
- "P-6D": {
+  "P-6D": {
     "title": "Walking Along Roadway - Intersection",
     "description": "The pedestrian was:",
     "infoAttrName": "walkingAlongRoadwayCd",
@@ -637,7 +653,7 @@
       }
     ]
   },
- "P-7": {
+  "P-7": {
     "title": "Typical Pedestrian Action - Non-Intersection",
     "description": "Which of the following best describes the pedestrian action at the time of the crash?",
     "infoAttrName": "typicalPedActionCd",
@@ -683,7 +699,7 @@
       }
     ]
   },
- "P-7A": {
+  "P-7A": {
     "title": "Walking Along Roadway - Non-Intersection",
     "description": "The pedestrian was:",
     "infoAttrName": "walkingAlongRoadwayCd",
@@ -710,7 +726,7 @@
       }
     ]
   },
- "P-7B": {
+  "P-7B": {
     "title": "Waiting To Cross - Non-Intersection",
     "description": "The motor vehicle was:",
     "infoAttrName": "waitingToCrossCd",
@@ -729,7 +745,7 @@
       }
     ]
   },
- "P-7C": {
+  "P-7C": {
     "title": "Crossing/In Roadway - Non-Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "crossingRoadwayCd",
@@ -773,7 +789,7 @@
       }
     ]
   },
- "P-7C1": {
+  "P-7C1": {
     "title": "Failure To Yield - Non-Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "failureToYieldCd",
@@ -798,7 +814,7 @@
       }
     ]
   },
- "P-7C1A": {
+  "P-7C1A": {
     "title": "Pedestrian Failure To Yield - Non-Intersection",
     "description": "Which of the following best describes the pedestrian action?",
     "infoAttrName": "pedestrianFailedToYieldCd",
@@ -821,7 +837,7 @@
       }
     ]
   },
- "P-7C2": {
+  "P-7C2": {
     "title": "Turn/Merge - Non-Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "turnMergeCd",
@@ -857,7 +873,7 @@
       }
     ]
   },
- "P-7D": {
+  "P-7D": {
     "title": "Other Action - Non-Intersection",
     "description": "Which of the following circumstances apply?",
     "infoAttrName": "otherPedActionCd",
@@ -879,7 +895,7 @@
       }
     ]
   },
- "P-7E": {
+  "P-7E": {
     "title": "Crossing A Driveway Intersection",
     "description": "Which of the following best describes the circumstances of the crash?",
     "infoAttrName": "crossingDrivewayCd",
@@ -903,7 +919,7 @@
       }
     ]
   },
- "P-LF": {
+  "P-LF": {
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
@@ -952,7 +968,7 @@
       }
     ]
   },
- "P-LN": {
+  "P-LN": {
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
@@ -1001,7 +1017,7 @@
       }
     ]
   },
- "P-Q1": {
+  "P-Q1": {
     "title": "Motorist Direction of Travel",
     "description": "Select the motorist's initial direction of travel (before any turns).",
     "infoAttrName": "motoristDirTravelCd",
@@ -1037,7 +1053,7 @@
       }
     ]
   },
- "P-Q2": {
+  "P-Q2": {
     "title": "Motorist Maneuver",
     "description": "Select the motorist's maneuver.",
     "infoAttrName": "motoristManeuverCd",
@@ -1067,7 +1083,7 @@
       }
     ]
   },
- "P-Q3A": {
+  "P-Q3A": {
     "title": "Leg of Intersection",
     "description": "Select the leg of the intersection where the crash occurred.",
     "infoAttrName": "legOfIntrsectCd",
@@ -1091,7 +1107,7 @@
       }
     ]
   },
- "P-Q3B": {
+  "P-Q3B": {
     "title": "Leg of Intersection",
     "description": "Select the leg of the intersection where the crash occurred.",
     "infoAttrName": "legOfIntrsectCd",
@@ -1115,7 +1131,7 @@
       }
     ]
   },
- "P-Q3C": {
+  "P-Q3C": {
     "title": "Leg of Intersection",
     "description": "Select the leg of the intersection where the crash occurred.",
     "infoAttrName": "legOfIntrsectCd",
@@ -1139,7 +1155,7 @@
       }
     ]
   },
- "P-RF": {
+  "P-RF": {
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
@@ -1188,7 +1204,7 @@
       }
     ]
   },
- "P-RN": {
+  "P-RN": {
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
@@ -1237,7 +1253,7 @@
       }
     ]
   },
- "P-SF": {
+  "P-SF": {
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
@@ -1286,7 +1302,7 @@
       }
     ]
   },
- "P-SN": {
+  "P-SN": {
     "title": "Pedestrian Movement",
     "description": "Select the scenario that best illustrates the pedestrian's movement when struck.",
     "infoAttrName": "pedestrianMovementCd",
@@ -1332,6 +1348,873 @@
         "description": "Pedestrian outside crosswalk area, approach direction unknown",
         "imageUrl": "images/pbcat/ped_SN_2c.png",
         "nextScreenName": "P-2"
+      }
+    ]
+  },
+  "B-1": {
+    "title": "Crash Location",
+    "description": "Where did the crash occur?",
+    "infoAttrName": "crashLocationCd",
+    "items": [
+      {
+        "title": "Intersection",
+        "infoAttrValue": "Intersection",
+        "description": "The crash occurred within the intersection proper or within the crosswalk area. Note: Unsignalized driveways are considered to be non-intersection locations.",
+        "imageUrl": "images/pbcat/bike_1_Intersection.png",
+        "nextScreenName": "B-2"
+      },
+      {
+        "title": "Intersection-Related",
+        "infoAttrValue": "IntersectionRelated",
+        "description": "The crash occurred outside the intersection proper or crosswalk area but was related to the presence of the intersection (e.g., the result of queuing traffic).",
+        "imageUrl": "images/pbcat/bike_1_IntersectionRelated.png",
+        "nextScreenName": "B-2"
+      },
+      {
+        "title": "Non-Intersection Location",
+        "infoAttrValue": "NonIntersectionLocation",
+        "description": "The crash occurred outside the intersection proper or crosswalk area and was not related to the presence of any intersection.",
+        "imageUrl": "images/pbcat/bike_1_NonIntersection.png",
+        "nextScreenName": "B-2"
+      },
+      {
+        "title": "Non-Roadway Location",
+        "infoAttrValue": "NonRoadwayLocation",
+        "description": "The crash occurred off the street network (e.g., parking lots, driveways, alleys, trails, and other open areas). Note: crashes occurring on paved shoulders, bike lanes, sidewalks, or driveway crossings are considered to be \"roadway\" crashes and should not be placed in the non-roadway classification.",
+        "imageUrl": "images/pbcat/bike_1_NonRoad.png",
+        "nextScreenName": "B-2"
+      },
+      {
+        "title": "Unknown/Insufficient Information",
+        "infoAttrValue": "UnknownOrInsufficientInformation",
+        "description": "There is insufficient information to determine where the crash occurred."
+      }
+    ]
+  },
+  "B-2": {
+    "title": "Bicyclist Position",
+    "description": "What was the initial position of the bicyclist?",
+    "infoAttrName": "bicyclistPositionCd",
+    "items": [
+      {
+        "title": "On a roadway, in a shared travel lane",
+        "infoAttrValue": "OnRoadwayInSharedTravelLane",
+        "nextScreenName": {
+          "Intersection": "B-3",
+          "IntersectionRelated": "B-3",
+          "NonIntersectionLocation": "B-3"
+        }
+      },
+      {
+        "title": "On a roadway, in a bicycle lane or on a paved shoulder",
+        "infoAttrValue": "OnRoadwayInBikeLaneOrPavedShoulder",
+        "nextScreenName": {
+          "Intersection": "B-3",
+          "IntersectionRelated": "B-3",
+          "NonIntersectionLocation": "B-3"
+        }
+      },
+      {
+        "title": "On a sidewalk, crosswalk, or driveway crossing",
+        "infoAttrValue": "OnSidewalkCrosswalkOrDrivewayCrossing",
+        "nextScreenName": {
+          "Intersection": "B-3",
+          "IntersectionRelated": "B-3",
+          "NonIntersectionLocation": "B-3"
+        }
+      },
+      {
+        "title": "On a separate bicycle/multi-use path",
+        "infoAttrValue": "OnSeparateBicycleOrMultiUsePath",
+        "nextScreenName": {
+          "Intersection": "B-3",
+          "IntersectionRelated": "B-3",
+          "NonIntersectionLocation": "B-3"
+        }
+      },
+      {
+        "title": "On a driveway or alley",
+        "infoAttrValue": "OnDrivewayOrAlley",
+        "nextScreenName": {
+          "Intersection": "B-3",
+          "IntersectionRelated": "B-3",
+          "NonIntersectionLocation": "B-3"
+        }
+      },
+      {
+        "title": "Other non-roadway  areas (parking lot, open areas, etc.)",
+        "infoAttrValue": "OtherNonRoadwayAreas",
+        "nextScreenName": {
+          "Intersection": "B-3",
+          "IntersectionRelated": "B-3",
+          "NonIntersectionLocation": "B-3"
+        }
+      },
+      {
+        "title": "Other (e.g., unpaved shoulder, worn path, etc.)",
+        "infoAttrValue": "OtherUnpavedShoulder",
+        "nextScreenName": {
+          "Intersection": "B-3",
+          "IntersectionRelated": "B-3",
+          "NonIntersectionLocation": "B-3"
+        }
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": "Unknown",
+        "nextScreenName": {
+          "Intersection": "B-3",
+          "IntersectionRelated": "B-3",
+          "NonIntersectionLocation": "B-3"
+        }
+      }
+    ]
+  },
+  "B-3": {
+    "title": "Bicyclist Direction of Travel",
+    "description": "In what direction was the bicyclist initially traveling prior to being struck or prior to making any turns which caused the crash?",
+    "infoAttrName": "bicyclistDirCd",
+    "items": [
+      {
+        "title": "With traffic",
+        "infoAttrValue": "WithTraffic",
+        "nextScreenName": "B-4"
+      },
+      {
+        "title": "Facing traffic",
+        "infoAttrValue": "FacingTraffic",
+        "nextScreenName": "B-4"
+      },
+      {
+        "title": "Not applicable (e.g., exiting a driveway, in a parking lot, or other non-roadway area)",
+        "infoAttrValue": "NotApplicable",
+        "nextScreenName": "B-4"
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": "Unknown",
+        "nextScreenName": "B-4"
+      }
+    ]
+  },
+  "B-4": {
+    "title": "Unusual/Specific Circumstances",
+    "description": "Which of the following unusual or specific circumstances best describe the crash?",
+    "infoAttrName": "unusualCircumstancesCd",
+    "items": [
+      {
+        "title": "Bicycle Only",
+        "infoAttrValue": "BicycleOnly",
+        "description": "The crash involved a bicycle but no motor vehicle.",
+        "imageUrl": "images/pbcat/bike_4_BicycleOnly.png"
+      },
+      {
+        "title": "Intentional",
+        "infoAttrValue": "Intentional",
+        "description": "The motorist or bicyclist intentionally caused the crash.",
+        "nextScreenName": "B-5"
+      },
+      {
+        "title": "Play Vehicle-Related",
+        "infoAttrValue": "PlayVehicleRelated",
+        "description": "The bicyclist was riding a child's vehicle such as a tricycle (not an adult tricycle), bicycle with training wheels, or \"Big Wheel\" type tricycle.",
+        "imageUrl": "images/pbcat/bike_4_PlayVehicleRelated.png"
+      },
+      {
+        "title": "Unusual Circumstances",
+        "infoAttrValue": "OtherUnusualCircumstances",
+        "description": "There were other unusual circumstances not defined above (e.g., bicyclist struck by falling cargo).",
+        "imageUrl": "images/pbcat/bike_4_UnusualCircumstances.png"
+      },
+      {
+        "title": "Backing Vehicle",
+        "infoAttrValue": "BackingVehicle",
+        "description": "The crash involved a motor vehicle that was backing and did not involve a play vehicle.",
+        "imageUrl": "images/pbcat/bike_4_BackingVehicle.png"
+      },
+      {
+        "title": "None of the Above",
+        "infoAttrValue": "NoneOfTheAbove",
+        "description": "The crash does not conform to any of the specific or unusual circumstances described.",
+        "nextScreenName": {
+          "Intersection": "B-6",
+          "IntersectionRelated": "B-6",
+          "NonIntersectionLocation": "B-6"
+        }
+      }
+    ]
+  },
+  "B-5": {
+    "title": "Intentional Crash",
+    "description": "Who intentionally caused the crash?",
+    "infoAttrName": "intentionalCrashCd",
+    "items": [
+      {
+        "title": "Motorist",
+        "infoAttrValue": "Motorist"
+      },
+      {
+        "title": "Bicyclist",
+        "infoAttrValue": "Bicyclist"
+      }
+    ]
+  },
+  "B-6": {
+    "title": "Initial Approach Paths",
+    "description": "What were the initial approach paths for the bicyclist and motorist?",
+    "infoAttrName": "initialApproachPathsCd",
+    "items": [
+      {
+        "title": "Crossing Paths - See Examples Below",
+        "infoAttrValue": "CrossingPaths",
+        "description": "The bicyclist and motorist were on intersecting paths prior to the crash and prior to any turns that caused the crash or turns to avoid the crash.",
+        "imageUrls": [
+          "images/pbcat/bike_6_CrossingPaths.png",
+          "images/pbcat/bike_6_CrossingPaths2.png",
+          "images/pbcat/bike_6_CrossingPaths3.png"
+        ],
+        "nextScreenName": {
+          "Intersection": "B-7",
+          "IntersectionRelated": "B-7",
+          "NonIntersectionLocation": "B-8"
+        }
+      },
+      {
+        "title": "Parallel Paths - See Examples Below",
+        "infoAttrValue": "ParallelPaths",
+        "description": "The bicyclist and motorist were on parallel paths prior to the crash and prior to any turns that caused the crash or turns to avoid the crash. The two vehicles could have been heading in the same direction or opposing directions.",
+        "imageUrls": [
+          "images/pbcat/bike_6_ParallelPaths.png",
+          "images/pbcat/bike_6_ParallelPaths2.png",
+          "images/pbcat/bike_6_ParallelPaths3.png"
+        ],
+        "nextScreenName": "B-9"
+      },
+      {
+        "title": "Unknown/Insufficient Information",
+        "infoAttrValue": "UnknownOrInsufficientInfo",
+        "description": "There is insufficient information to determine the initial approach paths of the vehicles."
+      }
+    ]
+  },
+  "B-7": {
+    "title": "Crossing Paths - Intersection",
+    "description": "Which of the following best describes the circumstances of the crash?",
+    "infoAttrName": "crossingPathsIntrsectCd",
+    "items": [
+      {
+        "title": "Turning Error",
+        "infoAttrValue": "TurningError",
+        "description": "Either the bicyclist or motorist made a turning error which led them into the path of the other operator.",
+        "imageUrl": "images/pbcat/bike_7_TurningError.png",
+        "nextScreenName": "B-7A"
+      },
+      {
+        "title": "Loss of Control",
+        "infoAttrValue": "LossOfControl",
+        "description": "Either the motorist or bicyclist clearly lost control and inadvertently moved into the path of the other operator.",
+        "imageUrl": "images/pbcat/bike_7_LossofControl.png",
+        "nextScreenName": "B-7B"
+      },
+      {
+        "title": "Drive/Ride - Out/Through",
+        "infoAttrValue": "DriveRideOutThrough",
+        "description": "Either the motorist drove or the bicyclist rode into the intersection or crosswalk area and into the path of the other operator without making a turning error or losing control of the vehicle prior to the crash.",
+        "imageUrl": "images/pbcat/bike_7_DriveRideOutThrough.png",
+        "nextScreenName": "B-7E"
+      },
+      {
+        "title": "Other Circumstances",
+        "infoAttrValue": "OtherCircumstances",
+        "description": "The crash involved a bicyclist and motorist on initial crossing paths but does not conform to any of the circumstances described."
+      }
+    ]
+  },
+  "B-7A": {
+    "title": "Turning Error",
+    "description": "Which best describes the turning error made by either the motorist or bicyclist?",
+    "infoAttrName": "turningErrorCd",
+    "items": [
+      {
+        "title": "Motorist Left Turn",
+        "infoAttrValue": "MotoristLeftTurn",
+        "description": "The motorist made a left turn, cut the corner and entered the opposing traffic lane.",
+        "imageUrl": "images/pbcat/bike_7A_MotoristLeftTurn.png"
+      },
+      {
+        "title": "Motorist Right Turn",
+        "infoAttrValue": "MotoristRightTurn",
+        "description": "The motorist made a right turn, swung too wide and entered the opposing traffic lane.",
+        "imageUrl": "images/pbcat/bike_7A_MotoristRightTurn.png"
+      },
+      {
+        "title": "Bicyclist Left Turn",
+        "infoAttrValue": "BicyclistLeftTurn",
+        "description": "The bicyclist made a left turn, cut the corner and entered the opposing traffic lane.",
+        "imageUrl": "images/pbcat/bike_7A_BicyclistLeftTurn.png"
+      },
+      {
+        "title": "Bicyclist Right Turn",
+        "infoAttrValue": "BicyclistRightTurn",
+        "description": "The bicyclist made a right turn, swung too wide and entered the opposing traffic lane.",
+        "imageUrl": "images/pbcat/bike_7A_BicyclistRightTurn.png"
+      },
+      {
+        "title": "Bicyclist Other Turn",
+        "infoAttrValue": "BicyclistOtherTurn",
+        "description": "The bicyclist made another type of turning error which led them into the path of the motorist."
+      },
+      {
+        "title": "Motorist Other Turn",
+        "infoAttrValue": "MotoristOtherTurn",
+        "description": "The motorist made another type of turning error which led them into the path of the bicyclist."
+      }
+    ]
+  },
+  "B-7B": {
+    "title": "Loss Of Control",
+    "description": "Who lost control and what was the cause?",
+    "infoAttrName": "lossOfControlCd",
+    "items": [
+      {
+        "subHeading": "The bicyclist lost control due to:",
+        "title": "mechanical problems",
+        "infoAttrValue": "BicyclistMechanical"
+      },
+      {
+        "title": "oversteering, improper braking, or speed too fast for conditions",
+        "infoAttrValue": "BicyclistOversteering"
+      },
+      {
+        "title": "alcohol or drug impairment",
+        "infoAttrValue": "BicyclistImpairment"
+      },
+      {
+        "title": "surface conditions (potholes, ice, etc.)",
+        "infoAttrValue": "BicyclistSurfaceConditions"
+      },
+      {
+        "title": "other/unknown circumstances",
+        "infoAttrValue": "BicyclistOtherOrUnknown"
+      },
+      {
+        "subHeading": "The motorist lost control due to:",
+        "title": "mechanical problems",
+        "infoAttrValue": "MotoristMechanical"
+      },
+      {
+        "title": "oversteering, improper braking, or speed too fast for conditions",
+        "infoAttrValue": "MotoristOversteering"
+      },
+      {
+        "title": "alcohol or drug impairment",
+        "infoAttrValue": "MotoristImpairment"
+      },
+      {
+        "title": "surface conditions (sand, debris, potholes, ice, etc.)",
+        "infoAttrValue": "MotoristSurfaceConditions"
+      },
+      {
+        "title": "other/unknown circumstances",
+        "infoAttrValue": "MotoristOtherOrUnknown"
+      }
+    ]
+  },
+  "B-7C": {
+    "title": "Sign-Controlled Intersection",
+    "description": "Which of the following best describes the circumstances of the crash?",
+    "infoAttrName": "intrsectCircumstancesCd",
+    "items": [
+      {
+        "title": "Motorist Drive-Out",
+        "infoAttrValue": "MotoristDriveOut",
+        "description": "The motorist drove into the roadway or across a sidewalk/driveway crossing area and into the path of a bicyclist.",
+        "imageUrl": "images/pbcat/bike_7C_MotoristDriveOut.png"
+      },
+      {
+        "title": "Bicyclist Ride-Out",
+        "infoAttrValue": "BicyclistRideOut",
+        "description": "The bicyclist was facing the sign or flashing signal and rode into the intersection and collided with the motorist after stopping or yielding.",
+        "imageUrl": "images/pbcat/bike_7C_BicyclistRideOut.png"
+      },
+      {
+        "title": "Motorist Drive-Through",
+        "infoAttrValue": "MotoristDriveThrough",
+        "description": "The motorist violated the sign or flashing signal and drove into the crosswalk area or intersection and collided with the bicyclist.",
+        "imageUrl": "images/pbcat/bike_7C_MotoristDriveThrough.png"
+      },
+      {
+        "title": "Bicyclist Ride-Through",
+        "infoAttrValue": "BicyclistRideThrough",
+        "description": "The bicyclist violated the sign or flashing signal and rode into the intersection and collided with the motorist.",
+        "imageUrl": "images/pbcat/bike_7C_BicyclistRideThrough.png"
+      },
+      {
+        "title": "Multiple Threat",
+        "infoAttrValue": "MultipleThreat",
+        "description": "The bicyclist entered the roadway in front of standing or slowing traffic and was struck by another motorist whose view of the bicyclist was blocked.",
+        "imageUrl": "images/pbcat/bike_7C_MultipleThreat.png"
+      },
+      {
+        "title": "Other / Unknown",
+        "infoAttrValue": "OtherOrUnknown",
+        "description": "The crash occurred at a sign-controlled intersection but does not conform to any of the circumstances described or the circumstances are unknown."
+      }
+    ]
+  },
+  "B-7D": {
+    "title": "Signal-Controlled Intersection",
+    "description": "Which of the following best describes the circumstances of the crash?",
+    "infoAttrName": "intrsectCircumstancesCd",
+    "items": [
+      {
+        "title": "Motorist Drive-Out",
+        "infoAttrValue": "MotoristDriveOut",
+        "description": "The motorist was facing a red signal, stopped, and then drove into the crosswalk area or intersection and collided with the bicyclist.",
+        "imageUrl": "images/pbcat/bike_7D_MotoristDriveOut.png",
+        "nextScreenName": "B-7D1"
+      },
+      {
+        "title": "Bicyclist Ride-Out",
+        "infoAttrValue": "BicyclistRideOut",
+        "description": "The bicyclist was facing the red signal, stopped, and then rode into the intersection and collided with the motorist.",
+        "imageUrl": "images/pbcat/bike_7D_BicyclistRideOut.png"
+      },
+      {
+        "title": "Motorist Drive-Through",
+        "infoAttrValue": "MotoristDriveThrough",
+        "description": "The motorist violated the signal and drove into the crosswalk area or intersection and collided with the bicyclist.",
+        "imageUrl": "images/pbcat/bike_7D_MotoristDriveThrough.png"
+      },
+      {
+        "title": "Bicyclist Ride-Through",
+        "infoAttrValue": "BicyclistRideThrough",
+        "description": "The bicyclist violated the signal and rode into the intersection and collided with the motorist.",
+        "imageUrl": "images/pbcat/bike_7D_BicyclistRideThrough.png"
+      },
+      {
+        "title": "Bicyclist Failed to Clear",
+        "infoAttrValue": "BicyclistFailedToClear",
+        "description": "The bicyclist lawfully entered the intersection on green but did not clear the intersection before the signal changed to green for the cross-street traffic.",
+        "imageUrl": "images/pbcat/bike_7D_BicyclistFailedtoClear.png",
+        "nextScreenName": "B-7D2"
+      },
+      {
+        "title": "Other / Unknown",
+        "infoAttrValue": "OtherOrUnknown",
+        "description": "The crash occurred at a signal-controlled intersection but does not conform to any of the circumstances described or the circumstances are unknown."
+      }
+    ]
+  },
+  "B-7D1": {
+    "title": "Right Turn On Red - Crossing Paths",
+    "description": "Was the motorist making a right turn on red?",
+    "infoAttrName": "rightTurnOnRedCd",
+    "items": [
+      {
+        "title": "Yes",
+        "infoAttrValue": "Yes"
+      },
+      {
+        "title": "No or Unknown",
+        "infoAttrValue": "NoOrUnknown"
+      }
+    ]
+  },
+  "B-7D2": {
+    "title": "Bicyclist Failed To Clear Intersection",
+    "description": "Which of the following scenarios best describes the crash?",
+    "infoAttrName": "bicyclistFailedToClearCd",
+    "items": [
+      {
+        "title": "Trapped",
+        "infoAttrValue": "Trapped",
+        "description": "The bicyclist was struck by a motorist whose view was not obstructed by standing or stopped traffic.",
+        "imageUrl": "images/pbcat/bike_7D2_Trapped.png"
+      },
+      {
+        "title": "Multiple Threat",
+        "infoAttrValue": "MultipleThreat",
+        "description": "The bicyclist entered the intersection in front of standing or slowing traffic and was struck by a motorist whose view of the bicyclist was obstructed.",
+        "imageUrl": "images/pbcat/bike_7D2_MultipleThreat.png"
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": "Unknown",
+        "description": "It is unknown whether the bicyclist was struck by a motorist whose view was obstructed or circumstances do not conform to either of those described."
+      }
+    ]
+  },
+  "B-7E": {
+    "title": "Type Of Traffic Control",
+    "description": "What type of traffic control was present at the intersection?",
+    "infoAttrName": "typeTrafficControlCd",
+    "items": [
+      {
+        "title": "Stop signs, yield signs, or flashing signals",
+        "infoAttrValue": "StopSignsYieldSignsOrFlashingSignals",
+        "nextScreenName": "B-7C"
+      },
+      {
+        "title": "Traffic signals",
+        "infoAttrValue": "TrafficSignals",
+        "nextScreenName": "B-7D"
+      },
+      {
+        "title": "None",
+        "infoAttrValue": "None"
+      },
+      {
+        "title": "Other / Unknown",
+        "infoAttrValue": "OtherOrUnknown"
+      }
+    ]
+  },
+  "B-8": {
+    "title": "Crossing Paths - Non-Intersection",
+    "description": "Which of the following best describes the circumstances of the crash?",
+    "infoAttrName": "crossingPathsNonIntrsectCd",
+    "items": [
+      {
+        "title": "Bicyclist Ride-Out",
+        "infoAttrValue": "BicyclistRideOut",
+        "description": "The bicyclist rode into the roadway and into the path of a motor vehicle.",
+        "imageUrl": "images/pbcat/bike_8_BicyclistRideOut.png",
+        "nextScreenName": "B-8A"
+      },
+      {
+        "title": "Motorist Drive-Out",
+        "infoAttrValue": "MotoristDriveOut",
+        "description": "The motorist drove into the roadway or across a sidewalk/driveway crossing area and into the path of a bicyclist.",
+        "imageUrl": "images/pbcat/bike_8_MotoristDriveOut.png",
+        "nextScreenName": "B-8B"
+      },
+      {
+        "title": "Loss of Control",
+        "infoAttrValue": "LossOfControl",
+        "description": "Either the motorist or bicyclist clearly lost control and inadvertently moved into the path of the other operator.",
+        "imageUrl": "images/pbcat/bike_8_LossofControl.png",
+        "nextScreenName": "B-7B"
+      },
+      {
+        "title": "Turning Error",
+        "infoAttrValue": "TurningError",
+        "description": "Either the bicyclist or motorist made a turning error which led them into the path of the other operator.",
+        "imageUrl": "images/pbcat/bike_8_TurningError.png",
+        "nextScreenName": "B-7A"
+      },
+      {
+        "title": "Multiple Threat",
+        "infoAttrValue": "MultipleThreat",
+        "description": "The bicyclist entered the roadway in front of standing or slowing traffic and was struck by another motorist whose view of the bicyclist was blocked.",
+        "imageUrl": "images/pbcat/bike_8_MultipleThreat.png"
+      },
+      {
+        "title": "Other Circumstances",
+        "infoAttrValue": "OtherCircumstances",
+        "description": "The crash involved a bicyclist and motorist on initial crossing paths but does not conform to any of the circumstances described."
+      }
+    ]
+  },
+  "B-8A": {
+    "title": "Bicyclist Ride-Out - Non-Intersection",
+    "description": "From where did the bicyclist come?",
+    "infoAttrName": "bicyclistRideOutCd",
+    "items": [
+      {
+        "title": "Residential driveway",
+        "infoAttrValue": "ResidentialDriveway"
+      },
+      {
+        "title": "Commercial driveway or alley",
+        "infoAttrValue": "CommercialDrivewayOrAlley"
+      },
+      {
+        "title": "Other midblock location",
+        "infoAttrValue": "OtherMidBlockLocation"
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": "Unknown"
+      }
+    ]
+  },
+  "B-8B": {
+    "title": "Motorist Drive-Out - Non-Intersection",
+    "description": "From where did the motorist come?",
+    "infoAttrName": "motoristDriveOutCd",
+    "items": [
+      {
+        "title": "Residential driveway",
+        "infoAttrValue": "ResidentialDriveway"
+      },
+      {
+        "title": "Commercial driveway or alley",
+        "infoAttrValue": "CommercialDrivewayOrAlley"
+      },
+      {
+        "title": "Other midblock location",
+        "infoAttrValue": "OtherMidBlockLocation"
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": "Unknown"
+      }
+    ]
+  },
+  "B-9": {
+    "title": "Parallel Paths",
+    "description": "Which of the following best describes the circumstances of the crash?",
+    "infoAttrName": "parallelPathsCd",
+    "items": [
+      {
+        "title": "Motorist Turned or Merged",
+        "infoAttrValue": "MotoristTurnedOrMerged",
+        "description": "The motorist turned, merged, or swerved into the path of the bicyclist.",
+        "imageUrl": "images/pbcat/bike_9_MotoristTurnedorMerged.png",
+        "nextScreenName": "B-9A"
+      },
+      {
+        "title": "Bicyclist Turned or Merged",
+        "infoAttrValue": "BicyclistTurnedOrMerged",
+        "description": "The bicyclist turned or merged into the path of the motorist.",
+        "imageUrl": "images/pbcat/bike_9_BicyclistTurnedorMerged.png",
+        "nextScreenName": "B-9B"
+      },
+      {
+        "title": "Motorist Overtaking",
+        "infoAttrValue": "MotoristOvertaking",
+        "description": "The motorist was overtaking the bicyclist. Note: Includes crashes where the bicyclist may have swerved into the path of the overtaking vehicle.",
+        "imageUrl": "images/pbcat/bike_9_MotoristOvertaking.png",
+        "nextScreenName": "B-9C"
+      },
+      {
+        "title": "Bicyclist Overtaking",
+        "infoAttrValue": "BicyclistOvertaking",
+        "description": "The bicyclist was overtaking the motorist. Note: Crashes involving parked vehicles are included.",
+        "imageUrl": "images/pbcat/bike_9_BicyclistOvertaking.png",
+        "nextScreenName": "B-9D"
+      },
+      {
+        "title": "Head-On",
+        "infoAttrValue": "HeadOn",
+        "description": "Either operator was going the wrong way, and the two parties collided head-on.",
+        "imageUrl": "images/pbcat/bike_9_Headon.png",
+        "nextScreenName": "B-9E"
+      },
+      {
+        "title": "Loss of Control",
+        "infoAttrValue": "LossOfControl",
+        "description": "Either the motorist or bicyclist clearly lost control and inadvertently moved into the path of the other operator.",
+        "imageUrl": "images/pbcat/bike_9_LossofControl.png",
+        "nextScreenName": "B-7B"
+      },
+      {
+        "title": "Other / Unknown Circumstances",
+        "infoAttrValue": "OtherOrUnknownCircumstances",
+        "description": "The crash involved a bicyclist and motorist on initial parallel paths but does not conform to any of the circumstances described or are unknown."
+      }
+    ]
+  },
+  "B-9A": {
+    "title": "Motorist Turn/Merge",
+    "description": "Which of the following scenarios best describes the maneuver of the motorist?",
+    "infoAttrName": "motoristTurnedMergedCd",
+    "items": [
+      {
+        "title": "Left Turn - Same Direction",
+        "infoAttrValue": "LeftTurnSameDirection",
+        "description": "The motorist turned left in front of a bicyclist going in the same direction.",
+        "imageUrl": "images/pbcat/bike_9A_LeftTurnSameDirection.png"
+      },
+      {
+        "title": "Left Turn - Opposite Direction",
+        "infoAttrValue": "LeftTurnOppositeDirection",
+        "description": "The motorist turned left in front of a bicyclist coming from the opposite direction.",
+        "imageUrl": "images/pbcat/bike_9A_LeftTurnOppositeDirection.png"
+      },
+      {
+        "title": "Drive-In/Out - Parking",
+        "infoAttrValue": "DriveInOrOutParking",
+        "description": "The motorist struck the bicyclist while exiting or entering on-street parking.",
+        "imageUrl": "images/pbcat/bike_9A_DriveInOutParking.png"
+      },
+      {
+        "title": "Right Turn - Same Direction",
+        "infoAttrValue": "RightTurnSameDirection",
+        "description": "The motorist turned right in front of a bicyclist going in the same direction.",
+        "imageUrl": "images/pbcat/bike_9A_RightTurnSameDirection.png",
+        "nextScreenName": "B-9A1"
+      },
+      {
+        "title": "Right Turn - Opposite Direction",
+        "infoAttrValue": "RightTurnOppositeDirection",
+        "description": "The motorist turned right in front of a bicyclist coming from the opposite direction.",
+        "imageUrl": "images/pbcat/bike_9A_RightTurnOppositeDirection.png",
+        "nextScreenName": "B-9A2"
+      },
+      {
+        "title": "Bus/Delivery Vehicle Pullover",
+        "infoAttrValue": "BusOrDeliveryVehiclePullover",
+        "description": "The bicyclist was struck by a bus or delivery vehicle pulling into or away from the curb.",
+        "imageUrl": "images/pbcat/bike_9A_BusDeliveryVehiclePullover.png"
+      },
+      {
+        "title": "Other / Unknown",
+        "infoAttrValue": "OtherOrUnknown",
+        "description": "The motorist’s turning maneuver is other than those described or is unknown."
+      }
+    ]
+  },
+  "B-9A1": {
+    "title": "Motorist Right on Red - Same Direction",
+    "description": "Was the motorist making a right turn on red?",
+    "infoAttrName": "rightTurnOnRedCd",
+    "items": [
+      {
+        "title": "Yes",
+        "infoAttrValue": "Yes"
+      },
+      {
+        "title": "No or Unknown",
+        "infoAttrValue": "NoOrUnknown"
+      }
+    ]
+  },
+  "B-9A2": {
+    "title": "Motorist Right on Red - Opposite Direction",
+    "description": "Was the motorist making a right turn on red?",
+    "infoAttrName": "rightTurnOnRedCd",
+    "items": [
+      {
+        "title": "Yes",
+        "infoAttrValue": "Yes"
+      },
+      {
+        "title": "No or Unknown",
+        "infoAttrValue": "NoOrUnknown"
+      }
+    ]
+  },
+  "B-9B": {
+    "title": "Bicyclist Turn/Merge",
+    "description": "Which of the following scenarios best describes the maneuver of the bicyclist?",
+    "infoAttrName": "bicyclistTurnedMergedCd",
+    "items": [
+      {
+        "title": "Left Turn - Same Direction",
+        "infoAttrValue": "LeftTurnSameDirection",
+        "description": "The bicyclist turned or merged left in front of a motorist going in the same direction.",
+        "imageUrl": "images/pbcat/bike_9B_LeftTurnSameDirection.png"
+      },
+      {
+        "title": "Left Turn - Opposite Direction",
+        "infoAttrValue": "LeftTurnOppositeDirection",
+        "description": "The bicyclist turned or merged left in front of a motorist coming from the opposite direction.",
+        "imageUrl": "images/pbcat/bike_9B_LeftTurnOppositeDirection.png"
+      },
+      {
+        "title": "Ride-Out",
+        "infoAttrValue": "RideInOrOut",
+        "description": "The bicyclist, initially on a sidewalk or other parallel path, rode into the roadway and into the path of a motor vehicle.",
+        "imageUrl": "images/pbcat/bike_9B_RideOutSidewalk.png"
+      },
+      {
+        "title": "Right Turn - Same Direction",
+        "infoAttrValue": "RightTurnSameDirection",
+        "description": "The bicyclist turned or merged right in front of a motorist going in the same direction.",
+        "imageUrl": "images/pbcat/bike_9B_RightTurnSameDirection.png"
+      },
+      {
+        "title": "Right Turn - Opposite Direction",
+        "infoAttrValue": "RightTurnOppositeDirection",
+        "description": "The bicyclist turned or merged right in front of a motorist coming from the opposite direction.",
+        "imageUrl": "images/pbcat/bike_9B_RightTurnOppositeDirection.png"
+      }
+    ]
+  },
+  "B-9C": {
+    "title": "Motorist Overtaking",
+    "description": "Which of the following best describes the overtaking crash?",
+    "infoAttrName": "motoristOvertakingCd",
+    "items": [
+      {
+        "title": "Undetected Bicyclist",
+        "infoAttrValue": "UndetectedBicyclist",
+        "description": "The motorist failed to detect the bicyclist.",
+        "imageUrl": "images/pbcat/bike_9C_UndetectedBicyclist.png"
+      },
+      {
+        "title": "Misjudged Space",
+        "infoAttrValue": "MisjudgedSpace",
+        "description": "The motorist misjudged the width and distance required to pass the bicyclist.",
+        "imageUrl": "images/pbcat/bike_9C_MisjudgedSpace.png"
+      },
+      {
+        "title": "Bicyclist Swerve",
+        "infoAttrValue": "BicyclistSwerved",
+        "description": "The bicyclist swerved or moved suddenly into the path of an overtaking vehicle.",
+        "imageUrl": "images/pbcat/bike_9C_BicyclistSwerve.png"
+      },
+      {
+        "title": "Other/Unknown",
+        "infoAttrValue": "OtherOrUnknown",
+        "description": "The specific circumstances surrounding the overtaking maneuver do not conform to any of the situations described or are unknown."
+      }
+    ]
+  },
+  "B-9D": {
+    "title": "Bicyclist Overtaking",
+    "description": "Which of the following best describes the overtaking crash?",
+    "infoAttrName": "bicyclistOvertakingCd",
+    "items": [
+      {
+        "title": "Passing on Right",
+        "infoAttrValue": "PassingOnRight",
+        "description": "The bicyclist struck a motor vehicle in the travel lane while passing on the right.",
+        "imageUrl": "images/pbcat/bike_9D_PassingonRight.png"
+      },
+      {
+        "title": "Passing on Left",
+        "infoAttrValue": "PassingOnLeft",
+        "description": "The bicyclist struck a motor vehicle in the travel lane while passing on the left.",
+        "imageUrl": "images/pbcat/bike_9D_PassingonLeft.png"
+      },
+      {
+        "title": "Parked Vehicle",
+        "infoAttrValue": "ParkedVehicle",
+        "description": "The bicyclist struck a parked vehicle while passing.",
+        "imageUrl": "images/pbcat/bike_9D_ParkedVehicle.png"
+      },
+      {
+        "title": "Extended Door",
+        "infoAttrValue": "ExtendedDoor",
+        "description": "The bicyclist struck an extended door on a parked vehicle while passing.",
+        "imageUrl": "images/pbcat/bike_9D_ExtendedDoor.png"
+      },
+      {
+        "title": "Other/Unknown",
+        "infoAttrValue": "OtherOrUnknown",
+        "description": "The specific circumstances surrounding the overtaking maneuver do not conform to any of the situations described or are unknown."
+      }
+    ]
+  },
+  "B-9E": {
+    "title": "Head-On",
+    "description": "Which operator was traveling in the wrong direction or in the wrong travel lane?",
+    "infoAttrName": "headOnCrashCd",
+    "items": [
+      {
+        "title": "Bicyclist",
+        "infoAttrValue": "Bicyclist"
+      },
+      {
+        "title": "Motorist",
+        "infoAttrValue": "Motorist"
+      },
+      {
+        "title": "Unknown",
+        "infoAttrValue": "Unknown"
       }
     ]
   }

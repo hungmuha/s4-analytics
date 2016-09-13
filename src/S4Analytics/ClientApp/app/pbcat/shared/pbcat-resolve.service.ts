@@ -3,7 +3,7 @@ import { Router, Resolve, ActivatedRouteSnapshot } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import '../../rxjs-operators';
 import { AppState } from '../../app.state';
-import { PbcatService } from './pbcat.service';
+import { PbcatService, PbcatParticipantInfo } from './pbcat.service';
 import { PbcatState } from './pbcat.state';
 import { PbcatFlow, FlowType } from './pbcat-flow';
 import { PbcatInfo } from './pbcat-info';
@@ -22,7 +22,6 @@ export class PbcatResolveService implements Resolve<void> {
     resolve(route: ActivatedRouteSnapshot): Observable<PbcatFlow> {
         let hsmvReportNumber = +route.params['hsmvReportNumber'];
         let stepNumber = +route.params['stepNumber'];
-        let flowType = FlowType.Pedestrian; // todo: set dynamically
         let config: PbcatConfig;
         this.currentFlow = this.appState.pbcatState.flow;
         this.isSameFlow = this.currentFlow && this.currentFlow.hsmvReportNumber === hsmvReportNumber;
@@ -31,13 +30,30 @@ export class PbcatResolveService implements Resolve<void> {
                 .catch(this.handleError);
         }
         else {
-            return this.pbcatService.getConfiguration(flowType)
+            return this.pbcatService.getConfiguration()
                 .do(cfg => config = cfg)
-                .switchMap(() => this.pbcatService.getPbcatInfo(flowType, hsmvReportNumber))
-                .map(pbcatInfo => new PbcatFlow(flowType, hsmvReportNumber, pbcatInfo, config))
+                .switchMap(() => this.pbcatService.getParticipantInfo(hsmvReportNumber))
+                .switchMap(participantInfo => [participantInfo, this.pbcatService.getPbcatInfo(participantInfo, hsmvReportNumber)])
+                .map(([participantInfo, pbcatInfo]) => new PbcatFlow(flowType, hsmvReportNumber, pbcatInfo, config))
                 .switchMap(flow => this.goToStepOrSummary(flow, stepNumber))
                 .catch(this.handleError);
         }
+    }
+
+    private determineFlowType(participantInfo: PbcatParticipantInfo): FlowType {
+        let flowType: FlowType;
+        if (participantInfo.HasPedestrianTyping ||
+            (participantInfo.HasPedestrianParticipant && !participantInfo.HasBicyclistParticipant)) {
+            flowType = FlowType.Pedestrian;
+        }
+        else if (participantInfo.HasBicyclistTyping ||
+            (participantInfo.HasBicyclistParticipant && !participantInfo.HasPedestrianParticipant)) {
+            flowType = FlowType.Bicyclist;
+        }
+        else {
+            flowType = FlowType.Undetermined;
+        }
+        return flowType;
     }
 
     private goToStepOrSummary(flow: PbcatFlow, stepNumber?: number): Observable<PbcatFlow> {
