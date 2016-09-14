@@ -5,6 +5,7 @@ export class PbcatStep {
     private _selectedItem: PbcatItem;
 
     constructor(
+        public screenName: string,
         public title: string,
         public description: string,
         public infoAttrName: string) { }

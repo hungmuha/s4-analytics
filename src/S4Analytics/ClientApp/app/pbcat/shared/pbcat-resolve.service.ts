@@ -3,9 +3,9 @@ import { Router, Resolve, ActivatedRouteSnapshot } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import '../../rxjs-operators';
 import { AppState } from '../../app.state';
-import { PbcatService } from './pbcat.service';
+import { PbcatService, PbcatParticipantInfo } from './pbcat.service';
 import { PbcatState } from './pbcat.state';
-import { PbcatFlow, FlowType } from './pbcat-flow';
+import { PbcatFlow } from './pbcat-flow';
 import { PbcatInfo } from './pbcat-info';
 import { PbcatConfig } from './pbcat-config';
 
@@ -22,8 +22,6 @@ export class PbcatResolveService implements Resolve<void> {
     resolve(route: ActivatedRouteSnapshot): Observable<PbcatFlow> {
         let hsmvReportNumber = +route.params['hsmvReportNumber'];
         let stepNumber = +route.params['stepNumber'];
-        let flowType = FlowType.Pedestrian; // todo: set dynamically
-        let config: PbcatConfig;
         this.currentFlow = this.appState.pbcatState.flow;
         this.isSameFlow = this.currentFlow && this.currentFlow.hsmvReportNumber === hsmvReportNumber;
         if (this.isSameFlow) {
@@ -31,12 +29,40 @@ export class PbcatResolveService implements Resolve<void> {
                 .catch(this.handleError);
         }
         else {
-            return this.pbcatService.getConfiguration(flowType)
-                .do(cfg => config = cfg)
-                .switchMap(() => this.pbcatService.getPbcatInfo(flowType, hsmvReportNumber))
-                .map(pbcatInfo => new PbcatFlow(flowType, hsmvReportNumber, pbcatInfo, config))
-                .switchMap(flow => this.goToStepOrSummary(flow, stepNumber))
-                .catch(this.handleError);
+            // if this is a new flow, it must start at step 1
+            if (stepNumber === 1) {
+                /*
+                1. get pbcat config
+                2. get participant info
+                3. config that crash has bike or ped
+                4. get existing typing info
+                5. create flow
+                6. advance to step 1
+                */
+                let config: PbcatConfig;
+                let participantInfo: PbcatParticipantInfo;
+                return this.pbcatService.getConfiguration()
+                    .do(cfg => config = cfg)
+                    .switchMap(() => this.pbcatService.getParticipantInfo(hsmvReportNumber))
+                    .switchMap(info => this.confirmBikePedCrash(info))
+                    .do(info => participantInfo = info)
+                    .switchMap(() => this.pbcatService.getPbcatInfo(participantInfo, hsmvReportNumber))
+                    .map(pbcatInfo => new PbcatFlow(hsmvReportNumber, participantInfo, pbcatInfo, config))
+                    .switchMap(flow => this.goToStepOrSummary(flow, 1))
+                    .catch(this.handleError);
+            }
+            else {
+                this.router.navigate(['pbcat', hsmvReportNumber, 'step', 1]);
+            }
+        }
+    }
+
+    private confirmBikePedCrash(participantInfo: PbcatParticipantInfo): Observable<any> {
+        if (participantInfo.hasBicyclistParticipant || participantInfo.hasPedestrianParticipant) {
+            return Observable.of(participantInfo);
+        }
+        else {
+            return Observable.throw('The crash has no pedestrian or bicyclist participants and cannot be typed.');
         }
     }
 

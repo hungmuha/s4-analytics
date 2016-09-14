@@ -23,6 +23,13 @@ class BicyclistInfoWrapper {
     ) { }
 }
 
+export class PbcatParticipantInfo {
+    hasPedestrianParticipant: boolean;
+    hasBicyclistParticipant: boolean;
+    hasPedestrianTyping: boolean;
+    hasBicyclistTyping: boolean;
+}
+
 export class NextCrashInfo {
     constructor(
         public hsmvReportNumber: number,
@@ -31,51 +38,47 @@ export class NextCrashInfo {
 
 @Injectable()
 export class PbcatService {
-    private cachedPedConfig: PbcatConfig;
-    private cachedBikeConfig: PbcatConfig;
+    private cachedConfig: PbcatConfig;
 
     constructor(private http: Http) { }
 
-    getConfiguration(flowType: FlowType): Observable<PbcatConfig> {
-        // return ped config if it was previously cached
-        if (flowType === FlowType.Pedestrian && this.cachedPedConfig !== undefined) {
-            return Observable.of(this.cachedPedConfig);
-        }
-        // return bike config if it was previously cached
-        else if (flowType === FlowType.Bicyclist && this.cachedBikeConfig !== undefined) {
-            return Observable.of(this.cachedBikeConfig);
+    getConfiguration(): Observable<PbcatConfig> {
+        // return cached config if available
+        if (this.cachedConfig !== undefined) {
+            return Observable.of(this.cachedConfig);
         }
         // otherwise retrieve the config from the server and cache it
         else {
-            let jsonUrl = flowType === FlowType.Pedestrian
-                ? 'json/pbcat-ped.json'
-                : 'json/pbcat-bike.json';
+            let url = 'json/pbcat-config.json';
             return this.http
-                .get(jsonUrl)
+                .get(url)
                 .map(response => this.extractData<PbcatConfig>(response))
-                .do(config => this.cacheConfig(flowType, config))
+                .do(config => this.cachedConfig = config)
                 .catch(this.handleError);
         }
     }
 
-    pbcatInfoNotFound(error: any): Observable<any> {
-        // if no record was found, create an empty one
-        if (error.status === 404) {
-            return Observable.of(undefined);
-        }
-        else {
-            return this.handleError(error);
-        }
-    }
-
-    getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Observable<PbcatInfo> {
-        // GET api/pbcat/:bikeOrPed/:hsmvRptNr
-        let bikeOrPed = this.getBikeOrPed(flowType);
-        let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
+    getParticipantInfo(hsmvReportNumber: number): Observable<PbcatParticipantInfo> {
+        let url = `api/pbcat/${hsmvReportNumber}`;
         return this.http
             .get(url)
-            .map(response => this.extractData<PbcatInfo>(response))
-            .catch(error => this.pbcatInfoNotFound(error));
+            .map(response => this.extractData<PbcatParticipantInfo>(response))
+            .catch(this.handleError);
+    }
+
+    getPbcatInfo(participantInfo: PbcatParticipantInfo, hsmvReportNumber: number): Observable<PbcatInfo> {
+        // GET api/pbcat/:bikeOrPed/:hsmvRptNr
+        if (participantInfo.hasPedestrianTyping || participantInfo.hasBicyclistTyping) {
+            let bikeOrPed = participantInfo.hasPedestrianTyping ? 'ped' : 'bike';
+            let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
+            return this.http
+                .get(url)
+                .map(response => this.extractData<PbcatInfo>(response))
+                .catch(this.handleError);
+        }
+        else {
+            return Observable.of(undefined);
+        }
     }
 
     createPbcatInfo(flow: PbcatFlow): Observable<NextCrashInfo> {
@@ -145,14 +148,5 @@ export class PbcatService {
         let body = response.json();
         let data = body.data || body || {};
         return data as T;
-    }
-
-    private cacheConfig(flowType: FlowType, config: PbcatConfig) {
-        if (flowType === FlowType.Pedestrian) {
-            this.cachedPedConfig = config;
-        }
-        else if (flowType === FlowType.Bicyclist) {
-            this.cachedBikeConfig = config;
-        }
     }
 }
