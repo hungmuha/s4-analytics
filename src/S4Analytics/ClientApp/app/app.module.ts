@@ -5,6 +5,7 @@ import { routing, appRoutingProviders } from './app.routing';
 import { AppComponent } from './app.component';
 import { PbcatModule } from './pbcat/pbcat.module';
 import { AppState } from './app.state';
+import { OptionsService } from './options.service';
 
 @NgModule({
     imports: [
@@ -14,7 +15,11 @@ import { AppState } from './app.state';
         routing
     ],
     declarations: [AppComponent],
-    providers: [AppState, appRoutingProviders],
+    providers: [
+        AppState,
+        appRoutingProviders,
+        OptionsService
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
