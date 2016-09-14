@@ -16,20 +16,29 @@ namespace S4Analytics.Controllers
         public CrashTypePedestrian PedestrianCrashType { get; set; }
     }
 
+    public class BicyclistInfoWrapper
+    {
+        public int HsmvReportNumber { get; set; }
+        public PBCATBicyclistInfo BicyclistInfo { get; set; }
+        public CrashTypeBicyclist BicyclistCrashType { get; set; }
+    }
+
     [Route("api/[controller]")]
     public class PbcatController : S4Controller
     {
-        public PbcatController(IPbcatPedRepository pedRepo)
+        // COMMON
+
+        public PbcatController(IPbcatRepository pbcatRepo)
         {
-            PedRepo = pedRepo;
+            PbcatRepo = pbcatRepo;
         }
 
-        public IPbcatPedRepository PedRepo { get; set; }
+        public IPbcatRepository PbcatRepo { get; set; }
 
         [HttpGet("{hsmvRptNbr}")]
         public IActionResult GetParticipantInfo(int hsmvRptNbr)
         {
-            var info = PedRepo.GetParticipantInfo(hsmvRptNbr);
+            var info = PbcatRepo.GetParticipantInfo(hsmvRptNbr);
             if (info == null)
             {
                 return NotFound();
@@ -38,6 +47,8 @@ namespace S4Analytics.Controllers
             return new ObjectResult(data);
         }
 
+        // PEDESTRIAN
+
         /// <summary>
         /// GET /api/pbcat/ped/:hsmvRptNbr
         /// Return an existing PBCAT_PED record from the database given its HSMV report number.
@@ -45,7 +56,7 @@ namespace S4Analytics.Controllers
         [HttpGet("ped/{hsmvRptNbr}", Name = "GetPedestrianInfo")]
         public IActionResult GetPedestrianInfo(int hsmvRptNbr)
         {
-            var pedInfo = PedRepo.Find(hsmvRptNbr);
+            var pedInfo = PbcatRepo.FindPedestrian(hsmvRptNbr);
             if (pedInfo == null)
             {
                 return NotFound();
@@ -72,20 +83,20 @@ namespace S4Analytics.Controllers
             var crashType = pedInfoWrapper.PedestrianCrashType;
 
             // crash report must exist
-            var crashReportExists = PedRepo.CrashReportExists(hsmvRptNbr);
+            var crashReportExists = PbcatRepo.CrashReportExists(hsmvRptNbr);
             if (!crashReportExists)
             {
                 return NotFound();
             }
 
             // ped info must not exist
-            var existingPedInfo = PedRepo.Find(hsmvRptNbr);
+            var existingPedInfo = PbcatRepo.FindPedestrian(hsmvRptNbr);
             if (existingPedInfo != null)
             {
                 return StatusCode((int)HttpStatusCode.Conflict);
             }
 
-            PedRepo.Add(hsmvRptNbr, pedInfo, crashType);
+            PbcatRepo.Add(hsmvRptNbr, pedInfo, crashType);
             var data = AjaxSafeData(pedInfoWrapper);
             return CreatedAtRoute("GetPedestrianInfo", new { hsmvRptNbr }, data);
         }
@@ -105,13 +116,13 @@ namespace S4Analytics.Controllers
             var pedInfo = pedInfoWrapper.PedestrianInfo;
             var crashType = pedInfoWrapper.PedestrianCrashType;
 
-            var existingPedInfo = PedRepo.Find(hsmvRptNbr);
+            var existingPedInfo = PbcatRepo.FindPedestrian(hsmvRptNbr);
             if (existingPedInfo == null)
             {
                 return NotFound();
             }
 
-            PedRepo.Update(hsmvRptNbr, pedInfo, crashType);
+            PbcatRepo.Update(hsmvRptNbr, pedInfo, crashType);
             return new NoContentResult();
         }
 
@@ -122,13 +133,13 @@ namespace S4Analytics.Controllers
         [HttpDelete("ped/{hsmvRptNbr}")]
         public IActionResult DeletePedestrianInfo(int hsmvRptNbr)
         {
-            var pedInfo = PedRepo.Find(hsmvRptNbr);
+            var pedInfo = PbcatRepo.FindPedestrian(hsmvRptNbr);
             if (pedInfo == null)
             {
                 return NotFound();
             }
 
-            PedRepo.Remove(hsmvRptNbr);
+            PbcatRepo.RemovePedestrian(hsmvRptNbr);
             return new NoContentResult();
         }
 
@@ -145,9 +156,123 @@ namespace S4Analytics.Controllers
                 return BadRequest();
             }
 
-            var crashType = PedRepo.GetCrashType(pedInfo);
+            var crashType = PbcatRepo.GetCrashType(pedInfo);
             var data = AjaxSafeData(crashType);
             return CreatedAtRoute("CalculatePedestrianCrashType", data);
+        }
+
+        // BICYCLIST
+
+        /// <summary>
+        /// GET /api/pbcat/bike/:hsmvRptNbr
+        /// Return an existing PBCAT_BIKE record from the database given its HSMV report number.
+        /// </summary>
+        [HttpGet("bike/{hsmvRptNbr}", Name = "GetBicyclistInfo")]
+        public IActionResult GetBicyclistInfo(int hsmvRptNbr)
+        {
+            var bikeInfo = PbcatRepo.FindBicyclist(hsmvRptNbr);
+            if (bikeInfo == null)
+            {
+                return NotFound();
+            }
+
+            var data = AjaxSafeData(bikeInfo);
+            return new ObjectResult(data);
+        }
+
+        /// <summary>
+        /// POST /api/pbcat/bike
+        /// Insert a new PBCAT_BIKE record into the database.
+        /// </summary>
+        [HttpPost("bike")]
+        public IActionResult CreateBicyclistInfo([FromBody] BicyclistInfoWrapper bikeInfoWrapper)
+        {
+            if (bikeInfoWrapper == null)
+            {
+                return BadRequest();
+            }
+
+            var hsmvRptNbr = bikeInfoWrapper.HsmvReportNumber;
+            var bikeInfo = bikeInfoWrapper.BicyclistInfo;
+            var crashType = bikeInfoWrapper.BicyclistCrashType;
+
+            // crash report must exist
+            var crashReportExists = PbcatRepo.CrashReportExists(hsmvRptNbr);
+            if (!crashReportExists)
+            {
+                return NotFound();
+            }
+
+            // bike info must not exist
+            var existingBikeInfo = PbcatRepo.FindBicyclist(hsmvRptNbr);
+            if (existingBikeInfo != null)
+            {
+                return StatusCode((int)HttpStatusCode.Conflict);
+            }
+
+            PbcatRepo.Add(hsmvRptNbr, bikeInfo, crashType);
+            var data = AjaxSafeData(bikeInfoWrapper);
+            return CreatedAtRoute("GetBicyclistInfo", new { hsmvRptNbr }, data);
+        }
+
+        /// <summary>
+        /// PUT /api/pbcat/bike/:hsmvRptNbr
+        /// Update an existing PBCAT_BIKE record in the database.
+        /// </summary>
+        [HttpPut("bike/{hsmvRptNbr}")]
+        public IActionResult UpdateBicyclistInfo(int hsmvRptNbr, [FromBody] BicyclistInfoWrapper bikeInfoWrapper)
+        {
+            if (bikeInfoWrapper == null)
+            {
+                return BadRequest();
+            }
+
+            var bikeInfo = bikeInfoWrapper.BicyclistInfo;
+            var crashType = bikeInfoWrapper.BicyclistCrashType;
+
+            var existingbikeInfo = PbcatRepo.FindBicyclist(hsmvRptNbr);
+            if (existingbikeInfo == null)
+            {
+                return NotFound();
+            }
+
+            PbcatRepo.Update(hsmvRptNbr, bikeInfo, crashType);
+            return new NoContentResult();
+        }
+
+        /// <summary>
+        /// DELETE /api/pbcat/bike/:hsmvRptNbr
+        /// Delete an existing PBCAT_BIKE record from the database given its HSMV report number.
+        /// </summary>
+        [HttpDelete("bike/{hsmvRptNbr}")]
+        public IActionResult DeleteBicyclistInfo(int hsmvRptNbr)
+        {
+            var bikeInfo = PbcatRepo.FindBicyclist(hsmvRptNbr);
+            if (bikeInfo == null)
+            {
+                return NotFound();
+            }
+
+            PbcatRepo.RemoveBicyclist(hsmvRptNbr);
+            return new NoContentResult();
+        }
+
+        /// <summary>
+        /// POST /api/pbcat/bike/crashtype
+        /// Calculate the CRASH_TYPE_NBR, CRASH_GROUP_NBR, CRASH_TYPE_EXPANDED and
+        /// CRASH_GROUP_EXPANDED for the PBCAT_BIKE record, but do not update the database.
+        /// </summary>
+        [HttpPost("bike/crashtype", Name = "CalculateBicyclistCrashType")]
+        public IActionResult CalculateBicyclistCrashType([FromBody] PBCATBicyclistInfo bikeInfo)
+        {
+            if (bikeInfo == null)
+            {
+                return BadRequest();
+            }
+
+            var crashType = PbcatRepo.GetCrashType(bikeInfo);
+            var data = AjaxSafeData(crashType);
+            return CreatedAtRoute("CalculateBicyclistCrashType", data);
         }
     }
 }

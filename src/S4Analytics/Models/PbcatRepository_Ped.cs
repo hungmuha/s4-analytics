@@ -1,32 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Data;
-using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
 using Lib.PBCAT;
 
 namespace S4Analytics.Models
 {
-    public class PbcatParticipantInfo
+    public partial class PbcatRepository
     {
-        public bool HasPedestrianParticipant { get; set; }
-        public bool HasBicyclistParticipant { get; set; }
-        public bool HasPedestrianTyping { get; set; }
-        public bool HasBicyclistTyping { get; set; }
-    }
-
-    public class PbcatPedRepository : S4Repository, IPbcatPedRepository
-    {
-        private string _warehouseConnStr;
-
-        public PbcatPedRepository(IOptions<ServerOptions> serverOptions)
-        {
-            _warehouseConnStr = serverOptions.Value.WarehouseConnStr;
-        }
-
-        public PBCATPedestrianInfo Find(int hsmvRptNbr)
+        public PBCATPedestrianInfo FindPedestrian(int hsmvRptNbr)
         {
             PBCATPedestrianInfo info = null;
 
@@ -158,7 +143,7 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = lastUpdateUserId;
                         cmd.ExecuteNonQuery();
                     }
-                    UpdateCrashReport(conn, hsmvRptNbr);
+                    UpdatePedestrianCrashReport(conn, hsmvRptNbr);
                     trans.Commit();
                 }
             }
@@ -254,66 +239,10 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
                         cmd.ExecuteNonQuery();
                     }
-                    UpdateCrashReport(conn, hsmvRptNbr);
+                    UpdatePedestrianCrashReport(conn, hsmvRptNbr);
                     trans.Commit();
                 }
             }
-        }
-
-        public void Remove(int hsmvRptNbr)
-        {
-            var cmdText = "DELETE FROM pbcat_ped WHERE hsmv_rpt_nbr = :hsmvRptNbr";
-            using (var conn = new OracleConnection(_warehouseConnStr))
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    using (var cmd = new OracleCommand(cmdText, conn) { BindByName = true })
-                    {
-                        cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
-                        cmd.ExecuteNonQuery();
-                    }
-                    UpdateCrashReport(conn, hsmvRptNbr);
-                    trans.Commit();
-                }
-            }
-        }
-
-        public PbcatParticipantInfo GetParticipantInfo(int hsmvRptNbr)
-        {
-            PbcatParticipantInfo info = null;
-            var cmdText = @"SELECT
-                CASE WHEN ce.ped_cnt > 0 OR he.harmful_evt_tx = 'Pedestrian' THEN 1 ELSE 0 END AS has_ped_participant,
-                CASE WHEN ce.bike_cnt > 0 OR he.harmful_evt_tx = 'Pedalcycle' THEN 1 ELSE 0 END AS has_bike_participant,
-                nvl2(p.hsmv_rpt_nbr, 1, 0) AS has_ped_typing,
-                nvl2(b.hsmv_rpt_nbr, 1, 0) AS has_bike_typing
-                FROM fact_crash_evt ce
-                LEFT OUTER JOIN dim_harmful_evt he
-                    ON he.ID = ce.key_1st_he
-                LEFT OUTER JOIN pbcat_ped p
-                    ON p.hsmv_rpt_nbr = ce.hsmv_rpt_nbr
-                LEFT OUTER JOIN pbcat_bike b
-                    ON b.hsmv_rpt_nbr = ce.hsmv_rpt_nbr
-                WHERE ce.hsmv_rpt_nbr = :hsmvRptNbr";
-            using (var conn = new OracleConnection(_warehouseConnStr))
-            {
-                var cmd = new OracleCommand(cmdText, conn);
-                cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
-                var da = new OracleDataAdapter(cmd);
-                var ds = new DataSet();
-                da.Fill(ds);
-                var dt = ds.Tables[0];
-                if (dt.Rows.Count > 0)
-                {
-                    var dr = dt.Rows[0];
-                    info = new PbcatParticipantInfo();
-                    info.HasPedestrianParticipant = dr.Field<decimal>("has_ped_participant") == 1;
-                    info.HasBicyclistParticipant = dr.Field<decimal>("has_bike_participant") == 1;
-                    info.HasPedestrianTyping = dr.Field<decimal>("has_ped_typing") == 1;
-                    info.HasBicyclistTyping = dr.Field<decimal>("has_bike_typing") == 1;
-                }
-            }
-            return info;
         }
 
         public CrashTypePedestrian GetCrashType(PBCATPedestrianInfo pedInfo)
@@ -326,23 +255,26 @@ namespace S4Analytics.Models
             return crashType;
         }
 
-        public bool CrashReportExists(int hsmvRptNbr)
+        public void RemovePedestrian(int hsmvRptNbr)
         {
-            var cmdText = "SELECT COUNT(*) FROM fact_crash_evt WHERE hsmv_rpt_nbr = :hsmvRptNbr";
-            int ct;
+            var cmdText = "DELETE FROM pbcat_ped WHERE hsmv_rpt_nbr = :hsmvRptNbr";
             using (var conn = new OracleConnection(_warehouseConnStr))
             {
                 conn.Open();
-                using (var cmd = new OracleCommand(cmdText, conn) { BindByName = true })
+                using (var trans = conn.BeginTransaction())
                 {
-                    cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
-                    ct = Convert.ToInt32(cmd.ExecuteScalar());
+                    using (var cmd = new OracleCommand(cmdText, conn) { BindByName = true })
+                    {
+                        cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
+                        cmd.ExecuteNonQuery();
+                    }
+                    UpdatePedestrianCrashReport(conn, hsmvRptNbr);
+                    trans.Commit();
                 }
             }
-            return ct > 0;
         }
 
-        private void UpdateCrashReport(OracleConnection conn, int hsmvRptNbr)
+        private void UpdatePedestrianCrashReport(OracleConnection conn, int hsmvRptNbr)
         {
             var cmdText = @"UPDATE fact_crash_evt c
                 SET key_bike_ped_crash_type = (
