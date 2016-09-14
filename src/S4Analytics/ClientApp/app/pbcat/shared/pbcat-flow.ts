@@ -24,6 +24,7 @@ export class PbcatFlow {
     private _stepHistory: PbcatStep[] = [];
     private _isFlowComplete: boolean = false;
     private _hasValidState: boolean = true;
+    private crashLocAttrValue: string;
 
     constructor(
         public hsmvReportNumber: number,
@@ -134,13 +135,16 @@ export class PbcatFlow {
 
         // if flow type was undetermined, the first step will be the "bike or ped" selection,
         // so we need to set the flowType now that the user has made a decision.
-        if (this.currentStepNumber === 1 && this.flowType === FlowType.Undetermined) {
+        if (this.currentStep.screenName === UNDETERMINED_INITIAL_SCREEN) {
             if (item.infoAttrValue === 'Pedestrian') {
                 this.flowType = FlowType.Pedestrian;
             }
             else if (item.infoAttrValue === 'Bicyclist') {
                 this.flowType = FlowType.Bicyclist;
             }
+        }
+        else if (this.currentStep.screenName === PED_INITIAL_SCREEN || this.currentStep.screenName === BIKE_INITIAL_SCREEN) {
+            this.crashLocAttrValue = item.infoAttrValue;
         }
 
         if (!isCurrentSelectedItem) {
@@ -208,7 +212,7 @@ export class PbcatFlow {
                 break;
         }
         let screenConfig = this.config[screenName];
-        let step = new PbcatStep(screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
+        let step = new PbcatStep(screenName, screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
         step.items = screenConfig.items.map((item, index) => this.itemFromItemConfig(item, index, false));
         return step;
     }
@@ -225,7 +229,7 @@ export class PbcatFlow {
             screenConfig = this.config[screenName];
         }
         if (screenConfig) {
-            step = new PbcatStep(screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
+            step = new PbcatStep(screenName, screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
             step.items = screenConfig.items.map((item, index) => this.itemFromItemConfig(item, index, false));
         }
 
@@ -251,15 +255,24 @@ export class PbcatFlow {
         let nextScreenName: string;
 
         if (typeof screenName === 'string') {
+            // In most cases, the config JSON looks like this example:
+            //   "nextScreenName": "P-1A"
+            // There is only one possibility.
             nextScreenName = screenName;
         }
         else if (screenName) {
-            // determine which crash location was selected in step 1
-            let crashLocation = this.stepHistory[0].selectedItem.infoAttrValue;
-            // get the corresponding next screen name (could be undefined, which indicates the flow is complete)
-            nextScreenName = screenName[crashLocation];
+            // In a few cases, the config JSON looks like this example:
+            //  "nextScreenName": {
+            //    "Intersection": "B-3",
+            //    "IntersectionRelated": "B-3",
+            //    "NonIntersectionLocation": "B-3"
+            //  }
+            // To determine the next screen name, we consult the crash location that was
+            // captured on the first step of the flow. It's possible that the result is undefined,
+            // if the crash location is not one of the keys in nextScreenName.
+            nextScreenName = screenName[this.crashLocAttrValue];
         }
 
-        return nextScreenName;
+        return nextScreenName; // If undefined, that's OK ... it means we have reached the end of the flow.
     }
 }
