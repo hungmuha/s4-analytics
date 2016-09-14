@@ -24,10 +24,10 @@ class BicyclistInfoWrapper {
 }
 
 export class PbcatParticipantInfo {
-    HasPedestrianParticipant: boolean;
-    HasBicyclistParticipant: boolean;
-    HasPedestrianTyping: boolean;
-    HasBicyclistTyping: boolean;
+    hasPedestrianParticipant: boolean;
+    hasBicyclistParticipant: boolean;
+    hasPedestrianTyping: boolean;
+    hasBicyclistTyping: boolean;
 }
 
 export class NextCrashInfo {
@@ -59,35 +59,25 @@ export class PbcatService {
     }
 
     getParticipantInfo(hsmvReportNumber: number): Observable<PbcatParticipantInfo> {
-        let url = `api/${hsmvReportNumber}`;
+        let url = `api/pbcat/${hsmvReportNumber}`;
         return this.http
             .get(url)
             .map(response => this.extractData<PbcatParticipantInfo>(response))
             .catch(this.handleError);
     }
 
-    pbcatInfoNotFound(error: any): Observable<any> {
-        // if no record was found, create an empty one
-        if (error.status === 404) {
-            return Observable.of(undefined);
-        }
-        else {
-            return this.handleError(error);
-        }
-    }
-
-    getPbcatInfo(flowType: FlowType, hsmvReportNumber: number): Observable<PbcatInfo> {
+    getPbcatInfo(participantInfo: PbcatParticipantInfo, hsmvReportNumber: number): Observable<PbcatInfo> {
         // GET api/pbcat/:bikeOrPed/:hsmvRptNr
-        if (flowType === FlowType.Undetermined) {
-            return Observable.of(undefined);
-        }
-        else {
-            let bikeOrPed = this.getBikeOrPed(flowType);
+        if (participantInfo.hasPedestrianTyping || participantInfo.hasBicyclistTyping) {
+            let bikeOrPed = participantInfo.hasPedestrianTyping ? 'ped' : 'bike';
             let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
             return this.http
                 .get(url)
                 .map(response => this.extractData<PbcatInfo>(response))
-                .catch(error => this.pbcatInfoNotFound(error));
+                .catch(this.handleError);
+        }
+        else {
+            return Observable.of(undefined);
         }
     }
 
