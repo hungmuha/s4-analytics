@@ -6,12 +6,16 @@ const pbcatRoutes: Routes = [
     {
         path: 'pbcat/:hsmvReportNumber/step/:stepNumber',
         component: PbcatFlowComponent,
-        resolve: { PbcatResolveService }
+        resolve: {
+            flow: PbcatResolveService
+        }
     },
     {
         path: 'pbcat/:hsmvReportNumber/summary',
         component: PbcatFlowComponent,
-        resolve: { PbcatResolveService }
+        resolve: {
+            flow: PbcatResolveService
+        }
     }
 ];
 

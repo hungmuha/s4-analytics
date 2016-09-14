@@ -60,7 +60,7 @@ export class PbcatFlowComponent {
     }
 
     private handleRouteData(data: { [name: string]: any }) {
-        this.state.flow = data['PbcatResolveService'] as PbcatFlow;
+        this.state.flow = data['flow'] as PbcatFlow;
         if (this.state.flow.showSummary) {
             this.crashTypeSub = this.pbcatService
                 .calculateCrashType(this.state.flow.flowType, this.state.flow.pbcatInfo)

@@ -2,7 +2,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { SafeResourceUrl, DomSanitizationService } from '@angular/platform-browser';
 import { Subscription } from 'rxjs/Subscription';
-import { OptionsService, Options } from './options.service';
+import { Options } from './options-resolve.service';
 
 // This component should not be necessary, but IE exhibits some
 // buggy behavior when programatically controlling a child window
@@ -15,32 +15,25 @@ import { OptionsService, Options } from './options.service';
     template: `<iframe class="report-viewer" [src]="pdfUrl"></iframe>`
 })
 export class ReportViewerComponent {
-    optionsSub: Subscription;
-    paramSub: Subscription;
+    dataSub: Subscription;
+    hsmvReportNumber: number;
     pdfUrl: SafeResourceUrl;
 
     constructor(
         private route: ActivatedRoute,
-        private sanitizer: DomSanitizationService,
-        private optionsService: OptionsService) {
+        private sanitizer: DomSanitizationService) {
     }
 
     ngOnInit() {
-        this.paramSub = this.route.params.subscribe(params => {
-            let hsmvReportNumber = params['hsmvReportNumber'];
-            this.setPdfUrl(hsmvReportNumber);
+        this.hsmvReportNumber = +this.route.snapshot.params['hsmvReportNumber'];
+        this.dataSub = this.route.data.subscribe(data => {
+            let options = data['options'] as Options;
+            this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+                `${options.silverlightBaseUrl}ImageHandler.ashx?hsmv=${this.hsmvReportNumber}`);
         });
     }
 
     ngOnDestroy() {
-        this.paramSub.unsubscribe();
-        this.optionsSub.unsubscribe();
-    }
-
-    setPdfUrl(hsmvReportNumber: number) {
-        this.optionsSub = this.optionsService.getOptions().subscribe(options => {
-            this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-                `${options.silverlightBaseUrl}ImageHandler.ashx?hsmv=${hsmvReportNumber}`);
-        });
+        this.dataSub.unsubscribe();
     }
 }

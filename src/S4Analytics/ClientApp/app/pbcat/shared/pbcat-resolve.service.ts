@@ -10,7 +10,7 @@ import { PbcatInfo } from './pbcat-info';
 import { PbcatConfig } from './pbcat-config';
 
 @Injectable()
-export class PbcatResolveService implements Resolve<void> {
+export class PbcatResolveService implements Resolve<PbcatFlow> {
     private currentFlow: PbcatFlow;
     private isSameFlow: boolean;
 
@@ -19,7 +19,7 @@ export class PbcatResolveService implements Resolve<void> {
         private router: Router,
         private appState: AppState) { }
 
-    resolve(route: ActivatedRouteSnapshot): Observable<PbcatFlow> {
+    resolve(route: ActivatedRouteSnapshot): Observable<any> {
         let hsmvReportNumber = +route.params['hsmvReportNumber'];
         let stepNumber = +route.params['stepNumber'];
         this.currentFlow = this.appState.pbcatState.flow;
