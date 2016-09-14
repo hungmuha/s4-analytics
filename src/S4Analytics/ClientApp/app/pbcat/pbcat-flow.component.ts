@@ -9,10 +9,10 @@ import {
 } from './shared';
 
 @Component({
-    selector: 'pbcat-master',
-    template: require('./pbcat-master.component.html')
+    selector: 'pbcat-flow',
+    template: require('./pbcat-flow.component.html')
 })
-export class PbcatMasterComponent {
+export class PbcatFlowComponent {
     private state: PbcatState;
     private routeSub: Subscription;
     private crashTypeSub: Subscription;
@@ -59,14 +59,14 @@ export class PbcatMasterComponent {
         this.alertVisible = false;
     }
 
-    private handleRouteData(data: {[name: string]: any}) {
+    private handleRouteData(data: { [name: string]: any }) {
         this.state.flow = data['PbcatResolveService'] as PbcatFlow;
         if (this.state.flow.showSummary) {
             this.crashTypeSub = this.pbcatService
                 .calculateCrashType(this.state.flow.flowType, this.state.flow.pbcatInfo)
                 .subscribe(
-                    crashType => this.state.flow.crashType = crashType,
-                    err => this.displayAlert('Error', err, AlertType.Danger)
+                crashType => this.state.flow.crashType = crashType,
+                err => this.displayAlert('Error', err, AlertType.Danger)
                 );
         }
     }
@@ -81,10 +81,10 @@ export class PbcatMasterComponent {
 
     private launchReportViewer() {
         if (this.state.reportViewerWindow && !this.state.reportViewerWindow.closed) {
-            this.state.reportViewerWindow.location.href = `/pbcat/viewer/${this.hsmvReportNumber}`;
+            this.state.reportViewerWindow.location.href = `/report-viewer/${this.hsmvReportNumber}`;
         }
         else {
-            this.state.reportViewerWindow = window.open(`/pbcat/viewer/${this.hsmvReportNumber}`, 'crashReportWindow');
+            this.state.reportViewerWindow = window.open(`/report-viewer/${this.hsmvReportNumber}`, 'crashReportWindow');
         }
     }
 

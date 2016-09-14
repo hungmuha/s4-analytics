@@ -2,8 +2,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { SafeResourceUrl, DomSanitizationService } from '@angular/platform-browser';
 import { Subscription } from 'rxjs/Subscription';
-import { AppState } from '../app.state';
-import { OptionsService, Options } from '../options.service';
+import { OptionsService, Options } from './options.service';
 
 // This component should not be necessary, but IE exhibits some
 // buggy behavior when programatically controlling a child window
@@ -12,10 +11,10 @@ import { OptionsService, Options } from '../options.service';
 // a cleaner URL to boot.
 
 @Component({
-    selector: 'pbcat-viewer',
-    template: require('./pbcat-viewer.component.html')
+    selector: 'report-viewer',
+    template: `<iframe class="report-viewer" [src]="pdfUrl"></iframe>`
 })
-export class PbcatViewerComponent {
+export class ReportViewerComponent {
     optionsSub: Subscription;
     paramSub: Subscription;
     pdfUrl: SafeResourceUrl;
@@ -23,8 +22,7 @@ export class PbcatViewerComponent {
     constructor(
         private route: ActivatedRoute,
         private sanitizer: DomSanitizationService,
-        private appState: AppState,
-        private envService: OptionsService) {
+        private optionsService: OptionsService) {
     }
 
     ngOnInit() {
@@ -40,7 +38,7 @@ export class PbcatViewerComponent {
     }
 
     setPdfUrl(hsmvReportNumber: number) {
-        this.optionsSub = this.envService.getOptions().subscribe(options => {
+        this.optionsSub = this.optionsService.getOptions().subscribe(options => {
             this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
                 `${options.silverlightBaseUrl}ImageHandler.ashx?hsmv=${hsmvReportNumber}`);
         });

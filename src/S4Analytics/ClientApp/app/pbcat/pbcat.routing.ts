@@ -1,22 +1,17 @@
 ﻿import { Routes, RouterModule } from '@angular/router';
-import { PbcatMasterComponent } from './pbcat-master.component';
-import { PbcatViewerComponent } from './pbcat-viewer.component';
+import { PbcatFlowComponent } from './pbcat-flow.component';
 import { PbcatResolveService } from './shared';
 
 const pbcatRoutes: Routes = [
     {
         path: 'pbcat/:hsmvReportNumber/step/:stepNumber',
-        component: PbcatMasterComponent,
+        component: PbcatFlowComponent,
         resolve: { PbcatResolveService }
     },
     {
         path: 'pbcat/:hsmvReportNumber/summary',
-        component: PbcatMasterComponent,
+        component: PbcatFlowComponent,
         resolve: { PbcatResolveService }
-    },
-    {
-        path: 'pbcat/viewer/:hsmvReportNumber',
-        component: PbcatViewerComponent
     }
 ];
 
