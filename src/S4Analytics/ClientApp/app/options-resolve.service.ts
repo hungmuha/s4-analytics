@@ -18,7 +18,7 @@ export class OptionsResolveService implements Resolve<Options> {
 
     public resolve(): Observable<any> {
         if (this.cachedOptions === undefined) {
-            var url = 'api/options';
+            let url = 'api/options';
             return this.http.get(url)
                 .map(response => response.json().data as Options)
                 .do(options => this.cachedOptions = options);
