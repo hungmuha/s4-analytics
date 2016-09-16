@@ -3,7 +3,7 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import '../../rxjs-operators';
 import { PbcatFlow, FlowType } from './pbcat-flow';
-import { PbcatConfig } from './pbcat-config.d';
+import { PbcatConfig, PbcatPayload } from './pbcat-config.d';
 import { PbcatCrashType } from './pbcat-crash-type';
 import { PbcatInfo, PbcatBicyclistInfo, PbcatPedestrianInfo } from './pbcat-info';
 
@@ -58,6 +58,13 @@ export class PbcatService {
         }
     }
 
+    getQueue(token: string): Observable<number[]> {
+        let url = `api/pbcat/queue/${token}`;
+        return this.http.get(url)
+            .map(response => this.extractData<PbcatPayload>(response).queue)
+            .catch(this.handleError);
+    }
+
     getParticipantInfo(hsmvReportNumber: number): Observable<PbcatParticipantInfo> {
         let url = `api/pbcat/${hsmvReportNumber}`;
         return this.http
@@ -81,35 +88,29 @@ export class PbcatService {
         }
     }
 
-    createPbcatInfo(flow: PbcatFlow): Observable<NextCrashInfo> {
+    createPbcatInfo(flow: PbcatFlow): Observable<void> {
         // POST api/pbcat/:bikeOrPed
         let bikeOrPed = this.getBikeOrPed(flow.flowType);
         let url = `api/pbcat/${bikeOrPed}`;
         let wrapper = flow.flowType === FlowType.Pedestrian
             ? new PedestrianInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatPedestrianInfo, flow.crashType)
             : new BicyclistInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatBicyclistInfo, flow.crashType);
-        // todo: get the actual next report info
-        let nextFlowType: FlowType = undefined;
-        let nextHsmvNumber: number = undefined;
         return this.http
             .post(url, wrapper)
-            .map(response => new NextCrashInfo(nextHsmvNumber, nextFlowType))
+            .map(response => undefined)
             .catch(this.handleError);
     }
 
-    updatePbcatInfo(flow: PbcatFlow): Observable<NextCrashInfo> {
+    updatePbcatInfo(flow: PbcatFlow): Observable<void> {
         // PUT api/pbcat/:bikeOrPed/:hsmvRptNr
         let bikeOrPed = this.getBikeOrPed(flow.flowType);
         let url = `api/pbcat/${bikeOrPed}/${flow.hsmvReportNumber}`;
         let wrapper = flow.flowType === FlowType.Pedestrian
             ? new PedestrianInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatPedestrianInfo, flow.crashType)
             : new BicyclistInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatBicyclistInfo, flow.crashType);
-        // todo: get the actual next report info
-        let nextFlowType: FlowType = undefined;
-        let nextHsmvNumber: number = undefined;
         return this.http
             .put(url, wrapper)
-            .map(response => new NextCrashInfo(nextHsmvNumber, nextFlowType))
+            .map(response => undefined)
             .catch(this.handleError);
     }
 

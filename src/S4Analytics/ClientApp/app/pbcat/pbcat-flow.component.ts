@@ -182,9 +182,17 @@ export class PbcatFlowComponent {
         this.router.navigate(route);
     }
 
-    private handleSaved(flowType: FlowType, nextHsmvNumber: number) {
+    private handleSaved() {
         this.flow.isSaved = true;
-        this.state.nextHsmvNumber = nextHsmvNumber;
+        if (this.state.queue) {
+            let i = this.state.queue.indexOf(this.hsmvReportNumber);
+            if (i > -1) {
+                this.state.queue.splice(i, 1);
+            }
+        }
+        this.state.nextHsmvNumber = this.state.queue && this.state.queue.length > 0
+            ? this.state.queue[0]
+            : undefined;
     }
 
     private get advanceToNextRoute(): any[] {
@@ -195,14 +203,14 @@ export class PbcatFlowComponent {
         if (this.flow.typingExists) {
             this.saveSub = this.pbcatService.updatePbcatInfo(this.flow)
                 .subscribe(
-                    nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber),
+                    nextCrash => this.handleSaved(),
                     err => this.displayAlert('Error', err, AlertType.Danger)
                 );
         }
         else {
             this.saveSub = this.pbcatService.createPbcatInfo(this.flow)
                 .subscribe(
-                    nextCrash => this.handleSaved(nextCrash.flowType, nextCrash.hsmvReportNumber),
+                    nextCrash => this.handleSaved(),
                     err => this.displayAlert('Error', err, AlertType.Danger)
                 );
         }

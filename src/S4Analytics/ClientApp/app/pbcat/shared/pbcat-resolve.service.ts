@@ -22,11 +22,12 @@ export class PbcatResolveService implements Resolve<PbcatFlow> {
     resolve(route: ActivatedRouteSnapshot): Observable<any> {
         let hsmvReportNumber = +route.params['hsmvReportNumber'];
         let stepNumber = +route.params['stepNumber'];
+        let token = route.params['token'];
         this.currentFlow = this.appState.pbcatState.flow;
         this.isSameFlow = this.currentFlow && this.currentFlow.hsmvReportNumber === hsmvReportNumber;
         if (this.isSameFlow) {
-            return this.goToStepOrSummary(this.currentFlow, stepNumber)
-                .catch(this.handleError);
+            return Observable.of(this.currentFlow)
+                .do(flow => this.goToStepOrSummary(flow, stepNumber));
         }
         else {
             // if this is a new flow, it must start at step 1
@@ -41,15 +42,22 @@ export class PbcatResolveService implements Resolve<PbcatFlow> {
                 */
                 let config: PbcatConfig;
                 let participantInfo: PbcatParticipantInfo;
-                return this.pbcatService.getConfiguration()
-                    .do(cfg => config = cfg)
+                let retVal: Observable<any> = this.pbcatService.getConfiguration()
+                    .do(cfg => config = cfg);
+                if (token) {
+                    retVal = retVal
+                        .switchMap(() => this.pbcatService.getQueue(token))
+                        .do(queue => this.appState.pbcatState.queue = queue);
+                }
+                retVal = retVal
                     .switchMap(() => this.pbcatService.getParticipantInfo(hsmvReportNumber))
-                    .switchMap(info => this.confirmBikePedCrash(info))
+                    .switchMap(info => this.confirmBikePedCrash(info)) // sanity check
                     .do(info => participantInfo = info)
                     .switchMap(() => this.pbcatService.getPbcatInfo(participantInfo, hsmvReportNumber))
                     .map(pbcatInfo => new PbcatFlow(hsmvReportNumber, participantInfo, pbcatInfo, config))
-                    .switchMap(flow => this.goToStepOrSummary(flow, 1))
+                    .do(flow => this.goToStepOrSummary(flow, 1))
                     .catch(this.handleError);
+                return retVal;
             }
             else {
                 this.router.navigate(['pbcat', hsmvReportNumber, 'step', 1]);
@@ -66,20 +74,12 @@ export class PbcatResolveService implements Resolve<PbcatFlow> {
         }
     }
 
-    private goToStepOrSummary(flow: PbcatFlow, stepNumber?: number): Observable<PbcatFlow> {
+    private goToStepOrSummary(flow: PbcatFlow, stepNumber?: number) {
         if (stepNumber) {
             flow.goToStep(stepNumber);
         }
         else {
             flow.goToSummary();
-        }
-
-        if (flow.hasValidState) {
-            return Observable.of<PbcatFlow>(flow);
-        }
-        else {
-            // todo: show some kind of 404 page
-            return this.handleError('404 Not Found');
         }
     }
 

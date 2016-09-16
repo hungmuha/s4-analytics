@@ -8,6 +8,7 @@ namespace S4Analytics.Models
 {
     public interface IPbcatRepository
     {
+        string GetQueueJson(Guid token);
         PBCATPedestrianInfo FindPedestrian(int hsmvRptNbr);
         PBCATBicyclistInfo FindBicyclist(int hsmvRptNbr);
         void Add(int hsmvRptNbr, PBCATPedestrianInfo pedInfo, CrashTypePedestrian crashType);

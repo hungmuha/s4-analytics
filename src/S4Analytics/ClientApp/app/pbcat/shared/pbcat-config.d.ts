@@ -25,3 +25,9 @@ export interface PbcatScreenConfig {
 export interface PbcatConfig {
     [screenName: string]: PbcatScreenConfig;
 }
+
+export interface PbcatPayload {
+    queue: number[];
+    userName: string;
+    userRoles: string[];
+}

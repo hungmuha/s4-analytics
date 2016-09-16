@@ -16,6 +16,13 @@ namespace S4Analytics.Models
         public bool HasBicyclistTyping { get; set; }
     }
 
+    public class BikePedQueue
+    {
+        public Guid Token { get; set; }
+        public int InitialHsmvReportNumber { get; set; }
+        public IList<int> HsmvReportNumbers { get; set; }
+    }
+
     public partial class PbcatRepository : S4Repository, IPbcatRepository
     {
         private string _warehouseConnStr;
@@ -23,6 +30,27 @@ namespace S4Analytics.Models
         public PbcatRepository(IOptions<ServerOptions> serverOptions)
         {
             _warehouseConnStr = serverOptions.Value.WarehouseConnStr;
+        }
+
+        public string GetQueueJson(Guid token)
+        {
+            string queueJson = "{}";
+            var cmdText = "SELECT json_payload FROM html5_conduit WHERE token = :token";
+            using (var conn = new OracleConnection(_warehouseConnStr))
+            {
+                var cmd = new OracleCommand(cmdText, conn);
+                cmd.Parameters.Add("token", OracleDbType.Raw).Value = token;
+                var da = new OracleDataAdapter(cmd);
+                var ds = new DataSet();
+                da.Fill(ds);
+                var dt = ds.Tables[0];
+                if (dt.Rows.Count > 0)
+                {
+                    var dr = dt.Rows[0];
+                    queueJson = dr.Field<string>("json_payload");
+                }
+            }
+            return "{ \"data\": " + queueJson + " }";
         }
 
         public PbcatParticipantInfo GetParticipantInfo(int hsmvRptNbr)

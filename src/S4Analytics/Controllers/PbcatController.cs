@@ -35,6 +35,14 @@ namespace S4Analytics.Controllers
 
         public IPbcatRepository PbcatRepo { get; set; }
 
+        [HttpGet("queue/{token}")]
+        public IActionResult GetQueue(string token)
+        {
+            var tokenAsGuid = Guid.Parse(token);
+            var queueJson = PbcatRepo.GetQueueJson(tokenAsGuid);
+            return Content(queueJson);
+        }
+
         [HttpGet("{hsmvRptNbr}")]
         public IActionResult GetParticipantInfo(int hsmvRptNbr)
         {

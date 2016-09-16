@@ -5,8 +5,8 @@ export class PbcatState {
     autoAdvance: boolean = true;
     showReportViewer: boolean = false;
     reportViewerWindow: Window;
-    nextFlowType: FlowType;
     nextHsmvNumber: number;
     config: PbcatConfig;
     flow: PbcatFlow;
+    queue: number[];
 }
