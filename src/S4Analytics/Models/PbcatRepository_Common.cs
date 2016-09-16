@@ -32,10 +32,10 @@ namespace S4Analytics.Models
             _warehouseConnStr = serverOptions.Value.WarehouseConnStr;
         }
 
-        public string GetQueueJson(Guid token)
+        public string GetSessionJson(Guid token)
         {
             string queueJson = "{}";
-            var cmdText = "SELECT json_payload FROM html5_conduit WHERE token = :token";
+            var cmdText = "SELECT json_payload FROM v_html5_conduit WHERE token = :token";
             using (var conn = new OracleConnection(_warehouseConnStr))
             {
                 var cmd = new OracleCommand(cmdText, conn);

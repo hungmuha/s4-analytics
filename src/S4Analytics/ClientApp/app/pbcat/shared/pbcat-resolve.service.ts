@@ -46,8 +46,12 @@ export class PbcatResolveService implements Resolve<PbcatFlow> {
                     .do(cfg => config = cfg);
                 if (token) {
                     retVal = retVal
-                        .switchMap(() => this.pbcatService.getQueue(token))
-                        .do(queue => this.appState.pbcatState.queue = queue);
+                        .switchMap(() => this.pbcatService.getSession(token))
+                        .do(session => {
+                            this.appState.pbcatState.queue = session.queue;
+                            this.appState.pbcatState.userName = session.userName;
+                            this.appState.pbcatState.userRoles = session.userRoles;
+                        });
                 }
                 retVal = retVal
                     .switchMap(() => this.pbcatService.getParticipantInfo(hsmvReportNumber))

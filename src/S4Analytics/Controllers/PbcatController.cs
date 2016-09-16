@@ -35,12 +35,12 @@ namespace S4Analytics.Controllers
 
         public IPbcatRepository PbcatRepo { get; set; }
 
-        [HttpGet("queue/{token}")]
-        public IActionResult GetQueue(string token)
+        [HttpGet("session/{token}")]
+        public IActionResult GetSession(string token)
         {
             var tokenAsGuid = Guid.Parse(token);
-            var queueJson = PbcatRepo.GetQueueJson(tokenAsGuid);
-            return Content(queueJson);
+            var sessionJson = PbcatRepo.GetSessionJson(tokenAsGuid);
+            return Content(sessionJson);
         }
 
         [HttpGet("{hsmvRptNbr}")]
