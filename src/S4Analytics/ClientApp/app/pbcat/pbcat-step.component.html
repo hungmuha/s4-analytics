@@ -10,7 +10,7 @@
 </div>
 
 <!-- image-based template -->
-<template [ngIf]="hasImages()">
+<template [ngIf]="hasImages">
     <div class="row">
         <template ngFor let-item [ngForOf]="step.items" let-i="index">
             <div class="col-sm-4">
@@ -31,7 +31,7 @@
 </template>
 
 <!-- non-image template -->
-<template [ngIf]="!hasImages()">
+<template [ngIf]="!hasImages">
     <template ngFor let-item [ngForOf]="step.items">
         <div class="row" *ngIf="item.subHeading">
             <div class="col-sm-8">
