@@ -71,10 +71,9 @@ build:others:
 
 .deploy:all: &deploy_script
   script:
-  - set CI_IIS_APP=Default Web Site/%CI_WEB_PATH%
   - copy app_offline.htm \\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\ # app_offline.htm tells iis to shut down the site and release file locks
   - dotnet publish "src\S4Analytics" --no-build --configuration Release --output "%CD%\src\S4Analytics\bin\Release\PublishOutput"
-  - msdeploy -verb:sync -source:contentPath="%CD%\src\S4Analytics\bin\Release\PublishOutput" -dest:contentPath="\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%" -skip:Directory="download" -skip:Directory="logs" -skip:File="app_offline.htm" -dest:backupSettings="%CI_IIS_APP%",enabled="False"
+  - msdeploy -verb:sync -source:contentPath="%CD%\src\S4Analytics\bin\Release\PublishOutput" -dest:contentPath="\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%" -skip:Directory="download" -skip:Directory="logs" -skip:File="app_offline.htm"
   - del \\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\app_offline.htm
   - (echo %CI_BUILD_ID%)>>\\xplan-agssrv10\wwwroot\%CI_WEB_PATH%\wwwroot\build.txt # write build number to build file
 
