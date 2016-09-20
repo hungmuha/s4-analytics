@@ -61,7 +61,7 @@ export class PbcatFlowComponent {
 
     private handleRouteData(data: { [name: string]: any }) {
         this.state.flow = data['flow'] as PbcatFlow;
-        this.updateReportViewer();
+        this.maintainReportViewer();
         if (this.state.flow.showSummary) {
             this.crashTypeSub = this.pbcatService
                 .calculateCrashType(this.state.flow.flowType, this.state.flow.pbcatInfo)
@@ -80,18 +80,27 @@ export class PbcatFlowComponent {
             : 'Bicyclist Crash Typing';
     }
 
-    private launchReportViewer() {
-        if (this.state.reportViewerWindow && !this.state.reportViewerWindow.closed) {
-            this.state.reportViewerWindow.location.href = `report-viewer/${this.hsmvReportNumber}`;
+    private maintainReportViewer() {
+        let userClosedWindow = this.state.reportViewerWindow && this.state.reportViewerWindow.closed;
+        if (userClosedWindow) {
+            // assume they don't want the crash report window anymore
+            this.state.showReportViewer = false;
+            delete this.state.reportViewerWindow;
         }
-        else {
-            this.state.reportViewerWindow = window.open(`report-viewer/${this.hsmvReportNumber}`, 'crashReportWindow');
-        }
-    }
-
-    private updateReportViewer() {
-        if (this.state.reportViewerWindow && !this.state.reportViewerWindow.closed) {
-            this.state.reportViewerWindow.location.href = `report-viewer/${this.hsmvReportNumber}`;
+        if (this.state.showReportViewer) {
+            let href = `report-viewer/${this.hsmvReportNumber}`;
+            let isWindowOpen = this.state.reportViewerWindow !== undefined;
+            if (isWindowOpen) {
+                let isUrlCurrent = this.state.reportViewerWindow.location.href.endsWith(href);
+                if (!isUrlCurrent) {
+                    console.log(`update: ${href}`);
+                    this.state.reportViewerWindow.location.href = href; // update the window url
+                }
+            }
+            else {
+                console.log(`launch: ${href}`);
+                this.state.reportViewerWindow = window.open(href, 'crashReportWindow'); // open a new window
+            }
         }
     }
 
@@ -138,7 +147,7 @@ export class PbcatFlowComponent {
         if (this.state.showReportViewer !== value) {
             this.state.showReportViewer = value;
             if (value) {
-                this.launchReportViewer();
+                this.maintainReportViewer();
             }
             else {
                 this.closeReportViewer();
