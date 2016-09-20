@@ -76,8 +76,7 @@ namespace S4Analytics.Models
             int crashTypeNbr;
             int crashGroupExpanded;
             int crashTypeExpanded;
-            // todo: change data type of CrashGroupNbr in Lib.PBCAT
-            //int.TryParse(crashType.CrashGroupNbr, out crashGroupNbr);
+            int.TryParse(crashType.CrashGroupNbr, out crashGroupNbr);
             int.TryParse(crashType.CrashTypeNbr, out crashTypeNbr);
             int.TryParse(crashType.CrashGroupExpanded, out crashGroupExpanded);
             int.TryParse(crashType.CrashTypeExpanded, out crashTypeExpanded);
