@@ -61,6 +61,7 @@ export class PbcatFlowComponent {
 
     private handleRouteData(data: { [name: string]: any }) {
         this.state.flow = data['flow'] as PbcatFlow;
+        this.updateReportViewer();
         if (this.state.flow.showSummary) {
             this.crashTypeSub = this.pbcatService
                 .calculateCrashType(this.state.flow.flowType, this.state.flow.pbcatInfo)
@@ -81,10 +82,16 @@ export class PbcatFlowComponent {
 
     private launchReportViewer() {
         if (this.state.reportViewerWindow && !this.state.reportViewerWindow.closed) {
-            this.state.reportViewerWindow.location.href = `/report-viewer/${this.hsmvReportNumber}`;
+            this.state.reportViewerWindow.location.href = `report-viewer/${this.hsmvReportNumber}`;
         }
         else {
-            this.state.reportViewerWindow = window.open(`/report-viewer/${this.hsmvReportNumber}`, 'crashReportWindow');
+            this.state.reportViewerWindow = window.open(`report-viewer/${this.hsmvReportNumber}`, 'crashReportWindow');
+        }
+    }
+
+    private updateReportViewer() {
+        if (this.state.reportViewerWindow && !this.state.reportViewerWindow.closed) {
+            this.state.reportViewerWindow.location.href = `report-viewer/${this.hsmvReportNumber}`;
         }
     }
 
