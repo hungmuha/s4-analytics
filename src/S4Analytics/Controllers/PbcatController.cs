@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
 using Lib.PBCAT;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using AspNetCore.Identity.Oracle;
 
 namespace S4Analytics.Controllers
 {
@@ -27,19 +30,28 @@ namespace S4Analytics.Controllers
     public class PbcatController : S4Controller
     {
         // COMMON
+        private readonly UserManager<OracleIdentityUser> _userManager;
+        private readonly SignInManager<OracleIdentityUser> _signInManager;
 
-        public PbcatController(IPbcatRepository pbcatRepo)
+        public PbcatController(
+            UserManager<OracleIdentityUser> userManager,
+            SignInManager<OracleIdentityUser> signInManager,
+            IPbcatRepository pbcatRepo)
         {
+            _userManager = userManager;
+            _signInManager = signInManager;
             PbcatRepo = pbcatRepo;
         }
 
         public IPbcatRepository PbcatRepo { get; set; }
 
+        [AllowAnonymous]
         [HttpGet("session/{token}")]
-        public IActionResult GetSession(string token)
+        public async Task<IActionResult> GetSession(string token)
         {
             var tokenAsGuid = Guid.Parse(token);
             var sessionJson = PbcatRepo.GetSessionJson(tokenAsGuid);
+            await _signInManager.SignInAsync(new OracleIdentityUser("nw"), isPersistent: false);
             return Content(sessionJson);
         }
 

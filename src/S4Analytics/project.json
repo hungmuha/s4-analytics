@@ -20,7 +20,8 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Oracle.ManagedDataAccess": "12.1.24160419",
-    "System.Data.Common": "4.1.0"
+    "System.Data.Common": "4.1.0",
+    "AspNetCore.Identity.Oracle": "1.0.2"
   },
 
   "tools": {

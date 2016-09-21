@@ -11,6 +11,12 @@ using Microsoft.Extensions.Logging;
 using S4Analytics.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
+using AspNetCore.Identity.Oracle;
+using AspNetCore.Identity.Oracle.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace S4Analytics
 {
@@ -31,6 +37,8 @@ namespace S4Analytics
 
     public class Startup
     {
+        private readonly IHostingEnvironment _env;
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -39,6 +47,7 @@ namespace S4Analytics
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            _env = env;
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -48,12 +57,43 @@ namespace S4Analytics
         {
             // Add framework services.
             services.AddMvc();
+            services.AddOptions();
+
             services.Configure<MvcJsonOptions>(jsonOptions =>
             {
                 // Serialize enums as strings, rather than integers.
                 jsonOptions.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
-            services.AddOptions();
+
+            // add and configure Oracle user store
+            services.AddSingleton<IUserStore<OracleIdentityUser>>(provider => {
+                var options = provider.GetService<IOptions<ServerOptions>>();
+                var connStr = options.Value.WarehouseConnStr;
+                return new OracleUserStore<OracleIdentityUser>("S4_Analytics", connStr, null);
+            });
+
+            services.AddSingleton<IRoleStore<OracleUserRole>, OracleRoleStore<OracleUserRole>>();
+
+            // configure sign-in scheme to use cookies
+            services.AddAuthentication(options =>
+            {
+                options.SignInScheme = new IdentityCookieOptions().ExternalCookieAuthenticationScheme;
+            });
+
+            // Hosting doesn't add IHttpContextAccessor by default
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddSingleton<IdentityMarkerService>();
+            services.AddSingleton<IUserValidator<OracleIdentityUser>, UserValidator<OracleIdentityUser>>();
+            services.AddSingleton<IPasswordValidator<OracleIdentityUser>, PasswordValidator<OracleIdentityUser>>();
+            services.AddSingleton<IPasswordHasher<OracleIdentityUser>, PasswordHasher<OracleIdentityUser>>();
+            services.AddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
+            services.AddSingleton<IdentityErrorDescriber>();
+            services.AddSingleton<ISecurityStampValidator, SecurityStampValidator<OracleIdentityUser>>();
+            services.AddSingleton<IUserClaimsPrincipalFactory<OracleIdentityUser>, UserClaimsPrincipalFactory<OracleIdentityUser>>();
+            services.AddSingleton<UserManager<OracleIdentityUser>>();
+            services.AddSingleton<RoleManager<OracleUserRole>>();
+            services.AddScoped<SignInManager<OracleIdentityUser>>();
 
             // Add configurations.
             services.Configure<ServerOptions>(serverOptions =>
@@ -92,6 +132,8 @@ namespace S4Analytics
 
             app.UseStaticFiles();
 
+            app.UseIdentity();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -102,6 +144,66 @@ namespace S4Analytics
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
+        }
+
+        public class UserClaimsPrincipalFactory<TUser> : IUserClaimsPrincipalFactory<TUser>
+            where TUser : class
+        {
+            public UserClaimsPrincipalFactory(
+                UserManager<TUser> userManager,
+                IOptions<IdentityOptions> optionsAccessor)
+            {
+                if (userManager == null)
+                {
+                    throw new ArgumentNullException(nameof(userManager));
+                }
+                if (optionsAccessor == null || optionsAccessor.Value == null)
+                {
+                    throw new ArgumentNullException(nameof(optionsAccessor));
+                }
+
+                UserManager = userManager;
+                Options = optionsAccessor.Value;
+            }
+
+            public UserManager<TUser> UserManager { get; private set; }
+
+            public IdentityOptions Options { get; private set; }
+
+            public virtual async Task<ClaimsPrincipal> CreateAsync(TUser user)
+            {
+                if (user == null)
+                {
+                    throw new ArgumentNullException(nameof(user));
+                }
+
+                var userId = await UserManager.GetUserIdAsync(user);
+                var userName = await UserManager.GetUserNameAsync(user);
+                var id = new ClaimsIdentity(Options.Cookies.ApplicationCookieAuthenticationScheme,
+                    Options.ClaimsIdentity.UserNameClaimType,
+                    Options.ClaimsIdentity.RoleClaimType);
+                id.AddClaim(new Claim(Options.ClaimsIdentity.UserIdClaimType, userId));
+                id.AddClaim(new Claim(Options.ClaimsIdentity.UserNameClaimType, userName));
+                if (UserManager.SupportsUserSecurityStamp)
+                {
+                    id.AddClaim(new Claim(Options.ClaimsIdentity.SecurityStampClaimType,
+                        await UserManager.GetSecurityStampAsync(user)));
+                }
+                if (UserManager.SupportsUserRole)
+                {
+                    var roles = await UserManager.GetRolesAsync(user);
+                    foreach (var roleName in roles)
+                    {
+                        id.AddClaim(new Claim(Options.ClaimsIdentity.RoleClaimType, roleName));
+                    }
+                }
+                if (UserManager.SupportsUserClaim)
+                {
+                    id.AddClaims(await UserManager.GetClaimsAsync(user));
+                }
+
+                return new ClaimsPrincipal(id);
+            }
         }
     }
 }
