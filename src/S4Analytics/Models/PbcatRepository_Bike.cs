@@ -155,11 +155,11 @@ namespace S4Analytics.Models
             var lastUpdateUserId = "pbcat";
 
             // convert some values to int
-            int crashGroupNbr = 0;
+            int crashGroupNbr;
             int crashTypeNbr;
             int crashGroupExpanded;
             int crashTypeExpanded;
-            //int.TryParse(crashType.CrashGroupNbr, out crashGroupNbr);
+            int.TryParse(crashType.CrashGroupNbr, out crashGroupNbr);
             int.TryParse(crashType.CrashTypeNbr, out crashTypeNbr);
             int.TryParse(crashType.CrashGroupExpanded, out crashGroupExpanded);
             int.TryParse(crashType.CrashTypeExpanded, out crashTypeExpanded);
