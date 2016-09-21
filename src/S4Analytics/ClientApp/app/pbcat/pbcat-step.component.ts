@@ -41,13 +41,6 @@ export class PbcatStepComponent implements AfterViewChecked {
         let imageCount = images.length;
         let loadedCount = 0;
 
-        let incrementCounter = () => {
-            loadedCount++;
-            if (loadedCount === imageCount) {
-                setEqualHeights($('.thumbnail'));
-            }
-        }
-
         let setEqualHeights = (group: any) => {
             let tallest = 0;
             group.each(function () {
@@ -57,7 +50,14 @@ export class PbcatStepComponent implements AfterViewChecked {
                 }
             });
             group.each(function () { $(this).height(tallest); });
-        }
+        };
+
+        let incrementCounter = () => {
+            loadedCount++;
+            if (loadedCount === imageCount) {
+                setEqualHeights($('.thumbnail'));
+            }
+        };
 
         [].forEach.call(images, function (img: any) {
             img.addEventListener('load', incrementCounter, false);
