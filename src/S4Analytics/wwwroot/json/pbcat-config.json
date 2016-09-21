@@ -623,6 +623,11 @@
         "title": "Walking in Roadway",
         "infoAttrValue": "WalkingInRoadway",
         "description": "The pedestrian was walking in the roadway prior to the crash."
+      },
+      {
+        "title": "Other - Intersection",
+        "enumValue": "Other",
+        "description": "The actions of the pedestrian prior to the crash cannot be determined or it cannot be determined who failed to yield."
       }
     ]
   },
