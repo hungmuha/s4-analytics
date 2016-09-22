@@ -4,12 +4,20 @@ import { Subscription } from 'rxjs/Subscription';
 import { Observable } from 'rxjs/Observable';
 import { OptionsService, Options } from './options.service';
 import './rxjs-operators';
+import * as moment from 'moment';
 
 @Injectable()
 export class KeepSilverlightAliveService {
+    private nextCallTime: moment.Moment;
+    private keepAliveInterval = 10; // in minutes
+
     constructor(
         private http: Http,
-        private optionsService: OptionsService) { }
+        private optionsService: OptionsService) {
+        // schedule the initial keep alive call
+        let now = moment();
+        this.nextCallTime = now.add(this.keepAliveInterval, 'minutes');
+    }
 
     keepAlive() {
         // keep the silverlight app alive
@@ -17,12 +25,16 @@ export class KeepSilverlightAliveService {
             (opener as any).keepSilverlightAlive();
         }
         // keep the silverlight app server alive
-        this.optionsService.getOptions()
-            .first()
-            .catch(err => Observable.throw(err))
-            .subscribe(options => {
-                this.callKeepAlivePage(options.silverlightBaseUrl);
-            });
+        let now = moment();
+        if (now.isAfter(this.nextCallTime)) {
+            this.optionsService.getOptions()
+                .first()
+                .catch(err => Observable.throw(err))
+                .subscribe(options => {
+                    this.callKeepAlivePage(options.silverlightBaseUrl);
+                });
+            this.nextCallTime = now.add(this.keepAliveInterval, 'minutes');
+        }
     }
 
     private callKeepAlivePage(silverlightBaseUrl: string) {

@@ -30,6 +30,7 @@ module.exports = {
             'bootstrap/dist/css/bootstrap.css',
             'es6-shim',
             'jquery',
+            'moment',
             'reflect-metadata',
             'rxjs',
             'zone.js'
