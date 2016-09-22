@@ -9,7 +9,4 @@ export class PbcatState {
     config: PbcatConfig;
     flow: PbcatFlow;
     queue: number[];
-    // provisional user management; values will be provided via HTML5_CONDUIT
-    userName: string;
-    userRoles: string[];
 }

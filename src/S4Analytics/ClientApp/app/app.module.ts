@@ -5,7 +5,8 @@ import { routing, appRoutingProviders } from './app.routing';
 import { AppComponent } from './app.component';
 import { PbcatModule } from './pbcat/pbcat.module';
 import { AppState } from './app.state';
-import { OptionsResolveService } from './options-resolve.service';
+import { OptionsService } from './options.service';
+import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
 
 @NgModule({
     imports: [
@@ -18,7 +19,8 @@ import { OptionsResolveService } from './options-resolve.service';
     providers: [
         AppState,
         appRoutingProviders,
-        OptionsResolveService
+        OptionsService,
+        KeepSilverlightAliveService
     ],
     bootstrap: [AppComponent]
 })

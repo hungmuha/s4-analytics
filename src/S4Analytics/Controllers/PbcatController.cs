@@ -26,6 +26,7 @@ namespace S4Analytics.Controllers
         public CrashTypeBicyclist BicyclistCrashType { get; set; }
     }
 
+    [Authorize]
     [Route("api/[controller]")]
     public class PbcatController : S4Controller
     {
@@ -50,9 +51,12 @@ namespace S4Analytics.Controllers
         public async Task<IActionResult> GetSession(string token)
         {
             var tokenAsGuid = Guid.Parse(token);
-            var sessionJson = PbcatRepo.GetSessionJson(tokenAsGuid);
-            await _signInManager.SignInAsync(new OracleIdentityUser("nw"), isPersistent: false);
-            return Content(sessionJson);
+            var session = PbcatRepo.GetSession(tokenAsGuid);
+            if (session.UserName.Length > 0)
+            {
+                await _signInManager.SignInAsync(new OracleIdentityUser(session.UserName), isPersistent: false);
+            }
+            return Content(session.QueueJson);
         }
 
         [HttpGet("{hsmvRptNbr}")]

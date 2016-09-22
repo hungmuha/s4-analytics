@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { AppState } from '../app.state';
 import { AlertType } from '../alert-type';
+import { KeepSilverlightAliveService } from '../keep-silverlight-alive.service.ts';
 import {
     PbcatService, PbcatItem, PbcatCrashType,
     PbcatFlow, FlowType, PbcatState
@@ -15,8 +16,6 @@ import {
 export class PbcatFlowComponent {
     private state: PbcatState;
     private routeSub: Subscription;
-    private crashTypeSub: Subscription;
-    private saveSub: Subscription;
 
     private AlertType = AlertType; // capture the enum for the template to use
     private alertHeading: string;
@@ -28,7 +27,8 @@ export class PbcatFlowComponent {
         private router: Router,
         private route: ActivatedRoute,
         private appState: AppState,
-        private pbcatService: PbcatService) {
+        private pbcatService: PbcatService,
+        private keepSilverlightAlive: KeepSilverlightAliveService) {
         this.state = appState.pbcatState;
     }
 
@@ -40,12 +40,6 @@ export class PbcatFlowComponent {
 
     ngOnDestroy() {
         this.routeSub.unsubscribe();
-        if (this.crashTypeSub) {
-            this.crashTypeSub.unsubscribe();
-        }
-        if (this.saveSub) {
-            this.saveSub.unsubscribe();
-        }
     }
 
     private displayAlert(heading: string, message: string, type: AlertType) {
@@ -63,13 +57,15 @@ export class PbcatFlowComponent {
         this.state.flow = data['flow'] as PbcatFlow;
         this.maintainReportViewer();
         if (this.state.flow.showSummary) {
-            this.crashTypeSub = this.pbcatService
+            this.pbcatService
                 .calculateCrashType(this.state.flow.flowType, this.state.flow.pbcatInfo)
+                .first()
                 .subscribe(
-                crashType => this.state.flow.crashType = crashType,
-                err => this.displayAlert('Error', err, AlertType.Danger)
+                    crashType => this.state.flow.crashType = crashType,
+                    err => this.displayAlert('Error', err, AlertType.Danger)
                 );
         }
+        this.keepSilverlightAlive.keepAlive();
     }
 
     private get flow(): PbcatFlow { return this.state.flow; }
@@ -217,14 +213,16 @@ export class PbcatFlowComponent {
 
     private acceptAndSave(): void {
         if (this.flow.typingExists) {
-            this.saveSub = this.pbcatService.updatePbcatInfo(this.flow)
+            this.pbcatService.updatePbcatInfo(this.flow)
+                .first()
                 .subscribe(
                     nextCrash => this.handleSaved(),
                     err => this.displayAlert('Error', err, AlertType.Danger)
                 );
         }
         else {
-            this.saveSub = this.pbcatService.createPbcatInfo(this.flow)
+            this.pbcatService.createPbcatInfo(this.flow)
+                .first()
                 .subscribe(
                     nextCrash => this.handleSaved(),
                     err => this.displayAlert('Error', err, AlertType.Danger)

@@ -23,6 +23,12 @@ namespace S4Analytics.Models
         public IList<int> HsmvReportNumbers { get; set; }
     }
 
+    public class PbcatSession
+    {
+        public string UserName { get; set; }
+        public string QueueJson { get; set; }
+    }
+
     public partial class PbcatRepository : S4Repository, IPbcatRepository
     {
         private string _warehouseConnStr;
@@ -32,10 +38,11 @@ namespace S4Analytics.Models
             _warehouseConnStr = serverOptions.Value.WarehouseConnStr;
         }
 
-        public string GetSessionJson(Guid token)
+        public PbcatSession GetSession(Guid token)
         {
             string queueJson = "{}";
-            var cmdText = "SELECT json_payload FROM v_html5_conduit WHERE token = :token";
+            string userName = "";
+            var cmdText = "SELECT user_nm, json_payload FROM v_html5_conduit WHERE token = :token";
             using (var conn = new OracleConnection(_warehouseConnStr))
             {
                 var cmd = new OracleCommand(cmdText, conn);
@@ -47,10 +54,12 @@ namespace S4Analytics.Models
                 if (dt.Rows.Count > 0)
                 {
                     var dr = dt.Rows[0];
+                    userName = dr.Field<string>("user_nm");
                     queueJson = dr.Field<string>("json_payload");
                 }
             }
-            return "{ \"data\": " + queueJson + " }";
+            queueJson = "{ \"data\": " + queueJson + " }";
+            return new PbcatSession { UserName = userName, QueueJson = queueJson };
         }
 
         public PbcatParticipantInfo GetParticipantInfo(int hsmvRptNbr)

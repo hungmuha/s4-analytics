@@ -2,7 +2,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { SafeResourceUrl, DomSanitizationService } from '@angular/platform-browser';
 import { Subscription } from 'rxjs/Subscription';
-import { Options } from './options-resolve.service';
+import { OptionsService, Options } from './options.service';
 
 // This component should not be necessary, but IE exhibits some
 // buggy behavior when programatically controlling a child window
@@ -15,25 +15,22 @@ import { Options } from './options-resolve.service';
     template: `<iframe class="report-viewer" [src]="pdfUrl"></iframe>`
 })
 export class ReportViewerComponent {
-    dataSub: Subscription;
     hsmvReportNumber: number;
     pdfUrl: SafeResourceUrl;
 
     constructor(
         private route: ActivatedRoute,
-        private sanitizer: DomSanitizationService) {
+        private sanitizer: DomSanitizationService,
+        private optionsService: OptionsService) {
     }
 
     ngOnInit() {
         this.hsmvReportNumber = +this.route.snapshot.params['hsmvReportNumber'];
-        this.dataSub = this.route.data.subscribe(data => {
-            let options = data['options'] as Options;
-            this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-                `${options.silverlightBaseUrl}ImageHandler.ashx?hsmv=${this.hsmvReportNumber}`);
-        });
-    }
-
-    ngOnDestroy() {
-        this.dataSub.unsubscribe();
+        this.optionsService.getOptions()
+            .first()
+            .subscribe(options => {
+                this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+                    `${options.silverlightBaseUrl}ImageHandler.ashx?hsmv=${this.hsmvReportNumber}`);
+            });
     }
 }

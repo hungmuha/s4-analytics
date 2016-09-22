@@ -11,12 +11,12 @@ export interface Options {
 }
 
 @Injectable()
-export class OptionsResolveService implements Resolve<Options> {
+export class OptionsService {
     private cachedOptions: Options;
 
     constructor(private http: Http) { }
 
-    public resolve(): Observable<any> {
+    public getOptions(): Observable<Options> {
         if (this.cachedOptions === undefined) {
             let url = 'api/options';
             return this.http.get(url)

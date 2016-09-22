@@ -3,7 +3,7 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import '../../rxjs-operators';
 import { PbcatFlow, FlowType } from './pbcat-flow';
-import { PbcatConfig, PbcatSession } from './pbcat-config.d';
+import { PbcatConfig } from './pbcat-config.d';
 import { PbcatCrashType } from './pbcat-crash-type';
 import { PbcatInfo, PbcatBicyclistInfo, PbcatPedestrianInfo } from './pbcat-info';
 
@@ -58,10 +58,10 @@ export class PbcatService {
         }
     }
 
-    getSession(token: string): Observable<PbcatSession> {
+    getSession(token: string): Observable<number[]> {
         let url = `api/pbcat/session/${token}`;
         return this.http.get(url)
-            .map(response => this.extractData<PbcatSession>(response))
+            .map(response => this.extractData<number[]>(response))
             .catch(this.handleError);
     }
 
