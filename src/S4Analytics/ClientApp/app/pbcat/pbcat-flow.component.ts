@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { AppState } from '../app.state';
 import { AlertType } from '../alert-type';
 import { KeepSilverlightAliveService } from '../keep-silverlight-alive.service.ts';
+import { OptionsService, Options } from '../options.service';
 import {
     PbcatService, PbcatItem, PbcatCrashType,
     PbcatFlow, FlowType, PbcatState
@@ -22,20 +23,28 @@ export class PbcatFlowComponent {
     private alertMessage: string;
     private alertType: AlertType;
     private alertVisible: boolean = false;
+    private options: Options;
 
     constructor(
         private router: Router,
         private route: ActivatedRoute,
         private appState: AppState,
         private pbcatService: PbcatService,
-        private keepSilverlightAlive: KeepSilverlightAliveService) {
+        private keepSilverlightAlive: KeepSilverlightAliveService,
+        private optionsService: OptionsService) {
         this.state = appState.pbcatState;
     }
 
     ngOnInit() {
-        this.routeSub = this.route.data.subscribe(
-            data => this.handleRouteData(data),
-            err => this.displayAlert('Error', err, AlertType.Danger));
+        let routeData: { [name: string]: any };
+        this.routeSub = this.route.data
+            .do(data => routeData = data)
+            .switchMap(() => this.optionsService.getOptions())
+            .do(options => this.options = options)
+            .subscribe(
+                options => this.handleRouteData(routeData),
+                err => this.displayAlert('Error', err, AlertType.Danger)
+            );
     }
 
     ngOnDestroy() {
@@ -84,17 +93,15 @@ export class PbcatFlowComponent {
             delete this.state.reportViewerWindow;
         }
         if (this.state.showReportViewer) {
-            let href = `report-viewer/${this.hsmvReportNumber}`;
+            let href = `${this.options.baseUrl}report-viewer/${this.hsmvReportNumber}`;
             let isWindowOpen = this.state.reportViewerWindow !== undefined;
             if (isWindowOpen) {
                 let isUrlCurrent = this.state.reportViewerWindow.location.href.endsWith(href);
                 if (!isUrlCurrent) {
-                    console.log(`update: ${href}`);
                     this.state.reportViewerWindow.location.href = href; // update the window url
                 }
             }
             else {
-                console.log(`launch: ${href}`);
                 this.state.reportViewerWindow = window.open(href, 'crashReportWindow'); // open a new window
             }
         }
