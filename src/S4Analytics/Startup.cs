@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Net;
 
 namespace S4Analytics
 {
@@ -33,6 +36,20 @@ namespace S4Analytics
         public string Version { get; set; }
         public string BaseUrl { get; set; }
         public string SilverlightBaseUrl { get; set; }
+    }
+
+    public class CustomJsonExceptionFilter : ExceptionFilterAttribute
+    {
+        // http://stackoverflow.com/questions/35245893/mvc-6-webapi-returning-html-error-page-instead-of-json-version-of-exception-obje
+        public override void OnException(ExceptionContext context)
+        {
+            if (context.HttpContext.Request.GetTypedHeaders().Accept.Any(header => header.MediaType == "application/json"))
+            {
+                var jsonResult = new JsonResult(new { error = context.Exception.Message });
+                jsonResult.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
+                context.Result = jsonResult;
+            }
+        }
     }
 
     public class Startup
@@ -55,34 +72,58 @@ namespace S4Analytics
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            services.AddMvc();
-            services.AddOptions();
+            // Add MVC.
+            services.AddMvc(mvcOptions =>
+            {
+                // Return API exceptions as JSON, not HTML.
+                mvcOptions.Filters.Add(new CustomJsonExceptionFilter());
+            });
 
+            // Serialize enums to JSON as strings, rather than integers.
             services.Configure<MvcJsonOptions>(jsonOptions =>
             {
-                // Serialize enums as strings, rather than integers.
                 jsonOptions.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
 
-            // add and configure Oracle user store
+            // Do not redirect to login for unauthorized API call; return Unauthorized status code instead.
+            // http://stackoverflow.com/questions/34770886/mvc6-unauthorized-results-in-redirect-instead
+            services.Configure<IdentityOptions>(identityOptions =>
+            {
+                identityOptions.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
+                {
+                    OnRedirectToLogin = ctx =>
+                    {
+                        if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                        {
+                            ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        }
+                        else
+                        {
+                            ctx.Response.Redirect(ctx.RedirectUri);
+                        }
+                        return Task.FromResult<object>(null);
+                    }
+                };
+            });
+
+            // Add and configure Oracle user store.
             services.AddSingleton<IUserStore<OracleIdentityUser>>(provider => {
                 var options = provider.GetService<IOptions<ServerOptions>>();
                 var connStr = options.Value.WarehouseConnStr;
                 return new OracleUserStore<OracleIdentityUser>("S4_Analytics", connStr, null);
             });
 
+            // Add and configure Oracle role store.
             services.AddSingleton<IRoleStore<OracleUserRole>, OracleRoleStore<OracleUserRole>>();
 
-            // configure sign-in scheme to use cookies
-            services.AddAuthentication(options =>
+            // Configure sign-in scheme to use cookies.
+            services.AddAuthentication(authOptions =>
             {
-                options.SignInScheme = new IdentityCookieOptions().ExternalCookieAuthenticationScheme;
+                authOptions.SignInScheme = new IdentityCookieOptions().ExternalCookieAuthenticationScheme;
             });
 
-            // Hosting doesn't add IHttpContextAccessor by default
+            // Add identity services.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
             services.AddSingleton<IdentityMarkerService>();
             services.AddSingleton<IUserValidator<OracleIdentityUser>, UserValidator<OracleIdentityUser>>();
             services.AddSingleton<IPasswordValidator<OracleIdentityUser>, PasswordValidator<OracleIdentityUser>>();
@@ -95,7 +136,8 @@ namespace S4Analytics
             services.AddSingleton<RoleManager<OracleUserRole>>();
             services.AddScoped<SignInManager<OracleIdentityUser>>();
 
-            // Add configurations.
+            // Add options.
+            services.AddOptions();
             services.Configure<ServerOptions>(serverOptions =>
             {
                 serverOptions.WarehouseConnStr = Configuration.GetConnectionString("Warehouse");
