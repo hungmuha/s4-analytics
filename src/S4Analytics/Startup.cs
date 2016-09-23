@@ -95,6 +95,7 @@ namespace S4Analytics
                     {
                         if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
                         {
+                            // todo: return HttpStatusCode.Forbidden when appropriate
                             ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                         }
                         else

@@ -10,13 +10,16 @@ import * as moment from 'moment';
 export class KeepSilverlightAliveService {
     private nextCallTime: moment.Moment;
     private keepAliveInterval = 10; // in minutes
+    private options: Options;
 
     constructor(
         private http: Http,
         private optionsService: OptionsService) {
         // schedule the initial keep alive call
-        let now = moment();
-        this.nextCallTime = now.add(this.keepAliveInterval, 'minutes');
+        this.nextCallTime = moment().add(this.keepAliveInterval, 'minutes');
+        this.optionsService.getOptions()
+            .first()
+            .subscribe(options => this.options = options);
     }
 
     keepAlive() {
@@ -25,23 +28,13 @@ export class KeepSilverlightAliveService {
             (opener as any).keepSilverlightAlive();
         }
         // keep the silverlight app server alive
-        let now = moment();
-        if (now.isAfter(this.nextCallTime)) {
-            this.optionsService.getOptions()
-                .first()
-                .catch(err => Observable.throw(err))
-                .subscribe(options => {
-                    this.callKeepAlivePage(options.silverlightBaseUrl);
-                });
-            this.nextCallTime = now.add(this.keepAliveInterval, 'minutes');
+        if (this.options) {
+            let now = moment();
+            if (now.isAfter(this.nextCallTime)) {
+                let url = `${this.options.silverlightBaseUrl}KeepAlive.aspx`;
+                this.http.get(url).first().subscribe();
+                this.nextCallTime = now.add(this.keepAliveInterval, 'minutes');
+            }
         }
-    }
-
-    private callKeepAlivePage(silverlightBaseUrl: string) {
-        let url = silverlightBaseUrl + 'KeepAlive.aspx';
-        this.http.get(url)
-            .first()
-            .catch(err => Observable.throw(err))
-            .subscribe();
     }
 }

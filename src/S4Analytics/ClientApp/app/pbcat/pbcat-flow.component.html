@@ -43,10 +43,10 @@
 
     <div class="pbcat-alert alert alert-dismissible"
          [class.hidden]="!alertVisible"
-         [class.alert-success]="alertType===AlertType.Success"
-         [class.alert-info]="alertType===AlertType.Info"
-         [class.alert-warning]="alertType===AlertType.Warning"
-         [class.alert-danger]="alertType===AlertType.Danger">
+         [class.alert-success]="alertType==='success'"
+         [class.alert-info]="alertType==='info'"
+         [class.alert-warning]="alertType==='warning'"
+         [class.alert-danger]="alertType==='danger'">
         <button type="button" class="close" (click)="dismissAlert()"><span>&times;</span></button>
         <strong>{{alertHeading}}</strong> {{alertMessage}}
     </div>

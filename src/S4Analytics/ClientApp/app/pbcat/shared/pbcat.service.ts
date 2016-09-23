@@ -53,24 +53,21 @@ export class PbcatService {
             return this.http
                 .get(url)
                 .map(response => this.extractData<PbcatConfig>(response))
-                .do(config => this.cachedConfig = config)
-                .catch(this.handleError);
+                .do(config => this.cachedConfig = config);
         }
     }
 
     getSession(token: string): Observable<number[]> {
         let url = `api/pbcat/session/${token}`;
         return this.http.get(url)
-            .map(response => this.extractData<number[]>(response))
-            .catch(this.handleError);
+            .map(response => this.extractData<number[]>(response));
     }
 
     getParticipantInfo(hsmvReportNumber: number): Observable<PbcatParticipantInfo> {
         let url = `api/pbcat/${hsmvReportNumber}`;
         return this.http
             .get(url)
-            .map(response => this.extractData<PbcatParticipantInfo>(response))
-            .catch(this.handleError);
+            .map(response => this.extractData<PbcatParticipantInfo>(response));
     }
 
     getPbcatInfo(participantInfo: PbcatParticipantInfo, hsmvReportNumber: number): Observable<PbcatInfo> {
@@ -80,8 +77,7 @@ export class PbcatService {
             let url = `api/pbcat/${bikeOrPed}/${hsmvReportNumber}`;
             return this.http
                 .get(url)
-                .map(response => this.extractData<PbcatInfo>(response))
-                .catch(this.handleError);
+                .map(response => this.extractData<PbcatInfo>(response));
         }
         else {
             return Observable.of(undefined);
@@ -97,8 +93,7 @@ export class PbcatService {
             : new BicyclistInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatBicyclistInfo, flow.crashType);
         return this.http
             .post(url, wrapper)
-            .map(response => undefined)
-            .catch(this.handleError);
+            .map(response => undefined);
     }
 
     updatePbcatInfo(flow: PbcatFlow): Observable<void> {
@@ -110,8 +105,7 @@ export class PbcatService {
             : new BicyclistInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatBicyclistInfo, flow.crashType);
         return this.http
             .put(url, wrapper)
-            .map(response => undefined)
-            .catch(this.handleError);
+            .map(response => undefined);
     }
 
     calculateCrashType(flowType: FlowType, pbcatInfo: PbcatInfo): Observable<PbcatCrashType> {
@@ -120,29 +114,16 @@ export class PbcatService {
         let url = `api/pbcat/${bikeOrPed}/crashtype`;
         return this.http
             .post(url, pbcatInfo)
-            .map(response => this.extractData<PbcatCrashType>(response))
-            .catch(this.handleError);
+            .map(response => this.extractData<PbcatCrashType>(response));
     }
 
-    private getBikeOrPed(flowType: FlowType): string {
+    private getBikeOrPed(flowType: FlowType): 'bike' | 'ped' {
         if (flowType === FlowType.Pedestrian) {
             return 'ped';
         }
         else if (flowType === FlowType.Bicyclist) {
             return 'bike';
         }
-    }
-
-    private handleError(error: any) {
-        // In a real world app, we might use a remote logging infrastructure
-        // We'd also dig deeper into the error to get a better message
-        let errMsg = (error.message)
-            ? error.message
-            : error.status
-                ? `${error.status} - ${error.statusText}`
-                : error;
-        console.error(errMsg); // log to console instead
-        return Observable.throw(errMsg);
     }
 
     private extractData<T>(response: Response): T {

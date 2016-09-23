@@ -56,7 +56,7 @@ export class PbcatResolveService implements Resolve<PbcatFlow> {
                     .switchMap(() => this.pbcatService.getPbcatInfo(participantInfo, hsmvReportNumber))
                     .map(pbcatInfo => new PbcatFlow(hsmvReportNumber, participantInfo, pbcatInfo, config))
                     .do(flow => this.goToStepOrSummary(flow, 1))
-                    .catch(this.handleError);
+                    .catch(err => this.handleError(err));
                 return retVal;
             }
             else {
@@ -84,14 +84,10 @@ export class PbcatResolveService implements Resolve<PbcatFlow> {
     }
 
     private handleError(error: any) {
-        // In a real world app, we might use a remote logging infrastructure
-        // We'd also dig deeper into the error to get a better message
-        let errMsg = (error.message)
-            ? error.message
-            : error.status
-                ? `${error.status} - ${error.statusText}`
-                : error;
-        console.error(errMsg); // log to console instead
-        return Observable.throw(errMsg);
+        // Redirect to login page if 401 (Unauthorized)
+        if (error.status === 401) {
+            this.router.navigate(['login']);
+        }
+        return Observable.throw(error);
     }
 }
