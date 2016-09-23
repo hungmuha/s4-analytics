@@ -66,11 +66,8 @@ namespace S4Analytics.Models
             return info;
         }
 
-        public void Add(int hsmvRptNbr, PBCATBicyclistInfo bikeInfo, CrashTypeBicyclist crashType)
+        public void Add(int hsmvRptNbr, string userName, PBCATBicyclistInfo bikeInfo, CrashTypeBicyclist crashType)
         {
-            // todo: user real user id
-            var lastUpdateUserId = "pbcat";
-
             // convert some values to int
             int crashGroupNbr = 0;
             int crashTypeNbr;
@@ -140,7 +137,7 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("crashTypeExpanded", OracleDbType.Decimal).Value = crashTypeExpanded;
                         cmd.Parameters.Add("crashGroupExpanded", OracleDbType.Decimal).Value = crashGroupExpanded;
                         cmd.Parameters.Add("enableGroupTyping", OracleDbType.Decimal).Value = enableGroupTyping;
-                        cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = lastUpdateUserId;
+                        cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = userName;
                         cmd.ExecuteNonQuery();
                     }
                     UpdateBicyclistCrashReport(conn, hsmvRptNbr);
@@ -149,11 +146,8 @@ namespace S4Analytics.Models
             }
         }
 
-        public void Update(int hsmvRptNbr, PBCATBicyclistInfo bikeInfo, CrashTypeBicyclist crashType)
+        public void Update(int hsmvRptNbr, string userName, PBCATBicyclistInfo bikeInfo, CrashTypeBicyclist crashType)
         {
-            // todo: user real user id
-            var lastUpdateUserId = "pbcat";
-
             // convert some values to int
             int crashGroupNbr;
             int crashTypeNbr;
@@ -230,7 +224,7 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("crashTypeExpanded", OracleDbType.Decimal).Value = crashTypeExpanded;
                         cmd.Parameters.Add("crashGroupExpanded", OracleDbType.Decimal).Value = crashGroupExpanded;
                         cmd.Parameters.Add("enableGroupTyping", OracleDbType.Decimal).Value = enableGroupTyping;
-                        cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = lastUpdateUserId;
+                        cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = userName;
                         cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
                         cmd.ExecuteNonQuery();
                     }

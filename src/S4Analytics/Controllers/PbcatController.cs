@@ -9,6 +9,8 @@ using Lib.PBCAT;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using AspNetCore.Identity.Oracle;
+using Microsoft.AspNetCore.Http;
+using System.IdentityModel.Claims;
 
 namespace S4Analytics.Controllers
 {
@@ -33,14 +35,17 @@ namespace S4Analytics.Controllers
         // COMMON
         private readonly UserManager<OracleIdentityUser> _userManager;
         private readonly SignInManager<OracleIdentityUser> _signInManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public PbcatController(
             UserManager<OracleIdentityUser> userManager,
             SignInManager<OracleIdentityUser> signInManager,
+            IHttpContextAccessor httpContextAccessor,
             IPbcatRepository pbcatRepo)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _httpContextAccessor = httpContextAccessor;
             PbcatRepo = pbcatRepo;
         }
 
@@ -120,7 +125,8 @@ namespace S4Analytics.Controllers
                 return StatusCode((int)HttpStatusCode.Conflict);
             }
 
-            PbcatRepo.Add(hsmvRptNbr, pedInfo, crashType);
+            var userName = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            PbcatRepo.Add(hsmvRptNbr, userName, pedInfo, crashType);
             var data = AjaxSafeData(pedInfoWrapper);
             return CreatedAtRoute("GetPedestrianInfo", new { hsmvRptNbr }, data);
         }
@@ -146,7 +152,8 @@ namespace S4Analytics.Controllers
                 return NotFound();
             }
 
-            PbcatRepo.Update(hsmvRptNbr, pedInfo, crashType);
+            var userName = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            PbcatRepo.Update(hsmvRptNbr, userName, pedInfo, crashType);
             return new NoContentResult();
         }
 
@@ -234,7 +241,8 @@ namespace S4Analytics.Controllers
                 return StatusCode((int)HttpStatusCode.Conflict);
             }
 
-            PbcatRepo.Add(hsmvRptNbr, bikeInfo, crashType);
+            var userName = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            PbcatRepo.Add(hsmvRptNbr, userName, bikeInfo, crashType);
             var data = AjaxSafeData(bikeInfoWrapper);
             return CreatedAtRoute("GetBicyclistInfo", new { hsmvRptNbr }, data);
         }
@@ -260,7 +268,8 @@ namespace S4Analytics.Controllers
                 return NotFound();
             }
 
-            PbcatRepo.Update(hsmvRptNbr, bikeInfo, crashType);
+            var userName = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            PbcatRepo.Update(hsmvRptNbr, userName, bikeInfo, crashType);
             return new NoContentResult();
         }
 
