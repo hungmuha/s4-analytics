@@ -145,7 +145,7 @@ export class PbcatFlowComponent {
     private get canReturnToSummary(): boolean { return this.flow.canReturnToSummary; }
 
     private get ready(): boolean {
-        return this.flow && this.flow.hasValidState;
+        return this.flow !== undefined;
     }
 
     private get nextCrashExists(): boolean { return this.flow.isSaved && this.state.nextHsmvNumber !== undefined; }

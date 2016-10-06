@@ -23,7 +23,6 @@ export class PbcatFlow {
     private _currentStepIndex: number = -1;
     private _stepHistory: PbcatStep[] = [];
     private _isFlowComplete: boolean = false;
-    private _hasValidState: boolean = true;
     private crashLocAttrValue: string;
 
     constructor(
@@ -41,8 +40,6 @@ export class PbcatFlow {
     get stepHistory() { return this._stepHistory; }
 
     get isFlowComplete() { return this._isFlowComplete; }
-
-    get hasValidState() { return this._hasValidState; }
 
     get isFinalStep(): boolean {
         return this._isFlowComplete && this._currentStepIndex === this._stepHistory.length - 1;
@@ -116,17 +113,11 @@ export class PbcatFlow {
             let currentStep = this.getFirstStep();
             this._stepHistory.push(currentStep);
         }
-        else if (!stepExists) {
-            this._hasValidState = false;
-        }
     }
 
     goToSummary() {
         if (this._isFlowComplete) {
             this._currentStepIndex = this._stepHistory.length; // summary isn't actually in the stepHistory
-        }
-        else {
-            this._hasValidState = false;
         }
     }
 
@@ -182,8 +173,12 @@ export class PbcatFlow {
 
     private reconstructStepHistory(pbcatInfo: PbcatInfo) {
         // replay the previous session
-        while (!this._isFlowComplete && this._hasValidState) { // check this._hasValidState for sanity only
+        while (!this._isFlowComplete) {
             this.goToStep(this.currentStepNumber + 1);
+            if (this.currentStep === undefined) {
+                // this can occur if the previous session was not completed/imported properly
+                break;
+            }
             for (let item of this.currentStep.items) {
                 if (item.infoAttrValue === (pbcatInfo as any)[this.currentStep.infoAttrName]) {
                     this.selectItemForCurrentStep(item);
