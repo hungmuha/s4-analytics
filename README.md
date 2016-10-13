@@ -8,6 +8,7 @@ Before contributing any code, consult the following:
 - [TypeScript Coding Guidelines](https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines)
 - [Angular2 Style Guide](https://angular.io/styleguide)
 - [C# Coding Conventions](https://msdn.microsoft.com/en-us/library/ff926074.aspx)
+- [SQL Style Guide](http://www.sqlstyle.guide/)
 - [Microsoft REST API Guidelines](https://github.com/Microsoft/api-guidelines/blob/master/Guidelines.md)
 
 ## Builds
