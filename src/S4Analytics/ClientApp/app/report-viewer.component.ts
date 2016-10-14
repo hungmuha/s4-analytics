@@ -1,6 +1,6 @@
 ﻿import { Component, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SafeResourceUrl, DomSanitizationService } from '@angular/platform-browser';
+import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs/Subscription';
 import { OptionsService, Options } from './options.service';
 
@@ -20,7 +20,7 @@ export class ReportViewerComponent {
 
     constructor(
         private route: ActivatedRoute,
-        private sanitizer: DomSanitizationService,
+        private sanitizer: DomSanitizer,
         private optionsService: OptionsService) {
     }
 
