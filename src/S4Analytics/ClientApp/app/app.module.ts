@@ -1,5 +1,5 @@
 ﻿import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, __platform_browser_private__ } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
 import { routing, appRoutingProviders } from './app.routing';
 import { AppComponent } from './app.component';
@@ -27,6 +27,7 @@ import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
     providers: [
         AppState,
         appRoutingProviders,
+        __platform_browser_private__.BROWSER_SANITIZATION_PROVIDERS,
         OptionsService,
         KeepSilverlightAliveService
     ],
