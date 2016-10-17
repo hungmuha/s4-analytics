@@ -21,7 +21,7 @@ namespace S4Analytics.Models
                 non_roadway_loc_cd, other_ped_action_cd, ped_dir_travel_cd, ped_failure_to_yield_cd,
                 ped_in_roadway_cd, ped_movement_cd, ped_position_cd, right_turn_on_red_cd, turn_merge_cd,
                 typical_ped_action_cd, unusual_circumstances_cd, unusual_ped_action_cd, unusual_veh_type_cd,
-                waiting_to_cross_cd, walking_along_roadway_cd, ped_loc_option_enabled, group_typing_enabled
+                waiting_to_cross_cd, walking_along_roadway_cd, ped_loc_option_enabled, group_typing_enabled, notes
                 FROM pbcat_ped WHERE hsmv_rpt_nbr = :hsmvRptNbr";
             using (var conn = new OracleConnection(_warehouseConnStr))
             {
@@ -60,6 +60,7 @@ namespace S4Analytics.Models
                     info.WalkingAlongRoadwayCd = ConvertToEnum<WalkingAlongRoadwayCircumstances>(dr.Field<decimal>("walking_along_roadway_cd"));
                     info.EnablePedestrianLocationOption = dr.Field<decimal>("ped_loc_option_enabled") != 0;
                     info.EnableGroupTyping = dr.Field<decimal>("group_typing_enabled") != 0;
+                    info.Notes = dr.Field<string>("notes");
                 }
             }
 
@@ -88,7 +89,7 @@ namespace S4Analytics.Models
                 typical_ped_action_cd, unusual_circumstances_cd, unusual_ped_action_cd, unusual_veh_type_cd,
                 waiting_to_cross_cd, walking_along_roadway_cd, crash_type_nbr, crash_grp_nbr,
                 crash_type_expanded, crash_grp_expanded, ped_loc_option_enabled, group_typing_enabled,
-                last_updt_user_id
+                last_updt_user_id, notes
             ) VALUES (
                 :hsmvRptNbr, :backingVehicleCd, :crashLocationCd, :crossingDrivewayCd, :crossingRoadwayCd,
                 :failureToYieldCd, :legOfIntrsectCd, :motoristDirTravelCd, :motoristManeuverCd,
@@ -97,7 +98,7 @@ namespace S4Analytics.Models
                 :turnMergeCd, :typicalPedActionCd, :unusualCircumstancesCd, :unusualPedActionCd,
                 :unusualVehicleTypeOrActionCd, :waitingToCrossCd, :walkingAlongRoadwayCd, :crashTypeNbr,
                 :crashGroupNbr, :crashTypeExpanded, :crashGroupExpanded, :enablePedestrianLocationOption,
-                :enableGroupTyping, :lastUpdateUserId
+                :enableGroupTyping, :lastUpdateUserId, :notes
             )";
 
             using (var conn = new OracleConnection(_warehouseConnStr))
@@ -138,6 +139,7 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("enablePedestrianLocationOption", OracleDbType.Decimal).Value = enablePedestrianLocationOption;
                         cmd.Parameters.Add("enableGroupTyping", OracleDbType.Decimal).Value = enableGroupTyping;
                         cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = userName;
+                        cmd.Parameters.Add("notes", OracleDbType.Varchar2).Value = pedInfo.Notes;
                         cmd.ExecuteNonQuery();
                     }
                     UpdatePedestrianCrashReport(conn, hsmvRptNbr);
@@ -190,7 +192,8 @@ namespace S4Analytics.Models
                 crash_grp_expanded = :crashGroupExpanded,
                 ped_loc_option_enabled = :enablePedestrianLocationOption,
                 group_typing_enabled = :enableGroupTyping,
-                last_updt_user_id = :lastUpdateUserId
+                last_updt_user_id = :lastUpdateUserId,
+                notes = :notes
             WHERE hsmv_rpt_nbr = :hsmvRptNbr";
 
             using (var conn = new OracleConnection(_warehouseConnStr))
@@ -230,6 +233,7 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("enablePedestrianLocationOption", OracleDbType.Decimal).Value = enablePedestrianLocationOption;
                         cmd.Parameters.Add("enableGroupTyping", OracleDbType.Decimal).Value = enableGroupTyping;
                         cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = userName;
+                        cmd.Parameters.Add("notes", OracleDbType.Varchar2).Value = pedInfo.Notes;
                         cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
                         cmd.ExecuteNonQuery();
                     }

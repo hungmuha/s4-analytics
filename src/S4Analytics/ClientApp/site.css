@@ -101,3 +101,7 @@ body {
     overflow: hidden;
     z-index: 999999;
 }
+
+.pbcat-summary-notes textarea {
+    min-width: 100%;
+}

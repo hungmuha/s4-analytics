@@ -1,5 +1,6 @@
 ﻿export abstract class PbcatInfo {
     rightTurnOnRedCd: string;
+    notes: string;
 }
 
 export class PbcatPedestrianInfo extends PbcatInfo {
