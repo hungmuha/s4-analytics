@@ -10,11 +10,20 @@ export class PbcatSummaryComponent {
     @Input() stepHistory: PbcatStep[];
     @Input() crashType: PbcatCrashType;
     @Input() isSaved: boolean;
+    @Input() notes: string;
+    @Output() notesChange = new EventEmitter<string>();
     @Output() jumpBackToStep = new EventEmitter<number>();
 
     private jumpBack(stepNumber: number) {
         if (!this.isSaved) {
             this.jumpBackToStep.emit(stepNumber);
+        }
+    }
+
+    private changeNotes(notes: string) {
+        if (!this.isSaved) {
+            this.notes = notes;
+            this.notesChange.emit(notes);
         }
     }
 

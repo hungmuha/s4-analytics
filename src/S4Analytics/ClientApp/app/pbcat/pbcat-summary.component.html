@@ -11,12 +11,19 @@
     </div>
 
     <div class="row" *ngFor="let step of stepHistory; let i=index">
-        <div class="col-sm-push-2 col-sm-10 col-md-push-1 col-md-11">
+        <div class="col-sm-push-2 col-sm-8 col-md-push-1 col-md-10">
             <p>
                 <a href="javascript:void(0);" (click)="jumpBack(i+1)">
-                    {{i+1}}. <b>{{step.title}}</b> {{step.selectedItem.title}}
+                    {{i+1}}. {{step.title}} <b>{{step.selectedItem.title}}</b>
                 </a>
             </p>
+        </div>
+    </div>
+
+    <div class="row pbcat-summary-notes">
+        <div class="col-sm-push-2 col-sm-8 col-md-push-1 col-md-10">
+            <h4>Notes</h4>
+            <textarea [ngModel]="notes" (ngModelChange)="changeNotes($event)" [disabled]="isSaved"></textarea>
         </div>
     </div>
 </template>

@@ -23,7 +23,7 @@ namespace S4Analytics.Models
                 initial_approach_paths_cd, intentional_crash_cd, intrsect_circumstances_cd,
                 loss_of_control_cd, motorist_drive_out_cd, motorist_overtaking_cd,
                 motorist_turned_merged_cd, parallel_paths_cd, right_turn_on_red_cd, turning_error_cd,
-                type_traffic_control_cd, unusual_circumstances_cd, group_typing_enabled
+                type_traffic_control_cd, unusual_circumstances_cd, group_typing_enabled, notes
                 FROM pbcat_bike WHERE hsmv_rpt_nbr = :hsmvRptNbr";
             using (var conn = new OracleConnection(_warehouseConnStr))
             {
@@ -59,6 +59,7 @@ namespace S4Analytics.Models
                     info.TurningErrorCd = ConvertToEnum<TurningError>(dr.Field<decimal>("turning_error_cd"));
                     info.TypeTrafficControlCd = ConvertToEnum<TypeOfTrafficControl>(dr.Field<decimal>("type_traffic_control_cd"));
                     info.UnusualCircumstancesCd = ConvertToEnum<UnusualCircumstancesBicyclist>(dr.Field<decimal>("unusual_circumstances_cd"));
+                    info.Notes = dr.Field<string>("notes");
                     info.EnableGroupTyping = dr.Field<decimal>("group_typing_enabled") != 0;
                 }
             }
@@ -88,7 +89,7 @@ namespace S4Analytics.Models
                 loss_of_control_cd, motorist_drive_out_cd, motorist_overtaking_cd,
                 motorist_turned_merged_cd, parallel_paths_cd, right_turn_on_red_cd, turning_error_cd,
                 type_traffic_control_cd, unusual_circumstances_cd, crash_type_nbr, crash_grp_nbr,
-                crash_type_expanded, crash_grp_expanded, group_typing_enabled, last_updt_user_id
+                crash_type_expanded, crash_grp_expanded, group_typing_enabled, last_updt_user_id, notes
             ) VALUES (
                 :hsmvRptNbr, :bicyclistDirCd, :bicyclistFailedToClearCd,
                 :bicyclistOvertakingCd, :bicyclistPositionCd, :bicyclistRideOutCd,
@@ -99,7 +100,7 @@ namespace S4Analytics.Models
                 :parallelPathsCd, :rightTurnOnRedCd, :turningErrorCd,
                 :typeTrafficControlCd, :unusualCircumstancesCd, :crashTypeNbr,
                 :crashGroupNbr, :crashTypeExpanded, :crashGroupExpanded,
-                :enableGroupTyping, :lastUpdateUserId
+                :enableGroupTyping, :lastUpdateUserId, :notes
             )";
 
             using (var conn = new OracleConnection(_warehouseConnStr))
@@ -138,6 +139,7 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("crashGroupExpanded", OracleDbType.Decimal).Value = crashGroupExpanded;
                         cmd.Parameters.Add("enableGroupTyping", OracleDbType.Decimal).Value = enableGroupTyping;
                         cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = userName;
+                        cmd.Parameters.Add("notes", OracleDbType.Varchar2).Value = bikeInfo.Notes;
                         cmd.ExecuteNonQuery();
                     }
                     UpdateBicyclistCrashReport(conn, hsmvRptNbr);
@@ -187,7 +189,8 @@ namespace S4Analytics.Models
                 crash_type_expanded = :crashTypeExpanded,
                 crash_grp_expanded = :crashGroupExpanded,
                 group_typing_enabled = :enableGroupTyping,
-                last_updt_user_id = :lastUpdateUserId
+                last_updt_user_id = :lastUpdateUserId,
+                notes = :notes
                 WHERE hsmv_rpt_nbr = :hsmvRptNbr";
 
             using (var conn = new OracleConnection(_warehouseConnStr))
@@ -225,6 +228,7 @@ namespace S4Analytics.Models
                         cmd.Parameters.Add("crashGroupExpanded", OracleDbType.Decimal).Value = crashGroupExpanded;
                         cmd.Parameters.Add("enableGroupTyping", OracleDbType.Decimal).Value = enableGroupTyping;
                         cmd.Parameters.Add("lastUpdateUserId", OracleDbType.Varchar2).Value = userName;
+                        cmd.Parameters.Add("notes", OracleDbType.Varchar2).Value = bikeInfo.Notes;
                         cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
                         cmd.ExecuteNonQuery();
                     }

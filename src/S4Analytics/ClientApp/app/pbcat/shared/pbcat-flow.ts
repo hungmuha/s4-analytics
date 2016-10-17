@@ -24,6 +24,7 @@ export class PbcatFlow {
     private _stepHistory: PbcatStep[] = [];
     private _isFlowComplete: boolean = false;
     private crashLocAttrValue: string;
+    private notes: string;
 
     constructor(
         public hsmvReportNumber: number,
@@ -94,6 +95,7 @@ export class PbcatFlow {
         }
 
         if (info) {
+            info.notes = this.notes;
             for (let step of this._stepHistory) {
                 if (step.selectedItem !== undefined) {
                     (info as any)[step.infoAttrName] = step.selectedItem.infoAttrValue;
@@ -186,6 +188,8 @@ export class PbcatFlow {
                 }
             }
         }
+        // grab the notes
+        this.notes = pbcatInfo.notes;
         // then return to step 1
         this.goToStep(1);
     }
