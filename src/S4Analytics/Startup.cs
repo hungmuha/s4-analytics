@@ -46,7 +46,7 @@ namespace S4Analytics
             if (context.HttpContext.Request.GetTypedHeaders().Accept.Any(header => header.MediaType == "application/json"))
             {
                 var jsonResult = new JsonResult(new { error = context.Exception.Message });
-                jsonResult.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
+                jsonResult.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Result = jsonResult;
             }
         }
