@@ -32,11 +32,10 @@ namespace S4Analytics.Controllers
         }
 
         /// <summary>
-        /// Login endpoint for local testing only. No password is required.
+        /// Login for local testing only. No password is required.
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpGet("login/{userName}")]
         public async Task<IActionResult> Login(string userName)
         {

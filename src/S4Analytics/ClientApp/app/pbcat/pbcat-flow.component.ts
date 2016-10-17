@@ -2,7 +2,7 @@
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { AppState } from '../app.state';
-import { KeepSilverlightAliveService } from '../keep-silverlight-alive.service.ts';
+import { KeepSilverlightAliveService } from '../keep-silverlight-alive.service';
 import { OptionsService, Options } from '../options.service';
 import {
     PbcatService, PbcatItem, PbcatCrashType,
