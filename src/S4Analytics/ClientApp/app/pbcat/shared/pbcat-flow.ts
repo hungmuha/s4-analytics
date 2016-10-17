@@ -18,8 +18,8 @@ const UNDETERMINED_INITIAL_SCREEN: string = 'PB';
 export class PbcatFlow {
     crashType: PbcatCrashType;
     isSaved: boolean = false;
-    typingExists: boolean = false;
     flowType: FlowType = FlowType.Undetermined;
+    private originalFlowType: FlowType = FlowType.Undetermined;
     private _currentStepIndex: number = -1;
     private _stepHistory: PbcatStep[] = [];
     private _isFlowComplete: boolean = false;
@@ -28,14 +28,26 @@ export class PbcatFlow {
 
     constructor(
         public hsmvReportNumber: number,
-        private participantInfo: PbcatParticipantInfo,
+        participantInfo: PbcatParticipantInfo,
         pbcatInfo: PbcatInfo,
         private config: PbcatConfig) {
+        if (participantInfo.hasPedestrianTyping) {
+            this.originalFlowType = FlowType.Pedestrian;
+        }
+        else if (participantInfo.hasBicyclistTyping) {
+            this.originalFlowType = FlowType.Bicyclist;
+        }
         this.flowType = this.determineFlowType(participantInfo);
         if (pbcatInfo !== undefined) {
-            this.typingExists = true;
-            this.reconstructStepHistory(pbcatInfo);
+            this.reconstructStepHistory(participantInfo, pbcatInfo);
         }
+    }
+
+    get typingExists(): boolean {
+        // Because typing info is stored separately for bike or ped, we only return true
+        // if the flow type is the same as before (bike and bike, for example).
+        // This property ultimately determines whether we issue a create or an update call to the server.
+        return this.flowType !== FlowType.Undetermined && this.flowType === this.originalFlowType;
     }
 
     get stepHistory() { return this._stepHistory; }
@@ -158,22 +170,16 @@ export class PbcatFlow {
     }
 
     private determineFlowType(participantInfo: PbcatParticipantInfo): FlowType {
-        let flowType: FlowType;
-        if (participantInfo.hasPedestrianTyping ||
-            (participantInfo.hasPedestrianParticipant && !participantInfo.hasBicyclistParticipant)) {
-            flowType = FlowType.Pedestrian;
+        if (participantInfo.hasPedestrianParticipant && !participantInfo.hasBicyclistParticipant) {
+            return FlowType.Pedestrian;
         }
-        else if (participantInfo.hasBicyclistTyping ||
-            (participantInfo.hasBicyclistParticipant && !participantInfo.hasPedestrianParticipant)) {
-            flowType = FlowType.Bicyclist;
+        else if (participantInfo.hasBicyclistParticipant && !participantInfo.hasPedestrianParticipant) {
+            return FlowType.Bicyclist;
         }
-        else {
-            flowType = FlowType.Undetermined;
-        }
-        return flowType;
+        return FlowType.Undetermined;
     }
 
-    private reconstructStepHistory(pbcatInfo: PbcatInfo) {
+    private reconstructStepHistory(participantInfo: PbcatParticipantInfo, pbcatInfo: PbcatInfo) {
         // replay the previous session
         while (!this._isFlowComplete) {
             this.goToStep(this.currentStepNumber + 1);
@@ -182,9 +188,18 @@ export class PbcatFlow {
                 break;
             }
             for (let item of this.currentStep.items) {
-                if (item.infoAttrValue === (pbcatInfo as any)[this.currentStep.infoAttrName]) {
+                // if the flow type is undetermined, we can determine it by which typing flow was used previously
+                if (this.currentStep.screenName === UNDETERMINED_INITIAL_SCREEN) {
+                    let pedTypingMatch = participantInfo.hasPedestrianTyping && item.infoAttrValue === "Pedestrian";
+                    let bikeTypingMatch = participantInfo.hasBicyclistTyping && item.infoAttrValue === "Bicyclist";
+                    if (pedTypingMatch || bikeTypingMatch) {
+                        this.selectItemForCurrentStep(item);
+                        break;
+                    }
+                }
+                else if (item.infoAttrValue === (pbcatInfo as any)[this.currentStep.infoAttrName]) {
                     this.selectItemForCurrentStep(item);
-                    continue;
+                    break;
                 }
             }
         }
