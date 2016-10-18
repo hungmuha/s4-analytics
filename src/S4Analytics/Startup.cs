@@ -11,8 +11,8 @@ using Microsoft.Extensions.Logging;
 using S4Analytics.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
-using AspNetCore.Identity.Oracle;
-using AspNetCore.Identity.Oracle.Models;
+using Lib.Identity;
+using Lib.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http;
@@ -108,14 +108,14 @@ namespace S4Analytics
             });
 
             // Add and configure Oracle user store.
-            services.AddSingleton<IUserStore<OracleIdentityUser>>(provider => {
+            services.AddSingleton<IUserStore<S4IdentityUser>>(provider => {
                 var options = provider.GetService<IOptions<ServerOptions>>();
                 var connStr = options.Value.WarehouseConnStr;
-                return new OracleUserStore<OracleIdentityUser>("S4_Analytics", connStr, null);
+                return new S4UserStore<S4IdentityUser>("S4_Analytics", connStr, null);
             });
 
             // Add and configure Oracle role store.
-            services.AddSingleton<IRoleStore<OracleUserRole>, OracleRoleStore<OracleUserRole>>();
+            services.AddSingleton<IRoleStore<S4UserRole>, S4RoleStore<S4UserRole>>();
 
             // Configure sign-in scheme to use cookies.
             services.AddAuthentication(authOptions =>
@@ -126,16 +126,16 @@ namespace S4Analytics
             // Add identity services.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IdentityMarkerService>();
-            services.AddSingleton<IUserValidator<OracleIdentityUser>, UserValidator<OracleIdentityUser>>();
-            services.AddSingleton<IPasswordValidator<OracleIdentityUser>, PasswordValidator<OracleIdentityUser>>();
-            services.AddSingleton<IPasswordHasher<OracleIdentityUser>, PasswordHasher<OracleIdentityUser>>();
+            services.AddSingleton<IUserValidator<S4IdentityUser>, UserValidator<S4IdentityUser>>();
+            services.AddSingleton<IPasswordValidator<S4IdentityUser>, PasswordValidator<S4IdentityUser>>();
+            services.AddSingleton<IPasswordHasher<S4IdentityUser>, PasswordHasher<S4IdentityUser>>();
             services.AddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
             services.AddSingleton<IdentityErrorDescriber>();
-            services.AddSingleton<ISecurityStampValidator, SecurityStampValidator<OracleIdentityUser>>();
-            services.AddSingleton<IUserClaimsPrincipalFactory<OracleIdentityUser>, UserClaimsPrincipalFactory<OracleIdentityUser>>();
-            services.AddSingleton<UserManager<OracleIdentityUser>>();
-            services.AddSingleton<RoleManager<OracleUserRole>>();
-            services.AddScoped<SignInManager<OracleIdentityUser>>();
+            services.AddSingleton<ISecurityStampValidator, SecurityStampValidator<S4IdentityUser>>();
+            services.AddSingleton<IUserClaimsPrincipalFactory<S4IdentityUser>, UserClaimsPrincipalFactory<S4IdentityUser>>();
+            services.AddSingleton<UserManager<S4IdentityUser>>();
+            services.AddSingleton<RoleManager<S4UserRole>>();
+            services.AddScoped<SignInManager<S4IdentityUser>>();
 
             // Add options.
             services.AddOptions();

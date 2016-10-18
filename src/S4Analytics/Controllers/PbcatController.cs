@@ -8,7 +8,7 @@ using S4Analytics.Models;
 using Lib.PBCAT;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using AspNetCore.Identity.Oracle;
+using Lib.Identity;
 using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Claims;
 
@@ -33,13 +33,13 @@ namespace S4Analytics.Controllers
     public class PbcatController : S4Controller
     {
         // COMMON
-        private readonly UserManager<OracleIdentityUser> _userManager;
-        private readonly SignInManager<OracleIdentityUser> _signInManager;
+        private readonly UserManager<S4IdentityUser> _userManager;
+        private readonly SignInManager<S4IdentityUser> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public PbcatController(
-            UserManager<OracleIdentityUser> userManager,
-            SignInManager<OracleIdentityUser> signInManager,
+            UserManager<S4IdentityUser> userManager,
+            SignInManager<S4IdentityUser> signInManager,
             IHttpContextAccessor httpContextAccessor,
             IPbcatRepository pbcatRepo)
         {
@@ -59,7 +59,7 @@ namespace S4Analytics.Controllers
             var session = PbcatRepo.GetSession(tokenAsGuid);
             if (session.UserName.Length > 0)
             {
-                await _signInManager.SignInAsync(new OracleIdentityUser(session.UserName), isPersistent: false);
+                await _signInManager.SignInAsync(new S4IdentityUser(session.UserName), isPersistent: false);
             }
             return Content(session.QueueJson);
         }

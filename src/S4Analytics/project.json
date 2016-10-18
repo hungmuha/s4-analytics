@@ -1,6 +1,7 @@
 {
   "version": "1.0.0",
   "dependencies": {
+    "Lib.Identity": "1.0.2",
     "Lib.PBCAT": "1.0.3",
     "Microsoft.AspNetCore.AngularServices": "1.0.0-*",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
@@ -20,8 +21,7 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Oracle.ManagedDataAccess": "12.1.24160419",
-    "System.Data.Common": "4.1.0",
-    "AspNetCore.Identity.Oracle": "1.0.2"
+    "System.Data.Common": "4.1.0"
   },
 
   "tools": {

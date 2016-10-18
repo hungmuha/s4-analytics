@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using AspNetCore.Identity.Oracle;
+using Lib.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace S4Analytics.Controllers
@@ -13,9 +13,9 @@ namespace S4Analytics.Controllers
     public class HomeController : Controller
     {
         private readonly IHostingEnvironment _env;
-        SignInManager<OracleIdentityUser> _signInManager;
+        SignInManager<S4IdentityUser> _signInManager;
 
-        public HomeController(SignInManager<OracleIdentityUser> signInManager, IHostingEnvironment env)
+        public HomeController(SignInManager<S4IdentityUser> signInManager, IHostingEnvironment env)
         {
             _signInManager = signInManager;
             _env = env;
@@ -41,7 +41,7 @@ namespace S4Analytics.Controllers
         {
             if (_env.EnvironmentName == "Local")
             {
-                await _signInManager.SignInAsync(new OracleIdentityUser(userName), isPersistent: false);
+                await _signInManager.SignInAsync(new S4IdentityUser(userName), isPersistent: false);
             }
             return new NoContentResult();
         }
