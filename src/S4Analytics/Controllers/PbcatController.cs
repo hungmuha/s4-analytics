@@ -64,6 +64,7 @@ namespace S4Analytics.Controllers
             return Content(session.QueueJson);
         }
 
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [HttpGet("{hsmvRptNbr}")]
         public IActionResult GetParticipantInfo(int hsmvRptNbr)
         {
@@ -82,6 +83,7 @@ namespace S4Analytics.Controllers
         /// GET /api/pbcat/ped/:hsmvRptNbr
         /// Return an existing PBCAT_PED record from the database given its HSMV report number.
         /// </summary>
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [HttpGet("ped/{hsmvRptNbr}", Name = "GetPedestrianInfo")]
         public IActionResult GetPedestrianInfo(int hsmvRptNbr)
         {
@@ -198,6 +200,7 @@ namespace S4Analytics.Controllers
         /// GET /api/pbcat/bike/:hsmvRptNbr
         /// Return an existing PBCAT_BIKE record from the database given its HSMV report number.
         /// </summary>
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [HttpGet("bike/{hsmvRptNbr}", Name = "GetBicyclistInfo")]
         public IActionResult GetBicyclistInfo(int hsmvRptNbr)
         {
