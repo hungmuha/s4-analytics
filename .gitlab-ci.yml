@@ -40,6 +40,7 @@ build:dev:
   - staging
   - demo
   - release
+  - tags
   before_script:
   # webpack looks for ASPNETCORE_ENVIRONMENT
   - set ASPNETCORE_ENVIRONMENT=Development
@@ -66,6 +67,7 @@ build:others:
   - staging
   - demo
   - release
+  - tags
   script:
   - dotnet test "test\S4Analytics.Tests"
 
