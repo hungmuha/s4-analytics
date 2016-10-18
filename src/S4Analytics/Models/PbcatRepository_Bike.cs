@@ -108,6 +108,14 @@ namespace S4Analytics.Models
                 conn.Open();
                 using (var trans = conn.BeginTransaction())
                 {
+                    // it is possible that the typing was changed from ped to bike; this is just in case
+                    var delPedCmdText = "DELETE FROM pbcat_ped WHERE hsmv_rpt_nbr = :hsmvRptNbr";
+                    using (var cmd = new OracleCommand(delPedCmdText, conn) { BindByName = true })
+                    {
+                        cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
+                        cmd.ExecuteNonQuery();
+                    }
+
                     using (var cmd = new OracleCommand(cmdText, conn) { BindByName = true })
                     {
                         cmd.Parameters.Add("hsmvRptNbr", OracleDbType.Decimal).Value = hsmvRptNbr;
