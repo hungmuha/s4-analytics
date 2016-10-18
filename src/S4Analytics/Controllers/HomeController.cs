@@ -32,17 +32,28 @@ namespace S4Analytics.Controllers
         }
 
         /// <summary>
-        /// Login for local testing only. No password is required.
+        /// Log in. Local environment only, as no password is required.
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        [HttpGet("login/{userName}")]
-        public async Task<IActionResult> Login(string userName)
+        [HttpGet("api/login/{userName}")]
+        public async Task<IActionResult> LogIn(string userName)
         {
             if (_env.EnvironmentName == "Local")
             {
                 await _signInManager.SignInAsync(new S4IdentityUser(userName), isPersistent: false);
             }
+            return new NoContentResult();
+        }
+
+        /// <summary>
+        /// Log out currently authenticated user.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("api/logout")]
+        public async Task<IActionResult> LogOut()
+        {
+            await _signInManager.SignOutAsync();
             return new NoContentResult();
         }
     }
