@@ -190,8 +190,8 @@ export class PbcatFlow {
             for (let item of this.currentStep.items) {
                 // if the flow type is undetermined, we can determine it by which typing flow was used previously
                 if (this.currentStep.screenName === UNDETERMINED_INITIAL_SCREEN) {
-                    let pedTypingMatch = participantInfo.hasPedestrianTyping && item.infoAttrValue === "Pedestrian";
-                    let bikeTypingMatch = participantInfo.hasBicyclistTyping && item.infoAttrValue === "Bicyclist";
+                    let pedTypingMatch = participantInfo.hasPedestrianTyping && item.infoAttrValue === 'Pedestrian';
+                    let bikeTypingMatch = participantInfo.hasBicyclistTyping && item.infoAttrValue === 'Bicyclist';
                     if (pedTypingMatch || bikeTypingMatch) {
                         this.selectItemForCurrentStep(item);
                         break;
