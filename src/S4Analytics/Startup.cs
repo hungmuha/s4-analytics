@@ -1,25 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using S4Analytics.Models;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Lib.Identity;
 using Lib.Identity.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Net;
+using S4Analytics.Models;
 
 namespace S4Analytics
 {
@@ -36,57 +34,6 @@ namespace S4Analytics
         public string Version { get; set; }
         public string BaseUrl { get; set; }
         public string SilverlightBaseUrl { get; set; }
-    }
-
-    public class CustomJsonExceptionFilter : ExceptionFilterAttribute
-    {
-        IHostingEnvironment _env;
-        public CustomJsonExceptionFilter(IHostingEnvironment env)
-        {
-            _env = env;
-        }
-
-        private object GetDetailedSerializableException(Exception ex)
-        {
-            return  new
-            {
-                message = ex.Message,
-                stackTrace = ex.StackTrace,
-                data = ex.Data,
-                helpLink = ex.HelpLink,
-                hResult = ex.HResult,
-                source = ex.Source,
-                innerException = ex.InnerException != null
-                    ? GetDetailedSerializableException(ex.InnerException)
-                    : null
-            };
-        }
-
-        private object GetSimpleSerializableException(Exception ex)
-        {
-            return new
-            {
-                message = ex.Message,
-                innerException = ex.InnerException != null
-                        ? GetSimpleSerializableException(ex.InnerException)
-                        : null
-            };
-        }
-
-        // http://stackoverflow.com/questions/35245893/mvc-6-webapi-returning-html-error-page-instead-of-json-version-of-exception-obje
-        public override void OnException(ExceptionContext context)
-        {
-            var isApiCall = context.HttpContext.Request.Path.StartsWithSegments("/api");
-            if (isApiCall)
-            {
-                var serializableException = _env.EnvironmentName == "Local"
-                    ? GetDetailedSerializableException(context.Exception)
-                    : GetSimpleSerializableException(context.Exception);
-                var jsonResult = new JsonResult(serializableException);
-                jsonResult.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Result = jsonResult;
-            }
-        }
     }
 
     public class Startup
@@ -228,7 +175,7 @@ namespace S4Analytics
             });
         }
 
-        public class UserClaimsPrincipalFactory<TUser> : IUserClaimsPrincipalFactory<TUser>
+        private class UserClaimsPrincipalFactory<TUser> : IUserClaimsPrincipalFactory<TUser>
             where TUser : class
         {
             public UserClaimsPrincipalFactory(
@@ -285,6 +232,57 @@ namespace S4Analytics
                 }
 
                 return new ClaimsPrincipal(id);
+            }
+        }
+
+        private class CustomJsonExceptionFilter : ExceptionFilterAttribute
+        {
+            IHostingEnvironment _env;
+            public CustomJsonExceptionFilter(IHostingEnvironment env)
+            {
+                _env = env;
+            }
+
+            private object GetDetailedSerializableException(Exception ex)
+            {
+                return new
+                {
+                    message = ex.Message,
+                    stackTrace = ex.StackTrace,
+                    data = ex.Data,
+                    helpLink = ex.HelpLink,
+                    hResult = ex.HResult,
+                    source = ex.Source,
+                    innerException = ex.InnerException != null
+                        ? GetDetailedSerializableException(ex.InnerException)
+                        : null
+                };
+            }
+
+            private object GetSimpleSerializableException(Exception ex)
+            {
+                return new
+                {
+                    message = ex.Message,
+                    innerException = ex.InnerException != null
+                            ? GetSimpleSerializableException(ex.InnerException)
+                            : null
+                };
+            }
+
+            // http://stackoverflow.com/questions/35245893/mvc-6-webapi-returning-html-error-page-instead-of-json-version-of-exception-obje
+            public override void OnException(ExceptionContext context)
+            {
+                var isApiCall = context.HttpContext.Request.Path.StartsWithSegments("/api");
+                if (isApiCall)
+                {
+                    var serializableException = _env.EnvironmentName == "Local"
+                        ? GetDetailedSerializableException(context.Exception)
+                        : GetSimpleSerializableException(context.Exception);
+                    var jsonResult = new JsonResult(serializableException);
+                    jsonResult.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    context.Result = jsonResult;
+                }
             }
         }
     }
