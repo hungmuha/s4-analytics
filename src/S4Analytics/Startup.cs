@@ -60,7 +60,10 @@ namespace S4Analytics
             services.AddMvc(mvcOptions =>
             {
                 // Return API exceptions as JSON, not HTML.
-                mvcOptions.Filters.Add(new CustomJsonExceptionFilter(_env));
+                // Include exception detail for local debugging only.
+                var showExceptionDetail = _env.EnvironmentName == "Local";
+                mvcOptions.Filters.Add(
+                    new CustomJsonExceptionFilter(showExceptionDetail));
             });
 
             // Serialize enums to JSON as strings, rather than integers.
@@ -237,10 +240,26 @@ namespace S4Analytics
 
         private class CustomJsonExceptionFilter : ExceptionFilterAttribute
         {
-            IHostingEnvironment _env;
-            public CustomJsonExceptionFilter(IHostingEnvironment env)
+            bool _showExceptionDetail;
+
+            public CustomJsonExceptionFilter(bool showExceptionDetail)
             {
-                _env = env;
+                _showExceptionDetail = showExceptionDetail;
+            }
+
+            // http://stackoverflow.com/questions/35245893/mvc-6-webapi-returning-html-error-page-instead-of-json-version-of-exception-obje
+            public override void OnException(ExceptionContext context)
+            {
+                var isApiCall = context.HttpContext.Request.Path.StartsWithSegments("/api");
+                if (isApiCall)
+                {
+                    var serializableException = _showExceptionDetail
+                        ? GetDetailedSerializableException(context.Exception)
+                        : GetSimpleSerializableException(context.Exception);
+                    var jsonResult = new JsonResult(serializableException);
+                    jsonResult.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    context.Result = jsonResult;
+                }
             }
 
             private object GetDetailedSerializableException(Exception ex)
@@ -268,21 +287,6 @@ namespace S4Analytics
                             ? GetSimpleSerializableException(ex.InnerException)
                             : null
                 };
-            }
-
-            // http://stackoverflow.com/questions/35245893/mvc-6-webapi-returning-html-error-page-instead-of-json-version-of-exception-obje
-            public override void OnException(ExceptionContext context)
-            {
-                var isApiCall = context.HttpContext.Request.Path.StartsWithSegments("/api");
-                if (isApiCall)
-                {
-                    var serializableException = _env.EnvironmentName == "Local"
-                        ? GetDetailedSerializableException(context.Exception)
-                        : GetSimpleSerializableException(context.Exception);
-                    var jsonResult = new JsonResult(serializableException);
-                    jsonResult.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    context.Result = jsonResult;
-                }
             }
         }
     }
