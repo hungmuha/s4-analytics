@@ -40,12 +40,49 @@ namespace S4Analytics
 
     public class CustomJsonExceptionFilter : ExceptionFilterAttribute
     {
+        IHostingEnvironment _env;
+        public CustomJsonExceptionFilter(IHostingEnvironment env)
+        {
+            _env = env;
+        }
+
+        private object GetDetailedSerializableException(Exception ex)
+        {
+            return  new
+            {
+                message = ex.Message,
+                stackTrace = ex.StackTrace,
+                data = ex.Data,
+                helpLink = ex.HelpLink,
+                hResult = ex.HResult,
+                source = ex.Source,
+                innerException = ex.InnerException != null
+                    ? GetDetailedSerializableException(ex.InnerException)
+                    : null
+            };
+        }
+
+        private object GetSimpleSerializableException(Exception ex)
+        {
+            return new
+            {
+                message = ex.Message,
+                innerException = ex.InnerException != null
+                        ? GetSimpleSerializableException(ex.InnerException)
+                        : null
+            };
+        }
+
         // http://stackoverflow.com/questions/35245893/mvc-6-webapi-returning-html-error-page-instead-of-json-version-of-exception-obje
         public override void OnException(ExceptionContext context)
         {
-            if (context.HttpContext.Request.GetTypedHeaders().Accept.Any(header => header.MediaType == "application/json"))
+            var isApiCall = context.HttpContext.Request.Path.StartsWithSegments("/api");
+            if (isApiCall)
             {
-                var jsonResult = new JsonResult(new { error = context.Exception.Message });
+                var serializableException = _env.EnvironmentName == "Local"
+                    ? GetDetailedSerializableException(context.Exception)
+                    : GetSimpleSerializableException(context.Exception);
+                var jsonResult = new JsonResult(serializableException);
                 jsonResult.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Result = jsonResult;
             }
@@ -76,7 +113,7 @@ namespace S4Analytics
             services.AddMvc(mvcOptions =>
             {
                 // Return API exceptions as JSON, not HTML.
-                mvcOptions.Filters.Add(new CustomJsonExceptionFilter());
+                mvcOptions.Filters.Add(new CustomJsonExceptionFilter(_env));
             });
 
             // Serialize enums to JSON as strings, rather than integers.
@@ -93,7 +130,9 @@ namespace S4Analytics
                 {
                     OnRedirectToLogin = ctx =>
                     {
-                        if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                        var isApiCall = ctx.Request.Path.StartsWithSegments("/api");
+                        var hasOkStatus = ctx.Response.StatusCode == (int)HttpStatusCode.OK;
+                        if (isApiCall && hasOkStatus)
                         {
                             // todo: return HttpStatusCode.Forbidden when appropriate
                             ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
