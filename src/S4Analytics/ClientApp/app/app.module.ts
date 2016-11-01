@@ -7,7 +7,6 @@ import { IndexComponent } from './index.component';
 import { LoginComponent } from './login.component';
 import { ReportViewerComponent } from './report-viewer.component';
 import { PbcatModule } from './pbcat/pbcat.module';
-import { AppState } from './app.state';
 import { OptionsService } from './options.service';
 import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
 
@@ -25,7 +24,6 @@ import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
         ReportViewerComponent
     ],
     providers: [
-        AppState,
         appRoutingProviders,
         __platform_browser_private__.BROWSER_SANITIZATION_PROVIDERS,
         OptionsService,

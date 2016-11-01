@@ -2,9 +2,8 @@
 import { Router, Resolve, ActivatedRouteSnapshot } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import '../../rxjs-operators';
-import { AppState } from '../../app.state';
 import { PbcatService, PbcatParticipantInfo } from './pbcat.service';
-import { PbcatState } from './pbcat.state';
+import { PbcatStateService } from './pbcat-state.service';
 import { PbcatFlow } from './pbcat-flow';
 import { PbcatInfo } from './pbcat-info';
 import { PbcatConfig } from './pbcat-config';
@@ -17,13 +16,13 @@ export class PbcatResolveService implements Resolve<PbcatFlow> {
     constructor(
         private pbcatService: PbcatService,
         private router: Router,
-        private appState: AppState) { }
+        private state: PbcatStateService) { }
 
     resolve(route: ActivatedRouteSnapshot): Observable<any> {
         let hsmvReportNumber = +route.params['hsmvReportNumber'];
         let stepNumber = +route.params['stepNumber'];
         let token = route.params['token'];
-        this.currentFlow = this.appState.pbcatState.flow;
+        this.currentFlow = this.state.flow;
         this.isSameFlow = this.currentFlow && this.currentFlow.hsmvReportNumber === hsmvReportNumber;
         if (this.isSameFlow) {
             return Observable.of(this.currentFlow)
@@ -47,7 +46,7 @@ export class PbcatResolveService implements Resolve<PbcatFlow> {
                 if (token) {
                     retVal = retVal
                         .switchMap(() => this.pbcatService.getSession(token))
-                        .do(queue => this.appState.pbcatState.queue = queue);
+                        .do(queue => this.state.queue = queue);
                 }
                 retVal = retVal
                     .switchMap(() => this.pbcatService.getParticipantInfo(hsmvReportNumber))

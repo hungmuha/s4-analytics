@@ -1,7 +1,9 @@
-﻿import { FlowType, PbcatFlow } from './pbcat-flow';
+﻿import { Injectable } from '@angular/core';
+import { FlowType, PbcatFlow } from './pbcat-flow';
 import { PbcatConfig } from './pbcat-config.d';
 
-export class PbcatState {
+@Injectable()
+export class PbcatStateService {
     autoAdvance: boolean = true;
     showReportViewer: boolean = false;
     reportViewerWindow: Window;

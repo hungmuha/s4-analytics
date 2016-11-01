@@ -1,12 +1,11 @@
 ﻿import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
-import { AppState } from '../app.state';
 import { KeepSilverlightAliveService } from '../keep-silverlight-alive.service';
 import { OptionsService, Options } from '../options.service';
 import {
     PbcatService, PbcatItem, PbcatCrashType,
-    PbcatFlow, FlowType, PbcatState
+    PbcatFlow, FlowType, PbcatStateService
 } from './shared';
 
 @Component({
@@ -14,9 +13,7 @@ import {
     template: require('./pbcat-flow.component.html')
 })
 export class PbcatFlowComponent {
-    private state: PbcatState;
     private routeSub: Subscription;
-
     private alertHeading: string;
     private alertMessage: string;
     private alertType: string;
@@ -26,12 +23,10 @@ export class PbcatFlowComponent {
     constructor(
         private router: Router,
         private route: ActivatedRoute,
-        private appState: AppState,
         private pbcatService: PbcatService,
+        private state: PbcatStateService,
         private keepSilverlightAlive: KeepSilverlightAliveService,
-        private optionsService: OptionsService) {
-        this.state = appState.pbcatState;
-    }
+        private optionsService: OptionsService) { }
 
     ngOnInit() {
         let routeData: { [name: string]: any };
