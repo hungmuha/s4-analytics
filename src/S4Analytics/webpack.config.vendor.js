@@ -26,7 +26,7 @@ module.exports = {
             '@angular/platform-browser',
             '@angular/platform-browser-dynamic',
             '@angular/router',
-            'bootstrap',
+            '@ng-bootstrap/ng-bootstrap',
             'bootstrap/dist/css/bootstrap.css',
             'es6-shim',
             'jquery',

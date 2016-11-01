@@ -1,6 +1,5 @@
 import 'es6-shim';
 import 'zone.js';
-import 'bootstrap';
 import 'reflect-metadata';
 import './site.css';
 

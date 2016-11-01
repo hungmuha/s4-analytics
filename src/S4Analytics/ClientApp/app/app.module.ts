@@ -1,6 +1,7 @@
 ﻿import { NgModule } from '@angular/core';
 import { BrowserModule, __platform_browser_private__ } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { routing, appRoutingProviders } from './app.routing';
 import { AppComponent } from './app.component';
 import { IndexComponent } from './index.component';
@@ -13,6 +14,7 @@ import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
 @NgModule({
     imports: [
         BrowserModule,
+        NgbModule.forRoot(),
         HttpModule,
         PbcatModule,
         routing
