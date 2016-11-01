@@ -12,7 +12,6 @@ cache:
   - src/S4Analytics/project.lock.json
   - src/S4Analytics/wwwroot/dist
   - src/S4Analytics/node_modules
-  - src/S4Analytics/typings
   - test/S4Analytics.Tests/bin
   - test/S4Analytics.Tests/obj
   - test/S4Analytics.Tests/project.lock.json
@@ -29,7 +28,6 @@ stages:
   - cd src\S4Analytics
   - call npm prune
   - call npm install --cache-min=99999999
-  - call typings install
   - call webpack --config webpack.config.vendor.js
   - call webpack
 

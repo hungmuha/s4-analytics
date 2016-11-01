@@ -14,7 +14,10 @@ http://www.typescriptlang.org/docs/handbook/tsconfig-json.html.
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipDefaultLibCheck": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": [
+      "requirejs"
+    ]
   },
   "exclude": [
     "node_modules",
