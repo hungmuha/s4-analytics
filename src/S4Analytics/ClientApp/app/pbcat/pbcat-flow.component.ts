@@ -139,9 +139,7 @@ export class PbcatFlowComponent {
 
     private get canReturnToSummary(): boolean { return this.flow.canReturnToSummary; }
 
-    private get ready(): boolean {
-        return this.flow !== undefined;
-    }
+    private get ready(): boolean { return this.flow !== undefined; }
 
     private get nextCrashExists(): boolean { return this.flow.isSaved && this.state.nextHsmvNumber !== undefined; }
 
@@ -163,14 +161,6 @@ export class PbcatFlowComponent {
         }
     }
 
-    private selectItem(pbcatItem: PbcatItem): void {
-        this.flow.selectItemForCurrentStep(pbcatItem);
-        if (this.autoAdvance) {
-            // a 300ms delay to give visual confirmation of selected item
-            setTimeout(() => this.proceed(), 300);
-        }
-    }
-
     private get backLinkText(): string {
         return `${this.flow.previousStepNumber}. ${this.flow.previousStep.title}`;
     }
@@ -181,24 +171,29 @@ export class PbcatFlowComponent {
             : `${this.flow.nextStepNumber}. ${this.flow.nextStep.title}`;
     }
 
-    private get backLinkRoute(): any[] {
-        return ['/pbcat', this.flow.hsmvReportNumber, 'step', this.flow.previousStepNumber];
+    private selectItem(pbcatItem: PbcatItem): void {
+        this.flow.selectItemForCurrentStep(pbcatItem);
+        if (this.autoAdvance) {
+            // a 300ms delay to give visual confirmation of selected item
+            setTimeout(() => this.proceed(), 300);
+        }
     }
 
-    private get proceedLinkRoute(): any[] {
-        return this.flow.isFinalStep
-            ? ['/pbcat', this.hsmvReportNumber, 'summary']
-            : ['/pbcat', this.flow.hsmvReportNumber, 'step', this.flow.nextStepNumber];
-    }
-
-    private get summaryRoute(): any[] {
-        return ['/pbcat', this.hsmvReportNumber, 'summary'];
+    private goBack(): void {
+        let backRoute = ['/pbcat', this.flow.hsmvReportNumber, 'step', this.flow.previousStepNumber];
+        this.router.navigate(backRoute);
     }
 
     private proceed(): void {
-        if (this.proceedLinkRoute) {
-            this.router.navigate(this.proceedLinkRoute);
-        }
+        let proceedLinkRoute = this.flow.isFinalStep
+            ? ['/pbcat', this.hsmvReportNumber, 'summary']
+            : ['/pbcat', this.flow.hsmvReportNumber, 'step', this.flow.nextStepNumber];
+        this.router.navigate(proceedLinkRoute);
+    }
+
+    private returnToSummary(): void {
+        let summaryRoute = ['/pbcat', this.hsmvReportNumber, 'summary'];
+        this.router.navigate(summaryRoute);
     }
 
     private jumpBackToStep(stepNumber: number) {
@@ -219,8 +214,9 @@ export class PbcatFlowComponent {
             : undefined;
     }
 
-    private get advanceToNextRoute(): any[] {
-        return ['/pbcat', this.state.nextHsmvNumber, 'step', 1];
+    private advanceToNext(): void {
+        let advanceRoute = ['/pbcat', this.state.nextHsmvNumber, 'step', 1];
+        this.router.navigate(advanceRoute);
     }
 
     private acceptAndSave(): void {

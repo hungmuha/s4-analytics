@@ -6,12 +6,12 @@
         <div class="col-sm-4 text-center">
             Auto advance:
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default"
+                <button type="button" class="btn btn-secondary"
                         [class.active]="autoAdvance"
                         (click)="autoAdvance=true">
                     On
                 </button>
-                <button type="button" class="btn btn-default"
+                <button type="button" class="btn btn-secondary"
                         [class.active]="!autoAdvance"
                         (click)="autoAdvance=false">
                     Off
@@ -21,12 +21,12 @@
         <div class="col-sm-4 text-right">
             Crash report viewer:
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default"
+                <button type="button" class="btn btn-secondary"
                         [class.active]="showReportViewer"
                         (click)="showReportViewer=true">
                     On
                 </button>
-                <button type="button" class="btn btn-default"
+                <button type="button" class="btn btn-secondary"
                         [class.active]="!showReportViewer"
                         (click)="showReportViewer=false">
                     Off
@@ -68,28 +68,26 @@
     </pbcat-summary>
 
     <div class="row">
-        <div class="col-sm-12">
-            <nav>
-                <ul class="pager">
-                    <li class="previous" *ngIf="canGoBack" [class.disabled]="isSaved">
-                        <a *ngIf="!isSaved" [routerLink]="backLinkRoute">&larr; Back to <em>{{backLinkText}}</em></a>
-                        <a *ngIf="isSaved" href="javascript:void(0);">&larr; Back to <em>{{backLinkText}}</em></a>
-                    </li>
-                    <li *ngIf="canReturnToSummary">
-                        <a [routerLink]="summaryRoute">Return to Summary</a>
-                    </li>
-                    <li class="next" *ngIf="canProceed">
-                        <a [routerLink]="proceedLinkRoute">Proceed to <em>{{proceedLinkText}}</em> &rarr;</a>
-                    </li>
-                    <li [class.disabled]="!nextCrashExists" class="next" *ngIf="showSummary">
-                        <a *ngIf="nextCrashExists" [routerLink]="advanceToNextRoute">Next Crash&rarr;</a>
-                        <a *ngIf="!nextCrashExists" href="javascript:void(0)">Next Crash&rarr;</a>
-                    </li>
-                    <li [class.disabled]="isSaved" class="next" *ngIf="showSummary">
-                        <a href="javascript:void(0);" (click)="acceptAndSave()">Accept and Save</a>
-                    </li>
-                </ul>
-            </nav>
+        <div class="col-sm-4">
+            <button type="button" class="btn btn-sm btn-outline-primary float-left" *ngIf="canGoBack" [class.disabled]="isSaved" [disabled]="isSaved" (click)="goBack()">
+                &larr; Back to <em>{{backLinkText}}</em>
+            </button>
+        </div>
+        <div class="col-sm-4">
+            <button type="button" class="btn btn-sm btn-outline-primary" *ngIf="canReturnToSummary" (click)="returnToSummary()">
+                Return to Summary
+            </button>
+        </div>
+        <div class="col-sm-4 float-right">
+            <button type="button" class="btn btn-sm btn-outline-primary float-right" *ngIf="canProceed" (click)="proceed()">
+                Proceed to <em>{{proceedLinkText}}</em> &rarr;
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary float-right" *ngIf="showSummary" [class.disabled]="isSaved" [disabled]="isSaved" (click)="acceptAndSave()">
+                Accept and Save
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary float-right" *ngIf="showSummary" [class.disabled]="!nextCrashExists" [disabled]="!nextCrashExists" (click)="this.advanceToNext()">
+                Next Crash &rarr;
+            </button>
         </div>
     </div>
 </div>
