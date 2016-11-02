@@ -69,21 +69,20 @@ body {
     color: green;
 }
 
-.pbcat-list-text {
-    vertical-align: middle;
-    margin-left: 40px;
+.card {
+    padding: 10px 10px 4px !important;
 }
 
-.thumbnail:hover {
+.card.placeholder {
+    border: none !important;
+}
+
+.card:not(.placeholder):hover {
     background-color: #efefef !important;
     cursor: pointer;
 }
 
-.thumbnail {
-    padding: 10px 10px 4px !important;
-}
-
-.thumbnail img:not(:first-child) {
+.card img:not(:first-child) {
     padding-top: 10px;
 }
 

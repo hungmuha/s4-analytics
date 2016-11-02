@@ -29,7 +29,6 @@ module.exports = {
             '@ng-bootstrap/ng-bootstrap',
             'bootstrap/dist/css/bootstrap.css',
             'es6-shim',
-            'jquery',
             'moment',
             'reflect-metadata',
             'rxjs',
@@ -43,7 +42,6 @@ module.exports = {
     },
     plugins: [
         extractCSS,
-        new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery' }), // Maps these identifiers to the jQuery package (because Bootstrap expects it to be a global variable)
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.DllPlugin({
             path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),

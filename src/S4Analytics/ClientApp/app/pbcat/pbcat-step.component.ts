@@ -1,31 +1,40 @@
 ﻿import { Component, Input, Output, EventEmitter, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PbcatService, PbcatStep, PbcatItem } from './shared';
-import * as $ from 'jquery';
 
 @Component({
     selector: 'pbcat-step',
     template: require('./pbcat-step.component.html')
 })
-export class PbcatStepComponent implements AfterViewChecked {
+export class PbcatStepComponent {
     @Input() hsmvReportNumber: number;
     @Input() step: PbcatStep;
     @Input() stepNumber: number;
     @Output() selectItem = new EventEmitter<PbcatItem>();
+    private _groupedItems: PbcatItem[][];
+    private _placeholderArray: any[];
 
     constructor(
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private pbcatService: PbcatService) { }
 
-    ngAfterViewChecked() {
-        if (this.hasImages) {
-            this.setEqualThumbnailHeights();
+    get groupedItems(): PbcatItem[][] {
+        // return items grouped in threes because of bootstrap card-deck behavior
+        if (this._groupedItems === undefined) {
+            this.groupItems();
         }
+        return this._groupedItems;
     }
 
-    makeSelection(item: PbcatItem) {
-        this.selectItem.emit(item);
+    get placeholderArray(): any[] {
+        // return an array of placeholder items in case the last group contains
+        // fewer than three items, because of bootstrap card-deck behavior
+        // and because ngFor requires an array to loop over
+        if (this._placeholderArray === undefined) {
+            this.groupItems();
+        }
+        return this._placeholderArray;
     }
 
     get hasImages(): boolean {
@@ -33,34 +42,21 @@ export class PbcatStepComponent implements AfterViewChecked {
         return imageUrls !== undefined && imageUrls.length > 0;
     }
 
-    setEqualThumbnailHeights() {
-        // http://stackoverflow.com/questions/11071314/javascript-execute-after-all-images-have-loaded
-        // http://stackoverflow.com/questions/9278569/equals-heights-of-thumbnails
+    makeSelection(item: PbcatItem) {
+        this.selectItem.emit(item);
+    }
 
-        let images = document.images;
-        let imageCount = images.length;
-        let loadedCount = 0;
-
-        let setEqualHeights = (group: any) => {
-            let tallest = 0;
-            group.each(function () {
-                let thisHeight = $(this).height();
-                if (thisHeight > tallest) {
-                    tallest = thisHeight;
-                }
-            });
-            group.each(function () { $(this).height(tallest); });
-        };
-
-        let incrementCounter = () => {
-            loadedCount++;
-            if (loadedCount === imageCount) {
-                setEqualHeights($('.thumbnail'));
-            }
-        };
-
-        [].forEach.call(images, function (img: any) {
-            img.addEventListener('load', incrementCounter, false);
-        });
+    groupItems() {
+        // group items by threes and populate the placeholder array
+        let groupSize = 3;
+        let groupedItems = new Array<PbcatItem[]>();
+        let placeholderCount = 0;
+        for (let i = 0; i < this.step.items.length; i += groupSize) {
+            let items = this.step.items.slice(i, i + groupSize);
+            groupedItems.push(items);
+            placeholderCount = groupSize - items.length;
+        }
+        this._groupedItems = groupedItems;
+        this._placeholderArray = new Array<any>(placeholderCount).fill(undefined);
     }
 }

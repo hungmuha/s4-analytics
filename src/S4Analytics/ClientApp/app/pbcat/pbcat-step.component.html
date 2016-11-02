@@ -11,21 +11,26 @@
 
 <!-- image-based template -->
 <template [ngIf]="hasImages">
-    <div class="row">
-        <template ngFor let-item [ngForOf]="step.items" let-i="index">
-            <div class="col-sm-4">
-                <div class="thumbnail" (click)="makeSelection(item)">
-                    <img *ngIf="item.imageUrl" [src]="item.imageUrl" />
-                    <template ngFor let-imageUrl [ngForOf]="item.imageUrls">
-                        <img [src]="imageUrl" />
-                    </template>
-                    <span *ngIf="item.selected" class="pbcat-image-checked glyphicon glyphicon-ok-sign"></span>
-                    <h4>{{item.title}}</h4>
-                    <p *ngIf="item.description">{{item.description}}</p>
-                </div>
+    <div class="card-deck-wrapper">
+        <template ngFor let-items [ngForOf]="groupedItems">
+            <div class="card-deck">
+                <template ngFor let-item [ngForOf]="items">
+                    <div class="card" (click)="makeSelection(item)">
+                        <!--<span *ngIf="item.selected" class="pbcat-image-checked glyphicon glyphicon-ok-sign"></span>-->
+                        <img class="card-img-top" *ngIf="item.imageUrl" [src]="item.imageUrl" />
+                        <template ngFor let-imageUrl [ngForOf]="item.imageUrls">
+                            <img class="card-img-top" [src]="imageUrl" />
+                        </template>
+                        <div class="card-block">
+                            <h5 class="card-title">{{item.title}}</h5>
+                            <p class="card-text" *ngIf="item.description">{{item.description}}</p>
+                        </div>
+                    </div>
+                </template>
+                <template [ngIf]="items.length < 3">
+                    <div class="card placeholder" *ngFor="let i of placeholderArray"></div>
+                </template>
             </div>
-            <!-- apply clearfix every 3rd item to avoid unwanted wrapping behavior -->
-            <div class="clearfix" *ngIf="(i+1) % 3 === 0"></div>
         </template>
     </div>
 </template>
@@ -40,10 +45,12 @@
         </div>
         <div class="row">
             <div class="col-sm-8">
-                <div class="thumbnail" (click)="makeSelection(item)">
-                    <span [class.checked]="item.selected" class="pbcat-list-check glyphicon glyphicon-ok-sign"></span>
-                    <h5 class="pbcat-list-text">{{item.title}}</h5>
-                    <p class="pbcat-list-text" *ngIf="item.description">{{item.description}}</p>
+                <div class="card" (click)="makeSelection(item)">
+                    <!--<span [class.checked]="item.selected" class="pbcat-list-check glyphicon glyphicon-ok-sign"></span>-->
+                    <div class="card-block">
+                        <h5 class="card-title">{{item.title}}</h5>
+                        <p class="card-text" *ngIf="item.description">{{item.description}}</p>
+                    </div>
                 </div>
             </div>
         </div>

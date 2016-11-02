@@ -82,11 +82,11 @@
             <button type="button" class="btn btn-sm btn-outline-primary float-right" *ngIf="canProceed" (click)="proceed()">
                 Proceed to <em>{{proceedLinkText}}</em> &rarr;
             </button>
-            <button type="button" class="btn btn-sm btn-outline-primary float-right" *ngIf="showSummary" [class.disabled]="isSaved" [disabled]="isSaved" (click)="acceptAndSave()">
-                Accept and Save
-            </button>
             <button type="button" class="btn btn-sm btn-outline-primary float-right" *ngIf="showSummary" [class.disabled]="!nextCrashExists" [disabled]="!nextCrashExists" (click)="this.advanceToNext()">
                 Next Crash &rarr;
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary float-right" *ngIf="showSummary" [class.disabled]="isSaved" [disabled]="isSaved" (click)="acceptAndSave()">
+                Accept and Save
             </button>
         </div>
     </div>
