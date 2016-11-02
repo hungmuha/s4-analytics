@@ -12,7 +12,7 @@ module.exports = {
     },
     module: {
         loaders: [
-            { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' },
+            { test: /\.(eot|woff|woff2|ttf|svg|png|jpe?g|gif)(\?\S*)?$/, loader: 'url-loader?limit=100000' },
             { test: /\.css/, loader: extractCSS.extract(['css']) }
         ]
     },
@@ -29,6 +29,7 @@ module.exports = {
             '@ng-bootstrap/ng-bootstrap',
             'bootstrap/dist/css/bootstrap.css',
             'es6-shim',
+            'font-awesome/css/font-awesome.css',
             'moment',
             'reflect-metadata',
             'rxjs',
