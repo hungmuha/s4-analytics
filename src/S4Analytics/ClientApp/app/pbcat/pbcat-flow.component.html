@@ -1,9 +1,9 @@
 ﻿<div class="container" *ngIf="ready">
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-4 text-sm-left">
             <h6>{{pageTitle}} (HSMV #{{hsmvReportNumber}})</h6>
         </div>
-        <div class="col-sm-4 text-center">
+        <div class="col-sm-4 text-sm-center">
             Auto advance:
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-secondary"
@@ -18,7 +18,7 @@
                 </button>
             </div>
         </div>
-        <div class="col-sm-4 text-right">
+        <div class="col-sm-4 text-sm-right">
             Crash report viewer:
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-secondary"
@@ -62,17 +62,17 @@
     </pbcat-summary>
 
     <div class="row pbcat-navigation">
-        <div class="col-sm-4">
+        <div class="col-sm-4 text-sm-left">
             <button type="button" class="btn btn-sm btn-outline-primary" *ngIf="canGoBack" [class.disabled]="isSaved" [disabled]="isSaved" (click)="goBack()">
                 &larr; Back to <em>{{backLinkText | truncate : 30}}</em>
             </button>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-4 text-sm-center">
             <button type="button" class="btn btn-sm btn-outline-primary" *ngIf="canReturnToSummary" (click)="returnToSummary()">
                 Return to Summary
             </button>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-4 text-sm-right">
             <button type="button" class="btn btn-sm btn-outline-primary" *ngIf="canProceed" (click)="proceed()">
                 Proceed to <em>{{proceedLinkText | truncate:30}}</em> &rarr;
             </button>
