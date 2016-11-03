@@ -1,11 +1,12 @@
 ﻿<div class="row">
     <div class="col-sm-12">
-        <h3>Step {{stepNumber}}. {{step.title}}</h3>
+        <h5>Step {{stepNumber}}. {{step.title}}</h5>
     </div>
 </div>
+
 <div class="row">
-    <div class="col-sm-12">
-        <h4>{{step.description}}</h4>
+    <div [class.col-sm-8]="!hasImages" [class.col-sm-12]="hasImages">
+        <p class="lead">{{step.description}}</p>
     </div>
 </div>
 
@@ -16,13 +17,13 @@
             <div class="card-deck">
                 <template ngFor let-item [ngForOf]="items">
                     <div class="card" (click)="makeSelection(item)">
-                        <!--<span *ngIf="item.selected" class="pbcat-image-checked glyphicon glyphicon-ok-sign"></span>-->
+                        <span *ngIf="item.selected" class="pbcat-image-checked fa fa-check-circle"></span>
                         <img class="card-img-top" *ngIf="item.imageUrl" [src]="item.imageUrl" />
                         <template ngFor let-imageUrl [ngForOf]="item.imageUrls">
                             <img class="card-img-top" [src]="imageUrl" />
                         </template>
                         <div class="card-block">
-                            <h5 class="card-title">{{item.title}}</h5>
+                            <h6 class="card-title">{{item.title}}</h6>
                             <p class="card-text" *ngIf="item.description">{{item.description}}</p>
                         </div>
                     </div>
@@ -46,10 +47,10 @@
         <div class="row">
             <div class="col-sm-8">
                 <div class="card" (click)="makeSelection(item)">
-                    <!--<span [class.checked]="item.selected" class="pbcat-list-check glyphicon glyphicon-ok-sign"></span>-->
                     <div class="card-block">
-                        <h5 class="card-title">{{item.title}}</h5>
-                        <p class="card-text" *ngIf="item.description">{{item.description}}</p>
+                        <span [class.checked]="item.selected" class="pbcat-list-check fa fa-check-circle"></span>
+                        <h6 class="card-title pbcat-list-text">{{item.title}}</h6>
+                        <p class="card-text pbcat-list-text" *ngIf="item.description">{{item.description}}</p>
                     </div>
                 </div>
             </div>

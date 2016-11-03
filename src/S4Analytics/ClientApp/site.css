@@ -15,26 +15,17 @@ body {
 }
 
 .container {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .pbcat-alert {
-    margin-top: 20px;
+    margin-top: 1rem;
     margin-bottom: 0 !important;
 }
 
-.pbcat-nav-row {
-    margin-top: 15px;
-}
-
-.pbcat-nav-icon {
-    font-size: 30px;
-    vertical-align: middle;
-}
-
-.pbcat-nav-link {
-    vertical-align: middle;
+.pbcat-navigation {
+    margin-top: 1rem;
 }
 
 .pbcat-image-checked {
@@ -42,8 +33,13 @@ body {
     background-color: white;
     color: green;
     font-size: 30px;
-    top: -10px;
-    right: 0;
+    top: -0.5rem;
+    right: -0.5rem;
+}
+
+.pbcat-list-text {
+    vertical-align: middle;
+    margin-left: 2rem;
 }
 
 .pbcat-list-check {
@@ -57,20 +53,23 @@ body {
     color: green;
 }
 
+.pbcat-summary-row {
+    margin-top: 1rem;
+}
+
+.pbcat-summary-row textarea {
+    min-width: 100%;
+}
+
 .pbcat-summary-check {
     font-size: 80px;
     color: lightgray;
     margin: 0;
     float: left;
-    margin-top: 20px;
 }
 
 .pbcat-summary-check.checked {
     color: green;
-}
-
-.card {
-    padding: 10px 10px 4px !important;
 }
 
 .card.placeholder {
@@ -82,8 +81,12 @@ body {
     cursor: pointer;
 }
 
+.card img {
+    padding: 1.25rem 1.25rem 0 1.25rem;
+}
+
 .card img:not(:first-child) {
-    padding-top: 10px;
+    padding-top: 0.75rem !important;
 }
 
 .report-viewer {
@@ -99,8 +102,4 @@ body {
     padding: 0;
     overflow: hidden;
     z-index: 999999;
-}
-
-.pbcat-summary-notes textarea {
-    min-width: 100%;
 }

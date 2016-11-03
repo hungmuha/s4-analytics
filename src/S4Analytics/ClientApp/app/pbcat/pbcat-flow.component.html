@@ -1,7 +1,7 @@
 ﻿<div class="container" *ngIf="ready">
     <div class="row">
         <div class="col-sm-4">
-            <h4>{{pageTitle}}</h4>
+            <h6>{{pageTitle}} (HSMV #{{hsmvReportNumber}})</h6>
         </div>
         <div class="col-sm-4 text-center">
             Auto advance:
@@ -35,12 +35,6 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-sm-12">
-            Crash Report #{{hsmvReportNumber}}
-        </div>
-    </div>
-
     <div class="pbcat-alert alert alert-dismissible"
          [class.hidden]="!alertVisible"
          [class.alert-success]="alertType==='success'"
@@ -67,10 +61,10 @@
                    (jumpBackToStep)="jumpBackToStep($event)">
     </pbcat-summary>
 
-    <div class="row">
+    <div class="row pbcat-navigation">
         <div class="col-sm-4">
-            <button type="button" class="btn btn-sm btn-outline-primary float-left" *ngIf="canGoBack" [class.disabled]="isSaved" [disabled]="isSaved" (click)="goBack()">
-                &larr; Back to <em>{{backLinkText}}</em>
+            <button type="button" class="btn btn-sm btn-outline-primary" *ngIf="canGoBack" [class.disabled]="isSaved" [disabled]="isSaved" (click)="goBack()">
+                &larr; Back to <em>{{backLinkText | truncate : 30}}</em>
             </button>
         </div>
         <div class="col-sm-4">
@@ -78,15 +72,15 @@
                 Return to Summary
             </button>
         </div>
-        <div class="col-sm-4 float-right">
-            <button type="button" class="btn btn-sm btn-outline-primary float-right" *ngIf="canProceed" (click)="proceed()">
-                Proceed to <em>{{proceedLinkText}}</em> &rarr;
+        <div class="col-sm-4">
+            <button type="button" class="btn btn-sm btn-outline-primary" *ngIf="canProceed" (click)="proceed()">
+                Proceed to <em>{{proceedLinkText | truncate:30}}</em> &rarr;
             </button>
-            <button type="button" class="btn btn-sm btn-outline-primary float-right" *ngIf="showSummary" [class.disabled]="!nextCrashExists" [disabled]="!nextCrashExists" (click)="this.advanceToNext()">
-                Next Crash &rarr;
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-primary float-right" *ngIf="showSummary" [class.disabled]="isSaved" [disabled]="isSaved" (click)="acceptAndSave()">
+            <button type="button" class="btn btn-sm btn-outline-primary" *ngIf="showSummary" [class.disabled]="isSaved" [disabled]="isSaved" (click)="acceptAndSave()">
                 Accept and Save
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary" *ngIf="showSummary" [class.disabled]="!nextCrashExists" [disabled]="!nextCrashExists" (click)="this.advanceToNext()">
+                Next Crash &rarr;
             </button>
         </div>
     </div>

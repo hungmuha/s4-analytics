@@ -1,6 +1,7 @@
 ﻿import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TruncatePipe } from '../shared';
 import { PbcatService } from './shared';
 import { routing } from './pbcat.routing';
 import { PbcatFlowComponent } from './pbcat-flow.component';
@@ -15,6 +16,7 @@ import { PbcatResolveService, PbcatStateService } from './shared';
         routing
     ],
     declarations: [
+        TruncatePipe,
         PbcatStepComponent,
         PbcatSummaryComponent,
         PbcatFlowComponent
