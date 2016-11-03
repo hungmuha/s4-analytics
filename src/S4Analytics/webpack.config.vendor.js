@@ -28,7 +28,6 @@ module.exports = {
             '@angular/router',
             '@ng-bootstrap/ng-bootstrap',
             'bootstrap/dist/css/bootstrap.css',
-            'es6-shim',
             'font-awesome/css/font-awesome.css',
             'moment',
             'reflect-metadata',

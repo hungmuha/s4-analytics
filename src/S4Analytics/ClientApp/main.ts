@@ -1,4 +1,3 @@
-import 'es6-shim';
 import 'zone.js';
 import 'reflect-metadata';
 import './site.css';

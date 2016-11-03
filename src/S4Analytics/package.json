@@ -20,7 +20,7 @@
     "@angular/router": "~3.1.0",
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.10",
     "bootstrap": "git://github.com/twbs/bootstrap.git#v4-dev",
-    "es6-shim": "^0.35.1",
+    "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",
     "moment": "^2.15.1",
     "reflect-metadata": "^0.1.8",
@@ -28,7 +28,7 @@
     "zone.js": "^0.6.25"
   },
   "devDependencies": {
-    "@types/es6-shim": "^0.31.32",
+    "@types/core-js": "^0.9.34",
     "@types/requirejs": "^2.1.28",
     "aspnet-webpack": "^1.0.6",
     "css": "^2.2.1",

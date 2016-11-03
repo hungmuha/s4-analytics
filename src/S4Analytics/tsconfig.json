@@ -16,6 +16,7 @@ http://www.typescriptlang.org/docs/handbook/tsconfig-json.html.
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "types": [
+      "core-js",
       "requirejs"
     ]
   },
