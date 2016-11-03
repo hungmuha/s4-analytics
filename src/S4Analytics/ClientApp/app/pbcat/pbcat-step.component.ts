@@ -11,30 +11,22 @@ export class PbcatStepComponent {
     @Input() step: PbcatStep;
     @Input() stepNumber: number;
     @Output() selectItem = new EventEmitter<PbcatItem>();
-    private _groupedItems: PbcatItem[][];
-    private _placeholderArray: any[];
+    private groupedItems: Array<PbcatItem[]>;
+    private placeholderItems: any[];
 
     constructor(
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private pbcatService: PbcatService) { }
 
-    get groupedItems(): PbcatItem[][] {
-        // return items grouped in threes because of bootstrap card-deck behavior
-        if (this._groupedItems === undefined) {
+    ngOnChanges() {
+        if (this.hasImages) {
             this.groupItems();
         }
-        return this._groupedItems;
-    }
-
-    get placeholderArray(): any[] {
-        // return an array of placeholder items in case the last group contains
-        // fewer than three items, because of bootstrap card-deck behavior
-        // and because ngFor requires an array to loop over
-        if (this._placeholderArray === undefined) {
-            this.groupItems();
+        else {
+            delete this.groupedItems;
+            delete this.placeholderItems;
         }
-        return this._placeholderArray;
     }
 
     get hasImages(): boolean {
@@ -56,7 +48,7 @@ export class PbcatStepComponent {
             groupedItems.push(items);
             placeholderCount = groupSize - items.length;
         }
-        this._groupedItems = groupedItems;
-        this._placeholderArray = new Array<any>(placeholderCount).fill(undefined);
+        this.groupedItems = groupedItems;
+        this.placeholderItems = new Array<any>(placeholderCount).fill(undefined);
     }
 }

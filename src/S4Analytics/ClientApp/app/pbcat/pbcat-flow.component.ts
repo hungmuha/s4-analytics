@@ -116,7 +116,7 @@ export class PbcatFlowComponent {
         if (this.state.reportViewerWindow && this.state.reportViewerWindow.close) {
             this.state.reportViewerWindow.close();
         }
-        this.state.reportViewerWindow = undefined;
+        delete this.state.reportViewerWindow;
     }
 
     private get isSaved(): boolean { return this.flow.isSaved; }
