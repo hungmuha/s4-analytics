@@ -29,6 +29,7 @@ module.exports = {
             '@ng-bootstrap/ng-bootstrap',
             'bootstrap/dist/css/bootstrap.css',
             'font-awesome/css/font-awesome.css',
+            'lodash',
             'moment',
             'reflect-metadata',
             'rxjs',
