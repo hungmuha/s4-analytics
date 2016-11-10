@@ -1,5 +1,6 @@
 ﻿import { Component, Input, Output, EventEmitter, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as _ from 'lodash';
 import { PbcatService, PbcatStep, PbcatItem } from './shared';
 
 @Component({
@@ -38,17 +39,10 @@ export class PbcatStepComponent {
         this.selectItem.emit(item);
     }
 
-    groupItems() {
-        // group items by threes and populate the placeholder array
-        let groupSize = 3;
-        let groupedItems = new Array<PbcatItem[]>();
-        let placeholderCount = 0;
-        for (let i = 0; i < this.step.items.length; i += groupSize) {
-            let items = this.step.items.slice(i, i + groupSize);
-            groupedItems.push(items);
-            placeholderCount = groupSize - items.length;
-        }
-        this.groupedItems = groupedItems;
+    groupItems(groupSize: number = 3) {
+        // group items and populate the placeholder array
+        this.groupedItems = _.chunk(this.step.items, groupSize);
+        let placeholderCount = groupSize - _.last(this.groupedItems).length;
         this.placeholderItems = new Array<any>(placeholderCount).fill(undefined);
     }
 }
