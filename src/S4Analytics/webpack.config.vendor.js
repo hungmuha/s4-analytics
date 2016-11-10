@@ -17,7 +17,7 @@ module.exports = {
         ]
     },
     entry: {
-        vendor: [
+        angular: [
             '@angular/common',
             '@angular/compiler',
             '@angular/core',
@@ -25,7 +25,9 @@ module.exports = {
             '@angular/http',
             '@angular/platform-browser',
             '@angular/platform-browser-dynamic',
-            '@angular/router',
+            '@angular/router'
+        ],
+        vendor: [
             '@ng-bootstrap/ng-bootstrap',
             'bootstrap/dist/css/bootstrap.css',
             'font-awesome/css/font-awesome.css',

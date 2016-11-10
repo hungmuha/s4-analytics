@@ -11,7 +11,7 @@ which is responsible for build tasks such as:
 var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var extractCSS = new ExtractTextPlugin('styles.css');
+var extractCSS = new ExtractTextPlugin('main.css');
 var merge = require('extendify')({ isDeep: true, arrays: 'concat' });
 var cssnext = require('postcss-cssnext');
 var failPlugin = require('webpack-fail-plugin');
