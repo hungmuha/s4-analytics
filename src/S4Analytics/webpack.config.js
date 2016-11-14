@@ -50,6 +50,10 @@ module.exports = merge({
         failPlugin, // cause CI build to fail if webpack encounters errors (see https://github.com/TypeStrong/ts-loader/issues/108)
         new webpack.DllReferencePlugin({
             context: __dirname,
+            manifest: require('./wwwroot/dist/angular-manifest.json')
+        }),
+        new webpack.DllReferencePlugin({
+            context: __dirname,
             manifest: require('./wwwroot/dist/vendor-manifest.json')
         })
     ]
