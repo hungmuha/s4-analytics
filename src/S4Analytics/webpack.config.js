@@ -15,13 +15,18 @@ var extractCSS = new ExtractTextPlugin('main.css');
 var merge = require('extendify')({ isDeep: true, arrays: 'concat' });
 var cssnext = require('postcss-cssnext');
 var failPlugin = require('webpack-fail-plugin');
-var devConfig = require('./webpack.config.dev');
-var prodConfig = require('./webpack.config.prod');
 var isDevelopment =
     process.env.ASPNETCORE_ENVIRONMENT === 'Local' ||
     process.env.ASPNETCORE_ENVIRONMENT === 'Development';
 
-module.exports = merge({
+if (process.env.ASPNETCORE_ENVIRONMENT) {
+    console.log('ASP.NET Core ' + process.env.ASPNETCORE_ENVIRONMENT + ' environment detected.');
+}
+else {
+    console.log('No ASP.NET Core environment detected.');
+}
+
+var commonConfig = {
     resolve: {
         extensions: [ '', '.js', '.ts' ]
     },
@@ -57,4 +62,21 @@ module.exports = merge({
             manifest: require('./wwwroot/dist/vendor-manifest.json')
         })
     ]
-}, isDevelopment ? devConfig : prodConfig);
+};
+
+var devConfig = {
+    devtool: 'inline-source-map'
+};
+
+var prodConfig = {
+    plugins: [
+        new webpack.optimize.OccurenceOrderPlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: { warnings: false },
+            minimize: true,
+            mangle: false // Due to https://github.com/angular/angular/issues/6678
+        })
+    ]
+};
+
+module.exports = merge(commonConfig, isDevelopment ? devConfig : prodConfig);
