@@ -1,8 +1,9 @@
 ﻿import { NgModule } from '@angular/core';
 import { BrowserModule, __platform_browser_private__ } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
+import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { routing, appRoutingProviders } from './app.routing';
+import { routes } from './app.routing';
 import { AppComponent } from './app.component';
 import { IndexComponent } from './index.component';
 import { LoginComponent } from './login.component';
@@ -13,11 +14,11 @@ import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
 
 @NgModule({
     imports: [
+        RouterModule.forRoot(routes),
+        HttpModule,
         BrowserModule,
         NgbModule.forRoot(),
-        HttpModule,
-        PbcatModule,
-        routing
+        PbcatModule
     ],
     declarations: [
         AppComponent,
@@ -26,7 +27,6 @@ import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
         ReportViewerComponent
     ],
     providers: [
-        appRoutingProviders,
         __platform_browser_private__.BROWSER_SANITIZATION_PROVIDERS,
         OptionsService,
         KeepSilverlightAliveService

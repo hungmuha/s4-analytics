@@ -1,8 +1,8 @@
-﻿import { Routes, RouterModule } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 import { PbcatFlowComponent } from './pbcat-flow.component';
 import { PbcatResolveService } from './shared';
 
-const pbcatRoutes: Routes = [
+export const routes: Routes = [
     {
         path: 'pbcat/:hsmvReportNumber/step/:stepNumber',
         component: PbcatFlowComponent,
@@ -18,5 +18,3 @@ const pbcatRoutes: Routes = [
         }
     }
 ];
-
-export const routing = RouterModule.forChild(pbcatRoutes);
