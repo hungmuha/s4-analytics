@@ -26,7 +26,7 @@ var commonConfig = {
         ]
     },
     entry: {
-        angular: [
+        vendor: [
             '@angular/common',
             '@angular/compiler',
             '@angular/core',
@@ -34,9 +34,7 @@ var commonConfig = {
             '@angular/http',
             '@angular/platform-browser',
             '@angular/platform-browser-dynamic',
-            '@angular/router'
-        ],
-        vendor: [
+            '@angular/router',
             '@ng-bootstrap/ng-bootstrap',
             'bootstrap/dist/css/bootstrap.css',
             'font-awesome/css/font-awesome.css',
