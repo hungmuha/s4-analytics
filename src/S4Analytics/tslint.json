@@ -5,7 +5,9 @@ you can run it locally using this command:
 
     npm run tslint
 
-For a complete list of rules, visit http://palantir.github.io/tslint/rules/.
+For a complete list of rules, visit
+  - http://palantir.github.io/tslint/rules/
+  - https://github.com/Microsoft/tslint-microsoft-contrib
 */
 
 {
@@ -16,10 +18,7 @@ For a complete list of rules, visit http://palantir.github.io/tslint/rules/.
       { "order": "fields-first" }
     ],
     "no-internal-module": true,
-    "no-namespace": [
-      true,
-      "allow-declarations"
-    ],
+    "no-namespace": [ true, "allow-declarations" ],
     "no-reference": true,
     "typedef-whitespace": [
       true,
@@ -39,44 +38,50 @@ For a complete list of rules, visit http://palantir.github.io/tslint/rules/.
     "no-invalid-this": true,
     "no-null-keyword": true,
     "no-shadowed-variable": true,
+    "no-typeof-undefined": true,
+    "no-unnecessary-bind": true,
     "no-unreachable": true,
     "no-unused-expression": true,
     "no-unused-variable": false, // unfortunately tslint can't detect Angular usages
     "no-use-before-declare": true,
     "no-var-keyword": true,
+    "no-var-self": true,
     "switch-default": true,
     "use-isnan": true,
-    "triple-equals": [
-      true,
-      "allow-null-check"
-    ],
+    "triple-equals": [ true, "allow-undefined-check" ],
 
     // Maintainability
-    "indent": [
-      true,
-      "spaces"
-    ],
+    "indent": [ true, "spaces" ],
     "no-trailing-whitespace": true,
+    "no-document-write": true,
+
+    // Security
+    "no-inner-html": true,
+    "non-literal-require": true,
+    "no-exec-script": true,
 
     // Style
     "class-name": true,
-    "comment-format": [
+    "comment-format": [ true, "check-space" ],
+    "function-name": [
       true,
-      "check-space"
+      {
+        "static-method-regex": "^[a-z][\\w\\d]+$"
+      }
     ],
+    "interface-name": [ true, "never-prefix" ],
     "no-angle-bracket-type-assertion": true,
     "one-line": [
       true,
       "check-open-brace",
       "check-whitespace"
     ],
-    "semicolon": [
-      true,
-      "always"
-    ],
+    "semicolon": [ true, "always" ],
     "variable-name": [
       true,
-      "ban-keywords"
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore"
     ],
     "whitespace": [
       true,
