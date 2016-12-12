@@ -142,6 +142,7 @@ namespace S4Analytics
 
             // Add repositories.
             services.AddSingleton<IPbcatRepository, PbcatRepository>();
+            services.AddSingleton<INewUserRequestRepository, NewUserRequestRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
