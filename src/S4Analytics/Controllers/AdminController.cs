@@ -39,5 +39,18 @@ namespace S4Analytics.Controllers
             return new ObjectResult(data);
         }
 
+        [HttpGet("new-user-request-nbr/{reqNbr}")]
+        public IActionResult GetNewUserRequestByReqNbr(int reqNbr)
+        {
+            var info = _newUserRequestRepo.GetNewUserRequestByReqNbr(reqNbr);
+            if (info == null)
+            {
+                return NotFound();
+            }
+            var data = AjaxSafeData(info);
+            return new ObjectResult(data);
+        }
+
+
     }
 }

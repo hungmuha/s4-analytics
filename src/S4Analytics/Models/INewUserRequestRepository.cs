@@ -8,6 +8,7 @@ namespace S4Analytics.Models
     {
         IEnumerable<NewUserRequest> GetAll();
         NewUserRequest GetNewUserRequestById(string id);
+        NewUserRequest GetNewUserRequestByReqNbr(int reqNbr);
         void UpdateRequestQueue(NewUserRequest newUserReq);
     }
 }
