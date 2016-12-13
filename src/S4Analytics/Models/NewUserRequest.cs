@@ -63,7 +63,6 @@ namespace S4Analytics.Models
         public string AccessReasonTx { get; set; }
         public DateTime? ContractStartDt { get; set; }
         public DateTime? ContractEndDt { get; set; }
-        public NewUserRequestStatus ReqStatus { get; set; }
         public string UserId { get; set; }
         public char WarnRequestorEmailCd { get; set; }
         public char WarnUserEmailCd { get; set; }
