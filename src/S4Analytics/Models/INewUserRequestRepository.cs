@@ -7,8 +7,7 @@ namespace S4Analytics.Models
     public interface INewUserRequestRepository
     {
         IEnumerable<NewUserRequest> GetAll();
-        NewUserRequest GetNewUserRequestById(string id);
-        NewUserRequest GetNewUserRequestByReqNbr(int reqNbr);
-        void UpdateRequestQueue(NewUserRequest newUserReq);
+        NewUserRequest Find(int reqNbr);
+        int Update(int reqNbr, Dictionary<string, object> body);
     }
 }

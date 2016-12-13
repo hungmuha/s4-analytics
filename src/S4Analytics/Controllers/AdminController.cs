@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
 using System;
 using System.Collections.Generic;
@@ -27,22 +28,10 @@ namespace S4Analytics.Controllers
             return new ObjectResult(data);
         }
 
-        [HttpGet("new-user-request/{id}")]
-        public IActionResult GetNewUserRequestById(string id)
-        {
-            var info = _newUserRequestRepo.GetNewUserRequestById(id);
-            if (info == null)
-            {
-                return NotFound();
-            }
-            var data = AjaxSafeData(info);
-            return new ObjectResult(data);
-        }
-
-        [HttpGet("new-user-request-nbr/{reqNbr}")]
+        [HttpGet("new-user-request/{reqNbr}")]
         public IActionResult GetNewUserRequestByReqNbr(int reqNbr)
         {
-            var info = _newUserRequestRepo.GetNewUserRequestByReqNbr(reqNbr);
+            var info = _newUserRequestRepo.Find(reqNbr);
             if (info == null)
             {
                 return NotFound();
@@ -51,6 +40,19 @@ namespace S4Analytics.Controllers
             return new ObjectResult(data);
         }
 
+        [HttpPatch("new-user-request/{reqNbr}")]
+        public IActionResult UpdateNewUserRequest(int reqNbr, [FromBody] Dictionary<string, object> body)
+        {
+            var result =  _newUserRequestRepo.Update(reqNbr,  body);
+
+            if (result == 0)
+            {
+                return NotFound();
+            }
+
+            var data = AjaxSafeData(result);
+            return new ObjectResult(data);
+        }
 
     }
 }
