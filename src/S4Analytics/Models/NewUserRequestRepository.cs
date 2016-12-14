@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
-using System;
 using System.Collections.Generic;
 
 namespace S4Analytics.Models
@@ -15,6 +14,10 @@ namespace S4Analytics.Models
             _connStr = serverOptions.Value.WarehouseConnStr;
         }
 
+        /// <summary>
+        /// Return all records from NEW_USER_REQ
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<NewUserRequest> GetAll()
         {
             var conn = new OracleConnection(_connStr);
@@ -48,14 +51,19 @@ namespace S4Analytics.Models
                 WARN_USER_VENDOR_EMAIL_CD AS WarnRequestorEmailCd,
                 WARN_USER_AGNCY_EMAIL_CD AS WarnUserEmailCd,
                 WARN_USER_EMAIL_CD AS WarnUserAgncyEmailCd,
-                WARN_REQUESTOR_EMAIL_CD AS WarnUserVendorEmailCd
+                WARN_REQUESTOR_EMAIL_CD AS WarnUserVendorEmailCd,
+                ADMIN_COMMENT as AdminComment
                 FROM new_user_req_new";
 
             var results = conn.Query<NewUserRequest>(cmdText);
             return results;
         }
 
-
+        /// <summary>
+        /// Return record from NEW_USER_REQ where REQ_NBR = reqNbr
+        /// </summary>
+        /// <param name="reqNbr">request number of record to return</param>
+        /// <returns></returns>
         public NewUserRequest Find(int reqNbr)
         {
             var conn = new OracleConnection(_connStr);
@@ -89,7 +97,8 @@ namespace S4Analytics.Models
                 WARN_USER_VENDOR_EMAIL_CD AS WarnRequestorEmailCd,
                 WARN_USER_AGNCY_EMAIL_CD AS WarnUserEmailCd,
                 WARN_USER_EMAIL_CD AS WarnUserAgncyEmailCd,
-                WARN_REQUESTOR_EMAIL_CD AS WarnUserVendorEmailCd
+                WARN_REQUESTOR_EMAIL_CD AS WarnUserVendorEmailCd,
+                ADMIN_COMMENT as AdminComment
                 FROM new_user_req_new
                 WHERE REQ_NBR = :REQNBR";
 
@@ -97,13 +106,50 @@ namespace S4Analytics.Models
             return results;
         }
 
+        /// <summary>
+        /// Update record in NEW_USER_REQ table
+        /// </summary>
+        /// <param name="reqNbr">record to update</param>
+        /// <param name="body">fields to update</param>
+        /// <returns>number of records updated</returns>
         public int Update(int reqNbr, Dictionary<string, object> body)
         {
             var conn = new OracleConnection(_connStr);
 
-            var cmdTxt = string.Format(@"UPDATE new_user_req_new SET
-                REQ_STATUS = {0}
-                WHERE REQ_NBR = :REQNBR", body["RequestStatus"]);
+            var setStr = string.Empty;
+
+            foreach (KeyValuePair<string,object> kvp in body)
+            {
+                var key = kvp.Key;
+                var value = kvp.Value;
+
+                switch (key)
+                {
+                    case "RequestStatus":
+                        setStr += setStr == string.Empty ?
+                            string.Format(" REQ_STATUS = {0} ", value):
+                            string.Format(", REQ_STATUS = {0} ", value);
+                        break;
+                    case "UserCreatedDate":
+                        setStr += setStr == string.Empty ?
+                            string.Format(" USER_CREATED_DT = TO_DATE('{0}', 'MM-DD-YYYY') ", value) :
+                            string.Format(", USER_CREATED_DT = TO_DATE('{0}', 'MM-DD-YYYY') ", value);
+                        break;
+                    case "Comment":
+                        setStr += setStr == string.Empty ?
+                            string.Format(" ADMIN_COMMENT = '{0}' ", value) :
+                            string.Format(", ADMIN_COMMENT = '{0}' ", value);
+                        break;
+                    case "UserId":
+                        setStr += setStr == string.Empty ?
+                            string.Format(" USER_ID = '{0}' ", value) :
+                            string.Format(", USER_ID = '{0}' ", value);
+                        break;
+                }
+            }
+
+            var cmdTxt = string.Format(@"UPDATE new_user_req_new SET {0}
+                WHERE REQ_NBR = :REQNBR", setStr);
 
             var result = conn.Execute(cmdTxt, new { REQNBR = reqNbr });
 
