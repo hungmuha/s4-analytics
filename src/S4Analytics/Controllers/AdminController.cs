@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace S4Analytics.Controllers
 {
@@ -18,7 +14,10 @@ namespace S4Analytics.Controllers
             _newUserRequestRepo = repo;
         }
 
-
+        /// <summary>
+        /// Return all records from NEW_USER_REQ
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("new-user-request")]
         public IActionResult GetAllNewUserRequests()
         {
@@ -28,6 +27,11 @@ namespace S4Analytics.Controllers
             return new ObjectResult(data);
         }
 
+        /// <summary>
+        /// Return record from NEW_USER_REQ where REQ_NBR = reqNbr
+        /// </summary>
+        /// <param name="reqNbr">request number of record to return</param>
+        /// <returns></returns>
         [HttpGet("new-user-request/{reqNbr}")]
         public IActionResult GetNewUserRequestByReqNbr(int reqNbr)
         {
@@ -40,6 +44,12 @@ namespace S4Analytics.Controllers
             return new ObjectResult(data);
         }
 
+        /// <summary>
+        /// Update record in NEW_USER_REQ table
+        /// </summary>
+        /// <param name="reqNbr">record to update</param>
+        /// <param name="body">fields to update</param>
+        /// <returns></returns>
         [HttpPatch("new-user-request/{reqNbr}")]
         public IActionResult UpdateNewUserRequest(int reqNbr, [FromBody] Dictionary<string, object> body)
         {
@@ -50,8 +60,7 @@ namespace S4Analytics.Controllers
                 return NotFound();
             }
 
-            var data = AjaxSafeData(result);
-            return new ObjectResult(data);
+            return new NoContentResult();
         }
 
     }

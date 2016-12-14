@@ -68,5 +68,6 @@ namespace S4Analytics.Models
         public char WarnUserEmailCd { get; set; }
         public char WarnUserAgncyEmailCd { get; set; }
         public char WarnUserVendorEmailCd { get; set; }
+        public string AdminComment { get; set; }
     }
 }
