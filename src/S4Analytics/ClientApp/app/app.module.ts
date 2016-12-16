@@ -9,6 +9,7 @@ import { IndexComponent } from './index.component';
 import { LoginComponent } from './login.component';
 import { ReportViewerComponent } from './report-viewer.component';
 import { PbcatModule } from './pbcat/pbcat.module';
+import { AdminModule } from './admin/admin.module';
 import { OptionsService } from './options.service';
 import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
 
@@ -18,7 +19,8 @@ import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
         HttpModule,
         BrowserModule,
         NgbModule.forRoot(),
-        PbcatModule
+        PbcatModule,
+        AdminModule
     ],
     declarations: [
         AppComponent,
