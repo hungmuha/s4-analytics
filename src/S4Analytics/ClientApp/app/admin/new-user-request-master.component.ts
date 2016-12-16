@@ -13,7 +13,7 @@ export class NewUserRequestMasterComponent {
         private router: Router
     ) { }
 
-    private ProcessRequest(): void {
+    private processRequest(): void {
         let processRoute = ['/newuserrequestprocess'];
         this.router.navigate(processRoute);
     }

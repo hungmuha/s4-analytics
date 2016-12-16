@@ -1,7 +1,7 @@
 ﻿import { Routes } from '@angular/router';
 import { AdminComponent } from './admin.component';
-import { NewUserRequestMasterComponent } from './new-user-request-master.component'
-import { NewUserRequestDetailComponent } from './new-user-request-detail.component'
+import { NewUserRequestMasterComponent } from './new-user-request-master.component';
+import { NewUserRequestDetailComponent } from './new-user-request-detail.component';
 
 export const routes: Routes = [
     {
@@ -17,4 +17,4 @@ export const routes: Routes = [
         component: NewUserRequestDetailComponent
     }
 
-]
+];
