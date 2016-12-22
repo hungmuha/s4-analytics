@@ -3,21 +3,21 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TruncatePipe } from '../shared';
-import { routes } from './admin.routing';
+import { adminRoutes } from './admin.routing';
 import { AdminComponent } from './admin.component';
-import { NewUserRequestMasterComponent } from './new-user-request-master.component';
-import { NewUserRequestDetailComponent } from './new-user-request-detail.component';
+import { RequestQueueComponent } from './new-user-request/request-queue.component';
+import { RequestActionComponent } from './new-user-request/request-action.component';
 
 @NgModule({
     imports: [
-        RouterModule.forChild(routes),
+        RouterModule.forRoot(adminRoutes),
         CommonModule,
         FormsModule
     ],
     declarations: [
         AdminComponent,
-        NewUserRequestMasterComponent,
-        NewUserRequestDetailComponent
+        RequestQueueComponent,
+        RequestActionComponent
     ]
 })
 export class AdminModule { }
