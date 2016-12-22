@@ -6,4 +6,6 @@ import { OptionsService, Options } from '../options.service';
 @Component({
     template: require('./admin.component.html')
 })
+
 export class AdminComponent {}
+
