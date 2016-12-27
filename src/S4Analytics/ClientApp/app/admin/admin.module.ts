@@ -9,7 +9,6 @@ import { AdminComponent } from './admin.component';
 import { NewUserRequestStateService, NewUserRequestService } from './shared';
 import { RequestQueueModule } from './new-user-request/new-user-request.module';
 
-
 @NgModule({
     imports: [
         RouterModule.forRoot(adminRoutes),
