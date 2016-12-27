@@ -7,6 +7,8 @@ import { adminRoutes } from './admin.routing';
 import { AdminComponent } from './admin.component';
 import { RequestQueueComponent } from './new-user-request/request-queue.component';
 import { RequestActionComponent } from './new-user-request/request-action.component';
+import { NewUserRequestStateService } from './new-user-request/shared/new-user-request-state.service';
+import { NewUserRequestService } from './new-user-request/shared/new-user-request.service';
 
 @NgModule({
     imports: [
@@ -18,6 +20,10 @@ import { RequestActionComponent } from './new-user-request/request-action.compon
         AdminComponent,
         RequestQueueComponent,
         RequestActionComponent
+    ],
+    providers: [
+        NewUserRequestService,
+        NewUserRequestStateService
     ]
 })
 export class AdminModule { }
