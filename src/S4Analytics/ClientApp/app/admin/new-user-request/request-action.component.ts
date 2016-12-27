@@ -7,6 +7,5 @@ import { OptionsService, Options } from '../../options.service';
     template: require('./request-action.component.html')
 })
 export class RequestActionComponent {
-    constructor(
-    ) { }
+    constructor() {}
 }

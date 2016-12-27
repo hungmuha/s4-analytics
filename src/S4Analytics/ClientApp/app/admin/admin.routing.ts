@@ -12,8 +12,8 @@ export const adminRoutes: Routes = [
         path: 'admin',
         component: AdminComponent,
         children: [
-            { path: 'requestqueue', component: RequestQueueComponent },
-            { path: 'requestaction', component: RequestActionComponent }
+            { path: 'request-queue', component: RequestQueueComponent },
+            { path: 'request-action', component: RequestActionComponent }
         ]
     }
 ];
