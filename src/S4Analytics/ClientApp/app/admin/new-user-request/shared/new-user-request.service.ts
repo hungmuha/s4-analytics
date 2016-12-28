@@ -12,7 +12,7 @@ export class NewUserRequestService {
             'request desc',
             2,
             0,
-            null,
+            undefined,
             7,
             1,
             '',
@@ -21,8 +21,8 @@ export class NewUserRequestService {
             'Yorty',
             '',
             'syorty@alachua.gov',
-            null,null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null);
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 
         let nur2 = new NewUserRequest(
             124,
@@ -30,7 +30,7 @@ export class NewUserRequestService {
             'request desc',
             4,
             5,
-            null,
+            undefined,
             6,
             9,
             '',
@@ -39,8 +39,8 @@ export class NewUserRequestService {
             'Jomes',
             '',
             'jones@alachua.gov',
-            null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null);
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 
         return [nur1, nur2];
     }
