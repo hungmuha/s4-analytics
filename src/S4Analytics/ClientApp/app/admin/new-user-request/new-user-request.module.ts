@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TruncatePipe } from '../../shared';
 import { adminRoutes } from '../admin.routing';
-import { AdminComponent } from '../admin.component';
 import { RequestQueueComponent } from './request-queue.component';
 import { RequestActionComponent } from './request-action.component';
 import { NewUserRequestStateService } from './shared/new-user-request-state.service';
