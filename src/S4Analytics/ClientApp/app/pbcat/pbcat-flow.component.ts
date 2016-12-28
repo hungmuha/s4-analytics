@@ -3,10 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { KeepSilverlightAliveService } from '../keep-silverlight-alive.service';
 import { OptionsService, Options } from '../options.service';
-import {
-    PbcatService, PbcatItem, PbcatCrashType,
-    PbcatFlow, FlowType, PbcatStateService
-} from './shared';
+import { PbcatService, PbcatItem, PbcatFlow, FlowType, PbcatStateService } from './shared';
 
 @Component({
     selector: 'pbcat-flow',
@@ -61,10 +58,6 @@ export class PbcatFlowComponent {
         this.alertMessage = message;
         this.alertType = type;
         this.alertVisible = true;
-    }
-
-    private dismissAlert() {
-        this.alertVisible = false;
     }
 
     private handleRouteData(data: { [name: string]: any }) {
@@ -171,6 +164,12 @@ export class PbcatFlowComponent {
             : `${this.flow.nextStepNumber}. ${this.flow.nextStep.title}`;
     }
 
+    /* tslint:disable:no-unused-variable */
+
+    private dismissAlert() {
+        this.alertVisible = false;
+    }
+
     private selectItem(pbcatItem: PbcatItem): void {
         this.flow.selectItemForCurrentStep(pbcatItem);
         if (this.autoAdvance) {
@@ -237,4 +236,6 @@ export class PbcatFlowComponent {
                 );
         }
     }
+
+    /* tslint:enable:no-unused-variable */
 }

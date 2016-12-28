@@ -1,5 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import { FlowType, PbcatFlow } from './pbcat-flow';
+import { PbcatFlow } from './pbcat-flow';
 import { PbcatConfig } from './pbcat-config.d';
 
 @Injectable()

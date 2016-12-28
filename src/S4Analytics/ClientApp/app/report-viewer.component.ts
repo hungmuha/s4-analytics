@@ -1,8 +1,7 @@
-﻿import { Component, Inject } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
-import { Subscription } from 'rxjs/Subscription';
-import { OptionsService, Options } from './options.service';
+import { OptionsService } from './options.service';
 
 // This component should not be necessary, but IE exhibits some
 // buggy behavior when programatically controlling a child window

@@ -1,8 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
-import { KeepSilverlightAliveService } from '../keep-silverlight-alive.service';
-import { OptionsService, Options } from '../options.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'newuserrequestqueue',
@@ -13,8 +10,12 @@ export class NewUserRequestMasterComponent {
         private router: Router
     ) { }
 
+    /* tslint:disable:no-unused-variable */
+
     private processRequest(): void {
         let processRoute = ['/newuserrequestprocess'];
         this.router.navigate(processRoute);
     }
+
+    /* tslint:enable:no-unused-variable */
 }

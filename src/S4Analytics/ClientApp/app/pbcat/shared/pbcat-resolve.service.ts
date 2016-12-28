@@ -5,7 +5,6 @@ import '../../rxjs-operators';
 import { PbcatService, PbcatParticipantInfo } from './pbcat.service';
 import { PbcatStateService } from './pbcat-state.service';
 import { PbcatFlow } from './pbcat-flow';
-import { PbcatInfo } from './pbcat-info';
 import { PbcatConfig } from './pbcat-config';
 
 @Injectable()
