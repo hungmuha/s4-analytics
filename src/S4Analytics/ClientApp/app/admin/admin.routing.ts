@@ -15,7 +15,6 @@ export const adminRoutes: Routes = [
             {
                 path: 'admin/request-queue', component: RequestQueueComponent
             }
-
         ]
     }
 ];
