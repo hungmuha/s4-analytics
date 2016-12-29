@@ -7,8 +7,7 @@ import { TruncatePipe } from '../../shared';
 import { adminRoutes } from '../admin.routing';
 import { RequestQueueComponent } from './request-queue.component';
 import { RequestActionComponent } from './request-action.component';
-import { NewUserRequestStateService } from './shared/new-user-request-state.service';
-import { NewUserRequestService } from './shared/new-user-request.service';
+import { NewUserRequestStateService, NewUserRequestService } from '../shared';
 
 @NgModule({
     imports: [
