@@ -16,6 +16,4 @@ export class RequestQueueComponent {
     ngOnInit() {
         this.state.newUserRequests = this.newUserRequestService.getNewUserRequests();
     }
-
-
 }
