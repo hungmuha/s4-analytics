@@ -14,6 +14,12 @@ export class PbcatSummaryComponent {
     @Output() notesChange = new EventEmitter<string>();
     @Output() jumpBackToStep = new EventEmitter<number>();
 
+    private get ready() {
+        return this.crashType !== undefined;
+    }
+
+    /* tslint:disable:no-unused-variable */
+
     private jumpBack(stepNumber: number) {
         if (!this.isSaved) {
             this.jumpBackToStep.emit(stepNumber);
@@ -27,7 +33,5 @@ export class PbcatSummaryComponent {
         }
     }
 
-    private get ready() {
-        return this.crashType !== undefined;
-    }
+    /* tslint:enable:no-unused-variable */
 }

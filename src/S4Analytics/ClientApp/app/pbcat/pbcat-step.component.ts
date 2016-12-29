@@ -1,4 +1,4 @@
-﻿import { Component, Input, Output, EventEmitter, AfterViewChecked } from '@angular/core';
+﻿import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as _ from 'lodash';
 import { PbcatService, PbcatStep, PbcatItem } from './shared';

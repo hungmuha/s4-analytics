@@ -120,7 +120,6 @@ export class PbcatFlow {
     goToStep(stepNumber: number) {
         let stepIndex = stepNumber - 1; // stepNumber is 1-based
         let isNewFlow = stepIndex === 0 && this._stepHistory.length === 0;
-        let stepExists = stepIndex >= 0 && stepIndex < this._stepHistory.length;
         this._currentStepIndex = stepIndex;
 
         if (isNewFlow) {
