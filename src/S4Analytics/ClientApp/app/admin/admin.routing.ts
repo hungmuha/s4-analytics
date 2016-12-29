@@ -5,14 +5,14 @@ import { RequestQueueComponent } from './new-user-request/request-queue.componen
 export const adminRoutes: Routes = [
     {
         path: 'admin',
-        component: AdminComponent
-    },
-    {
-        path: '',
         component: AdminComponent,
         children: [
             {
-                path: 'admin/request-queue', component: RequestQueueComponent
+                path: ''
+            },
+            {
+                path: 'request-queue',
+                component: RequestQueueComponent
             }
         ]
     }
