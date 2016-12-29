@@ -1,34 +1,33 @@
 ﻿export class NewUserRequest {
-    constructor(
-        public requestNbr: number,
-        public requestDt: Date,
-        public requestDesc: string,
-        public requestType: number,
-        public requestStatus: number,
-        public userCreatedDt: Date,
-        public agncyId: number,
-        public newAgncyTypeCd: number,
-        public newAgncyNm: string,
-        public newAgncyEmailDomain: string,
-        public requestorFirstNm: string,
-        public requestorLastNm:  string,
-        public requestorSuffixNm: string,
-        public requestorEmail: string,
-        public contractorId: number,
-        public newContractorNm: string,
-        public newContractorEmailDomain: string,
-        public consultantFirstNm: string,
-        public consultantLastNm:  string,
-        public consultantSuffixNm: string,
-        public consultantEmail: string,
-        public accessReasonTx:  string,
-        public contractStartDt: Date,
-        public contractEndDt: Date,
-        public userId: string,
-        public warnRequestorEmail: string,
-        public warnUserEmailCd: string,
-        public warnUserAgncyEmailCd: string,
-        public warnUserVendorEmailCd: string,
-        public adminComment: string
-        ) { }
+    requestNbr: number;
+    requestDt: Date;
+    requestDesc: string;
+    requestType: number;
+    requestStatus: number;
+    userCreatedDt: Date;
+    agncyId: number;
+    newAgncyTypeCd: number;
+    newAgncyNm: string;
+    newAgncyEmailDomain: string;
+    requestorFirstNm: string;
+    requestorLastNm:  string;
+    requestorSuffixNm: string;
+    requestorEmail: string;
+    contractorId: number;
+    newContractorNm: string;
+    newContractorEmailDomain: string;
+    consultantFirstNm: string;
+    consultantLastNm:  string;
+    consultantSuffixNm: string;
+    consultantEmail: string;
+    accessReasonTx:  string;
+    contractStartDt: Date;
+    contractEndDt: Date;
+    userId: string;
+    warnRequestorEmail: string;
+    warnUserEmailCd: string;
+    warnUserAgncyEmailCd: string;
+    warnUserVendorEmailCd: string;
+    adminComment: string;
+
 }
