@@ -9,11 +9,11 @@ export const adminRoutes: Routes = [
         component: AdminComponent
     },
     {
-        path: 'admin',
+        path: '',
         component: AdminComponent,
         children: [
             {
-                path: 'request-queue', component: RequestQueueComponent
+                path: 'admin/request-queue', component: RequestQueueComponent
             }
         ]
     }
