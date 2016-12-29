@@ -1,9 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subscription } from 'rxjs/Subscription';
-import { KeepSilverlightAliveService } from '../../keep-silverlight-alive.service';
-import { OptionsService, Options } from '../../options.service';
 import { NewUserRequestStateService, NewUserRequestService } from '../shared';
 
 @Component({
@@ -20,8 +16,5 @@ export class RequestQueueComponent {
     ngOnInit() {
         this.state.newUserRequests = this.newUserRequestService.getNewUserRequests();
     }
-
-    private sortColumn(): void { }
-
 
 }
