@@ -13,8 +13,8 @@ import { RequestQueueModule } from './new-user-request/new-user-request.module';
         RouterModule.forRoot(adminRoutes),
         CommonModule,
         FormsModule,
-        NgbModule.forRoot(),
-        RequestQueueModule
+        RequestQueueModule,
+        NgbModule.forRoot()
     ],
     declarations: [
         AdminComponent

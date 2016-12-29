@@ -9,8 +9,7 @@ import { NewUserRequestStateService, NewUserRequestService } from '../shared';
 @NgModule({
     imports: [
         CommonModule,
-        FormsModule,
-        NgbModule.forRoot()
+        FormsModule
     ],
     declarations: [
         RequestQueueComponent,
