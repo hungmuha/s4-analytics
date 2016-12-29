@@ -8,4 +8,3 @@ import { OptionsService, Options } from '../options.service';
 })
 
 export class AdminComponent {}
-
