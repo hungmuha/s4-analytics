@@ -14,10 +14,12 @@ export class RequestQueueComponent {
 
     constructor(
         private state: NewUserRequestStateService,
-        private newUserRequestState: NewUserRequestService,
+        private newUserRequestService: NewUserRequestService,
         private modalService: NgbModal) {
+    }
 
-        this.state.newUserRequests = this.newUserRequestState.getNewUserRequests();
+    ngOnInit() {
+        this.state.newUserRequests = this.newUserRequestService.getNewUserRequests();
     }
 
     private sortColumn(): void { }

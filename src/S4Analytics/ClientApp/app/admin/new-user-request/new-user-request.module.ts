@@ -12,7 +12,6 @@ import { NewUserRequestService } from './shared/new-user-request.service';
 
 @NgModule({
     imports: [
-        RouterModule.forRoot(adminRoutes),
         CommonModule,
         FormsModule,
         NgbModule.forRoot()
