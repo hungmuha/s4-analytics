@@ -2,21 +2,21 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { routes } from './admin.routing';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { adminRoutes } from './admin.routing';
 import { AdminComponent } from './admin.component';
-import { NewUserRequestMasterComponent } from './new-user-request-master.component';
-import { NewUserRequestDetailComponent } from './new-user-request-detail.component';
+import { RequestQueueModule } from './new-user-request/new-user-request.module';
 
 @NgModule({
     imports: [
-        RouterModule.forChild(routes),
+        RouterModule.forRoot(adminRoutes),
         CommonModule,
-        FormsModule
+        FormsModule,
+        RequestQueueModule,
+        NgbModule.forRoot()
     ],
     declarations: [
-        AdminComponent,
-        NewUserRequestMasterComponent,
-        NewUserRequestDetailComponent
+        AdminComponent
     ]
 })
 export class AdminModule { }

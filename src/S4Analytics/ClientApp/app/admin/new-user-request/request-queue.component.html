@@ -1,0 +1,49 @@
+﻿
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <h5>New User Request Master Page - request queue</h5>
+        </div>
+        <!-- filter button toolbar-->
+        <div class="btn-group btn-group-sm pull-right" role="group">
+            <button type="button" class="btn btn-secondary">All</button>
+            <button type="button" class="btn btn-secondary">Pending</button>
+            <button type="button" class="btn btn-secondary">Completed</button>
+            <button type="button" class="btn btn-secondary">Rejected</button>
+        </div>
+        <!-- queue -->
+        <table class="pull-right" border="1" style="width:90%" align="center">
+            <thead>
+                <tr>
+                    <th style="width: 5%" (click)="sortColumn()">Request Nbr</th>
+                    <th style="width: 7%">Request Dt</th>
+                    <th style="width: 10%">Request Type</th>
+                    <th style="width: 10%"> Requestor</th>
+                    <th style="width: 20%">Requestor Agency</th>
+                    <th style="width: 5%">Request Status</th>
+                    <th style="width: 7%">Account Created</th>
+                    <th style="width: 10%">Action</th>
+                    <th style="width: 20%">Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let newUserReq of this.state.newUserRequests">
+                    <td style="width: 5%">{{newUserReq.requestNbr}}</td>
+                    <td style="width: 10%">{{newUserReq.requestDt}}</td>
+                    <td style="width: 10%">{{newUserReq.requestType}}</td>
+                    <td style="width: 10%">{{newUserReq.requestorFirstNm}}</td>
+                    <td style="width: 20%">{{newUserReq.requestStatus}}</td>
+                    <td style="width: 5%"></td>
+                    <td style="width: 10%"></td>
+                    <td style="width: 10%">
+                        <request-action-modal></request-action-modal>
+                    </td>
+                    <td style="width: 20%"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

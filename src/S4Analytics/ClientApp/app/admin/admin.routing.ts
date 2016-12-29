@@ -1,20 +1,19 @@
 ﻿import { Routes } from '@angular/router';
 import { AdminComponent } from './admin.component';
-import { NewUserRequestMasterComponent } from './new-user-request-master.component';
-import { NewUserRequestDetailComponent } from './new-user-request-detail.component';
+import { RequestQueueComponent } from './new-user-request/request-queue.component';
 
-export const routes: Routes = [
+export const adminRoutes: Routes = [
     {
         path: 'admin',
-        component: AdminComponent
-    },
-    {
-        path: 'newuserrequestqueue',
-        component: NewUserRequestMasterComponent
-    },
-    {
-        path: 'newuserrequestprocess',
-        component: NewUserRequestDetailComponent
+        component: AdminComponent,
+        children: [
+            {
+                path: ''
+            },
+            {
+                path: 'request-queue',
+                component: RequestQueueComponent
+            }
+        ]
     }
-
 ];
