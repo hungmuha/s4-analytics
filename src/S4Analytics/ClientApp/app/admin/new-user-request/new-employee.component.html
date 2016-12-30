@@ -1,16 +1,21 @@
 ﻿<div>
     <!-- requestor info-->
-    <label>First Name:</label>
-    <label id="firstName">Sara</label>
+    <label for="firstName">First Name:</label>
+    <input id="firstName" [value]="state.selectedRequest.requestorFirstNm" style="border:none"/>
     <label>Last Name:</label>
-    <label id="LastName">Yorty</label>
+    <input id="lastName" [value]="state.selectedRequest.requestorLastNm" style="border:none">
+    <br />
     <label>Email:</label>
-    <label id="email">syorty@alachua.us</label>
+    <input id="email" [value]="state.selectedRequest.requestorEmail" style="border:none">
+    <br />
     <label>Agency:</label>
-    <label id="agency">Alachua County Traffic Engineering</label>
+    <input id="agency" style="border:none">
 </div>
 <label id="warning" style="background-color:red" hidden="hidden">Warning: Use's email does not match agency's</label>
-
+<div>
+    <input type="radio" name="approveReject" value="approve" />Approve Employee
+    <input type="radio" name="approveReject" value="reject" />Reject Employee
+</div>
 <div>
     <label>Reason for rejection (to be sent to person making request):</label>
     <textarea id="reason" rows="4" cols="45"></textarea>

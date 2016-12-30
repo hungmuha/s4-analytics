@@ -1,4 +1,5 @@
 ﻿import { Component } from '@angular/core';
+import { NewUserRequestStateService } from './shared';
 
 @Component({
     selector: 'new-employee-component',
@@ -6,5 +7,10 @@
 })
 
 export class NewEmployeeComponent {
-    constructor() { }
+    approveReject: string[] = [
+        'Accept Employee',
+        'Reject Employee'
+    ];
+
+    constructor(private state: NewUserRequestStateService) { }
 }

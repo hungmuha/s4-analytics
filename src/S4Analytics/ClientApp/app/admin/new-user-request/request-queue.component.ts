@@ -1,6 +1,6 @@
 ﻿import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NewUserRequestStateService, NewUserRequestService } from './shared';
+import { NewUserRequestStateService, NewUserRequestService, NewUserRequest } from './shared';
 
 @Component({
     template: require('./request-queue.component.html')

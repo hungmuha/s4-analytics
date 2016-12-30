@@ -3,7 +3,6 @@
         <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
             <span aria-hidden="true">&times;</span>
         </button>
-        <!--<h1 class="modal-title">New User Request Action</h1>-->
     </div>
     <div class="modal-body">
         <new-employee-component *ngIf="index == 1"></new-employee-component>
@@ -16,10 +15,9 @@
         <button type="button" class="btn btn-secondary" (click)="c('Close click')">Cancel</button>
     </div>
 </template>
-
-
-
 <pre>{{closeResult}}</pre>
+
+
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
@@ -48,7 +46,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let newUserReq of this.state.newUserRequests">
+                <tr *ngFor="let newUserReq of state.newUserRequests; let i=index">
                     <td style="width: 5%">{{newUserReq.requestNbr}}</td>
                     <td style="width: 10%">{{newUserReq.requestDt}}</td>
                     <td style="width: 10%">{{newUserReq.requestType}}</td>
@@ -59,7 +57,7 @@
                     <td style="width: 10%">
                         <!-- process request button to open action dialog-->
                         <!--<request-action-modal></request-action-modal>-->
-                        <button (click)="openActionModal(content)">Process Request</button>
+                        <button (click)="openActionModal(content, i)">Process Request</button>
                     </td>
                     <td style="width: 20%"></td>
                 </tr>

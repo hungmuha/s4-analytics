@@ -4,4 +4,5 @@ import { NewUserRequest } from './new-user-request';
 @Injectable()
 export class NewUserRequestStateService {
     newUserRequests: NewUserRequest[];
+    selectedRequest: NewUserRequest;
 }
