@@ -37,6 +37,7 @@ var commonConfig = {
             '@angular/router',
             '@ng-bootstrap/ng-bootstrap',
             'bootstrap/dist/css/bootstrap.css',
+            'core-js',
             'font-awesome/css/font-awesome.css',
             'lodash',
             'moment',
