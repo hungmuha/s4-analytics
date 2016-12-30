@@ -2,7 +2,7 @@
 
 ## Development
 
-Refer to the [developer guide](https://geodevops.geoplan.ufl.edu/signal-four/S4-Analytics-Html5/wikis/developer-guide) to get started.
+Refer to the [developer guide](https://geodevops.geoplan.ufl.edu/signal-four-gen2/S4-Analytics-Html5/wikis/developer-guide) to get started.
 
 Before contributing any code, consult the following:
 - [TypeScript Coding Guidelines](https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines)
