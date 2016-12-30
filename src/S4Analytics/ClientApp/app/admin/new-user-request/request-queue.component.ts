@@ -6,6 +6,8 @@ import { NewUserRequestStateService, NewUserRequestService } from './shared';
     template: require('./request-queue.component.html')
 })
 export class RequestQueueComponent {
+    closeResult: string;
+    index: number = 1;
 
     constructor(
         private state: NewUserRequestStateService,
