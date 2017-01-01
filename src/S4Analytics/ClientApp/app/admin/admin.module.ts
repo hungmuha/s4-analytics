@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { adminRoutes } from './admin.routing';
 import { AdminComponent } from './admin.component';
-import { NewUserRequestStateService, NewUserRequestService } from './shared';
 import { RequestQueueModule } from './new-user-request/new-user-request.module';
 
 @NgModule({
@@ -18,10 +17,6 @@ import { RequestQueueModule } from './new-user-request/new-user-request.module';
     ],
     declarations: [
         AdminComponent
-    ],
-    providers: [
-        NewUserRequestService,
-        NewUserRequestStateService
     ]
 })
 export class AdminModule { }
