@@ -1,22 +1,22 @@
 ﻿<template #content let-c="close" let-d="dismiss">
     <div class="modal-header">
         <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-            <span aria-hidden="true">&times;</span>
+            <span aria-hidden="true">Some heading here?</span>
         </button>
     </div>
     <div class="modal-body">
         <new-employee-component *ngIf="index == 1"></new-employee-component>
-        <new-consultant-component *ngIf="index == 2"></new-consultant-component>
-        <new-contractor-component *ngIf="index == 3"></new-contractor-component>
-        <new-non-fl-component *ngIf="index == 4"></new-non-fl-component>
+        <new-agency-component *ngIf="index == 2"></new-agency-component>
+        <agency-create-component *ngIf="index == 3"></agency-create-component>
+        <new-consultant-component *ngIf="index == 4"></new-consultant-component>
+        <new-contractor-component *ngIf="index == 5"></new-contractor-component>
+        <new-non-fl-component *ngIf="index == 6"></new-non-fl-component>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="c('Close click')">OK</button>
-        <button type="button" class="btn btn-secondary" (click)="c('Close click')">Cancel</button>
+        <button type="button" class="btn btn-secondary" (click)="c('ok')">OK</button>
+        <button type="button" class="btn btn-secondary" (click)="c('cancel')">Cancel</button>
     </div>
 </template>
-<pre>{{closeResult}}</pre>
-
 
 <div class="container">
     <div class="row">

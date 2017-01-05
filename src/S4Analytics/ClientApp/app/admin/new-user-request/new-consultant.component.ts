@@ -1,4 +1,5 @@
 ﻿import { Component } from '@angular/core';
+import { NewUserRequestStateService, RequestActionResults } from './shared';
 
 @Component({
     selector: 'new-consultant-component',
@@ -6,5 +7,8 @@
 })
 
 export class NewConsultantComponent {
-    constructor() { }
+
+    constructor(private state: NewUserRequestStateService) {
+        this.state.currentRequestActionResults = new RequestActionResults();
+    }
 }

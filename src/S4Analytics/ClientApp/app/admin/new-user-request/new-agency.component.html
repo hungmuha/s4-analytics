@@ -1,0 +1,50 @@
+﻿<h5>Approve New Agency</h5>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <input type="radio" name="lea" [(ngModel)]="state.currentRequestActionResults.lea"
+                   [value]="false" />Non-Law Enforcement
+        </div>
+        <div class="col-md-6">
+            <input type="radio" name="lea" [(ngModel)]="state.currentRequestActionResults.lea"
+                    [value]="true" />Law Enforcement
+        </div>
+    </div>
+    <div class="row">
+        <b>Agency Name: </b>{{state.selectedRequest.newAgncyNm}}
+    </div>
+    <div class="row">
+        <b>Agency Email Domain:</b>
+        {{state.selectedRequest.newAgncyEmailDomain}}
+    </div>
+    <div class="row">
+        <b>Agency:</b>
+        <input style="border:none" />
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-6">
+            <input type="radio" class="form-check-input"
+                   [(ngModel)]="state.currentRequestActionResults.approved"
+                   name="approved" [value]="true" />Approve Agency
+        </div>
+        <div class="col-md-6">
+            <input type="radio" class="form-check-input"
+                   [(ngModel)]="state.currentRequestActionResults.approved"
+                   name="approved" [value]="false" />Reject Agency
+        </div>
+    </div>
+    <div>
+        <input type="checkbox" [disabled]="!state.currentRequestActionResults.approved"
+               [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
+               [value]="true"
+               /> Report Access Before 70 days
+    </div>
+    <div class="row">
+        <label>Reason for rejection (to be sent to person making request):</label>
+        <textarea id="reason" rows="4" cols="45" [disabled]="state.currentRequestActionResults.approved"
+                  [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
+    </div>
+</div>
+<hr/>
+

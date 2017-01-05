@@ -1,10 +1,10 @@
 ﻿export class NewUserRequest {
     requestNbr: number;
-    requestDt: Date;
+    requestDt: string;
     requestDesc: string;
     requestType: number;
     requestStatus: number;
-    userCreatedDt: Date;
+    userCreatedDt: string;
     agncyId: number;
     newAgncyTypeCd: number;
     newAgncyNm: string;
@@ -21,8 +21,8 @@
     consultantSuffixNm: string;
     consultantEmail: string;
     accessReasonTx:  string;
-    contractStartDt: Date;
-    contractEndDt: Date;
+    contractStartDt: string;
+    contractEndDt: string;
     userId: string;
     warnRequestorEmail: string;
     warnUserEmailCd: string;

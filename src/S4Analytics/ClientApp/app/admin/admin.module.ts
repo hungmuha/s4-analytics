@@ -7,6 +7,7 @@ import { adminRoutes } from './admin.routing';
 import { AdminComponent } from './admin.component';
 import { RequestQueueModule } from './new-user-request/new-user-request.module';
 
+
 @NgModule({
     imports: [
         RouterModule.forRoot(adminRoutes),

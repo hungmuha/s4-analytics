@@ -1,23 +1,39 @@
-﻿<div>
-    <!-- requestor info-->
-    <label for="firstName">First Name:</label>
-    <input id="firstName" [value]="state.selectedRequest.requestorFirstNm" style="border:none"/>
-    <label>Last Name:</label>
-    <input id="lastName" [value]="state.selectedRequest.requestorLastNm" style="border:none">
-    <br />
-    <label>Email:</label>
-    <input id="email" [value]="state.selectedRequest.requestorEmail" style="border:none">
-    <br />
-    <label>Agency:</label>
-    <input id="agency" style="border:none">
-</div>
-<label id="warning" style="background-color:red" hidden="hidden">Warning: Use's email does not match agency's</label>
-<div>
-    <input type="radio" name="approveReject" value="approve" />Approve Employee
-    <input type="radio" name="approveReject" value="reject" />Reject Employee
-</div>
-<div>
-    <label>Reason for rejection (to be sent to person making request):</label>
-    <textarea id="reason" rows="4" cols="45"></textarea>
+﻿<h5>Approve New Employee</h5>
+<div class="container-fluid">
+    <div class="row">
+        <!-- requestor info-->
+        <b>Requestor Name:</b>
+        {{state.selectedRequest.requestorFirstNm}}
+        {{state.selectedRequest.requestorLastNm}}
+    </div>
+    <div class="row">
+        <b>Email:</b>
+        {{state.selectedRequest.requestorEmail}}
+    </div>
+    <div class="row">
+        <b>Agency:</b>
+        <input style="border:none"/>
+    </div>
+    <div class="row">
+        <label id="warning" style="color:red">Warning: User's email does not match agency's</label>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-6">
+            <input type="radio" class="form-check-input"
+                [(ngModel)]="state.currentRequestActionResults.approved"
+                name="approved" [value]="true" />Approve Employee
+        </div>
+        <div class="col-md-6">
+            <input type="radio" class="form-check-input"
+                [(ngModel)]="state.currentRequestActionResults.approved"
+                name="approved" [value]="false" />Reject Employee
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <label>Reason for rejection (to be sent to person making request):</label>
+        <textarea id="reason" rows="4" cols="45" disabled="{{state.currentRequestActionResults.approved}}" [(ngModel)]="state.currentRequestActionResults.rejectionReason" ></textarea>
+    </div>
 </div>
 

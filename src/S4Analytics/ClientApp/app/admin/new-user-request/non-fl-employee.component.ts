@@ -1,4 +1,5 @@
 ﻿import { Component } from '@angular/core';
+import { NewUserRequestStateService, NewNonFlAgencyResults } from './shared';
 
 @Component({
     selector: 'new-non-fl-component',
@@ -6,5 +7,9 @@
 })
 
 export class NewNonFlComponent {
-    constructor() { }
+
+    constructor(private state: NewUserRequestStateService) {
+        this.state.currentRequestActionResults = new NewNonFlAgencyResults();
+    }
+
 }
