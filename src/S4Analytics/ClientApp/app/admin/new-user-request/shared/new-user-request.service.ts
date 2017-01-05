@@ -30,6 +30,7 @@ export class NewUserRequestService {
                 consultantSuffixNm: '',
                 consultantEmail: '',
                 accessReasonTx: '',
+
                 contractStartDt: '',
                 contractEndDt: '',
                 userId: '',

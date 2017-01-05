@@ -3,5 +3,4 @@
 @Component({
     template: require('./admin.component.html')
 })
-
 export class AdminComponent {}

@@ -6,8 +6,8 @@ import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
     template: require('./request-action.component.html')
 })
 export class RequestActionComponent {
-    constructor(
-    ) { }
+
+    constructor() { }
 
 }
 

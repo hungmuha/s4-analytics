@@ -20,7 +20,7 @@ export class RequestQueueComponent {
         this.state.newUserRequests = this.newUserRequestService.getNewUserRequests();
     }
 
-    openActionModal (content: any, index: number) {
+    openActionModal(content: any, index: number) {
         this.state.selectedRequest = this.state.newUserRequests[index];
         let actionModal = this.modalService.open(content, { backdrop: 'static', keyboard: false });
 

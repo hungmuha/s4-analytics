@@ -12,3 +12,4 @@ export class NewConsultantComponent {
         this.state.currentRequestActionResults = new RequestActionResults();
     }
 }
+
