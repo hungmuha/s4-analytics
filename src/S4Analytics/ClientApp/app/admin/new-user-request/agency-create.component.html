@@ -1,0 +1,33 @@
+﻿<h5>Create New Agency</h5>
+<div class="container-fluid">
+    <div class="row">Agency Approved</div>
+    <div class="row">
+        <b>Agency:</b>
+        {{state.selectedRequest.newAgncyNm}}
+    </div>
+    <div class="row">
+        <b>Report Access Permission:</b>
+        <input style="border:none" />
+    </div>
+    <div class="row">
+        <b>Acton to be taken:</b> Create agency in S4 Analytics User Manager
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <input type="radio" class="form-check-input"
+                   [(ngModel)]="state.currentRequestActionResults.approved"
+                   name="approved" [value]="true" />Agency Created
+        </div>
+        <div class="col-md-6">
+            <input type="radio" class="form-check-input"
+                   [(ngModel)]="state.currentRequestActionResults.approved"
+                   name="approved" [value]="false" />Unable to Create Agency
+        </div>
+    </div>
+    <div class="row">
+        <label>Reason for rejection (to be sent to person making request):</label>
+        <textarea id="reason" rows="4" cols="45" [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
+    </div>
+</div>
+

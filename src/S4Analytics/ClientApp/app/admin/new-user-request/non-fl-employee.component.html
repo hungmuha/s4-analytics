@@ -1,9 +1,65 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-    <title>new-user-request-create-non-fl-employee.component</title>
-</head>
-<body>
-    
-</body>
-</html>
+﻿<h5>Approve New Non-Fl Agency</h5>
+
+<div class="container-fluid">
+    <div class="row">
+        <b>Agency: </b>{{state.selectedRequest.newAgncyNm}}
+    </div>
+    <div class="row">
+        <b>Contact Name:</b>
+        {{state.selectedRequest.requestorFirstNm}}
+        {{state.selectedRequest.requestorLastNm}}
+    </div>
+    <div class="row">
+        <b>Email:</b>
+        {{state.selectedRequest.requestorEmail}}
+    </div>
+    <div>
+        <label>Reason for Access:</label>
+        <textarea id="reason" rows="4" cols="45" readonly>{{state.selectedRequest.accessReasonTx}}</textarea>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-6">
+            <input type="radio" class="form-check-input"
+                   [(ngModel)]="state.currentRequestActionResults.approved"
+                   name="approved" [value]="true" />Approve Agency
+        </div>
+     </div>
+     <div>
+        Report Access:
+        <div>
+            <input type="radio"
+                   [(ngModel)]="state.currentRequestActionResults.noReportAccess"
+                   name="reportAccess" [value]="true" />No Report Access (Guest Account Only)
+         </div>
+         <div>
+            <input type="radio"
+                   [(ngModel)]="state.currentRequestActionResults.noReportAccess"
+                   name="reportAccess" [value]="false" />Report Access After 70 Days
+        </div>
+    </div>
+    <div>
+        Geographic Scope:
+        <select name="counties">
+            <option>Alachua</option>
+            <option>Bradford</option>
+            <option>Broward</option>
+            <option>Clay</option>
+        </select>
+    </div>
+    <div>
+        Expiration Date:
+        <input type="date" name="expirationDt" />
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <input type="radio" class="form-check-input"
+                   [(ngModel)]="state.currentRequestActionResults.approved"
+                   name="approved" [value]="false" />Reject Agency
+        </div>
+    </div>
+    <div class="row">
+        <label>Reason for rejection (to be sent to person making request):</label>
+        <textarea id="reason" rows="4" cols="45" [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
+    </div>
+</div>

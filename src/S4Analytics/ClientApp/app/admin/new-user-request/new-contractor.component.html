@@ -1,1 +1,38 @@
-﻿
+﻿<h5>Approve New Contractor</h5>
+<div class="container-fluid">
+    <div class="row">
+        <b>Contractor Name:</b>
+        {{state.selectedRequest.newContractorNm}}
+    </div>
+    <div class="row">
+        <b>Contractor Email Domain:</b>
+        {{state.selectedRequest.newContractorEmailDomain}}
+    </div>
+    <div class="row">
+        <b>Contract Start Date:</b>
+        {{state.selectedRequest.contractStartDt}}
+    </div>
+    <div class="row">
+        <b>Contract End Date:</b>
+        {{state.selectedRequest.contractEndDt}}
+        <button class="pull-right">View Contract</button>
+    </div>
+    <div>
+        <div class="row">
+            <div class="col-md-6">
+                <input type="radio" class="form-check-input"
+                       [(ngModel)]="state.currentRequestActionResults.approved"
+                       name="approved" [value]="true" />Approve Contractor
+            </div>
+            <div class="col-md-6">
+                <input type="radio" class="form-check-input"
+                       [(ngModel)]="state.currentRequestActionResults.approved"
+                       name="approved" [value]="false" />Reject Contractor
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <label>Reason for rejection (to be sent to person making request):</label>
+        <textarea id="reason" rows="4" cols="45" [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
+    </div>
+</div>
