@@ -8,17 +8,4 @@ export class NewUserRequestStateService {
 
     selectedRequest: NewUserRequest;
     currentRequestActionResults: RequestActionResults;
-
-    public get isRejected(): boolean {
-
-        if (!this.currentRequestActionResults === undefined) {
-            console.log('approved: undefined');
-            return true;
-        }
-
-        console.log('approved: ' + this.currentRequestActionResults.approved);
-
-        return !this.currentRequestActionResults.approved;
-    }
-
 }

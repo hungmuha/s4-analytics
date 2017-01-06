@@ -9,11 +9,10 @@ export class NewUserRequestService {
 
         let nur1 = {
                 requestNbr: 123,
-                requestDt: '12/16/2017',
+                requestDt: new Date('12/16/2017'),
                 requestDesc: 'New Employee',
                 requestType: 5,
                 requestStatus: 6,
-                userCreatedDt: '',
                 agncyId: 7,
                 newAgncyTypeCd: 0,
                 newAgncyNm: '',
@@ -31,8 +30,6 @@ export class NewUserRequestService {
                 consultantEmail: '',
                 accessReasonTx: '',
 
-                contractStartDt: '',
-                contractEndDt: '',
                 userId: '',
                 warnRequestorEmail: 'N',
                 warnUserEmailCd: 'N',
@@ -43,11 +40,10 @@ export class NewUserRequestService {
 
         let nur2 = {
                 requestNbr: 123,
-                requestDt: '12/18/2017',
+                requestDt: new Date('12/18/2017'),
                 requestDesc: 'New Contractor, New Consultant',
                 requestType: 10,
                 requestStatus: 11,
-                userCreatedDt: '',
                 agncyId: 12,
                 newAgncyTypeCd: 0,
                 newAgncyNm: '',
@@ -64,8 +60,6 @@ export class NewUserRequestService {
                 consultantSuffixNm: '',
                 consultantEmail: 'msmith@ncc.gov',
                 accessReasonTx: 'She needs to do some work',
-                contractStartDt: '12/18/2017',
-                contractEndDt: '12/18/2017',
                 userId: '',
                 warnRequestorEmail: 'N',
                 warnUserEmailCd: 'N',

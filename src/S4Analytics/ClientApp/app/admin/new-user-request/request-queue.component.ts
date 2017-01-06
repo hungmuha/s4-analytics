@@ -7,7 +7,7 @@ import { NewUserRequestStateService, NewUserRequestService } from './shared';
 })
 export class RequestQueueComponent {
     closeResult: string;
-    index: number = 1;
+    index: number = 4;
     requestType = 'New Employee Request';
 
     constructor(
