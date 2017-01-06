@@ -32,13 +32,71 @@ export class PbcatFlowComponent {
             .switchMap(() => this.optionsService.getOptions())
             .do(options => this.options = options)
             .subscribe(
-                options => this.handleRouteData(routeData),
+                () => this.handleRouteData(routeData),
                 err => this.handleError(err)
             );
     }
 
     ngOnDestroy() {
         this.routeSub.unsubscribe();
+    }
+
+    dismissAlert() {
+        this.alertVisible = false;
+    }
+
+    selectItem(pbcatItem: PbcatItem): void {
+        this.flow.selectItemForCurrentStep(pbcatItem);
+        if (this.autoAdvance) {
+            // a 300ms delay to give visual confirmation of selected item
+            setTimeout(() => this.proceed(), 300);
+        }
+    }
+
+    goBack(): void {
+        let backRoute = ['/pbcat', this.flow.hsmvReportNumber, 'step', this.flow.previousStepNumber];
+        this.router.navigate(backRoute);
+    }
+
+    proceed(): void {
+        let proceedLinkRoute = this.flow.isFinalStep
+            ? ['/pbcat', this.hsmvReportNumber, 'summary']
+            : ['/pbcat', this.flow.hsmvReportNumber, 'step', this.flow.nextStepNumber];
+        this.router.navigate(proceedLinkRoute);
+    }
+
+    returnToSummary(): void {
+        let summaryRoute = ['/pbcat', this.hsmvReportNumber, 'summary'];
+        this.router.navigate(summaryRoute);
+    }
+
+    jumpBackToStep(stepNumber: number) {
+        let route = ['/pbcat', this.flow.hsmvReportNumber, 'step', stepNumber];
+        this.router.navigate(route);
+    }
+
+    advanceToNext(): void {
+        let advanceRoute = ['/pbcat', this.state.nextHsmvNumber, 'step', 1];
+        this.router.navigate(advanceRoute);
+    }
+
+    acceptAndSave(): void {
+        if (this.flow.typingExists) {
+            this.pbcatService.updatePbcatInfo(this.flow)
+                .first()
+                .subscribe(
+                () => this.handleSaved(),
+                err => this.handleError(err)
+                );
+        }
+        else {
+            this.pbcatService.createPbcatInfo(this.flow)
+                .first()
+                .subscribe(
+                () => this.handleSaved(),
+                err => this.handleError(err)
+                );
+        }
     }
 
     private handleError(error: any) {
@@ -164,42 +222,6 @@ export class PbcatFlowComponent {
             : `${this.flow.nextStepNumber}. ${this.flow.nextStep.title}`;
     }
 
-    /* tslint:disable:no-unused-variable */
-
-    private dismissAlert() {
-        this.alertVisible = false;
-    }
-
-    private selectItem(pbcatItem: PbcatItem): void {
-        this.flow.selectItemForCurrentStep(pbcatItem);
-        if (this.autoAdvance) {
-            // a 300ms delay to give visual confirmation of selected item
-            setTimeout(() => this.proceed(), 300);
-        }
-    }
-
-    private goBack(): void {
-        let backRoute = ['/pbcat', this.flow.hsmvReportNumber, 'step', this.flow.previousStepNumber];
-        this.router.navigate(backRoute);
-    }
-
-    private proceed(): void {
-        let proceedLinkRoute = this.flow.isFinalStep
-            ? ['/pbcat', this.hsmvReportNumber, 'summary']
-            : ['/pbcat', this.flow.hsmvReportNumber, 'step', this.flow.nextStepNumber];
-        this.router.navigate(proceedLinkRoute);
-    }
-
-    private returnToSummary(): void {
-        let summaryRoute = ['/pbcat', this.hsmvReportNumber, 'summary'];
-        this.router.navigate(summaryRoute);
-    }
-
-    private jumpBackToStep(stepNumber: number) {
-        let route = ['/pbcat', this.flow.hsmvReportNumber, 'step', stepNumber];
-        this.router.navigate(route);
-    }
-
     private handleSaved() {
         this.flow.isSaved = true;
         if (this.state.queue) {
@@ -212,30 +234,4 @@ export class PbcatFlowComponent {
             ? this.state.queue[0]
             : undefined;
     }
-
-    private advanceToNext(): void {
-        let advanceRoute = ['/pbcat', this.state.nextHsmvNumber, 'step', 1];
-        this.router.navigate(advanceRoute);
-    }
-
-    private acceptAndSave(): void {
-        if (this.flow.typingExists) {
-            this.pbcatService.updatePbcatInfo(this.flow)
-                .first()
-                .subscribe(
-                    nextCrash => this.handleSaved(),
-                    err => this.handleError(err)
-                );
-        }
-        else {
-            this.pbcatService.createPbcatInfo(this.flow)
-                .first()
-                .subscribe(
-                    nextCrash => this.handleSaved(),
-                    err => this.handleError(err)
-                );
-        }
-    }
-
-    /* tslint:enable:no-unused-variable */
 }

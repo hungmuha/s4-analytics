@@ -226,7 +226,7 @@ export class PbcatFlow {
         }
         let screenConfig = this.config[screenName];
         let step = new PbcatStep(screenName, screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
-        step.items = screenConfig.items.map((item, index) => this.itemFromItemConfig(item, index, false));
+        step.items = screenConfig.items.map((item, index) => this.itemFromItemConfig(item, index));
         return step;
     }
 
@@ -243,13 +243,13 @@ export class PbcatFlow {
         }
         if (screenConfig) {
             step = new PbcatStep(screenName, screenConfig.title, screenConfig.description, screenConfig.infoAttrName);
-            step.items = screenConfig.items.map((item, index) => this.itemFromItemConfig(item, index, false));
+            step.items = screenConfig.items.map((item, index) => this.itemFromItemConfig(item, index));
         }
 
         return step;
     }
 
-    private itemFromItemConfig(itemConfig: PbcatItemConfig, index: number, selected: boolean) {
+    private itemFromItemConfig(itemConfig: PbcatItemConfig, index: number) {
         return new PbcatItem(
             index,
             itemConfig.infoAttrValue,

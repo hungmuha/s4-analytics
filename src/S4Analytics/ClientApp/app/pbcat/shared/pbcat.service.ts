@@ -93,7 +93,7 @@ export class PbcatService {
             : new BicyclistInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatBicyclistInfo, flow.crashType);
         return this.http
             .post(url, wrapper)
-            .map(response => undefined);
+            .map(() => undefined);
     }
 
     updatePbcatInfo(flow: PbcatFlow): Observable<void> {
@@ -105,7 +105,7 @@ export class PbcatService {
             : new BicyclistInfoWrapper(flow.hsmvReportNumber, flow.pbcatInfo as PbcatBicyclistInfo, flow.crashType);
         return this.http
             .put(url, wrapper)
-            .map(response => undefined);
+            .map(() => undefined);
     }
 
     calculateCrashType(flowType: FlowType, pbcatInfo: PbcatInfo): Observable<PbcatCrashType> {
