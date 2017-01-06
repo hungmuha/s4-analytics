@@ -1,4 +1,4 @@
-//import 'core-js';
+import 'core-js';
 import 'zone.js';
 import 'reflect-metadata';
 import './site.css';
