@@ -18,11 +18,5 @@
     <DnxInvisibleFolder Include=".git\" />
     <DnxInvisibleFolder Include=".vs\" />
   </ItemGroup>
-  <ItemGroup>
-    <DnxInvisibleContent Include="ClientApp\app\admin\new-user-request\request-action.component.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <DnxInvisibleTypeScriptCompile Include="ClientApp\app\admin\new-user-request\new-user-request.routing.ts" />
-  </ItemGroup>
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>
