@@ -18,20 +18,16 @@ export class PbcatSummaryComponent {
         return this.crashType !== undefined;
     }
 
-    /* tslint:disable:no-unused-variable */
-
-    private jumpBack(stepNumber: number) {
+    jumpBack(stepNumber: number) {
         if (!this.isSaved) {
             this.jumpBackToStep.emit(stepNumber);
         }
     }
 
-    private changeNotes(notes: string) {
+    changeNotes(notes: string) {
         if (!this.isSaved) {
             this.notes = notes;
             this.notesChange.emit(notes);
         }
     }
-
-    /* tslint:enable:no-unused-variable */
 }

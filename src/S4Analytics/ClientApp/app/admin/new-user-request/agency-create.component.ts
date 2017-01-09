@@ -8,5 +8,5 @@ import { NewUserRequestStateService } from './shared';
 
 export class AgencyCreateComponent {
 
-    constructor(private state: NewUserRequestStateService) { }
+    constructor(public state: NewUserRequestStateService) { }
 }
