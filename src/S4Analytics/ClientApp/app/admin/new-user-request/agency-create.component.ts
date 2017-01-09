@@ -1,5 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { NewUserRequestStateService } from './shared';
+import { NewUserRequestStateService, RequestActionResults } from './shared';
 
 @Component({
     selector: 'agency-create-component',
@@ -8,5 +8,8 @@ import { NewUserRequestStateService } from './shared';
 
 export class AgencyCreateComponent {
 
-    constructor(public state: NewUserRequestStateService) { }
+    constructor(private state: NewUserRequestStateService) {
+        this.state.currentRequestActionResults = new RequestActionResults();
+    }
+
 }
