@@ -14,7 +14,7 @@ import { OptionsService } from '../../options.service';
     template: `<iframe class="contract-viewer" [src]="pdfUrl"></iframe>`
 })
 export class ContractViewerComponent {
-    requestNumber: number = 85440392;
+    requestNumber: number;
     pdfUrl: SafeResourceUrl;
 
     constructor(

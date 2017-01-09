@@ -26,6 +26,22 @@
         <label>Reason for Access:</label>
         <textarea id="reason" rows="4" cols="45" readonly>{{state.selectedRequest.accessReasonTx}}</textarea>
     </div>
+
+    <div class="row">
+        <!-- requestor info-->
+        <b>Requestor Name:</b>
+        {{state.selectedRequest.requestorFirstNm}}
+        {{state.selectedRequest.requestorLastNm}}
+    </div>
+    <div class="row">
+        <b>Email:</b>
+        {{state.selectedRequest.requestorEmail}}
+    </div>
+    <div class="row">
+        <b>Agency:</b>
+        <input style="border:none" />
+    </div>
+
     <hr/>
     <div class="row">
         <div class="col-md-6">
@@ -39,8 +55,13 @@
                    name="approved" [value]="false" />Reject Consultant
         </div>
     </div>
+    <div>
+        <input type="checkbox" [disabled]="!state.currentRequestActionResults.approved"
+               [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
+               [value]="true" /> Report Access Before 70 days
+    </div>
     <div class="row">
         <label>Reason for rejection (to be sent to person making request):</label>
-        <textarea id="reason" rows="4" cols="45" [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
+        <textarea id="reason" class="form-control" [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
     </div>
 </div>
