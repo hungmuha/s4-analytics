@@ -24,7 +24,7 @@
     </div>
     <div>
         <label>Reason for Access:</label>
-        <textarea id="reason" rows="4" cols="45" readonly>{{state.selectedRequest.accessReasonTx}}</textarea>
+        <textarea class="form-control" id="reason" rows="4" readonly>{{state.selectedRequest.accessReasonTx}}</textarea>
     </div>
 
     <div class="row">
@@ -62,6 +62,6 @@
     </div>
     <div class="row">
         <label>Reason for rejection (to be sent to person making request):</label>
-        <textarea id="reason" class="form-control" [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
+        <textarea class="form-control" id="reason" rows="4"  [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
     </div>
 </div>
