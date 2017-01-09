@@ -42,6 +42,11 @@ export class RequestQueueComponent {
                 console.log('User: REJECTED');
             }
 
+            if (this.state.contractViewerWindow != undefined) {
+                this.state.contractViewerWindow.close();
+                delete this.state.contractViewerWindow;
+            }
+
         });
     }
 

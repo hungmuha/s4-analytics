@@ -8,4 +8,5 @@ export class NewUserRequestStateService {
 
     selectedRequest: NewUserRequest;
     currentRequestActionResults: RequestActionResults;
+    contractViewerWindow: Window;
 }

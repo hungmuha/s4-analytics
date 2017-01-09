@@ -12,5 +12,7 @@ export class NewContractorComponent {
         this.state.currentRequestActionResults = new RequestActionResults();
     }
 
-
+    openContractViewer() {
+        this.state.contractViewerWindow = window.open('', '', 'width=200,height=100');
+    }
 }
