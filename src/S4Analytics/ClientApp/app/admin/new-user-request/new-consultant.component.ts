@@ -11,5 +11,9 @@ export class NewConsultantComponent {
     constructor(private state: NewUserRequestStateService) {
         this.state.currentRequestActionResults = new RequestActionResults();
     }
+
+    openContractViewer() {
+        this.state.contractViewerWindow = window.open('', '', 'width=200,height=100');
+    }
 }
 
