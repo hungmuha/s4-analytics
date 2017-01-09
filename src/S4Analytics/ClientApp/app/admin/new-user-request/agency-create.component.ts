@@ -11,5 +11,4 @@ export class AgencyCreateComponent {
     constructor(private state: NewUserRequestStateService) {
         this.state.currentRequestActionResults = new RequestActionResults();
     }
-
 }
