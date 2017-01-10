@@ -24,14 +24,14 @@
         "title": "Intersection",
         "infoAttrValue": "Intersection",
         "description": "The crash occurred within the intersection proper or within the crosswalk area. Note: Driveways controlled by signals or signs should be coded as Intersections. Uncontrolled driveways should be coded as Non-Intersection Locations.",
-        "imageUrl": "images/pbcat/ped_1_IntersectionRelated.png",
+        "imageUrl": "images/pbcat/ped_1_Intersection.png",
         "nextScreenName": "P-1A"
       },
       {
         "title": "Intersection-Related",
         "infoAttrValue": "IntersectionRelated",
         "description": "The crash occurred outside the intersection crosswalk area but within 15 m (50 ft) of the intersection.",
-        "imageUrl": "images/pbcat/ped_1_Intersection.png",
+        "imageUrl": "images/pbcat/ped_1_IntersectionRelated.png",
         "nextScreenName": "P-1A"
       },
       {
