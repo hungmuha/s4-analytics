@@ -15,7 +15,7 @@
         <input style="border:none"/>
     </div>
     <div class="row">
-        <label id="warning" style="color:red">Warning: User's email does not match agency's</label>
+        <label [hidden]="this.state.selectedRequest.warnRequestorEmailCd == 'N'" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
     </div>
     <hr/>
     <div class="row">
@@ -33,7 +33,7 @@
     <br/>
     <div class="row">
         <label>Reason for rejection (to be sent to person making request):</label>
-        <textarea id="reason" rows="4" cols="45" [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason" ></textarea>
+        <textarea class="form-control" id="reason" rows="4" [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason" ></textarea>
     </div>
 </div>
 

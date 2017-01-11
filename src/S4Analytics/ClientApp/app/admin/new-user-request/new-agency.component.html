@@ -21,6 +21,19 @@
         <b>Agency:</b>
         <input style="border:none" />
     </div>
+    <div class="row">
+        <!-- requestor info-->
+        <b>Requestor Name:</b>
+        {{state.selectedRequest.requestorFirstNm}}
+        {{state.selectedRequest.requestorLastNm}}
+    </div>
+    <div class="row">
+        <b>Email:</b>
+        {{state.selectedRequest.requestorEmail}}
+    </div>
+    <div class="row">
+        <label [hidden]="this.state.selectedRequest.warnRequestorEmailCd == 'N'" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
+    </div>
     <hr/>
     <div class="row">
         <div class="col-md-6">
@@ -42,7 +55,7 @@
     </div>
     <div class="row">
         <label>Reason for rejection (to be sent to person making request):</label>
-        <textarea id="reason" rows="4" cols="45" [disabled]="state.currentRequestActionResults.approved"
+        <textarea class="form-control" id="reason" rows="4" [disabled]="state.currentRequestActionResults.approved"
                   [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
     </div>
 </div>

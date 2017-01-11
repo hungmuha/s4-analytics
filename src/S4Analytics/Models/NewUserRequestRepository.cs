@@ -48,10 +48,8 @@ namespace S4Analytics.Models
                 ACCESS_REASON_TX AS AccessReasonTx,
                 CONTRACT_END_DT AS ContractStartDt,
                 CONTRACT_START_DT AS ContractEndDt,
-                WARN_USER_VENDOR_EMAIL_CD AS WarnRequestorEmailCd,
-                WARN_USER_AGNCY_EMAIL_CD AS WarnUserEmailCd,
-                WARN_USER_EMAIL_CD AS WarnUserAgncyEmailCd,
-                WARN_REQUESTOR_EMAIL_CD AS WarnUserVendorEmailCd,
+                WARN_REQUESTOR_EMAIL_CD AS WarnRequestorEmailCd,                
+                WARN_USER_EMAIL_CD AS WarnConsultantEmailCd,
                 ADMIN_COMMENT as AdminComment
                 FROM new_user_req_new";
 
@@ -94,10 +92,8 @@ namespace S4Analytics.Models
                 ACCESS_REASON_TX AS AccessReasonTx,
                 CONTRACT_END_DT AS ContractStartDt,
                 CONTRACT_START_DT AS ContractEndDt,
-                WARN_USER_VENDOR_EMAIL_CD AS WarnRequestorEmailCd,
-                WARN_USER_AGNCY_EMAIL_CD AS WarnUserEmailCd,
-                WARN_USER_EMAIL_CD AS WarnUserAgncyEmailCd,
-                WARN_REQUESTOR_EMAIL_CD AS WarnUserVendorEmailCd,
+                WARN_REQUESTOR_EMAIL_CD AS WarnRequestorEmailCd,                
+                WARN_USER_EMAIL_CD AS WarnConsultantEmailCd,
                 ADMIN_COMMENT as AdminComment
                 FROM new_user_req_new
                 WHERE REQ_NBR = :REQNBR";

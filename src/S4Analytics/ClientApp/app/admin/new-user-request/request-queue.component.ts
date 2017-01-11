@@ -1,14 +1,16 @@
 ﻿import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NewUserRequestStateService, NewUserRequestService } from './shared';
+import { NewUserRequestStateService, NewUserRequestService, NewUserRequestStatus} from './shared';
 
 @Component({
     template: require('./request-queue.component.html')
 })
 export class RequestQueueComponent {
     closeResult: string;
-    index: number = 4;
+    index: number = 5;
     requestType = 'New Employee Request';
+    newUserRequestStatus = NewUserRequestStatus;
+
 
     constructor(
         private state: NewUserRequestStateService,
@@ -17,7 +19,7 @@ export class RequestQueueComponent {
     }
 
     ngOnInit() {
-        this.state.newUserRequests = this.newUserRequestService.getNewUserRequests();
+        this.newUserRequestService.getNewUserRequests().subscribe(result => this.state.newUserRequests = result);
     }
 
     openActionModal(content: any, index: number) {
