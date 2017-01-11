@@ -17,8 +17,7 @@
         {{state.selectedRequest.contractEndDt}}
         <button class="pull-right" (click)="openContractViewer()">View Contract</button>
     </div>
-
-    <div class="row">
+     <div class="row">
         <!-- requestor info-->
         <b>Requestor Name:</b>
         {{state.selectedRequest.requestorFirstNm}}
@@ -32,7 +31,9 @@
         <b>Agency:</b>
         <input style="border:none" />
     </div>
-
+    <div class="row">
+        <label [hidden]="this.state.selectedRequest.warnRequestorEmailCd == 'N'" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
+    </div>
     <hr/>
 
     <div>

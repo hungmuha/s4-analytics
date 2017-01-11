@@ -5,12 +5,12 @@
         </button>
     </div>
     <div class="modal-body">
-        <new-employee-component *ngIf="index == 1"></new-employee-component>
-        <new-agency-component *ngIf="index == 2"></new-agency-component>
-        <agency-create-component *ngIf="index == 3"></agency-create-component>
-        <new-consultant-component *ngIf="index == 4"></new-consultant-component>
-        <new-contractor-component *ngIf="index == 5"></new-contractor-component>
-        <new-non-fl-component *ngIf="index == 6"></new-non-fl-component>
+        <new-employee-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == newUserRequestStatus.NewUser"></new-employee-component>
+        <new-agency-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == newUserRequestStatus.NewAgencyAndUser"></new-agency-component>
+        <agency-create-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == newUserRequestStatus.CreateAgencyAndUser"></agency-create-component>
+        <new-consultant-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == newUserRequestStatus.NewConsultant"></new-consultant-component>
+        <new-contractor-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == newUserRequestStatus.NewContractorAndConsultant"></new-contractor-component>
+        <new-non-fl-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] === newUserRequestStatus.NewNonFLUser"></new-non-fl-component>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="c('ok')">OK</button>
@@ -50,9 +50,9 @@
                     <td style="width: 5%">{{newUserReq.requestNbr}}</td>
                     <td style="width: 10%">{{newUserReq.requestDt}}</td>
                     <td style="width: 10%">{{newUserReq.requestType}}</td>
-                    <td style="width: 10%">{{newUserReq.requestorFirstNm}}</td>
-                    <td style="width: 20%">{{newUserReq.requestStatus}}</td>
-                    <td style="width: 5%"></td>
+                    <td style="width: 10%">{{newUserReq.requestorFirstNm + " " + newUserReq.requestorLastNm}}</td>
+                    <td style="width: 20%"></td>
+                    <td style="width: 5%">{{newUserReq.requestStatus}}</td>
                     <td style="width: 10%"></td>
                     <td style="width: 10%">
                         <!-- process request button to open action dialog-->

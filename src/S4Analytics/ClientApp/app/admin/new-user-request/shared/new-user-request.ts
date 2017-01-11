@@ -1,12 +1,14 @@
-﻿export class NewUserRequest {
+﻿import { AgencyType, NewUserRequestType, NewUserRequestStatus } from './new-user-request-enum';
+
+export class NewUserRequest {
     requestNbr: number;
     requestDt: Date;
     requestDesc: string;
-    requestType: number;
-    requestStatus: number;
+    requestType: NewUserRequestType;
+    requestStatus: NewUserRequestStatus;
     userCreatedDt: Date;
     agncyId: number;
-    newAgncyTypeCd: number;
+    newAgncyTypeCd: AgencyType;
     newAgncyNm: string;
     newAgncyEmailDomain: string;
     requestorFirstNm: string;
@@ -24,10 +26,8 @@
     contractStartDt: Date;
     contractEndDt: Date;
     userId: string;
-    warnRequestorEmail: string;
-    warnUserEmailCd: string;
-    warnUserAgncyEmailCd: string;
-    warnUserVendorEmailCd: string;
+    warnRequestorEmailCd: string;
+    warnConsultantEmailCd: string;
     adminComment: string;
 
 }

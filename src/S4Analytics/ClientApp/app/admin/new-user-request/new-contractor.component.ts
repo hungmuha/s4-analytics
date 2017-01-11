@@ -13,6 +13,6 @@ export class NewContractorComponent {
     }
 
     openContractViewer() {
-        this.state.contractViewerWindow = window.open('', '', 'width=200,height=100');
+        this.state.contractViewerWindow = window.open('', '', 'width=400,height=200');
     }
 }

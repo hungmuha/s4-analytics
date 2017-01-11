@@ -1,7 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
-import { OptionsService } from '../../options.service';
+import { SafeResourceUrl } from '@angular/platform-browser';
 
 // This component should not be necessary, but IE exhibits some
 // buggy behavior when programatically controlling a child window
@@ -17,19 +15,10 @@ export class ContractViewerComponent {
     requestNumber: number;
     pdfUrl: SafeResourceUrl;
 
-    constructor(
-        private route: ActivatedRoute,
-        private sanitizer: DomSanitizer,
-        private optionsService: OptionsService) {
+    constructor() {
     }
 
     ngOnInit() {
-        this.requestNumber = +this.route.snapshot.params['requestNumber'];
-        this.optionsService.getOptions()
-            .first()
-            .subscribe(options => {
-                this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-                    `${options.silverlightBaseUrl}ImageHandler.ashx?hsmv=${this.requestNumber}`);
-            });
+        // initalize option service here (note to self: see report-viewer.component.ts)
     }
 }

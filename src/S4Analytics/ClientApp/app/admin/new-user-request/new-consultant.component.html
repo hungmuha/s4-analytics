@@ -10,8 +10,11 @@
         {{state.selectedRequest.consultantEmail}}
     </div>
     <div class="row">
-        <b>Agency:</b>
+        <b>Contractor:</b>
         <input style="border:none" />
+    </div>
+    <div class="row">
+        <label [hidden]="this.state.selectedRequest.warnConsultantEmailCd == 'N'" style="color:red">Warning: Consultants's email domain does not match Consultants's contractor's email domain</label>
     </div>
     <div class="row">
         <b>Contract Start Date:</b>
@@ -39,29 +42,30 @@
     </div>
     <div class="row">
         <b>Agency:</b>
-        <input style="border:none" />
     </div>
-
-    <hr/>
+    <div class="row">
+        <label [hidden]="this.state.selectedRequest.warnRequestorEmailCd == 'N'" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
+    </div>
+    <hr />
     <div class="row">
         <div class="col-md-6">
             <input type="radio" class="form-check-input"
-                   [(ngModel)]="state.currentRequestActionResults.approved"
-                   name="approved" [value]="true" />Approve Consultant
+                    [(ngModel)]="state.currentRequestActionResults.approved"
+                    name="approved" [value]="true" />Approve Consultant
         </div>
         <div class="col-md-6">
             <input type="radio" class="form-check-input"
-                   [(ngModel)]="state.currentRequestActionResults.approved"
-                   name="approved" [value]="false" />Reject Consultant
+                    [(ngModel)]="state.currentRequestActionResults.approved"
+                    name="approved" [value]="false" />Reject Consultant
         </div>
     </div>
     <div>
         <input type="checkbox" [disabled]="!state.currentRequestActionResults.approved"
-               [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
-               [value]="true" /> Report Access Before 70 days
+                [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
+                [value]="true" /> Report Access Before 70 days
     </div>
     <div class="row">
         <label>Reason for rejection (to be sent to person making request):</label>
-        <textarea class="form-control" id="reason" rows="4"  [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
+        <textarea class="form-control" id="reason" rows="4" [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason"></textarea>
     </div>
 </div>

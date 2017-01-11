@@ -15,7 +15,7 @@
         <input style="border:none"/>
     </div>
     <div class="row">
-        <label id="warning" style="color:red">Warning: User's email does not match agency's</label>
+        <label [hidden]="this.state.selectedRequest.warnRequestorEmailCd == 'N'" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
     </div>
     <hr/>
     <div class="row">
