@@ -5,12 +5,12 @@
         </button>
     </div>
     <div class="modal-body">
-        <new-employee-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == newUserRequestStatus.NewUser"></new-employee-component>
-        <new-agency-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == newUserRequestStatus.NewAgencyAndUser"></new-agency-component>
-        <agency-create-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == newUserRequestStatus.CreateAgencyAndUser"></agency-create-component>
-        <new-consultant-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == newUserRequestStatus.NewConsultant"></new-consultant-component>
-        <new-contractor-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == newUserRequestStatus.NewContractorAndConsultant"></new-contractor-component>
-        <new-non-fl-component *ngIf="this.newUserRequestStatus[this.state.selectedRequest.requestStatus] === newUserRequestStatus.NewNonFLUser"></new-non-fl-component>
+        <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)"></new-employee-component>
+        <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgencyAndUser)"></new-agency-component>
+        <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgencyAndUser)"></agency-create-component>
+        <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)"></new-consultant-component>
+        <new-contractor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewContractorAndConsultant)"></new-contractor-component>
+        <new-non-fl-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewNonFLUser)"></new-non-fl-component>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="c('ok')">OK</button>

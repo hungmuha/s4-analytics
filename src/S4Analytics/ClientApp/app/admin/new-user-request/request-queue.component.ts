@@ -7,10 +7,8 @@ import { NewUserRequestStateService, NewUserRequestService, NewUserRequestStatus
 })
 export class RequestQueueComponent {
     closeResult: string;
-    index: number = 5;
     requestType = 'New Employee Request';
     newUserRequestStatus = NewUserRequestStatus;
-
 
     constructor(
         private state: NewUserRequestStateService,
@@ -20,6 +18,11 @@ export class RequestQueueComponent {
 
     ngOnInit() {
         this.newUserRequestService.getNewUserRequests().subscribe(result => this.state.newUserRequests = result);
+    }
+
+    newUserRequestMatch(nur: string )
+    {
+        return this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == nur;
     }
 
     openActionModal(content: any, index: number) {
@@ -51,5 +54,4 @@ export class RequestQueueComponent {
 
         });
     }
-
 }
