@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
+using System;
 using System.Collections.Generic;
 
 namespace S4Analytics.Models
@@ -123,8 +124,9 @@ namespace S4Analytics.Models
             var conn = new OracleConnection(_connStr);
 
             var setStr = string.Empty;
+            var p = new Dictionary<string, object> { { "REQNBR", reqNbr } };
 
-            foreach (KeyValuePair<string,object> kvp in body)
+            foreach (KeyValuePair<string, object> kvp in body)
             {
                 var key = kvp.Key;
                 var value = kvp.Value;
@@ -133,23 +135,27 @@ namespace S4Analytics.Models
                 {
                     case "RequestStatus":
                         setStr += setStr == string.Empty ?
-                            string.Format(" req_status = {0} ", value):
-                            string.Format(", req_status = {0} ", value);
+                            string.Format(" req_status = :reqStatus") :
+                            string.Format(", req_status = :reqStatus");
+                        p.Add("REQSTATUS", value);
                         break;
                     case "UserCreatedDate":
                         setStr += setStr == string.Empty ?
-                            string.Format(" user_created_dt = TO_DATE('{0}', 'MM-DD-YYYY') ", value) :
-                            string.Format(", user_created_dt = TO_DATE('{0}', 'MM-DD-YYYY') ", value);
+                            string.Format(" user_created_dt = :createDt") :
+                            string.Format(", user_created_dt = :createDt");
+                        p.Add("CREATEDT", Convert.ToDateTime(value));
                         break;
                     case "Comment":
                         setStr += setStr == string.Empty ?
-                            string.Format(" admin_comment = '{0}' ", value) :
-                            string.Format(", admin_comment = '{0}' ", value);
+                            string.Format(" admin_comment = :adminComment"):
+                            string.Format(", admin_comment = :adminComment");
+                        p.Add("ADMINCOMMENT", value);
                         break;
                     case "UserId":
                         setStr += setStr == string.Empty ?
-                            string.Format(" user_id = '{0}' ", value) :
-                            string.Format(", user_id = '{0}' ", value);
+                            string.Format(" user_id = :userId") :
+                            string.Format(", user_id = :userId");
+                        p.Add("USERID", value);
                         break;
                 }
             }
@@ -157,9 +163,9 @@ namespace S4Analytics.Models
             var cmdTxt = string.Format(@"UPDATE new_user_req_new SET {0}
                 WHERE req_nbr = :reqnbr", setStr);
 
-            var result = conn.Execute(cmdTxt, new { REQNBR = reqNbr });
-
+            var result = conn.Execute(cmdTxt, p);// new { REQNBR = reqNbr });
             return result;
         }
+
     }
 }

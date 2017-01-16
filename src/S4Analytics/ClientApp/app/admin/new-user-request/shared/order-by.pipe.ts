@@ -10,7 +10,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
     name: 'orderby'
 })
-// https://github.com/nicolas2bert/angular2-orderby-pipe/blob/master/app/orderby.ts
+// Code from https://github.com/nicolas2bert/angular2-orderby-pipe/blob/master/app/orderby.ts used under the ISC license
 export class OrderByPipe implements PipeTransform {
     transform (array: Array<any>, args: any) {
 
