@@ -11,4 +11,5 @@ export class NewUserRequestStateService {
     contractViewerWindow: Window;
     sortField: string[] = ['requestDt'];
     sortAsc: boolean = true;
+    sortColumn: number;
 }

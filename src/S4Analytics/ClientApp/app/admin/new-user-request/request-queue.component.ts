@@ -67,7 +67,14 @@ export class RequestQueueComponent {
     }
 
     sortColumn(columnNum: number): void {
-        this.state.sortAsc = !this.state.sortAsc;
+
+        if (columnNum != undefined && columnNum === this.state.sortColumn) {
+            this.state.sortAsc = !this.state.sortAsc;
+        }
+        else {
+            this.state.sortColumn = columnNum;
+        }
+
         let sortOrder = this.state.sortAsc ? '' : '!';
 
         switch (columnNum) {
