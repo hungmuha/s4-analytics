@@ -12,10 +12,10 @@
     </div>
     <div class="row">
         <b>Agency:</b>
-        <input style="border:none"/>
+        {{state.selectedRequest.agncyNm}}
     </div>
     <div class="row">
-        <label [hidden]="this.state.selectedRequest.warnRequestorEmailCd == 'N'" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
+        <label [hidden]="hideRequestorWarning" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
     </div>
     <hr/>
     <div class="row">

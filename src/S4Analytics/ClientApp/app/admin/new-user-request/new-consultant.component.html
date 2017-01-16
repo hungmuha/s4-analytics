@@ -11,10 +11,10 @@
     </div>
     <div class="row">
         <b>Contractor:</b>
-        <input style="border:none" />
+        {{state.selectedRequest.contractorNm}}
     </div>
     <div class="row">
-        <label [hidden]="this.state.selectedRequest.warnConsultantEmailCd == 'N'" style="color:red">Warning: Consultants's email domain does not match Consultants's contractor's email domain</label>
+        <label [hidden]="hideConsultantWarning" style="color:red">Warning: Consultants's email domain does not match Consultants's contractor's email domain</label>
     </div>
     <div class="row">
         <b>Contract Start Date:</b>
@@ -42,9 +42,10 @@
     </div>
     <div class="row">
         <b>Agency:</b>
+        {{state.selectedRequest.agncyNm}}
     </div>
     <div class="row">
-        <label [hidden]="this.state.selectedRequest.warnRequestorEmailCd == 'N'" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
+        <label [hidden]="hideRequestorWarning" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
     </div>
     <hr />
     <div class="row">

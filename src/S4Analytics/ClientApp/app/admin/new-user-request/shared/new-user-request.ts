@@ -7,7 +7,7 @@ export class NewUserRequest {
     requestType: NewUserRequestType;
     requestStatus: NewUserRequestStatus;
     userCreatedDt: Date;
-    agncyId: number;
+    agncyNm: string;
     newAgncyTypeCd: AgencyType;
     newAgncyNm: string;
     newAgncyEmailDomain: string;
@@ -15,7 +15,7 @@ export class NewUserRequest {
     requestorLastNm:  string;
     requestorSuffixNm: string;
     requestorEmail: string;
-    contractorId: number;
+    contractorNm: string;
     newContractorNm: string;
     newContractorEmailDomain: string;
     consultantFirstNm: string;

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
+using System;
 using System.Collections.Generic;
 
 namespace S4Analytics.Models
@@ -23,35 +24,40 @@ namespace S4Analytics.Models
             var conn = new OracleConnection(_connStr);
 
             var cmdText = @"SELECT 
-                REQ_NBR AS RequestNbr,
-                REQ_STATUS AS RequestStatus,
-                REQ_DESC AS RequestDesc,
-                REQ_TYPE AS RequestType,
-                REQ_DT AS RequestDt,
-                USER_CREATED_DT AS UserCreatedDt,
-                REQUESTOR_EMAIL_ADDR_TX AS RequestorEmail,
-                REQUESTOR_LAST_NM AS RequestorLastNm,
-                REQUESTOR_FIRST_NM AS RequestorFirstNm,
-                REQUESTOR_SUFFIX AS RequestorSuffixNm,
-                NEW_AGNCY_NM AS NewAgncyNm,
-                NEW_AGNCY_TYPE_CD AS NewAgncyTypeCd,
-                AGNCY_ID AS AgncyId,
-                NEW_AGNCY_EMAIL_DOMAIN_TX AS NewAgncyEmailDomain,
-                USER_ID AS UserId,
-                CONSULTANT_FIRST_NM AS ConsultantFirstNm,
-                CONSULTANT_LAST_NM AS ConsultantLastNm,
-                CONSULTANT_SUFFIX AS ConsultantSuffixNm,
-                CONSULTANT_EMAIL_ADDR_TX AS ConsultantEmail,
-                CONTRACTOR_ID AS ContractorId,
-                NEW_CONTRACTOR_NM AS NewContractorNm,
-                NEW_CONTRACTOR_EMAIL_DOMAIN_TX AS NewContractorEmailDomain,
-                ACCESS_REASON_TX AS AccessReasonTx,
-                CONTRACT_END_DT AS ContractStartDt,
-                CONTRACT_START_DT AS ContractEndDt,
-                WARN_REQUESTOR_EMAIL_CD AS WarnRequestorEmailCd,                
-                WARN_USER_EMAIL_CD AS WarnConsultantEmailCd,
-                ADMIN_COMMENT as AdminComment
-                FROM new_user_req_new";
+                            u.req_nbr AS requestnbr,
+                            u.req_status AS requeststatus,
+                            u.req_desc AS requestdesc,
+                            u.req_type AS requesttype,
+                            u.req_dt AS requestdt,
+                            u.user_created_dt AS usercreateddt,
+                            u.requestor_email_addr_tx AS requestoremail,
+                            u.requestor_last_nm AS requestorlastnm,
+                            u.requestor_first_nm AS requestorfirstnm,
+                            u.requestor_suffix AS requestorsuffixnm,
+                            a.agncy_nm AS agncynm,
+                            u.new_agncy_nm AS newagncynm,
+                            u.new_agncy_type_cd AS newagncytypecd,
+                            u.agncy_id AS agncyid,
+                            u.new_agncy_email_domain_tx AS newagncyemaildomain,
+                            u.user_id AS userid,
+                            u.consultant_first_nm AS consultantfirstnm,
+                            u.consultant_last_nm AS consultantlastnm,
+                            u.consultant_suffix AS consultantsuffixnm,
+                            u.consultant_email_addr_tx AS consultantemail,
+                            u.contractor_id AS contractorid,
+                            u.new_contractor_nm AS newcontractornm,
+                            u.new_contractor_email_domain_tx AS newcontractoremaildomain,
+                            u.access_reason_tx AS accessreasontx,
+                            u.contract_end_dt AS contractstartdt,
+                            u.contract_start_dt AS contractenddt,
+                            u.warn_requestor_email_cd AS warnrequestoremailcd,                
+                            u.warn_user_email_cd AS warnconsultantemailcd,
+                            u.admin_comment AS admincomment
+                            FROM new_user_req_new u
+                            LEFT JOIN s4_agncy a
+                            ON u.agncy_id = a.agncy_id
+                            LEFT JOIN contractor c
+                            ON c.contractor_id = u.contractor_id";
 
             var results = conn.Query<NewUserRequest>(cmdText);
             return results;
@@ -67,36 +73,41 @@ namespace S4Analytics.Models
             var conn = new OracleConnection(_connStr);
 
             var cmdText = @"SELECT 
-                REQ_NBR AS RequestNbr,
-                REQ_STATUS AS RequestStatus,
-                REQ_DESC AS RequestDesc,
-                REQ_TYPE AS RequestType,
-                REQ_DT AS RequestDt,
-                USER_CREATED_DT AS UserCreatedDt,
-                REQUESTOR_EMAIL_ADDR_TX AS RequestorEmail,
-                REQUESTOR_LAST_NM AS RequestorLastNm,
-                REQUESTOR_FIRST_NM AS RequestorFirstNm,
-                REQUESTOR_SUFFIX AS RequestorSuffixNm,
-                NEW_AGNCY_NM AS NewAgncyNm,
-                NEW_AGNCY_TYPE_CD AS NewAgncyTypeCd,
-                AGNCY_ID AS AgncyId,
-                NEW_AGNCY_EMAIL_DOMAIN_TX AS NewAgncyEmailDomain,
-                USER_ID AS UserId,
-                CONSULTANT_FIRST_NM AS ConsultantFirstNm,
-                CONSULTANT_LAST_NM AS ConsultantLastNm,
-                CONSULTANT_SUFFIX AS ConsultantSuffixNm,
-                CONSULTANT_EMAIL_ADDR_TX AS ConsultantEmail,
-                CONTRACTOR_ID AS ContractorId,
-                NEW_CONTRACTOR_NM AS NewContractorNm,
-                NEW_CONTRACTOR_EMAIL_DOMAIN_TX AS NewContractorEmailDomain,
-                ACCESS_REASON_TX AS AccessReasonTx,
-                CONTRACT_END_DT AS ContractStartDt,
-                CONTRACT_START_DT AS ContractEndDt,
-                WARN_REQUESTOR_EMAIL_CD AS WarnRequestorEmailCd,                
-                WARN_USER_EMAIL_CD AS WarnConsultantEmailCd,
-                ADMIN_COMMENT as AdminComment
-                FROM new_user_req_new
-                WHERE REQ_NBR = :REQNBR";
+                            u.req_nbr AS requestnbr,
+                            u.req_status AS requeststatus,
+                            u.req_desc AS requestdesc,
+                            u.req_type AS requesttype,
+                            u.req_dt AS requestdt,
+                            u.user_created_dt AS usercreateddt,
+                            u.requestor_email_addr_tx AS requestoremail,
+                            u.requestor_last_nm AS requestorlastnm,
+                            u.requestor_first_nm AS requestorfirstnm,
+                            u.requestor_suffix AS requestorsuffixnm,
+                            a.agncy_nm AS agncynm,
+                            u.new_agncy_nm AS newagncynm,
+                            u.new_agncy_type_cd AS newagncytypecd,
+                            u.agncy_id AS agncyid,
+                            u.new_agncy_email_domain_tx AS newagncyemaildomain,
+                            u.user_id AS userid,
+                            u.consultant_first_nm AS consultantfirstnm,
+                            u.consultant_last_nm AS consultantlastnm,
+                            u.consultant_suffix AS consultantsuffixnm,
+                            u.consultant_email_addr_tx AS consultantemail,
+                            u.contractor_id AS contractorid,
+                            u.new_contractor_nm AS newcontractornm,
+                            u.new_contractor_email_domain_tx AS newcontractoremaildomain,
+                            u.access_reason_tx AS accessreasontx,
+                            u.contract_end_dt AS contractstartdt,
+                            u.contract_start_dt AS contractenddt,
+                            u.warn_requestor_email_cd AS warnrequestoremailcd,                
+                            u.warn_user_email_cd AS warnconsultantemailcd,
+                            u.admin_comment AS admincomment
+                            FROM new_user_req_new u
+                            LEFT JOIN s4_agncy a
+                            ON u.agncy_id = a.agncy_id
+                            LEFT JOIN contractor c
+                            ON c.contractor_id = u.contractor_id
+                            WHERE req_nbr = :reqnbr";
 
             var results = conn.QueryFirstOrDefault<NewUserRequest>(cmdText, new { REQNBR = reqNbr });
             return results;
@@ -113,8 +124,9 @@ namespace S4Analytics.Models
             var conn = new OracleConnection(_connStr);
 
             var setStr = string.Empty;
+            var p = new Dictionary<string, object> { { "REQNBR", reqNbr } };
 
-            foreach (KeyValuePair<string,object> kvp in body)
+            foreach (KeyValuePair<string, object> kvp in body)
             {
                 var key = kvp.Key;
                 var value = kvp.Value;
@@ -123,33 +135,37 @@ namespace S4Analytics.Models
                 {
                     case "RequestStatus":
                         setStr += setStr == string.Empty ?
-                            string.Format(" REQ_STATUS = {0} ", value):
-                            string.Format(", REQ_STATUS = {0} ", value);
+                            string.Format(" req_status = :reqStatus") :
+                            string.Format(", req_status = :reqStatus");
+                        p.Add("REQSTATUS", value);
                         break;
                     case "UserCreatedDate":
                         setStr += setStr == string.Empty ?
-                            string.Format(" USER_CREATED_DT = TO_DATE('{0}', 'MM-DD-YYYY') ", value) :
-                            string.Format(", USER_CREATED_DT = TO_DATE('{0}', 'MM-DD-YYYY') ", value);
+                            string.Format(" user_created_dt = :createDt") :
+                            string.Format(", user_created_dt = :createDt");
+                        p.Add("CREATEDT", Convert.ToDateTime(value));
                         break;
                     case "Comment":
                         setStr += setStr == string.Empty ?
-                            string.Format(" ADMIN_COMMENT = '{0}' ", value) :
-                            string.Format(", ADMIN_COMMENT = '{0}' ", value);
+                            string.Format(" admin_comment = :adminComment"):
+                            string.Format(", admin_comment = :adminComment");
+                        p.Add("ADMINCOMMENT", value);
                         break;
                     case "UserId":
                         setStr += setStr == string.Empty ?
-                            string.Format(" USER_ID = '{0}' ", value) :
-                            string.Format(", USER_ID = '{0}' ", value);
+                            string.Format(" user_id = :userId") :
+                            string.Format(", user_id = :userId");
+                        p.Add("USERID", value);
                         break;
                 }
             }
 
             var cmdTxt = string.Format(@"UPDATE new_user_req_new SET {0}
-                WHERE REQ_NBR = :REQNBR", setStr);
+                WHERE req_nbr = :reqnbr", setStr);
 
-            var result = conn.Execute(cmdTxt, new { REQNBR = reqNbr });
-
+            var result = conn.Execute(cmdTxt, p);// new { REQNBR = reqNbr });
             return result;
         }
+
     }
 }
