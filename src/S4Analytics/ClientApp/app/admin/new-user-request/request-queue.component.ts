@@ -1,13 +1,29 @@
 ﻿import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NewUserRequestStateService, NewUserRequestService, NewUserRequestStatus} from './shared';
+import {
+    NewUserRequestStateService, NewUserRequestService, NewUserRequestStatus
+} from './shared';
+
+export enum QueueColumn {
+    ReqNbr,
+    ReqDt,
+    ReqType,
+    Requestor,
+    ReqAgncy,
+    ReqStatus,
+    AcctCreated,
+    Comment
+}
 
 @Component({
     template: require('./request-queue.component.html')
 })
+
+
 export class RequestQueueComponent {
+
+
     closeResult: string;
-    requestType = 'New Employee Request';
     newUserRequestStatus = NewUserRequestStatus;
 
     constructor(
@@ -18,11 +34,6 @@ export class RequestQueueComponent {
 
     ngOnInit() {
         this.newUserRequestService.getNewUserRequests().subscribe(result => this.state.newUserRequests = result);
-    }
-
-    newUserRequestMatch(nur: string )
-    {
-        return this.newUserRequestStatus[this.state.selectedRequest.requestStatus] == nur;
     }
 
     openActionModal(content: any, index: number) {
@@ -53,5 +64,22 @@ export class RequestQueueComponent {
             }
 
         });
+    }
+
+    sortColumn(columnNum: number): void {
+        this.state.sortAsc = !this.state.sortAsc;
+        let sortOrder = this.state.sortAsc ? '' : '!';
+
+        switch (columnNum) {
+            case 1: this.state.sortField = [sortOrder + 'requestNbr']; break;
+            case 2: this.state.sortField = [sortOrder + 'requestDt']; break;
+            case 3: this.state.sortField = [sortOrder + 'requestType']; break;
+            case 4: this.state.sortField = [sortOrder + 'requestorLastNm']; break;
+            case 5: this.state.sortField = [sortOrder + 'agncyNm']; break;
+            case 6: this.state.sortField = [sortOrder + 'requestStatus']; break;
+            case 7: this.state.sortField = [sortOrder + 'userCreatedDt']; break;
+            case 8: this.state.sortField = [sortOrder + 'adminComment']; break;
+            default: this.state.sortField = [sortOrder + 'requestNbr']; break;
+        }
     }
 }

@@ -1,17 +1,5 @@
 ﻿<template #content let-c="close" let-d="dismiss">
-    <div class="modal-header">
-        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-            <span aria-hidden="true">Some heading here?</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)"></new-employee-component>
-        <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgencyAndUser)"></new-agency-component>
-        <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgencyAndUser)"></agency-create-component>
-        <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)"></new-consultant-component>
-        <new-contractor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewContractorAndConsultant)"></new-contractor-component>
-        <new-non-fl-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewNonFLUser)"></new-non-fl-component>
-    </div>
+    <request-action-component></request-action-component>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="c('ok')">OK</button>
         <button type="button" class="btn btn-secondary" (click)="c('cancel')">Cancel</button>
@@ -34,29 +22,27 @@
         <table class="pull-right" border="1" style="width:90%" align="center">
             <thead>
                 <tr>
-                    <th style="width: 5%" (click)="sortColumn()">Request Nbr</th>
-                    <th style="width: 7%">Request Dt</th>
-                    <th style="width: 10%">Request Type</th>
-                    <th style="width: 10%"> Requestor</th>
-                    <th style="width: 20%">Requestor Agency</th>
-                    <th style="width: 5%">Request Status</th>
-                    <th style="width: 7%">Account Created</th>
+                    <th name="reqNmbr" id="xxx" style="width: 5%" (click)="sortColumn(1)">Request Nbr</th>
+                    <th style="width: 7%" (click)="sortColumn(2)">Request Dt</th>
+                    <th style="width: 10%" (click)="sortColumn(3)">Request Type</th>
+                    <th style="width: 10%" (click)="sortColumn(4)">Requestor</th>
+                    <th style="width: 20%" (click)="sortColumn(5)">Requestor Agency</th>
+                    <th style="width: 5%" (click)="sortColumn(6)">Request Status</th>
+                    <th style="width: 7%" (click)="sortColumn(7)">Account Created</th>
                     <th style="width: 10%">Action</th>
-                    <th style="width: 20%">Comment</th>
+                    <th style="width: 20%" (click)="sortColumn(8)">Comment</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let newUserReq of state.newUserRequests; let i=index">
+                <tr *ngFor="let newUserReq of (state.newUserRequests | orderby:state.sortField); let i=index">
                     <td style="width: 5%">{{newUserReq.requestNbr}}</td>
-                    <td style="width: 10%">{{newUserReq.requestDt}}</td>
-                    <td style="width: 10%">{{newUserReq.requestType}}</td>
+                    <td style="width: 10%">{{newUserReq.requestDt | date:"MM/dd/yy"}}</td>
+                    <td style="width: 10%">{{newUserReq.requestType | requestType }}</td>
                     <td style="width: 10%">{{newUserReq.requestorFirstNm + " " + newUserReq.requestorLastNm}}</td>
-                    <td style="width: 20%"></td>
-                    <td style="width: 5%">{{newUserReq.requestStatus}}</td>
+                    <td style="width: 20%">{{newUserReq.agncyNm}}</td>
+                    <td style="width: 5%">{{newUserReq.requestStatus | requestStatus }}</td>
                     <td style="width: 10%"></td>
                     <td style="width: 10%">
-                        <!-- process request button to open action dialog-->
-                        <!--<request-action-modal></request-action-modal>-->
                         <button (click)="openActionModal(content, i)">Process Request</button>
                     </td>
                     <td style="width: 20%"></td>
