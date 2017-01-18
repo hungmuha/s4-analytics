@@ -115,7 +115,7 @@ export class RequestQueueComponent {
                 this.processNewAgencyCreated();
                 break;
             default:
-                console.log("default");
+                console.log('default');
                 break;
         }
     }
@@ -217,8 +217,7 @@ export class RequestQueueComponent {
         this.state.selectedRequest.userCreatedDt = new Date(date);
     }
 
-    private updateStatus(status: NewUserRequestStatus)
-    {
+    private updateStatus(status: NewUserRequestStatus) {
         this.state.selectedRequest.requestStatus = status;
     }
 

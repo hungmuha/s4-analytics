@@ -12,7 +12,7 @@ export class RequestStatusPipe implements PipeTransform {
             case this.newUserRequestStatus[NewUserRequestStatus.NewConsultant]: return 'Approve New Consultant';
             case this.newUserRequestStatus[NewUserRequestStatus.NewContractor]: return 'Approve New Contractor';
             case this.newUserRequestStatus[NewUserRequestStatus.NewAgency]: return 'Approve New Agency';
-            case this.newUserRequestStatus[NewUserRequestStatus.CreateAgency]: return 'Verify New Agency Created'; 
+            case this.newUserRequestStatus[NewUserRequestStatus.CreateAgency]: return 'Verify New Agency Created';
             case this.newUserRequestStatus[NewUserRequestStatus.Completed]: return 'Completed';
             case this.newUserRequestStatus[NewUserRequestStatus.Rejected]: return 'Rejected';
             default: return 'Not implemented' + value;
