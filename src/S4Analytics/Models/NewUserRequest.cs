@@ -25,14 +25,14 @@ namespace S4Analytics.Models
     {
         Unknown = 0,
         NewUser = 1,
-        NewAgencyAndUser = 2,
+        NewAgency = 2,
         NewConsultant = 3,
-        NewContractorAndConsultant = 4,
-        CreateAgencyAndUser = 5,
-        VerifyEmail = 6,
-        VerifyContract = 7,
-        VerifyNonFLUser = 8,
-        NewNonFLUser = 9,
+        NewContractor = 4,
+        CreateAgency = 5,
+        //VerifyEmail = 6,
+        //VerifyContract = 7,
+        //VerifyNonFLUser = 8,
+        //NewNonFLUser = 9,
         Completed = 10,
         Rejected = 11
     }
