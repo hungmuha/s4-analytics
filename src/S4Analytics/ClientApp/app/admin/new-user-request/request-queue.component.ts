@@ -83,8 +83,8 @@ export class RequestQueueComponent {
     }
 
     private processOKResult(): void {
-        console.log(this.state.selectedRequest.requestStatus);
-        console.log(NewUserRequestStatus.NewUser);
+        console.log(this.newUserRequestStatus[this.state.selectedRequest.requestStatus]);
+        console.log(this.newUserRequestStatus.NewUser);
 
         switch (this.state.selectedRequest.requestStatus) {
             case this.newUserRequestStatus.NewUser:
@@ -92,30 +92,30 @@ export class RequestQueueComponent {
 
                 this.processNewUserCreated();
                 break;
-            case this.newUserRequestStatus.NewConsultant:
-                console.log('create new consultant, record completed');
+            //case this.newUserRequestStatus.NewConsultant:
+            //    console.log('create new consultant, record completed');
 
-                this.processNewConsulantCreated();
-                if (this.sendEmail(this.getNewConsultantCredentialsEmail())) {
-                    this.updateStatus(NewUserRequestStatus.Completed);
-                }
-                break;
-            case this.newUserRequestStatus.NewContractor:
-                console.log('create new contractor, update status to NewConsultant, open NewConsultant dialog');
+            //    this.processNewConsulantCreated();
+            //    if (this.sendEmail(this.getNewConsultantCredentialsEmail())) {
+            //        this.updateStatus(NewUserRequestStatus.Completed);
+            //    }
+            //    break;
+            //case this.newUserRequestStatus.NewContractor:
+            //    console.log('create new contractor, update status to NewConsultant, open NewConsultant dialog');
 
-                this.processNewContractorCreated();
-                break;
-            case this.newUserRequestStatus.NewAgency:
-                console.log('send email to global admin to create new agency, update status to CreateAgency');
+            //    this.processNewContractorCreated();
+            //    break;
+            //case this.newUserRequestStatus.NewAgency:
+            //    console.log('send email to global admin to create new agency, update status to CreateAgency');
 
-                this.processRequestNewAgency();
-                break;
-            case this.newUserRequestStatus.CreateAgency:
-                console.log('verify new agency created, update status to NewUser');
-                this.processNewAgencyCreated();
-                break;
+            //    this.processRequestNewAgency();
+            //    break;
+            //case this.newUserRequestStatus.CreateAgency:
+            //    console.log('verify new agency created, update status to NewUser');
+            //    this.processNewAgencyCreated();
+            //    break;
             default:
-                console.log('default');
+                console.log("default");
                 break;
         }
     }
@@ -153,28 +153,28 @@ export class RequestQueueComponent {
         this.refreshQueue();
     }
 
-    private processNewConsulantCreated(): void {
-        this.createNewConsultant();
-        this.updateStatus(NewUserRequestStatus.Completed);
-        this.sendEmail(this.getNewConsultantCredentialsEmail());
-        this.refreshQueue();
-    }
+    //private processNewConsulantCreated(): void {
+    //    this.createNewConsultant();
+    //    this.updateStatus(NewUserRequestStatus.Completed);
+    //    this.sendEmail(this.getNewConsultantCredentialsEmail());
+    //    this.refreshQueue();
+    //}
 
-    private processRequestNewAgency(): void {
-        this.updateStatus(NewUserRequestStatus.CreateAgency);
-        this.sendEmail(this.getCreateAgencyEmail());
-        this.refreshQueue();
-    }
+    //private processRequestNewAgency(): void {
+    //    this.updateStatus(NewUserRequestStatus.CreateAgency);
+    //    this.sendEmail(this.getCreateAgencyEmail());
+    //    this.refreshQueue();
+    //}
 
-    private processNewAgencyCreated(): void {
-        this.updateStatus(NewUserRequestStatus.NewUser);
-        this.sendEmail(this.getApproveNewUserEmail());
-        this.refreshQueue();
-    }
-    private processNewContractorCreated(): void {
-        this.updateStatus(NewUserRequestStatus.NewConsultant);
-        // open New Consultant dialog
-    }
+    //private processNewAgencyCreated(): void {
+    //    this.updateStatus(NewUserRequestStatus.NewUser);
+    //    this.sendEmail(this.getApproveNewUserEmail());
+    //    this.refreshQueue();
+    //}
+    //private processNewContractorCreated(): void {
+    //    this.updateStatus(NewUserRequestStatus.NewConsultant);
+    //    // open New Consultant dialog
+    //}
 
     private sendEmail(emailContent: string): void {
         console.log(emailContent);
@@ -186,20 +186,20 @@ export class RequestQueueComponent {
         return '';
     }
 
-    private getNewConsultantCredentialsEmail(): string {
+    //private getNewConsultantCredentialsEmail(): string {
 
-        return '';
-    }
+    //    return '';
+    //}
 
-    private getCreateAgencyEmail(): string {
+    //private getCreateAgencyEmail(): string {
 
-        return '';
-    }
+    //    return '';
+    //}
 
-    private getApproveNewUserEmail(): string {
+    //private getApproveNewUserEmail(): string {
 
-        return '';
-    }
+    //    return '';
+    //}
 
     private createNewUser(): void {
         // create a new user in database
@@ -207,17 +207,18 @@ export class RequestQueueComponent {
         this.updateCreatedDt(Date.now());
     }
 
-    private createNewConsultant(): void {
-        // create a new consultant in database
+    //private createNewConsultant(): void {
+    //    // create a new consultant in database
 
-        this.updateCreatedDt(Date.now());
-    }
+    //    this.updateCreatedDt(Date.now());
+    //}
 
     private updateCreatedDt(date: number) {
         this.state.selectedRequest.userCreatedDt = new Date(date);
     }
 
-    private updateStatus(status: NewUserRequestStatus) {
+    private updateStatus(status: NewUserRequestStatus)
+    {
         this.state.selectedRequest.requestStatus = status;
     }
 
