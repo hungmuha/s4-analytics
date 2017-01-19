@@ -8,9 +8,6 @@ export const adminRoutes: Routes = [
         component: AdminComponent,
         children: [
             {
-                path: ''
-            },
-            {
                 path: 'request-queue',
                 component: RequestQueueComponent
             }
