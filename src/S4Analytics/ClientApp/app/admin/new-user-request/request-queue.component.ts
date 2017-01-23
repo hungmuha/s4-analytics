@@ -90,7 +90,7 @@ export class RequestQueueComponent {
         return this.state.currentRequestActionResults.approved == undefined ||
             (!this.state.currentRequestActionResults.approved &&
                 (this.state.currentRequestActionResults.rejectionReason == undefined ||
-                    this.state.currentRequestActionResults.rejectionReason.trim.length === 0));
+                    this.state.currentRequestActionResults.rejectionReason.trim().length === 0));
     }
 
     private processOKResult(): void {
