@@ -50,7 +50,6 @@ export class RequestQueueComponent {
             }
 
             // what to do if cancel  --> reset state?
-
             if (this.state.contractViewerWindow != undefined) {
                 this.state.contractViewerWindow.close();
                 delete this.state.contractViewerWindow;
@@ -153,7 +152,6 @@ export class RequestQueueComponent {
                 console.log('default');
                 break;
         }
-
         console.log('rejected');
 
         this.updateStatus(NewUserRequestStatus.Rejected);
@@ -231,5 +229,4 @@ export class RequestQueueComponent {
         this.state.selectedRequest.requestStatus = status;
         console.log(this.state.selectedRequest.requestStatus);
     }
-
 }
