@@ -60,7 +60,7 @@ export class RequestQueueComponent {
 
     sortColumn(columnNum: number): void {
 
-        if (columnNum != undefined && columnNum === this.state.sortColumn) {
+        if (columnNum === this.state.sortColumn) {
             this.state.sortAsc = !this.state.sortAsc;
         }
         else {
@@ -103,7 +103,7 @@ export class RequestQueueComponent {
             case NewUserRequestStatus.NewConsultant:
                 console.log('create new consultant, record completed');
 
-                this.processNewConsulantCreated();
+                this.processNewConsultantCreated();
                 if (this.sendEmail(this.getNewConsultantCredentialsEmail())) {
                     this.updateStatus(NewUserRequestStatus.Completed);
                 }
@@ -163,7 +163,7 @@ export class RequestQueueComponent {
         this.sendEmail(this.getNewUserCredentialsEmail());
     }
 
-    private processNewConsulantCreated(): void {
+    private processNewConsultantCreated(): void {
         this.createNewConsultant();
         this.updateStatus(NewUserRequestStatus.Completed);
         this.sendEmail(this.getNewConsultantCredentialsEmail());
