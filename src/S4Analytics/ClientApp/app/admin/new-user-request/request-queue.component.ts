@@ -22,9 +22,7 @@ export enum QueueColumn {
 
 export class RequestQueueComponent {
 
-
     closeResult: string;
-    newUserRequestStatus = NewUserRequestStatus;
 
     constructor(
         private state: NewUserRequestStateService,
@@ -41,14 +39,17 @@ export class RequestQueueComponent {
         let actionModal = this.modalService.open(content, { backdrop: 'static', keyboard: false });
 
         actionModal.result.then((result) => {
+
             if (result === 'ok') {
-                console.log('ok');
-                this.processOKResult();
-            }
-            else {
-                this.processRejectedResult();
+                if (this.state.currentRequestActionResults.approved) {
+                    this.processOKResult();
+                }
+                else {
+                    this.processRejectedResult();
+                }
             }
 
+            // what to do if cancel  --> reset state?
 
             if (this.state.contractViewerWindow != undefined) {
                 this.state.contractViewerWindow.close();
@@ -82,40 +83,48 @@ export class RequestQueueComponent {
         }
     }
 
-    private processOKResult(): void {
-        console.log(this.newUserRequestStatus[this.state.selectedRequest.requestStatus]);
-        console.log(this.newUserRequestStatus.NewUser);
+    get okButtonDisabled() {
+        if (this.state.currentRequestActionResults.rejectionReason != undefined) {
+            console.log(this.state.currentRequestActionResults.rejectionReason.trim.length === 0);
+        }
 
+        return this.state.currentRequestActionResults.approved == undefined ||
+            (!this.state.currentRequestActionResults.approved &&
+                (this.state.currentRequestActionResults.rejectionReason == undefined ||
+                    this.state.currentRequestActionResults.rejectionReason.trim.length === 0));
+    }
+
+    private processOKResult(): void {
         switch (this.state.selectedRequest.requestStatus) {
-            case this.newUserRequestStatus.NewUser:
+            case NewUserRequestStatus.NewUser:
                 console.log('create new user, record completed');
 
                 this.processNewUserCreated();
                 break;
-            //case this.newUserRequestStatus.NewConsultant:
-            //    console.log('create new consultant, record completed');
+            case NewUserRequestStatus.NewConsultant:
+                console.log('create new consultant, record completed');
 
-            //    this.processNewConsulantCreated();
-            //    if (this.sendEmail(this.getNewConsultantCredentialsEmail())) {
-            //        this.updateStatus(NewUserRequestStatus.Completed);
-            //    }
-            //    break;
-            //case this.newUserRequestStatus.NewContractor:
-            //    console.log('create new contractor, update status to NewConsultant, open NewConsultant dialog');
+                this.processNewConsulantCreated();
+                if (this.sendEmail(this.getNewConsultantCredentialsEmail())) {
+                    this.updateStatus(NewUserRequestStatus.Completed);
+                }
+                break;
+            case NewUserRequestStatus.NewContractor:
+                console.log('create new contractor, update status to NewConsultant, open NewConsultant dialog');
 
-            //    this.processNewContractorCreated();
-            //    break;
-            //case this.newUserRequestStatus.NewAgency:
-            //    console.log('send email to global admin to create new agency, update status to CreateAgency');
+                this.processNewContractorCreated();
+                break;
+            case NewUserRequestStatus.NewAgency:
+                console.log('send email to global admin to create new agency, update status to CreateAgency');
 
-            //    this.processRequestNewAgency();
-            //    break;
-            //case this.newUserRequestStatus.CreateAgency:
-            //    console.log('verify new agency created, update status to NewUser');
-            //    this.processNewAgencyCreated();
-            //    break;
+                this.processRequestNewAgency();
+                break;
+            case NewUserRequestStatus.CreateAgency:
+                console.log('verify new agency created, update status to NewUser');
+                this.processNewAgencyCreated();
+                break;
             default:
-                console.log("default");
+                console.log('default');
                 break;
         }
     }
@@ -144,37 +153,37 @@ export class RequestQueueComponent {
                 console.log('default');
                 break;
         }
+
+        console.log('rejected');
+
+        this.updateStatus(NewUserRequestStatus.Rejected);
     }
 
     private processNewUserCreated(): void {
         this.createNewUser();
         this.updateStatus(NewUserRequestStatus.Completed);
         this.sendEmail(this.getNewUserCredentialsEmail());
-        this.refreshQueue();
     }
 
-    //private processNewConsulantCreated(): void {
-    //    this.createNewConsultant();
-    //    this.updateStatus(NewUserRequestStatus.Completed);
-    //    this.sendEmail(this.getNewConsultantCredentialsEmail());
-    //    this.refreshQueue();
-    //}
+    private processNewConsulantCreated(): void {
+        this.createNewConsultant();
+        this.updateStatus(NewUserRequestStatus.Completed);
+        this.sendEmail(this.getNewConsultantCredentialsEmail());
+    }
 
-    //private processRequestNewAgency(): void {
-    //    this.updateStatus(NewUserRequestStatus.CreateAgency);
-    //    this.sendEmail(this.getCreateAgencyEmail());
-    //    this.refreshQueue();
-    //}
+    private processRequestNewAgency(): void {
+        this.updateStatus(NewUserRequestStatus.CreateAgency);
+        this.sendEmail(this.getCreateAgencyEmail());
+    }
 
-    //private processNewAgencyCreated(): void {
-    //    this.updateStatus(NewUserRequestStatus.NewUser);
-    //    this.sendEmail(this.getApproveNewUserEmail());
-    //    this.refreshQueue();
-    //}
-    //private processNewContractorCreated(): void {
-    //    this.updateStatus(NewUserRequestStatus.NewConsultant);
-    //    // open New Consultant dialog
-    //}
+    private processNewAgencyCreated(): void {
+        this.updateStatus(NewUserRequestStatus.NewUser);
+        this.sendEmail(this.getApproveNewUserEmail());
+    }
+    private processNewContractorCreated(): void {
+        this.updateStatus(NewUserRequestStatus.NewConsultant);
+        // open New Consultant dialog
+    }
 
     private sendEmail(emailContent: string): void {
         console.log(emailContent);
@@ -186,20 +195,20 @@ export class RequestQueueComponent {
         return '';
     }
 
-    //private getNewConsultantCredentialsEmail(): string {
+    private getNewConsultantCredentialsEmail(): string {
 
-    //    return '';
-    //}
+        return '';
+    }
 
-    //private getCreateAgencyEmail(): string {
+    private getCreateAgencyEmail(): string {
 
-    //    return '';
-    //}
+        return '';
+    }
 
-    //private getApproveNewUserEmail(): string {
+    private getApproveNewUserEmail(): string {
 
-    //    return '';
-    //}
+        return '';
+    }
 
     private createNewUser(): void {
         // create a new user in database
@@ -207,22 +216,20 @@ export class RequestQueueComponent {
         this.updateCreatedDt(Date.now());
     }
 
-    //private createNewConsultant(): void {
-    //    // create a new consultant in database
+    private createNewConsultant(): void {
+        // create a new consultant in database
 
-    //    this.updateCreatedDt(Date.now());
-    //}
+        this.updateCreatedDt(Date.now());
+    }
 
     private updateCreatedDt(date: number) {
         this.state.selectedRequest.userCreatedDt = new Date(date);
     }
 
-    private updateStatus(status: NewUserRequestStatus)
-    {
+    private updateStatus(status: NewUserRequestStatus) {
+        console.log(status);
         this.state.selectedRequest.requestStatus = status;
+        console.log(this.state.selectedRequest.requestStatus);
     }
 
-    private refreshQueue(): void {
-
-    }
 }

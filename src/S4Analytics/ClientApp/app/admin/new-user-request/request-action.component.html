@@ -12,4 +12,11 @@
         <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)"></new-consultant-component>
         <new-non-fl-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewNonFLUser)"></new-non-fl-component>
     </div>
+    <div class="row">
+        <label>Reason for rejection (to be sent to person making request):</label>
+        <textarea class="form-control" id="reason" rows="4"
+                  [disabled]="state.currentRequestActionResults.approved"
+                  [(ngModel)]="state.currentRequestActionResults.rejectionReason"
+                  placeholder="Type reason for rejection here (REQUIRED)"></textarea>
+    </div>
 </div>

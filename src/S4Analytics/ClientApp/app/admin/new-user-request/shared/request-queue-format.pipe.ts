@@ -4,17 +4,15 @@ import { NewUserRequestStatus, NewUserRequestType } from './new-user-request-enu
 @Pipe({ name: 'requestStatus' })
 export class RequestStatusPipe implements PipeTransform {
 
-    newUserRequestStatus = NewUserRequestStatus;
-
-    transform(value: string): string {
+    transform(value: number): string {
         switch (value) {
-            case this.newUserRequestStatus[NewUserRequestStatus.NewUser]: return 'Approve New User';
-            case this.newUserRequestStatus[NewUserRequestStatus.NewConsultant]: return 'Approve New Consultant';
-            case this.newUserRequestStatus[NewUserRequestStatus.NewContractor]: return 'Approve New Contractor';
-            case this.newUserRequestStatus[NewUserRequestStatus.NewAgency]: return 'Approve New Agency';
-            case this.newUserRequestStatus[NewUserRequestStatus.CreateAgency]: return 'Verify New Agency Created';
-            case this.newUserRequestStatus[NewUserRequestStatus.Completed]: return 'Completed';
-            case this.newUserRequestStatus[NewUserRequestStatus.Rejected]: return 'Rejected';
+            case NewUserRequestStatus.NewUser: return 'Approve New User';
+            case NewUserRequestStatus.NewConsultant: return 'Approve New Consultant';
+            case NewUserRequestStatus.NewContractor: return 'Approve New Contractor';
+            case NewUserRequestStatus.NewAgency: return 'Approve New Agency';
+            case NewUserRequestStatus.CreateAgency: return 'Verify New Agency Created';
+            case NewUserRequestStatus.Completed: return 'Completed';
+            case NewUserRequestStatus.Rejected: return 'Rejected';
             default: return 'Not implemented' + value;
         }
 
@@ -24,12 +22,10 @@ export class RequestStatusPipe implements PipeTransform {
 @Pipe({ name: 'requestType' })
 export class RequestTypePipe implements PipeTransform {
 
-    newUserRequestType = NewUserRequestType;
-
-    transform(value: string): string {
+    transform(value: number): string {
         switch (value) {
-            case this.newUserRequestType[NewUserRequestType.FlPublicAgencyEmployee]: return 'Florida Public Agency Employee';
-            case this.newUserRequestType[NewUserRequestType.FlPublicAgencyMgr]: return 'Florida Public Agency Manager';
+            case NewUserRequestType.FlPublicAgencyEmployee: return 'Florida Public Agency Employee';
+            case NewUserRequestType.FlPublicAgencyMgr: return 'Florida Public Agency Manager';
             default: return 'Not implemented';
         }
 

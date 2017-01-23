@@ -1,9 +1,11 @@
 ﻿<template #content let-c="close" let-d="dismiss">
-    <request-action-component></request-action-component>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="c('ok')">OK</button>
-        <button type="button" class="btn btn-secondary" (click)="c('cancel')">Cancel</button>
-    </div>
+    <form>
+        <request-action-component></request-action-component>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="c('ok')">OK</button>
+            <button type="button" class="btn btn-secondary" (click)="c('cancel')">Cancel</button>
+        </div>
+    </form>
 </template>
 
 <div class="container">

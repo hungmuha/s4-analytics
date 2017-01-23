@@ -16,8 +16,8 @@ export class RequestActionComponent {
         this.state.currentRequestActionResults = new RequestActionResults();
     }
 
-    newUserRequestMatch(nur: string) {
-        return this.newUserRequestStatus[this.state.selectedRequest.requestStatus] === nur;
+    newUserRequestMatch(nur: number) {
+        return this.state.selectedRequest.requestStatus === nur;
     }
 
     get hideRequestorWarning() {
