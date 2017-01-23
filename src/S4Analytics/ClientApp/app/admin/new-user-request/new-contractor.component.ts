@@ -1,15 +1,16 @@
 ﻿import { Component } from '@angular/core';
-import { NewUserRequestStateService, RequestActionResults } from './shared';
+import { NewUserRequestStateService } from './shared';
+import { RequestActionComponent } from './request-action.component';
 
 @Component({
     selector: 'new-contractor-component',
     template: require('./new-contractor.component.html')
 })
 
-export class NewContractorComponent {
+export class NewContractorComponent extends RequestActionComponent {
 
-    constructor(private state: NewUserRequestStateService) {
-        this.state.currentRequestActionResults = new RequestActionResults();
+    constructor(public state: NewUserRequestStateService) {
+        super(state);
     }
 
     openContractViewer() {

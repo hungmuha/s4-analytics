@@ -20,20 +20,20 @@
     <hr/>
     <div class="row">
         <div class="col-md-6">
-            <input type="radio" class="form-check-input"
-                [(ngModel)]="state.currentRequestActionResults.approved"
-                name="approved" [value]="true" />Approve Employee
+            <label>
+                <input type="radio"
+                       [(ngModel)]="state.currentRequestActionResults.approved"
+                       name="approved" [value]="true" />Approve Employee
+            </label>
         </div>
         <div class="col-md-6">
-            <input type="radio" class="form-check-input"
-                [(ngModel)]="state.currentRequestActionResults.approved"
-                name="approved" [value]="false" />Reject Employee
+            <label>
+                <input type="radio"
+                       [(ngModel)]="state.currentRequestActionResults.approved"
+                       name="approved" [value]="false" />Reject Employee
+            </label>
         </div>
     </div>
     <br/>
-    <div class="row">
-        <label>Reason for rejection (to be sent to person making request):</label>
-        <textarea class="form-control" id="reason" rows="4" [disabled]="state.currentRequestActionResults.approved" [(ngModel)]="state.currentRequestActionResults.rejectionReason" ></textarea>
-    </div>
 </div>
 
