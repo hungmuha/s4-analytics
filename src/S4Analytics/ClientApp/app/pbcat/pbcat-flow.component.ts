@@ -7,7 +7,7 @@ import { PbcatService, PbcatItem, PbcatFlow, FlowType, PbcatStateService } from 
 
 @Component({
     selector: 'pbcat-flow',
-    template: require('./pbcat-flow.component.html')
+    templateUrl: './pbcat-flow.component.html'
 })
 export class PbcatFlowComponent {
     private routeSub: Subscription;

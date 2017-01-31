@@ -32,7 +32,7 @@ var commonConfig = {
     },
     module: {
         loaders: [
-            { test: /\.ts$/, include: /ClientApp/, loader: 'ts-loader?silent=true' },
+            { test: /\.ts$/, include: /ClientApp/, loaders: ['ts-loader?silent=true', 'angular2-template-loader'] },
             { test: /\.html$/, loader: 'raw-loader' },
             { test: /\.css$/, loader: extractCSS.extract(['css','postcss']) }
         ]

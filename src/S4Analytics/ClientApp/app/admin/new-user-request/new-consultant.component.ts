@@ -4,7 +4,7 @@ import { RequestActionComponent } from './request-action.component';
 
 @Component({
     selector: 'new-consultant-component',
-    template: require('./new-consultant.component.html')
+    templateUrl: './new-consultant.component.html'
 })
 
 export class NewConsultantComponent extends RequestActionComponent {

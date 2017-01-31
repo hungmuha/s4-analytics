@@ -2,7 +2,7 @@
 
 @Component({
     selector: 'index',
-    template: require('./index.component.html')
+    templateUrl: './index.component.html'
 })
 export class IndexComponent {
 }

@@ -32,6 +32,7 @@
     "@types/core-js": "^0.9.35",
     "@types/lodash": "4.14.51",
     "@types/requirejs": "^2.1.28",
+    "angular2-template-loader": "^0.6.0",
     "aspnet-webpack": "^1.0.26",
     "css": "^2.2.1",
     "css-loader": "^0.23.1",

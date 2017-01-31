@@ -4,7 +4,7 @@ import { NewUserRequestStateService, RequestActionResults, NewUserRequestStatus 
 
 @Component({
     selector: 'request-action-component',
-    template: require('./request-action.component.html')
+    templateUrl: './request-action.component.html'
 })
 
 
