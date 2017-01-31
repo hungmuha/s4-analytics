@@ -1,0 +1,6 @@
+{
+  "extends": "./tslint.json",
+  "rulesDirectory": [
+    "C:\\Users\\gitlab-runner\\AppData\\Roaming\\npm\\node_modules\\tslint-microsoft-contrib"
+  ]
+}

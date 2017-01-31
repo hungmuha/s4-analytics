@@ -4,7 +4,7 @@
   "description": "Signal Four Analytics",
   "author": "UF GeoPlan Center",
   "scripts": {
-    "lint": "tslint -c tslint.json \"ClientApp/**/*.ts\" --rules-dir node_modules/tslint-microsoft-contrib || true && stylelint \"ClientApp/**/*.css\" || true",
+    "lint": "tslint -c tslint.local.json \"ClientApp/**/*.ts\" || true && stylelint \"ClientApp/**/*.css\" || true",
     "pkgs": "npm prune && npm update && npm install && webpack --config webpack.config.vendor.js"
   },
   "repository": "https://geodevops.geoplan.ufl.edu/signal-four/S4-Analytics-Html5",
