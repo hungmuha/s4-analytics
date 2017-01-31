@@ -3,7 +3,7 @@ import { NewUserRequestStateService, NewAgencyResults } from './shared';
 
 @Component({
     selector: 'new-agency-component',
-    template: require('./new-agency.component.html')
+    templateUrl: './new-agency.component.html'
 })
 
 export class NewAgencyComponent {

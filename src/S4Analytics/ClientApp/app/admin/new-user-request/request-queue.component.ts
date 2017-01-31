@@ -16,7 +16,7 @@ export enum QueueColumn {
 }
 
 @Component({
-    template: require('./request-queue.component.html')
+    templateUrl: './request-queue.component.html'
 })
 
 

@@ -4,7 +4,7 @@ import { PbcatStep, PbcatItem } from './shared';
 
 @Component({
     selector: 'pbcat-step',
-    template: require('./pbcat-step.component.html')
+    templateUrl: './pbcat-step.component.html'
 })
 export class PbcatStepComponent {
     @Input() hsmvReportNumber: number;

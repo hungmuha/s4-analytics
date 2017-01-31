@@ -45,7 +45,7 @@ build:dev:
   - set ASPNETCORE_ENVIRONMENT=Development
   - cd src\S4Analytics
   - call stylelint "ClientApp/**/*.css"
-  - call tslint -c tslint.json "ClientApp/**/*.ts" --rules-dir %AppData%/npm/node_modules/tslint-microsoft-contrib
+  - call tslint -c tslint.ci.json "ClientApp/**/*.ts"
   - cd ..\..
   <<: *build_script
 
