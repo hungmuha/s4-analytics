@@ -4,8 +4,14 @@
   "description": "Signal Four Analytics",
   "author": "UF GeoPlan Center",
   "scripts": {
-    "lint": "tslint -c tslint.local.json \"ClientApp/**/*.ts\" || true && stylelint \"ClientApp/**/*.css\" || true",
-    "pkgs": "npm prune && npm update && npm install && webpack --config webpack.config.vendor.js"
+    "lint": "npm-run-all lint:*",
+    "lint:ts": "tslint -c tslint.local.json \"ClientApp/**/*.ts\" || true",
+    "lint:css": "stylelint \"ClientApp/**/*.css\" || true",
+    "pkgs": "npm-run-all pkgs:*",
+    "pkgs:prune": "npm prune",
+    "pkgs:update": "npm update",
+    "pkgs:install": "npm install",
+    "pkgs:webpack": "webpack --config webpack.config.vendor.js"
   },
   "repository": "https://geodevops.geoplan.ufl.edu/signal-four/S4-Analytics-Html5",
   "license": "UNLICENSED",
@@ -39,6 +45,7 @@
     "extendify": "^1.0.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.8.5",
+    "npm-run-all": "^4.0.1",
     "postcss-cssnext": "^2.5.2",
     "postcss-loader": "^0.9.1",
     "raw-loader": "^0.5.1",
