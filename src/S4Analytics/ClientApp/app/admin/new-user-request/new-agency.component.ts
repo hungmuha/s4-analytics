@@ -1,14 +1,15 @@
 ﻿import { Component } from '@angular/core';
-import { NewUserRequestStateService, NewAgencyResults } from './shared';
+import { NewUserRequestStateService } from './shared';
 
 @Component({
     selector: 'new-agency-component',
     templateUrl: './new-agency.component.html'
 })
 
-export class NewAgencyComponent {
+export class NewAgencyComponent  {
+    constructor(public state: NewUserRequestStateService) {
 
-    constructor(private state: NewUserRequestStateService) {
-        this.state.currentRequestActionResults = new NewAgencyResults();
     }
+
+
 }

@@ -5,3 +5,4 @@ export * from './request-action-results';
 export * from './new-user-request-enum';
 export * from './request-queue-format.pipe';
 export * from './order-by.pipe';
+export * from './control-messages';

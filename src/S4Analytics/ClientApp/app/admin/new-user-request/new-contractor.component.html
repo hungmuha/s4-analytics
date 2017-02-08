@@ -1,5 +1,4 @@
-﻿<h5>Approve New Contractor</h5>
-<div class="container-fluid">
+﻿<div class="container-fluid">
     <div class="row">
         <b>Contractor Name:</b>
         {{state.selectedRequest.newContractorNm}}
@@ -32,6 +31,7 @@
         {{state.selectedRequest.agncyNm}}
     </div>
     <div class="row">
+        <control-messages [errorType]="errorType" [errorMsg]="errorMsg"></control-messages>
         <label [hidden]="hideRequestorWarning" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
     </div>
     <hr/>

@@ -1,4 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
+import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NewUserRequest } from './new-user-request';
 import { RequestActionResults } from './request-action-results';
 
@@ -12,4 +13,5 @@ export class NewUserRequestStateService {
     sortField: string[] = ['requestDt'];
     sortAsc: boolean = true;
     sortColumn: number;
+    currentActionForm: NgbModalRef;
 }

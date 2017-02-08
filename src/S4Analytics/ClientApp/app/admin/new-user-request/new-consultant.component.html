@@ -1,5 +1,4 @@
-﻿<h5>Approve New Consulant</h5>
-<div class="container-fluid">
+﻿<div class="container-fluid">
     <div class="row">
         <b>Consultant Name:</b>
         {{state.selectedRequest.consultantFirstNm}}
@@ -14,6 +13,7 @@
         {{state.selectedRequest.contractorNm}}
     </div>
     <div class="row">
+        <control-messages [errorType]="errorType" [errorMsg]="errorMsg"></control-messages>
         <label [hidden]="hideConsultantWarning" style="color:red">Warning: Consultants's email domain does not match Consultants's contractor's email domain</label>
     </div>
     <div class="row">
