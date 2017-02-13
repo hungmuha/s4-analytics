@@ -13,7 +13,7 @@
         {{state.selectedRequest.contractorNm}}
     </div>
     <div class="row">
-        <control-messages errorType="consultant" [errorMsg]="state.selectedRequest.warnConsultantEmailCd"></control-messages>
+        <warning-messages errorType="consultant" [errorMsg]="state.selectedRequest.warnConsultantEmailCd"></warning-messages>
     </div>
     <div class="row">
         <b>Contract Start Date:</b>
@@ -44,7 +44,7 @@
         {{state.selectedRequest.agncyNm}}
     </div>
     <div class="row">
-        <control-messages errorType="requestor" [errorMsg]="state.selectedRequest.warnRequestorEmailCd"></control-messages>
+        <warning-messages errorType="requestor" [errorMsg]="state.selectedRequest.warnRequestorEmailCd"></warning-messages>
     </div>
     <hr />
     <div class="row">

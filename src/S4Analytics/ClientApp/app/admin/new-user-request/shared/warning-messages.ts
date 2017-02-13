@@ -1,16 +1,10 @@
 ﻿import { Component, Input } from '@angular/core';
 
-/**
- * Created by rob on 6/16/16.
- */
-
-
-// control-message component from https://coryrylan.com/blog/angular-2-form-builder-and-validation-management
 @Component({
-    selector: 'control-messages',
+    selector: 'warning-messages',
     template: `<div style="color:red" *ngIf="errorMessage !== null">{{errorMessage}}</div>`
 })
-export class ControlMessages {
+export class WarningMessages {
     @Input() errorType: string = 'Default';
     @Input() errorMsg: string = 'Msg Default';
     constructor() { }

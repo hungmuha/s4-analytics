@@ -11,7 +11,7 @@ import { NewContractorComponent } from './new-contractor.component';
 import { NewNonFlComponent } from './non-fl-employee.component';
 import {
     NewUserRequestStateService, NewUserRequestService, RequestStatusPipe, RequestTypePipe,
-    OrderByPipe, ControlMessages
+    OrderByPipe, WarningMessages
 } from './shared';
 
 @NgModule({
@@ -31,7 +31,7 @@ import {
         RequestStatusPipe,
         RequestTypePipe,
         OrderByPipe,
-        ControlMessages
+        WarningMessages
     ],
     providers: [
         NewUserRequestService,
