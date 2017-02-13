@@ -3,11 +3,11 @@
         <button type="button" class="close" aria-label="Close" (click)="d('Cross click')"></button>
     </div>-->
     <div class="modal-body">
-        <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)"></new-employee-component>
-        <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)"></new-agency-component>
-        <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgency)"></agency-create-component>
-        <new-contractor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewContractor)"></new-contractor-component>
-        <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)"></new-consultant-component>
+        <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)" #actionTypeRef></new-employee-component>
+        <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)" #actionTypeRef></new-agency-component>
+        <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgency)" #actionTypeRef></agency-create-component>
+        <new-contractor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewContractor)" #actionTypeRef></new-contractor-component>
+        <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)" #actionTypeRef></new-consultant-component>
 
     </div>
     <div>

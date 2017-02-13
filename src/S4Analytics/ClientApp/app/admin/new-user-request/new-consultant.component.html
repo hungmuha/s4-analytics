@@ -51,11 +51,13 @@
         <div class="col-md-6">
             <input type="radio" class="form-check-input"
                     [(ngModel)]="state.currentRequestActionResults.approved"
+                    (change)="approved(true)"
                     name="approved" [value]="true" />Approve Consultant
         </div>
         <div class="col-md-6">
             <input type="radio" class="form-check-input"
                     [(ngModel)]="state.currentRequestActionResults.approved"
+                    (change)="approved(false)"
                     name="approved" [value]="false" />Reject Consultant
         </div>
     </div>

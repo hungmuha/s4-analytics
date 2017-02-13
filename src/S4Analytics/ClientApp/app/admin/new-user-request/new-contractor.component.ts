@@ -14,6 +14,14 @@ export class NewContractorComponent {
 
     }
 
+    approved(approved: boolean) {
+
+        if (approved) {
+            console.log('approved');
+            this.state.currentRequestActionResults.rejectionReason = '';
+        }
+    }
+
     openContractViewer() {
         this.state.contractViewerWindow = window.open('', '', 'width=400,height=200');
     }

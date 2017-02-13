@@ -22,6 +22,12 @@ export class RequestActionComponent  {
         return this.state.selectedRequest.requestStatus === nur;
     }
 
+    ngOnChanges() {
+        console.log("on changes");
+    }
+
+
+
     submit() {
 
         if (this.state.currentRequestActionResults.approved) {

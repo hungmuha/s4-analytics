@@ -6,8 +6,7 @@ import { NewUserRequestStateService } from './shared';
     templateUrl: './new-employee.component.html'
 })
 
-export class NewEmployeeComponent  {
-
+export class NewEmployeeComponent {
 
     errorType: string = 'requestor';
     errorMsg: string = this.state.selectedRequest.warnRequestorEmailCd;
@@ -15,7 +14,12 @@ export class NewEmployeeComponent  {
     constructor(public state: NewUserRequestStateService) {
     }
 
+    approved(approved: boolean) {
 
+        if (approved) {
+            this.state.currentRequestActionResults.rejectionReason = '';
+        }
+    }
 
 
 

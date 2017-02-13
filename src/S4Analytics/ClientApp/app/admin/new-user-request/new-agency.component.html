@@ -43,6 +43,7 @@
             <div class="col-md-6"  >
                 <input type="radio"
                        [(ngModel)]="state.currentRequestActionResults.approved"
+                        (change)="approved(true)"
                        name="approved" [value]="true"
                        />Approve Agency
             </div>
@@ -50,6 +51,7 @@
                 <input type="radio"
                        [disabled]="state.currentRequestActionResults.lea == undefined"
                        [(ngModel)]="state.currentRequestActionResults.approved"
+                        (change)="approved(false)"
                        name="approved" [value]="false"
                        />Reject Agency
             </div>

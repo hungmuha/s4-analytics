@@ -21,6 +21,7 @@
         <label>
             <input type="radio"
                     [(ngModel)]="state.currentRequestActionResults.approved"
+                    (change)="approved(true)"
                     name="approved"
                     [value]="true" />Approve Employee
         </label>
@@ -30,6 +31,7 @@
             <input type="radio"
                     [(ngModel)]="state.currentRequestActionResults.approved"
                     name="approved"
+                    (change)="approved(false)"
                     [value]="false" />Reject Employee
         </label>
     </div>
