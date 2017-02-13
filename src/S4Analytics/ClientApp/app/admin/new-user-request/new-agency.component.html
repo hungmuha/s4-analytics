@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="row">
-            <b>Agency Name: </b>{{state.selectedRequest.newAgncyNm}}
+            <b>Agency Name:</b>{{state.selectedRequest.newAgncyNm}}
         </div>
         <div class="row">
             <b>Agency Email Domain:</b>
@@ -36,8 +36,7 @@
             {{state.selectedRequest.requestorEmail}}
         </div>
         <div class="row">
-            <control-messages [errorType]="errorType" [errorMsg]="errorMsg"></control-messages>
-            <label [hidden]="hideRequestorWarning" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
+            <control-messages errorType="requestor" [errorMsg]="state.selectedRequest.warnRequestorEmailCd"></control-messages>
         </div>
         <hr />
         <div class="row">
@@ -64,5 +63,4 @@
         </div>
     </div>
     <hr />
-    {{subform.valid}}
 </form>

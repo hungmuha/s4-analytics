@@ -31,8 +31,7 @@
         {{state.selectedRequest.agncyNm}}
     </div>
     <div class="row">
-        <control-messages [errorType]="errorType" [errorMsg]="errorMsg"></control-messages>
-        <label [hidden]="hideRequestorWarning" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
+        <control-messages errorType="requestor" [errorMsg]="state.selectedRequest.warnRequestorEmailCd"></control-messages>
     </div>
     <hr/>
 

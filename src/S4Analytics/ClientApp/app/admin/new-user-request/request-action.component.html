@@ -4,13 +4,13 @@
     </div>-->
     <div class="modal-body">
         <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)"></new-employee-component>
-        <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)" name="a" id="a" #spy3><br />{{spy3.className}}+"a"</new-agency-component>
+        <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)"></new-agency-component>
         <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgency)"></agency-create-component>
         <new-contractor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewContractor)"></new-contractor-component>
         <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)"></new-consultant-component>
 
     </div>
-    <div class="row">
+    <div>
         <label>Reason for rejection (to be sent to person making request):</label>
         <textarea class="form-control" id="reason" rows="4" name="reason"
                   [disabled]="state.currentRequestActionResults.approved == undefined"
@@ -19,9 +19,7 @@
                   [(ngModel)]="state.currentRequestActionResults.rejectionReason"
                   placeholder="Type reason for rejection here (REQUIRED)"
                   #reason="ngModel"
-                  #spy></textarea>
-       <br/>{{spy.className}}
-        <br/>{{state.currentRequestActionResults.approved}}
+                  ></textarea>
     </div>
     <div class="modal-footer">
         <button type="submit" class="btn btn-secondary" [disabled]="!actionForm.valid">
@@ -31,6 +29,5 @@
             Cancel
         </button>
     </div>
-    <br/>{{spy2.className}}
-</form>
+  </form>
 

@@ -1,5 +1,5 @@
-﻿import { Component, Input } from "@angular/core";
-//import { ValidationService } from "./validation.service";
+﻿import { Component, Input } from '@angular/core';
+
 /**
  * Created by rob on 6/16/16.
  */
@@ -17,10 +17,10 @@ export class ControlMessages {
 
     get errorMessage() {
 
-        if (this.errorMsg == 'Y') {
+        if (this.errorMsg === 'Y') {
 
             let errStr: string;
-            if (this.errorType == 'requestor') {
+            if (this.errorType === 'requestor') {
                 errStr = 'Warning: Requestor\'s email domain does not match requestor\'s agency\'s email domain';
             }
             else {

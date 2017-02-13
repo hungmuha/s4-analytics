@@ -13,7 +13,7 @@
     {{state.selectedRequest.agncyNm}}
 </div>
 <div class="row">
-    <control-messages [errorType]="errorType" [errorMsg]="errorMsg" ></control-messages>
+    <control-messages errorType="requestor" [errorMsg]="state.selectedRequest.warnRequestorEmailCd"></control-messages>
 </div>
 <hr />
 <div class="row">

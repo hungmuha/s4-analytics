@@ -1,11 +1,11 @@
-﻿<div class="container-fluid">
+﻿
     <div class="row">
         <b>Consultant Name:</b>
         {{state.selectedRequest.consultantFirstNm}}
         {{state.selectedRequest.consultantLastNm}}
     </div>
     <div class="row">
-        <b>Email:</b>
+        <b>Email: </b>
         {{state.selectedRequest.consultantEmail}}
     </div>
     <div class="row">
@@ -13,8 +13,7 @@
         {{state.selectedRequest.contractorNm}}
     </div>
     <div class="row">
-        <control-messages [errorType]="errorType" [errorMsg]="errorMsg"></control-messages>
-        <label [hidden]="hideConsultantWarning" style="color:red">Warning: Consultants's email domain does not match Consultants's contractor's email domain</label>
+        <control-messages errorType="consultant" [errorMsg]="state.selectedRequest.warnConsultantEmailCd"></control-messages>
     </div>
     <div class="row">
         <b>Contract Start Date:</b>
@@ -45,7 +44,7 @@
         {{state.selectedRequest.agncyNm}}
     </div>
     <div class="row">
-        <label [hidden]="hideRequestorWarning" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
+        <control-messages errorType="requestor" [errorMsg]="state.selectedRequest.warnRequestorEmailCd"></control-messages>
     </div>
     <hr />
     <div class="row">
@@ -65,4 +64,3 @@
                 [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
                 [value]="true" /> Report Access Before 70 days
     </div>
-</div>

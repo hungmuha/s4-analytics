@@ -14,8 +14,12 @@ export class RequestActionComponent  {
     newUserRequestStatus = NewUserRequestStatus;
 
     constructor(public state: NewUserRequestStateService, public modalService: NgbModal) {
-        if (this.state === undefined) { return;}
+        if (this.state === undefined) { return; }
         this.state.currentRequestActionResults = new RequestActionResults();
+    }
+
+    newUserRequestMatch(nur: number) {
+        return this.state.selectedRequest.requestStatus === nur;
     }
 
     submit() {
@@ -32,8 +36,7 @@ export class RequestActionComponent  {
     }
 
 
-    cancel()
-    {
+    cancel() {
         this.state.currentActionForm.close();
         this.closeContractViewer();
     }
@@ -179,9 +182,7 @@ export class RequestActionComponent  {
     }
 
 
-    newUserRequestMatch(nur: number) {
-        return this.state.selectedRequest.requestStatus === nur;
-    }
+
 
     get hideRequestorWarning() {
         return this.state.selectedRequest.warnRequestorEmailCd === 'N';
