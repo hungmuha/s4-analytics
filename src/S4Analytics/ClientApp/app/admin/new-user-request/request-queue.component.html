@@ -17,10 +17,10 @@
         </div>
         <!-- filter button toolbar-->
         <div class="btn-group btn-group-sm pull-right" role="group">
-            <button type="button" class="btn btn-secondary">All</button>
-            <button type="button" class="btn btn-secondary">Pending</button>
-            <button type="button" class="btn btn-secondary">Completed</button>
-            <button type="button" class="btn btn-secondary">Rejected</button>
+            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(2)">All</button>
+            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(1)">Pending</button>
+            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(10)">Completed</button>
+            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(11)">Rejected</button>
         </div>
         <!-- queue -->
         <table class="pull-right" border="1" style="width:90%" align="center">

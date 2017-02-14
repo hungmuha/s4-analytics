@@ -14,13 +14,12 @@ export class NewAgencyComponent  {
     approved(approved: boolean) {
 
         if (approved) {
-            console.log('approved');
             this.state.currentRequestActionResults.rejectionReason = '';
         }
         else {
-            console.log('disproved');
-            (<NewAgencyResults>(this.state.currentRequestActionResults)).lea = undefined;
-            (<NewAgencyResults>(this.state.currentRequestActionResults)).accessBefore70Days = false;
+            let newAgencyResults = this.state.currentRequestActionResults as NewAgencyResults;
+            newAgencyResults.lea = undefined;
+            newAgencyResults.accessBefore70Days = false;
         }
     }
 

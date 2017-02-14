@@ -58,6 +58,9 @@ export class RequestQueueComponent {
         }
     }
 
+    filterQueueBy(button: number) {
+        this.newUserRequestService.filterNewUserRequestsBy(button).subscribe(result => this.state.newUserRequests = result);
+    }
 
     openActionModal(content: any, index: number) {
         this.state.selectedRequest = this.state.newUserRequests[index];
