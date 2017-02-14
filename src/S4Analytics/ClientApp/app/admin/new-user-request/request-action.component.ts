@@ -181,17 +181,4 @@ export class RequestActionComponent  {
         this.state.selectedRequest.requestStatus = status;
     }
 
-
-
-
-    get hideRequestorWarning() {
-        return this.state.selectedRequest.warnRequestorEmailCd === 'N';
-    }
-
-    get hideConsultantWarning() {
-        return this.state.selectedRequest.warnConsultantEmailCd === 'N';
-    }
-
-
-
 }

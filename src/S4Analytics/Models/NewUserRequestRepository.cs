@@ -50,7 +50,7 @@ namespace S4Analytics.Models
                             u.access_reason_tx AS accessreasontx,
                             u.contract_end_dt AS contractstartdt,
                             u.contract_start_dt AS contractenddt,
-                            u.warn_requestor_email_cd AS warnrequestoremailcd,                
+                            u.warn_requestor_email_cd AS warnrequestoremailcd,
                             u.warn_user_email_cd AS warnconsultantemailcd,
                             u.admin_comment AS admincomment
                             FROM new_user_req_new u
@@ -99,7 +99,7 @@ namespace S4Analytics.Models
                             u.access_reason_tx AS accessreasontx,
                             u.contract_end_dt AS contractstartdt,
                             u.contract_start_dt AS contractenddt,
-                            u.warn_requestor_email_cd AS warnrequestoremailcd,           
+                            u.warn_requestor_email_cd AS warnrequestoremailcd,
                             u.warn_user_email_cd AS warnconsultantemailcd,
                             u.admin_comment AS admincomment
                             FROM new_user_req_new u
@@ -151,7 +151,7 @@ namespace S4Analytics.Models
                             u.access_reason_tx AS accessreasontx,
                             u.contract_end_dt AS contractstartdt,
                             u.contract_start_dt AS contractenddt,
-                            u.warn_requestor_email_cd AS warnrequestoremailcd,                
+                            u.warn_requestor_email_cd AS warnrequestoremailcd,
                             u.warn_user_email_cd AS warnconsultantemailcd,
                             u.admin_comment AS admincomment
                             FROM new_user_req_new u

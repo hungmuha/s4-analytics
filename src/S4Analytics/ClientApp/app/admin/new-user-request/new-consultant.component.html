@@ -13,7 +13,8 @@
         {{state.selectedRequest.contractorNm}}
     </div>
     <div class="row">
-        <warning-messages errorType="consultant" [errorMsg]="state.selectedRequest.warnConsultantEmailCd"></warning-messages>
+        <label [hidden]="!state.selectedRequest.warnConsultantEmail" style="color:red">Warning: Consultant's email domain does not match agency's email domain</label>
+
     </div>
     <div class="row">
         <b>Contract Start Date:</b>
@@ -44,7 +45,7 @@
         {{state.selectedRequest.agncyNm}}
     </div>
     <div class="row">
-        <warning-messages errorType="requestor" [errorMsg]="state.selectedRequest.warnRequestorEmailCd"></warning-messages>
+        <label [hidden]="!state.selectedRequest.warnRequestorEmail" style="color:red">Warning: Requestor's email domain does not match agency's email domain</label>
     </div>
     <hr />
     <div class="row">

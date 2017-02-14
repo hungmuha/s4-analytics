@@ -7,9 +7,6 @@ import { NewUserRequestStateService, NewAgencyResults } from './shared';
 })
 
 export class NewConsultantComponent  {
-    errorType: string = 'consultant';
-    errorMsg: string = this.state.selectedRequest.warnConsultantEmailCd;
-
 
     constructor(public state: NewUserRequestStateService) {
 
