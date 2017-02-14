@@ -13,7 +13,7 @@
     <div>
         <label>Reason for rejection (to be sent to person making request):</label>
         <textarea class="form-control" id="reason" rows="4" name="reason"
-                  [disabled]="state.currentRequestActionResults.approved == undefined"
+                  [disabled]="disableTextArea()"
                   [readonly]="state.currentRequestActionResults.approved"
                   [required]="!state.currentRequestActionResults.approved"
                   [(ngModel)]="state.currentRequestActionResults.rejectionReason"

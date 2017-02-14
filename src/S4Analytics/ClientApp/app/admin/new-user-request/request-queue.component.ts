@@ -64,9 +64,6 @@ export class RequestQueueComponent {
 
     openActionModal(content: any, index: number) {
         this.state.selectedRequest = this.state.newUserRequests[index];
-
-        console.log('this: ' + this.state.selectedRequest.warnRequestorEmail);
-
         this.state.currentActionForm = this.modalService.open(content, { backdrop: 'static', keyboard: false });
     }
 

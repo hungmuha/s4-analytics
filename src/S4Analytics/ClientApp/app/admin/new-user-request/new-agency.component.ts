@@ -7,6 +7,13 @@ import { NewUserRequestStateService, NewAgencyResults } from './shared';
 })
 
 export class NewAgencyComponent  {
+
+    newAgencyResults = this.state.currentRequestActionResults as NewAgencyResults;
+
+    disableRejctRb() {
+        return this.newAgencyResults.lea === undefined;
+    }
+
     constructor(public state: NewUserRequestStateService) {
 
     }
@@ -17,9 +24,8 @@ export class NewAgencyComponent  {
             this.state.currentRequestActionResults.rejectionReason = '';
         }
         else {
-            let newAgencyResults = this.state.currentRequestActionResults as NewAgencyResults;
-            newAgencyResults.lea = undefined;
-            newAgencyResults.accessBefore70Days = false;
+            this.newAgencyResults.lea = undefined;
+            this.newAgencyResults.accessBefore70Days = false;
         }
     }
 

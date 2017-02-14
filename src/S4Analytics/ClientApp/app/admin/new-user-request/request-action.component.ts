@@ -14,7 +14,6 @@ export class RequestActionComponent  {
     newUserRequestStatus = NewUserRequestStatus;
 
     constructor(public state: NewUserRequestStateService, public modalService: NgbModal) {
-        if (this.state === undefined) { return; }
         this.state.currentRequestActionResults = new RequestActionResults();
     }
 
@@ -22,19 +21,20 @@ export class RequestActionComponent  {
         return this.state.selectedRequest.requestStatus === nur;
     }
 
-    submit() {
+    disableTextArea() {
+        return this.state.currentRequestActionResults.approved === undefined;
+    }
 
+    submit() {
         if (this.state.currentRequestActionResults.approved) {
             this.processOKResult();
         }
         else {
             this.processRejectedResult();
         }
-
         this.state.currentActionForm.close();
         this.closeContractViewer();
     }
-
 
     cancel() {
         this.state.currentActionForm.close();
@@ -44,7 +44,7 @@ export class RequestActionComponent  {
     private closeContractViewer() {
         if (this.state.contractViewerWindow != undefined) {
             this.state.contractViewerWindow.close();
-            delete this.state.contractViewerWindow;
+            this.state.contractViewerWindow = undefined;
         }
     }
 

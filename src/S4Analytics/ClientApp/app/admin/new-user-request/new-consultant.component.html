@@ -14,7 +14,6 @@
     </div>
     <div class="row">
         <label [hidden]="!state.selectedRequest.warnConsultantEmail" style="color:red">Warning: Consultant's email domain does not match agency's email domain</label>
-
     </div>
     <div class="row">
         <b>Contract Start Date:</b>
@@ -23,13 +22,12 @@
     <div class="row">
             <b>Contract End Date:</b>
             {{state.selectedRequest.contractEndDt}}
-            <button class="pull-right" (click)="openContractViewer()">View Contract</button>
+            <button type="button" class="pull-right" (click)="openContractViewer()">View Contract</button>
     </div>
     <div>
         <label>Reason for Access:</label>
         <textarea class="form-control" id="reason" rows="4" readonly>{{state.selectedRequest.accessReasonTx}}</textarea>
     </div>
-
     <div class="row">
         <!-- requestor info-->
         <b>Requestor Name:</b>
