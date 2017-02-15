@@ -14,10 +14,8 @@ export class NewUserRequestService {
             .map((r: Response) => r.json().data as NewUserRequest[]);
     }
 
-    filterNewUserRequestsBy(i : number): Observable<NewUserRequest[]> {
+    filterNewUserRequestsBy(i: number): Observable<NewUserRequest[]> {
         let url = `api/admin/new-user-request/filter/${i}`;
-
-        console.log(url);
 
         return this.http
             .get(url)

@@ -10,12 +10,12 @@ export class NewAgencyComponent  {
 
     newAgencyResults = this.state.currentRequestActionResults as NewAgencyResults;
 
-    disableRejctRb() {
-        return this.newAgencyResults.lea === undefined;
-    }
-
     constructor(public state: NewUserRequestStateService) {
 
+    }
+
+    disableRejctRb() {
+        return this.newAgencyResults.lea === undefined;
     }
 
     approved(approved: boolean) {
