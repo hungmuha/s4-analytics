@@ -13,8 +13,6 @@ var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var extractCSS = new ExtractTextPlugin('main.css');
 var merge = require('extendify')({ isDeep: true, arrays: 'concat' });
-var cssnext = require('postcss-cssnext');
-var failPlugin = require('webpack-fail-plugin');
 var isDevelopment =
     process.env.ASPNETCORE_ENVIRONMENT === 'Local' ||
     process.env.ASPNETCORE_ENVIRONMENT === 'Development';
@@ -28,19 +26,14 @@ else {
 
 var commonConfig = {
     resolve: {
-        extensions: [ '', '.js', '.ts' ]
+        extensions: [ '.js', '.ts' ]
     },
     module: {
-        loaders: [
+        rules: [
             { test: /\.ts$/, include: /ClientApp/, loaders: ['ts-loader?silent=true', 'angular2-template-loader'] },
             { test: /\.html$/, loader: 'raw-loader' },
-            { test: /\.css$/, loader: extractCSS.extract(['css','postcss']) }
+            { test: /\.css/, loader: extractCSS.extract(['css-loader', 'postcss-loader']) }
         ]
-    },
-    postcss: function () {
-        return {
-            defaults: [cssnext]
-        };
     },
     entry: {
         main: ['./ClientApp/main.ts']
@@ -51,8 +44,12 @@ var commonConfig = {
         publicPath: '/dist/'
     },
     plugins: [
+        // see https://github.com/angular/angular/issues/11580
+        new webpack.ContextReplacementPlugin(
+          /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
+          './src'
+        ),
         extractCSS,
-        failPlugin, // cause CI build to fail if webpack encounters errors (see https://github.com/TypeStrong/ts-loader/issues/108)
         new webpack.DllReferencePlugin({
             context: __dirname,
             manifest: require('./wwwroot/dist/vendor-manifest.json')
@@ -66,7 +63,7 @@ var devConfig = {
 
 var prodConfig = {
     plugins: [
-        new webpack.optimize.OccurenceOrderPlugin(),
+        new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.UglifyJsPlugin({
             compress: { warnings: false },
             minimize: true,

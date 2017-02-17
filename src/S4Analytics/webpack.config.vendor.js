@@ -3,7 +3,6 @@ var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var extractCSS = new ExtractTextPlugin('vendor.css');
 var merge = require('extendify')({ isDeep: true, arrays: 'concat' });
-var failPlugin = require('webpack-fail-plugin');
 var isDevelopment =
     process.env.ASPNETCORE_ENVIRONMENT === 'Local' ||
     process.env.ASPNETCORE_ENVIRONMENT === 'Development';
@@ -17,12 +16,12 @@ else {
 
 var commonConfig = {
     resolve: {
-        extensions: [ '', '.js' ]
+        extensions: [ '.js' ]
     },
     module: {
         loaders: [
             { test: /\.(eot|woff|woff2|ttf|svg|png|jpe?g|gif)(\?\S*)?$/, loader: 'url-loader?limit=100000' },
-            { test: /\.css/, loader: extractCSS.extract(['css']) }
+            { test: /\.css/, loader: extractCSS.extract(['css-loader']) }
         ]
     },
     entry: {
@@ -52,9 +51,13 @@ var commonConfig = {
         library: '[name]_[hash]',
     },
     plugins: [
+        // see https://github.com/angular/angular/issues/11580
+        new webpack.ContextReplacementPlugin(
+          /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
+          './src'
+        ),
         extractCSS,
-        failPlugin, // cause CI build to fail if webpack encounters errors (see https://github.com/TypeStrong/ts-loader/issues/108)
-        new webpack.optimize.OccurenceOrderPlugin(),
+        new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.DllPlugin({
             path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
             name: '[name]_[hash]'
