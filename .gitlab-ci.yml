@@ -27,8 +27,8 @@ stages:
   - dotnet build "src\S4Analytics" --configuration Release --no-dependencies --no-incremental
   - cd src\S4Analytics
   - call npm prune
-  - call npm update --cache-min=99999999
-  - call npm install --cache-min=99999999
+  - call npm update --cache-min=Infinity
+  - call npm install --cache-min=Infinity
   - call webpack --config webpack.config.vendor.js
   - call webpack
 
