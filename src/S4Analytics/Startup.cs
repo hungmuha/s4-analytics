@@ -66,12 +66,6 @@ namespace S4Analytics
                     new CustomJsonExceptionFilter(showExceptionDetail));
             });
 
-            // Serialize enums to JSON as strings, rather than integers.
-            //services.Configure<MvcJsonOptions>(jsonOptions =>
-            //{
-            //    jsonOptions.SerializerSettings.Converters.Add(new StringEnumConverter());
-            //});
-
             // Do not redirect to login for unauthorized API call; return Unauthorized status code instead.
             // http://stackoverflow.com/questions/34770886/mvc6-unauthorized-results-in-redirect-instead
             services.Configure<IdentityOptions>(identityOptions =>
@@ -141,7 +135,6 @@ namespace S4Analytics
             });
 
             // Add repositories.
-            services.AddSingleton<IPbcatRepository, PbcatRepository>();
             services.AddSingleton<INewUserRequestRepository, NewUserRequestRepository>();
         }
 

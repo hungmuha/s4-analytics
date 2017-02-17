@@ -7,8 +7,6 @@ import { routes } from './app.routing';
 import { AppComponent } from './app.component';
 import { IndexComponent } from './index.component';
 import { LoginComponent } from './login.component';
-import { ReportViewerComponent } from './report-viewer.component';
-import { PbcatModule } from './pbcat/pbcat.module';
 import { AdminModule } from './admin/admin.module';
 import { OptionsService } from './options.service';
 import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
@@ -19,14 +17,12 @@ import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
         HttpModule,
         BrowserModule,
         NgbModule.forRoot(),
-        PbcatModule,
         AdminModule
     ],
     declarations: [
         AppComponent,
         IndexComponent,
-        LoginComponent,
-        ReportViewerComponent
+        LoginComponent
     ],
     providers: [
         __platform_browser_private__.BROWSER_SANITIZATION_PROVIDERS,
