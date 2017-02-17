@@ -84,6 +84,7 @@ deploy:dev:
   - master
   before_script:
   - set CI_WEB_PATH=analytics-html5-dev
+  - copy src\S4Analytics\web.Development.config src\S4Analytics\web.config
   <<: *deploy_script
 
 deploy:staging:
@@ -92,6 +93,7 @@ deploy:staging:
   - staging
   before_script:
   - set CI_WEB_PATH=analytics-html5-staging
+  - copy src\S4Analytics\web.Staging.config src\S4Analytics\web.config
   <<: *deploy_script
 
 deploy:demo:
@@ -100,6 +102,7 @@ deploy:demo:
   - demo
   before_script:
   - set CI_WEB_PATH=analytics-html5-demo
+  - copy src\S4Analytics\web.Demo.config src\S4Analytics\web.config
   <<: *deploy_script
 
 deploy:release:
@@ -108,4 +111,5 @@ deploy:release:
   - release
   before_script:
   - set CI_WEB_PATH=analytics-html5
+  - copy src\S4Analytics\web.Release.config src\S4Analytics\web.config
   <<: *deploy_script
