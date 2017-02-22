@@ -1,15 +1,18 @@
 ﻿export class RequestActionResults {
-    public approved: boolean ;
+    public requestNumber: number;
+    public approved: boolean;
     public rejectionReason: string;
+
+    constructor(id: number) {
+        this.requestNumber = id;
+    }
 }
 
-export class NewAgencyResults extends RequestActionResults {
+export class NewAgencyActionResults extends RequestActionResults {
     public lea: boolean;
     public accessBefore70Days: boolean;
 }
 
-export class NewNonFlAgencyResults extends RequestActionResults {
-    public noReportAccess: boolean;
-    public counties: string[];
-    public expirationDt: Date;
+export class NewConsultantActionResults extends RequestActionResults {
+    public accessBefore70Days: boolean;
 }

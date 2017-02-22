@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace S4Analytics.Models
 {
+
     public interface INewUserRequestRepository
     {
         IEnumerable<NewUserRequest> GetAll();
-        IEnumerable<NewUserRequest> FilterBy(NewUserRequestStatus status);
         NewUserRequest Find(int reqNbr);
-        int Update(int reqNbr, Dictionary<string, object> body);
+        NewUserRequest ApproveNewUser(int id, NewUserRequestStatus newStatus);
+        NewUserRequest ApproveNewConsultant(int id, bool before70days, NewUserRequestStatus newStatus);
+        NewUserRequest ApproveNewAgency(int id, bool before70days, bool lea, NewUserRequestStatus newStatus);
+        NewUserRequest ApproveNewContractor(int id, NewUserRequestStatus newStatus);
+        NewUserRequest ApproveCreateNewAgency(int id, NewUserRequestStatus newStatus);
     }
 }

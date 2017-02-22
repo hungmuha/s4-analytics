@@ -9,7 +9,7 @@ import { NewUserRequestStateService, RequestActionResults } from './shared';
 export class AgencyCreateComponent {
 
     constructor(private state: NewUserRequestStateService) {
-        this.state.currentRequestActionResults = new RequestActionResults();
+        this.state.currentRequestActionResults = new RequestActionResults(this.state.selectedRequest.requestNbr);
     }
 
     approved(approved: boolean) {

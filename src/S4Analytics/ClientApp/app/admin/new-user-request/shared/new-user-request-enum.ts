@@ -1,4 +1,15 @@
-﻿export enum AgencyType {
+﻿export enum QueueColumn {
+    ReqNbr,
+    ReqDt,
+    ReqType,
+    Requestor,
+    ReqAgncy,
+    ReqStatus,
+    AcctCreated,
+    Comment
+}
+
+export enum AgencyType {
     NonLEA = 0,
     FHP = 1,
     PoliceDept = 2,
@@ -21,10 +32,6 @@ export enum NewUserRequestStatus {
     NewConsultant = 3,
     NewContractor = 4,
     CreateAgency = 5,
-//    VerifyEmail = 6,
- //   VerifyContract = 7,
-//    VerifyNonFLUser = 8,
-//    NewNonFLUser = 9,
     Completed = 10,
     Rejected = 11
 }

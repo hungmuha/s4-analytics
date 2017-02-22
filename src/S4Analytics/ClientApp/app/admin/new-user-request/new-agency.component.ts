@@ -1,20 +1,19 @@
 ﻿import { Component } from '@angular/core';
-import { NewUserRequestStateService, NewAgencyResults } from './shared';
+import { NewUserRequestStateService, NewAgencyActionResults } from './shared';
 
 @Component({
     selector: 'new-agency-component',
     templateUrl: './new-agency.component.html'
 })
 
-export class NewAgencyComponent  {
+export class NewAgencyComponent {
 
-    newAgencyResults = this.state.currentRequestActionResults as NewAgencyResults;
+    newAgencyResults = this.state.currentRequestActionResults as NewAgencyActionResults;
 
     constructor(public state: NewUserRequestStateService) {
-
     }
 
-    disableRejctRb() {
+    disableRejectRb() {
         return this.newAgencyResults.lea === undefined;
     }
 

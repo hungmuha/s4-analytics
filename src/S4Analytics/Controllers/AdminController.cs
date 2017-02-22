@@ -1,9 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
-using System.Collections.Generic;
 
 namespace S4Analytics.Controllers
 {
+
+    public enum QueueFilter
+    {
+        All,
+        Pending,
+        Completed,
+        Rejected
+    }
+
+    public class RequestApproval
+    {
+        public int RequestNumber { get; set; }
+        public NewUserRequestStatus NewStatus { get; set; }
+        public NewUserRequestStatus CurrentStatus { get; set; }
+    }
+
+    public class NewAgencyRequestApproval : RequestApproval
+    {
+        public bool Before70Days { get; set;}
+        public bool Lea { get; set; }
+    }
+
+    public class NewConsultantRequestApproval : RequestApproval
+    {
+        public bool Before70Days { get; set; }
+    }
+
     [Route("api/[controller]")]
     public class AdminController : S4Controller
     {
@@ -44,41 +70,44 @@ namespace S4Analytics.Controllers
             return new ObjectResult(data);
         }
 
-        /// <summary>
-        /// Return record from NEW_USER_REQ where REQ_NBR = reqNbr
-        /// </summary>
-        /// <param name="reqNbr">request number of record to return</param>
-        /// <returns></returns>
-        [HttpGet("new-user-request/filter/{status}", Name = "GetNewUserRequestByStatus")]
-        public IActionResult GetNewUserRequestByStatus(NewUserRequestStatus status)
+        [HttpPatch("new-user-request/{id}/approve")]
+        public IActionResult ApproveOther(int id, [FromBody]RequestApproval wrapper)
         {
-            var info = _newUserRequestRepo.FilterBy(status);
-            if (info == null)
+            var currentStatus = wrapper.CurrentStatus;
+            var newStatus = wrapper.NewStatus;
+
+            switch(currentStatus)
             {
-                return NotFound();
+                case NewUserRequestStatus.NewUser:
+                    _newUserRequestRepo.ApproveNewUser(id, newStatus);
+                    break;
+                case NewUserRequestStatus.NewContractor:
+                    _newUserRequestRepo.ApproveNewContractor(id, newStatus);
+                    break;
+                case NewUserRequestStatus.CreateAgency:
+                    _newUserRequestRepo.ApproveCreateNewAgency(id, newStatus);
+                    break;
             }
-            var data = AjaxSafeData(info);
-            return new ObjectResult(data);
+
+            return null;
         }
 
-        /// <summary>
-        /// Update record in NEW_USER_REQ table
-        /// </summary>
-        /// <param name="reqNbr">record to update</param>
-        /// <param name="body">fields to update</param>
-        /// <returns></returns>
-        [HttpPatch("new-user-request/{reqNbr}")]
-        public IActionResult UpdateNewUserRequest(int reqNbr, [FromBody] Dictionary<string, object> body)
+        [HttpPatch("new-user-request/{id}/approve/consultant")]
+        public IActionResult ApproveConsultant(int id, [FromBody]NewConsultantRequestApproval wrapper)
         {
-            var result =  _newUserRequestRepo.Update(reqNbr,  body);
+            _newUserRequestRepo.ApproveNewConsultant(id, wrapper.Before70Days, wrapper.NewStatus);
 
-            if (result == 0)
-            {
-                return NotFound();
-            }
+            return null;
+        }
 
-            return new NoContentResult();
+        [HttpPatch("new-user-request/{id}/approve/agency")]
+        public IActionResult ApproveAgency(int id, [FromBody]NewAgencyRequestApproval wrapper)
+        {
+            _newUserRequestRepo.ApproveNewAgency(id, wrapper.Before70Days, wrapper.Lea, wrapper.NewStatus);
+
+            return null;
         }
 
     }
+
 }
