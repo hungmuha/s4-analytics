@@ -9,7 +9,6 @@
             <div class="col-md-6">
                 <input type="radio" name="lea" [(ngModel)]="state.currentRequestActionResults.lea"
                        [value]="true"
-                       #lea="ngModel"
                        required />Law Enforcement
             </div>
         </div>
@@ -22,7 +21,7 @@
         </div>
         <div class="row">
             <b>Agency:</b>
-            {{state.selectedRequest.agncyNm}}
+            {{state.selectedRequest.newAgncyNm}}
         </div>
         <div class="row">
             <!-- requestor info-->
@@ -35,7 +34,7 @@
             {{state.selectedRequest.requestorEmail}}
         </div>
         <div class="row">
-            <label [hidden]="!state.selectedRequest.warnRequestorEmail" style="color:red">Warning: Requestor's email domain does not match agency's email domain</label>
+            <label [hidden]="!state.selectedRequest.warnRequestorEmailCd" class="warning-message">Warning: Requestor's email domain does not match agency's email domain</label>
         </div>
         <hr />
         <div class="row">
@@ -48,7 +47,7 @@
             </div>
             <div class="col-md-6">
                 <input type="radio"
-                       [disabled]="disableRejctRb()"
+                       [disabled]="disableRejectRb()"
                        [(ngModel)]="state.currentRequestActionResults.approved"
                         (change)="approved(false)"
                        name="approved" [value]="false"

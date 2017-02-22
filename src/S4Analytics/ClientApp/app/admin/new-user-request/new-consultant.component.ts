@@ -1,5 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { NewUserRequestStateService, NewAgencyResults } from './shared';
+import { NewUserRequestStateService, NewConsultantActionResults } from './shared';
 
 @Component({
     selector: 'new-consultant-component',
@@ -18,9 +18,8 @@ export class NewConsultantComponent  {
             this.state.currentRequestActionResults.rejectionReason = '';
         }
         else {
-            let newAgencyResults = this.state.currentRequestActionResults as NewAgencyResults;
-            newAgencyResults.lea = undefined;
-            newAgencyResults.accessBefore70Days = false;
+            let newConsultantResults = this.state.currentRequestActionResults as NewConsultantActionResults;
+            newConsultantResults.accessBefore70Days = false;
         }
     }
 
