@@ -86,7 +86,7 @@ export class RequestQueueComponent {
     }
 
     displayAgencyNm(nur: NewUserRequest): string {
-        return nur.newAgncyNm === undefined ? nur.agncyNm : nur.newAgncyNm;
+        return nur.requestStatus === NewUserRequestStatus.NewAgency ? nur.newAgncyNm : nur.agncyNm;
     }
 
     hideProcessRequestButton(index: number) {
