@@ -1,16 +1,27 @@
 ﻿import { Component } from '@angular/core';
-import { NewUserRequestStateService } from './shared';
-import { RequestActionComponent } from './request-action.component';
+import { NewUserRequestStateService, NewAgencyResults } from './shared';
 
 @Component({
     selector: 'new-consultant-component',
     templateUrl: './new-consultant.component.html'
 })
 
-export class NewConsultantComponent extends RequestActionComponent {
+export class NewConsultantComponent  {
 
     constructor(public state: NewUserRequestStateService) {
-        super(state);
+
+    }
+
+    approved(approved: boolean) {
+
+        if (approved) {
+            this.state.currentRequestActionResults.rejectionReason = '';
+        }
+        else {
+            let newAgencyResults = this.state.currentRequestActionResults as NewAgencyResults;
+            newAgencyResults.lea = undefined;
+            newAgencyResults.accessBefore70Days = false;
+        }
     }
 
     openContractViewer() {

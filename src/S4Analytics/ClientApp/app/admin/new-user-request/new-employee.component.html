@@ -1,39 +1,39 @@
-﻿<h5>Approve New Employee</h5>
-<div class="container-fluid">
-    <div class="row">
-        <!-- requestor info-->
-        <b>Requestor Name:</b>
-        {{state.selectedRequest.requestorFirstNm}}
-        {{state.selectedRequest.requestorLastNm}}
-    </div>
-    <div class="row">
-        <b>Email:</b>
-        {{state.selectedRequest.requestorEmail}}
-    </div>
-    <div class="row">
-        <b>Agency:</b>
-        {{state.selectedRequest.agncyNm}}
-    </div>
-    <div class="row">
-        <label [hidden]="hideRequestorWarning" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
-    </div>
-    <hr/>
-    <div class="row">
-        <div class="col-md-6">
-            <label>
-                <input type="radio"
-                       [(ngModel)]="state.currentRequestActionResults.approved"
-                       name="approved" [value]="true" />Approve Employee
-            </label>
-        </div>
-        <div class="col-md-6">
-            <label>
-                <input type="radio"
-                       [(ngModel)]="state.currentRequestActionResults.approved"
-                       name="approved" [value]="false" />Reject Employee
-            </label>
-        </div>
-    </div>
-    <br/>
+﻿<div class="row">
+    <!-- requestor info-->
+    <b>Requestor Name:</b>
+    {{state.selectedRequest.requestorFirstNm}}
+    {{state.selectedRequest.requestorLastNm}}
 </div>
-
+<div class="row">
+    <b>Email:</b>
+    {{state.selectedRequest.requestorEmail}}
+</div>
+<div class="row">
+    <b>Agency:</b>
+    {{state.selectedRequest.agncyNm}}
+</div>
+<div class="row">
+    <label [hidden]="!state.selectedRequest.warnRequestorEmail" style="color:red">Warning: Requestor's email domain does not match agency's email domain</label>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <label>
+            <input type="radio"
+                    [(ngModel)]="state.currentRequestActionResults.approved"
+                    (change)="approved(true)"
+                    name="approved"
+                    [value]="true" />Approve Employee
+        </label>
+    </div>
+    <div class="col-md-6">
+        <label>
+            <input type="radio"
+                    [(ngModel)]="state.currentRequestActionResults.approved"
+                    name="approved"
+                    (change)="approved(false)"
+                    [value]="false" />Reject Employee
+        </label>
+    </div>
+</div>
+<br />

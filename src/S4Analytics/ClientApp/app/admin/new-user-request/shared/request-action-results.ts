@@ -1,5 +1,5 @@
 ﻿export class RequestActionResults {
-    public approved: boolean;
+    public approved: boolean ;
     public rejectionReason: string;
 }
 

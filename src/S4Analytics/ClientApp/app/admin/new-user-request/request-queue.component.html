@@ -1,24 +1,27 @@
 ﻿<template #content let-c="close" let-d="dismiss">
-    <form>
-        <request-action-component></request-action-component>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="c('ok')">OK</button>
-            <button type="button" class="btn btn-secondary" (click)="c('cancel')">Cancel</button>
+    <div class="container-fluid">
+        <div class="modal-header">
+            <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+                <span aria-hidden="true">{{this.state.selectedRequest.requestStatus | requestStatus }}</span>
+            </button>
         </div>
-    </form>
+        <request-action-component></request-action-component>
+    </div>
 </template>
 
 <div class="container">
+
     <div class="row">
         <div class="col-sm-12">
             <h5>New User Request Master Page - request queue</h5>
         </div>
         <!-- filter button toolbar-->
         <div class="btn-group btn-group-sm pull-right" role="group">
-            <button type="button" class="btn btn-secondary">All</button>
-            <button type="button" class="btn btn-secondary">Pending</button>
-            <button type="button" class="btn btn-secondary">Completed</button>
-            <button type="button" class="btn btn-secondary">Rejected</button>
+            <!-- Temporarily hard coded values here. -->
+            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(2)">All</button>
+            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(1)">Pending</button>
+            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(10)">Completed</button>
+            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(11)">Rejected</button>
         </div>
         <!-- queue -->
         <table class="pull-right" border="1" style="width:90%" align="center">
@@ -53,3 +56,4 @@
         </table>
     </div>
 </div>
+

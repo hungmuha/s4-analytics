@@ -1,22 +1,33 @@
-﻿<div class="container">
-    <div class="modal-header">
-        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-            <span aria-hidden="true">{{this.state.selectedRequest.requestStatus | requestStatus }}</span>
+﻿<form #actionForm="ngForm"  (ngSubmit)="submit()" #spy2>
+    <!--<div class="modal-header">
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')"></button>
+    </div>-->
+    <div class="modal-body">
+        <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)" #actionTypeRef></new-employee-component>
+        <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)" #actionTypeRef></new-agency-component>
+        <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgency)" #actionTypeRef></agency-create-component>
+        <new-contractor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewContractor)" #actionTypeRef></new-contractor-component>
+        <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)" #actionTypeRef></new-consultant-component>
+
+    </div>
+    <div>
+        <label>Reason for rejection (to be sent to person making request):</label>
+        <textarea class="form-control" id="reason" rows="4" name="reason"
+                  [disabled]="disableTextArea()"
+                  [readonly]="state.currentRequestActionResults.approved"
+                  [required]="!state.currentRequestActionResults.approved"
+                  [(ngModel)]="state.currentRequestActionResults.rejectionReason"
+                  placeholder="Type reason for rejection here (REQUIRED)"
+                  #reason="ngModel"
+                  ></textarea>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-secondary" [disabled]="!actionForm.valid">
+            OK
+        </button>
+        <button type="button" class="btn btn-primary" (click)="cancel()">
+            Cancel
         </button>
     </div>
-    <div class="modal-body">
-        <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)"></new-employee-component>
-        <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)"></new-agency-component>
-        <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgency)"></agency-create-component>
-        <new-contractor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewContractor)"></new-contractor-component>
-        <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)"></new-consultant-component>
-        <new-non-fl-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewNonFLUser)"></new-non-fl-component>
-    </div>
-    <div class="row">
-        <label>Reason for rejection (to be sent to person making request):</label>
-        <textarea class="form-control" id="reason" rows="4"
-                  [disabled]="state.currentRequestActionResults.approved"
-                  [(ngModel)]="state.currentRequestActionResults.rejectionReason"
-                  placeholder="Type reason for rejection here (REQUIRED)"></textarea>
-    </div>
-</div>
+  </form>
+

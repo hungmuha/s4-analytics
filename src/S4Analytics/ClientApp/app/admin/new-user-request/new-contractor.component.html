@@ -1,5 +1,4 @@
-﻿<h5>Approve New Contractor</h5>
-<div class="container-fluid">
+﻿<div class="container-fluid">
     <div class="row">
         <b>Contractor Name:</b>
         {{state.selectedRequest.newContractorNm}}
@@ -15,7 +14,7 @@
     <div class="row">
         <b>Contract End Date:</b>
         {{state.selectedRequest.contractEndDt}}
-        <button class="pull-right" (click)="openContractViewer()">View Contract</button>
+        <button type="button" class="pull-right" (click)="openContractViewer()">View Contract</button>
     </div>
      <div class="row">
         <!-- requestor info-->
@@ -32,7 +31,7 @@
         {{state.selectedRequest.agncyNm}}
     </div>
     <div class="row">
-        <label [hidden]="hideRequestorWarning" style="color:red">Warning: Requestor's email domain does not match requestor's agency's email domain</label>
+        <label [hidden]="!state.selectedRequest.warnRequestorEmail" style="color:red">Warning: Requestor's email domain does not match agency's email domain</label>
     </div>
     <hr/>
 
@@ -41,11 +40,13 @@
             <div class="col-md-6">
                 <input type="radio" class="form-check-input"
                        [(ngModel)]="state.currentRequestActionResults.approved"
+                        (change)="approved(true)"
                        name="approved" [value]="true" />Approve Contractor
             </div>
             <div class="col-md-6">
                 <input type="radio" class="form-check-input"
                        [(ngModel)]="state.currentRequestActionResults.approved"
+                        (change)="approved(false)"
                        name="approved" [value]="false" />Reject Contractor
             </div>
         </div>

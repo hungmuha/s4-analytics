@@ -1,4 +1,5 @@
 ﻿import { Component } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NewUserRequestStateService, RequestActionResults, NewUserRequestStatus } from './shared';
 
 
@@ -8,11 +9,11 @@ import { NewUserRequestStateService, RequestActionResults, NewUserRequestStatus 
 })
 
 
-export class RequestActionComponent {
+export class RequestActionComponent  {
 
     newUserRequestStatus = NewUserRequestStatus;
 
-    constructor(public state: NewUserRequestStateService) {
+    constructor(public state: NewUserRequestStateService, public modalService: NgbModal) {
         this.state.currentRequestActionResults = new RequestActionResults();
     }
 
@@ -20,11 +21,41 @@ export class RequestActionComponent {
         return this.state.selectedRequest.requestStatus === nur;
     }
 
-    get hideRequestorWarning() {
-        return this.state.selectedRequest.warnRequestorEmailCd === 'N';
+    disableTextArea() {
+        return this.state.currentRequestActionResults.approved === undefined;
     }
 
-    get hideConsultantWarning() {
-        return this.state.selectedRequest.warnConsultantEmailCd === 'N';
+    submit() {
+        if (this.state.currentRequestActionResults.approved) {
+            this.processOKResult();
+        }
+        else {
+            this.processRejectedResult();
+        }
+        this.state.currentActionForm.close();
+        this.closeContractViewer();
     }
+
+    cancel() {
+        this.state.currentActionForm.close();
+        this.closeContractViewer();
+    }
+
+    private closeContractViewer() {
+        if (this.state.contractViewerWindow != undefined) {
+            this.state.contractViewerWindow.close();
+            this.state.contractViewerWindow = undefined;
+        }
+    }
+
+    private processOKResult(): void {
+
+    }
+
+    private processRejectedResult(): void {
+
+    }
+
+
+
 }

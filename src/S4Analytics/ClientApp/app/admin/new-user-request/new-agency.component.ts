@@ -6,9 +6,28 @@ import { NewUserRequestStateService, NewAgencyResults } from './shared';
     templateUrl: './new-agency.component.html'
 })
 
-export class NewAgencyComponent {
+export class NewAgencyComponent  {
 
-    constructor(private state: NewUserRequestStateService) {
-        this.state.currentRequestActionResults = new NewAgencyResults();
+    newAgencyResults = this.state.currentRequestActionResults as NewAgencyResults;
+
+    constructor(public state: NewUserRequestStateService) {
+
     }
+
+    disableRejctRb() {
+        return this.newAgencyResults.lea === undefined;
+    }
+
+    approved(approved: boolean) {
+
+        if (approved) {
+            this.state.currentRequestActionResults.rejectionReason = '';
+        }
+        else {
+            this.newAgencyResults.lea = undefined;
+            this.newAgencyResults.accessBefore70Days = false;
+        }
+    }
+
+
 }

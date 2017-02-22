@@ -13,4 +13,12 @@ export class NewUserRequestService {
             .get(url)
             .map((r: Response) => r.json().data as NewUserRequest[]);
     }
+
+    filterNewUserRequestsBy(i: number): Observable<NewUserRequest[]> {
+        let url = `api/admin/new-user-request/filter/${i}`;
+
+        return this.http
+            .get(url)
+            .map((r: Response) => r.json().data as NewUserRequest[]);
+    }
 }

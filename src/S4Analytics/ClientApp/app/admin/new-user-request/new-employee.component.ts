@@ -1,15 +1,24 @@
 ﻿import { Component } from '@angular/core';
 import { NewUserRequestStateService } from './shared';
-import { RequestActionComponent } from './request-action.component';
 
 @Component({
     selector: 'new-employee-component',
     templateUrl: './new-employee.component.html'
 })
 
-export class NewEmployeeComponent extends RequestActionComponent {
+export class NewEmployeeComponent {
 
     constructor(public state: NewUserRequestStateService) {
-        super(state);
     }
+
+    approved(approved: boolean) {
+
+        if (approved) {
+            this.state.currentRequestActionResults.rejectionReason = '';
+        }
+    }
+
+
+
+
 }

@@ -64,8 +64,10 @@ namespace S4Analytics.Models
         public DateTime? ContractStartDt { get; set; }
         public DateTime? ContractEndDt { get; set; }
         public string UserId { get; set; }
-        public char WarnRequestorEmailCd { get; set; }
-        public char WarnConsultantEmailCd { get; set; }
-         public string AdminComment { get; set; }
+        public string WarnRequestorEmailCd { get; set; }
+        public string WarnConsultantEmailCd { get; set; }
+        public bool WarnRequestorEmail { get { return WarnRequestorEmailCd == "Y" ? true : false; } }
+        public bool WarnConsultantEmail { get { return WarnConsultantEmailCd == "Y" ? true : false; } }
+        public string AdminComment { get; set; }
     }
 }
