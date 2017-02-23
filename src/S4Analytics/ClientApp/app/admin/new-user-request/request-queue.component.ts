@@ -74,8 +74,8 @@ export class RequestQueueComponent {
         this.state.queueFilter = filter;
      }
 
-    openActionModal(content: any, index: number) {
-        this.state.selectedRequest = this.state.newUserRequests[index];
+    openActionModal(content: any, request: NewUserRequest) {
+        this.state.selectedRequest = request;
         this.state.currentActionForm = this.modalService.open(content, { backdrop: 'static', keyboard: false });
     }
 
@@ -84,8 +84,7 @@ export class RequestQueueComponent {
         return nur.requestStatus === NewUserRequestStatus.NewAgency ? nur.newAgncyNm : nur.agncyNm;
     }
 
-    hideProcessRequestButton(index: number) {
-        let request = this.state.newUserRequests[index];
+    hideProcessRequestButton(request: NewUserRequest) {
         return request.requestStatus === NewUserRequestStatus.Completed || request.requestStatus === NewUserRequestStatus.Rejected;
     }
 
