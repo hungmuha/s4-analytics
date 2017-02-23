@@ -2,6 +2,7 @@
 import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NewUserRequest } from './new-user-request';
 import { RequestActionResults } from './request-action-results';
+import { QueueColumn } from './new-user-request-enum';
 
 
 @Injectable()
@@ -12,6 +13,6 @@ export class NewUserRequestStateService {
     contractViewerWindow: Window;
     sortField: string[] = ['requestDt'];
     sortAsc: boolean = true;
-    sortColumn: number;
+    sortColumn: QueueColumn;
     currentActionForm: NgbModalRef;
 }

@@ -26,8 +26,9 @@ export class NewUserRequest {
     contractStartDt: Date;
     contractEndDt: Date;
     userId: string;
-    warnRequestorEmail: boolean;
-    warnConsultantEmail: boolean;
+    warnRequestorEmailCd: boolean;
+    warnConsultantEmailCd: boolean;
     adminComment: string;
+    accessBefore70Days: boolean = false;
 
 }

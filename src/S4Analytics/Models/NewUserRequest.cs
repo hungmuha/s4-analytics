@@ -29,10 +29,6 @@ namespace S4Analytics.Models
         NewConsultant = 3,
         NewContractor = 4,
         CreateAgency = 5,
-        //VerifyEmail = 6,
-        //VerifyContract = 7,
-        //VerifyNonFLUser = 8,
-        //NewNonFLUser = 9,
         Completed = 10,
         Rejected = 11
     }
@@ -44,7 +40,7 @@ namespace S4Analytics.Models
         public string RequestDesc { get; set; }
         public NewUserRequestType RequestType { get; set; }
         public NewUserRequestStatus RequestStatus { get; set; }
-        public DateTime UserCreatedDt { get; set; }
+        public DateTime? UserCreatedDt { get; set; }
         public string AgncyNm { get; set; }
         public AgencyType? NewAgncyTypeCd { get; set; }
         public string NewAgncyNm { get; set; }
@@ -64,10 +60,9 @@ namespace S4Analytics.Models
         public DateTime? ContractStartDt { get; set; }
         public DateTime? ContractEndDt { get; set; }
         public string UserId { get; set; }
-        public string WarnRequestorEmailCd { get; set; }
-        public string WarnConsultantEmailCd { get; set; }
-        public bool WarnRequestorEmail { get { return WarnRequestorEmailCd == "Y" ? true : false; } }
-        public bool WarnConsultantEmail { get { return WarnConsultantEmailCd == "Y" ? true : false; } }
+        public bool WarnRequestorEmailCd { get; set; }
+        public bool WarnConsultantEmailCd { get; set; }
         public string AdminComment { get; set; }
+        public bool AccessBefore70Days { get; set; }
     }
 }
