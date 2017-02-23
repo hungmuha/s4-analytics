@@ -38,7 +38,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let newUserReq of (filteredRequests | orderby:state.sortField); let i=index">
+                <tr *ngFor="let newUserReq of (filteredRequests | orderby:state.sortField)">
                     <td style="width: 5%">{{newUserReq.requestNbr}}</td>
                     <td style="width: 10%">{{newUserReq.requestDt | date:"MM/dd/yy"}}</td>
                     <td style="width: 10%">{{newUserReq.requestType | requestType }}</td>
@@ -47,7 +47,7 @@
                     <td style="width: 5%">{{newUserReq.requestStatus | requestStatus }}</td>
                     <td style="width: 10%"></td>
                     <td style="width: 10%">
-                        <button [hidden]= "hideProcessRequestButton(i)" (click)="openActionModal(content, i)">Process Request</button>
+                        <button [hidden]= "hideProcessRequestButton(newUserReq)" (click)="openActionModal(content, newUserReq)">Process Request</button>
                     </td>
                     <td style="width: 20%"></td>
                 </tr>
