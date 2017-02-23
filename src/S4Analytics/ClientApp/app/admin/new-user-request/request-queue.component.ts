@@ -2,17 +2,10 @@
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as _ from 'lodash';
 import {
-    NewUserRequestStateService, NewUserRequestService, QueueColumn, NewUserRequest, NewUserRequestStatus
+    NewUserRequestStateService, NewUserRequestService, QueueColumn, QueueFilter, NewUserRequest, NewUserRequestStatus
 } from './shared';
 
 
-
-export enum QueueFilter {
-    All,
-    Pending,
-    Completed,
-    Rejected
-}
 
 @Component({
     templateUrl: './request-queue.component.html'
@@ -25,7 +18,23 @@ export class RequestQueueComponent {
     queueColumn = QueueColumn;
     closeResult: string;
 
-    filteredRequests: NewUserRequest[] = this.state.newUserRequests;
+    get filteredRequests(): NewUserRequest[] {
+        let queueFilter = this.state.queueFilter;
+
+        return _.filter(this.state.newUserRequests,
+            function (nur) {
+                switch (queueFilter) {
+                    case QueueFilter.Completed:
+                        return nur.requestStatus === NewUserRequestStatus.Completed;
+                    case QueueFilter.Rejected:
+                        return nur.requestStatus === NewUserRequestStatus.Rejected;
+                    case QueueFilter.Pending:
+                        return nur.requestStatus !== NewUserRequestStatus.Completed && nur.requestStatus !== NewUserRequestStatus.Rejected;
+                    default:
+                        return true;
+                }
+            });
+    }
 
     constructor(
         private state: NewUserRequestStateService,
@@ -34,7 +43,7 @@ export class RequestQueueComponent {
     }
 
     ngOnInit() {
-        this.newUserRequestService.getNewUserRequests().subscribe(result => this.state.newUserRequests = this.filteredRequests = result);
+        this.newUserRequestService.getNewUserRequests().subscribe(result => this.state.newUserRequests = result);
     }
 
     sortColumn(columnNum: QueueColumn): void {
@@ -62,23 +71,8 @@ export class RequestQueueComponent {
     }
 
     filterQueueBy(filter: QueueFilter) {
-        this.filteredRequests = _.filter(this.state.newUserRequests,
-            function (nur) {
-                switch (filter.valueOf()) {
-                    case QueueFilter.Completed:
-                        return nur.requestStatus === NewUserRequestStatus.Completed;
-                    case QueueFilter.Rejected:
-                        return nur.requestStatus === NewUserRequestStatus.Rejected;
-                    case QueueFilter.Pending:
-                        return nur.requestStatus !== NewUserRequestStatus.Completed && nur.requestStatus !== NewUserRequestStatus.Rejected;
-                    default:
-                        return true;
-
-                }
-            });
-    }
-
-    filterRequests() { return this.filteredRequests; }
+        this.state.queueFilter = filter;
+     }
 
     openActionModal(content: any, index: number) {
         this.state.selectedRequest = this.state.newUserRequests[index];
