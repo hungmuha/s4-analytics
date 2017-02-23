@@ -114,6 +114,7 @@ namespace S4Analytics.Models
 
         public NewUserRequest  ApproveNewUser(int id, NewUserRequestStatus newStatus)
         {
+
             return null;
         }
         public NewUserRequest  ApproveNewConsultant(int id, bool before70days, NewUserRequestStatus newStatus)
