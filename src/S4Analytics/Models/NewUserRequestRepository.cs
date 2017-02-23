@@ -136,40 +136,5 @@ namespace S4Analytics.Models
             return null;
         }
 
-        //public int Update(int id, NewUserRequest nur)
-        //{
-        //    var conn = new OracleConnection(_connStr);
-        //    var setStr = string.Empty;
-
-        //    var p = new Dictionary<string, object> { { "REQNBR", id } };
-
-        //    setStr += string.Format(" req_status = :reqStatus");
-        //    p.Add("REQSTATUS", nur.RequestStatus);
-
-        //    if (nur.UserCreatedDt != null)
-        //    {
-        //        setStr += string.Format(", user_created_dt = :createDt");
-        //        p.Add("CREATEDT", nur.UserCreatedDt);
-        //    }
-
-        //    if (nur.AdminComment != null)
-        //    {
-        //        setStr += string.Format(", admin_comment = :adminComment");
-        //        p.Add("ADMINCOMMENT", nur.AdminComment);
-        //    }
-
-        //    if (nur.UserId != null)
-        //    {
-        //        setStr += string.Format(", user_id = :userId");
-        //        p.Add("USERID", nur.UserId);
-        //    }
-
-        //    var cmdTxt = string.Format(@"UPDATE new_user_req_new SET {0}
-        //        WHERE req_nbr = :reqnbr", setStr);
-
-        //    var result = conn.Execute(cmdTxt, p);
-        //    return result;
-
-        //}
     }
 }
