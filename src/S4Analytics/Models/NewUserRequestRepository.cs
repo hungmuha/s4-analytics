@@ -734,8 +734,6 @@ namespace S4Analytics.Models
 
         private Agency GetAgency(int agencyId)
         {
-
-
             var selectTxt = @"SELECT
                                 agncy_id AS AGENCYID,
                                 agncy_nm AS AGENCYNAME,
