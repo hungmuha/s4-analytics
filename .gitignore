@@ -26,7 +26,10 @@ Obj/
 
 # Visual Studio 2015 cache/options directory
 **/.vs/
-**/wwwroot/dist/
+**/wwwroot/dist/**
+
+# Workaround for https://github.com/aspnet/JavaScriptServices/issues/235
+!**/wwwroot/dist/_placeholder.txt
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -182,9 +185,13 @@ ClientBin/
 *.dbproj.schemaview
 *.pfx
 *.publishsettings
-node_modules/
-typings/
 orleans.codegen.cs
+
+# Workaround for https://github.com/aspnet/JavaScriptServices/issues/235
+**/node_modules/**
+!**/node_modules/_placeholder.txt
+
+**/yarn.lock
 
 # RIA/Silverlight projects
 Generated_Code/

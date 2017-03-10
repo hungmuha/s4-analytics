@@ -1,0 +1,52 @@
+﻿<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>S4Analytics</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>S4Analytics</PackageId>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.50.2" />
+    <PackageReference Include="Lib.Identity" Version="1.0.2" />
+    <PackageReference Include="Lib.PBCAT" Version="1.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
+    <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.24160419" />
+    <PackageReference Include="System.Data.Common" Version="4.1.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.IdentityModel" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Files not to show in IDE -->
+    <None Remove="yarn.lock" />
+
+    <!-- Files not to publish -->
+    <Content Remove="ClientApp\**" />
+  </ItemGroup>
+
+  <Target Name="PublishWebpackGeneratedFiles" AfterTargets="ComputeFilesToPublish">
+    <!-- Include webpack generated files in the publish output -->
+    <ItemGroup>
+      <DistFiles Include="wwwroot\dist\**" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
+</Project>
