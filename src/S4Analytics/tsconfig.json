@@ -17,13 +17,9 @@ http://www.typescriptlang.org/docs/handbook/tsconfig-json.html.
     "emitDecoratorMetadata": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "types": [
-      "core-js",
-      "requirejs"
-    ]
+    "lib": [ "es6", "dom" ],
+    "types": [ "node" ]
   },
-  "exclude": [
-    "node_modules",
-    "wwwroot"
-  ]
+  "exclude": [ "bin", "node_modules" ],
+  "atom": { "rewriteTsconfig": false }
 }
