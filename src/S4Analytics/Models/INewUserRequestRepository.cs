@@ -7,10 +7,10 @@ namespace S4Analytics.Models
     {
         IEnumerable<NewUserRequest> GetAll();
         NewUserRequest Find(int reqNbr);
-        NewUserRequest ApproveNewUser(int id, NewUserRequestStatus newStatus);
-        NewUserRequest ApproveNewConsultant(int id, bool before70days, NewUserRequestStatus newStatus);
-        NewUserRequest ApproveNewAgency(int id, bool before70days, bool lea, NewUserRequestStatus newStatus);
-        NewUserRequest ApproveNewContractor(int id, NewUserRequestStatus newStatus);
-        NewUserRequest ApproveCreateNewAgency(int id, NewUserRequestStatus newStatus);
+        NewUserRequest ApproveNewUser(int id, NewUserRequestStatus newStatus, NewUserRequest selectedRequest);
+        NewUserRequest ApproveNewConsultant(int id, bool before70days, NewUserRequestStatus newStatus, NewUserRequest selectedRequest);
+        NewUserRequest ApproveAgency(int id, bool before70days, bool lea, NewUserRequestStatus newStatus, NewUserRequest selectedRequest);
+        NewUserRequest ApproveNewContractor(int id, NewUserRequestStatus newStatus, NewUserRequest selectedRequest);
+        NewUserRequest ApproveCreatedNewAgency(int id, NewUserRequestStatus newStatus, NewUserRequest selectedRequest);
     }
 }
