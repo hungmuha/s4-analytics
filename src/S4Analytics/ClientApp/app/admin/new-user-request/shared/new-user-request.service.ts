@@ -8,6 +8,7 @@ import { RequestActionResults, NewAgencyActionResults, NewConsultantActionResult
 class RequestApproval {
     constructor(
         public requestNumber: number,
+        public selectedRequest: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus) { }
 }
@@ -15,21 +16,23 @@ class RequestApproval {
 class NewAgencyRequestApproval extends RequestApproval {
     constructor(
         public requestNumber: number,
+        public selectedRequest: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
         public before70Days: boolean,
         public lea: boolean) {
-        super(requestNumber, currentStatus, newStatus);
+        super(requestNumber, selectedRequest, currentStatus, newStatus);
         }
 }
 
 class NewConsultantRequestApproval extends RequestApproval {
     constructor(
         public requestNumber: number,
+        public selectedRequest: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
         public before70Days: boolean) {
-        super(requestNumber, currentStatus, newStatus);
+        super(requestNumber, selectedRequest, currentStatus, newStatus);
         }
 }
 
@@ -54,18 +57,24 @@ export class NewUserRequestService {
             .map((r: Response) => r.json() as NewUserRequest[]);
     }
 
-    approve(currentStatus: NewUserRequestStatus, requestActionResults: RequestActionResults): Observable<NewUserRequest> {
+    approve(currentStatus: NewUserRequestStatus,
+        requestActionResults: RequestActionResults,
+        selectedRequest: NewUserRequest): Observable<NewUserRequest> {
 
         let reqWrapper: RequestApproval;
 
         switch (currentStatus) {
             case NewUserRequestStatus.NewContractor:
-                reqWrapper = new RequestApproval(requestActionResults.requestNumber, NewUserRequestStatus.NewContractor, NewUserRequestStatus.NewConsultant);
+                reqWrapper = new RequestApproval(requestActionResults.requestNumber,
+                    selectedRequest,
+                    NewUserRequestStatus.NewContractor,
+                    NewUserRequestStatus.NewConsultant);
                 break;
             case NewUserRequestStatus.NewAgency:
 
                 reqWrapper = new NewAgencyRequestApproval(
                     requestActionResults.requestNumber,
+                    selectedRequest,
                     NewUserRequestStatus.NewAgency,
                     NewUserRequestStatus.CreateAgency,
                     (requestActionResults as NewAgencyActionResults).accessBefore70Days,
@@ -74,12 +83,17 @@ export class NewUserRequestService {
 
                 break;
             case NewUserRequestStatus.CreateAgency:
-                reqWrapper = new RequestApproval(requestActionResults.requestNumber, NewUserRequestStatus.CreateAgency, NewUserRequestStatus.NewUser);
+                reqWrapper = new RequestApproval(
+                    requestActionResults.requestNumber,
+                    selectedRequest,
+                    NewUserRequestStatus.CreateAgency,
+                    NewUserRequestStatus.NewUser);
                 break;
             case NewUserRequestStatus.NewConsultant:
 
                 reqWrapper = new NewConsultantRequestApproval(
                     requestActionResults.requestNumber,
+                    selectedRequest,
                     NewUserRequestStatus.NewConsultant,
                     NewUserRequestStatus.Completed,
                     (requestActionResults as NewConsultantActionResults).accessBefore70Days
@@ -87,7 +101,11 @@ export class NewUserRequestService {
 
                 break;
             default:
-                reqWrapper = new RequestApproval(requestActionResults.requestNumber, currentStatus.valueOf(), NewUserRequestStatus.Completed);
+                reqWrapper = new RequestApproval(
+                    requestActionResults.requestNumber,
+                    selectedRequest,
+                    currentStatus.valueOf(),
+                    NewUserRequestStatus.Completed);
                 break;
         }
 

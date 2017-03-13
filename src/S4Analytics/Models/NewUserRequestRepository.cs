@@ -1,7 +1,11 @@
 ﻿using Dapper;
+using Lib.Identity;
 using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace S4Analytics.Models
 {
@@ -50,7 +54,7 @@ namespace S4Analytics.Models
                             u.contract_end_dt AS contractstartdt,
                             u.contract_start_dt AS contractenddt,
                             CASE WHEN u.warn_requestor_email_cd = 'Y' THEN 1 ELSE 0 END AS warnrequestoremailcd,
-                            CASE WHEN u.warn_user_email_cd = 'Y' THEN 1 ELSE 0 END AS warnconsultantemailcd,
+                            CASE WHEN u.warn_consultant_email_cd = 'Y' THEN 1 ELSE 0 END AS warnconsultantemailcd,
                             u.admin_comment AS admincomment
                             FROM new_user_req_new u
                             LEFT JOIN s4_agncy a
@@ -99,7 +103,7 @@ namespace S4Analytics.Models
                             u.contract_end_dt AS contractstartdt,
                             u.contract_start_dt AS contractenddt,
                             CASE WHEN u.warn_requestor_email_cd = 'Y' THEN 1 ELSE 0 END AS warnrequestoremailcd,
-                            CASE WHEN u.warn_user_email_cd = 'Y' THEN 1 ELSE 0 END AS warnconsultantemailcd,
+                            CASE WHEN u.warn_consultant_email_cd = 'Y' THEN 1 ELSE 0 END AS warnconsultantemailcd,
                             u.admin_comment AS admincomment
                             FROM new_user_req_new u
                             LEFT JOIN s4_agncy a
@@ -112,30 +116,103 @@ namespace S4Analytics.Models
             return results;
         }
 
-        public NewUserRequest  ApproveNewUser(int id, NewUserRequestStatus newStatus)
+        /// <summary>
+        /// Create new user in S4_USER, USER_CNTY, USER_ROLE
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="newStatus"></param>
+        /// <returns></returns>
+        public NewUserRequest ApproveNewUser(int id, NewUserRequestStatus newStatus, NewUserRequest request)
         {
+            var user = CreateIdentityUser(request);
 
-            return null;
-        }
-        public NewUserRequest  ApproveNewConsultant(int id, bool before70days, NewUserRequestStatus newStatus)
-        {
-            return null;
-        }
 
-        public NewUserRequest  ApproveNewAgency(int id, bool before70days, bool lea, NewUserRequestStatus newStatus)
-        {
-            return null;
-        }
+            return request;
 
-        public NewUserRequest  ApproveNewContractor(int id, NewUserRequestStatus newStatus)
-        {
-            return null;
         }
 
-        public NewUserRequest ApproveCreateNewAgency(int id, NewUserRequestStatus newStatus)
+     
+
+        /// <summary>
+        /// Create new user in S4_USER, USER_CNTY, USER_ROLE
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="before70days"></param>
+        /// <param name="newStatus"></param>
+        /// <param name="selectedRequest"></param>
+        /// <returns></returns>
+        public NewUserRequest ApproveNewConsultant(int id, bool before70days, NewUserRequestStatus newStatus, NewUserRequest request)
         {
             return null;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="before70days"></param>
+        /// <param name="lea"></param>
+        /// <param name="newStatus"></param>
+        /// <param name="selectedRequest"></param>
+        /// <returns></returns>
+        public NewUserRequest ApproveAgency(int id, bool before70days, bool lea, NewUserRequestStatus newStatus, NewUserRequest request)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Create new contractor in CONTRACTOR
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="newStatus"></param>
+        /// <param name="selectedRequest"></param>
+        /// <returns></returns>
+        public NewUserRequest ApproveNewContractor(int id, NewUserRequestStatus newStatus, NewUserRequest request)
+        {
+            //Create new user in S4_USER, USER_CNTY, USER_ROLE
+            return null;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="newStatus"></param>
+        /// <param name="selectedRequest"></param>
+        /// <returns></returns>
+        public NewUserRequest ApproveCreatedNewAgency(int id, NewUserRequestStatus newStatus, NewUserRequest request)
+        {
+            return null;
+        }
+
+
+        // CREATE CONSTRUCTOR IN LIB.IDENTITY TO TAKE A NEWUSEREQUEST AS A PARAMETER?
+        private S4IdentityUser CreateIdentityUser(NewUserRequest request)
+        {
+            S4IdentityUser user;
+            string email;
+            string username;
+
+            switch (request.RequestType)
+            {
+                case NewUserRequestType.FlPublicAgencyEmployee:
+                    username = request.RequestorFirstNm[0] + request.RequestorLastNm;  // need to check name does not exist
+                    email = request.RequestorEmail;
+                    break;
+                case NewUserRequestType.FlPublicAgencyMgr:
+                    username = request.ConsultantFirstNm[0] + request.ConsultantLastNm;  // need to check name does not exist
+                    email = request.ConsultantEmail;
+                    break;
+                default:
+                    return null;
+            }
+
+            user = new S4IdentityUser(username, email);
+
+            //pupulate remaining values
+            // ....
+
+            return user;
+        }
     }
 }
