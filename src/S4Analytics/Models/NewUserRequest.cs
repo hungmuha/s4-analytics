@@ -1,4 +1,5 @@
 ﻿using System;
+using Lib.Identity;
 
 
 namespace S4Analytics.Models

@@ -55,7 +55,7 @@ export class RequestActionComponent  {
 
     private processOKResult(): void {
 
-        this.newUserRequestService.approve(this.state.selectedRequest.requestStatus, this.state.currentRequestActionResults)
+        this.newUserRequestService.approve(this.state.selectedRequest.requestStatus, this.state.currentRequestActionResults, this.state.selectedRequest)
             .subscribe(
             result => console.log(result));
     }
