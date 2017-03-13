@@ -16,7 +16,6 @@ namespace S4Analytics.Models
         #endregion
         public Contractor()
         {
-
         }
 
         public Contractor(string contractorNm, int contractorId)

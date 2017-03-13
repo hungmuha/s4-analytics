@@ -53,7 +53,6 @@ namespace S4Analytics.Models
         public IEnumerable<NewUserRequest> GetAll()
         {
             var selectTxt = GetRequestSelectQuery();
-
             var cmdTxt = string.Format(@"{0}  
                             FROM new_user_req_new u
                             LEFT JOIN s4_agncy a
@@ -752,6 +751,7 @@ namespace S4Analytics.Models
             return agency;
         }
 
+
         private Contractor GetContractor(int id)
         {
             var selectTxt = @"SELECT
@@ -911,6 +911,5 @@ namespace S4Analytics.Models
         }
 
         #endregion
-
     }
 }

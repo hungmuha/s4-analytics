@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lib.Identity;
-using Lib.Identity.Models;
 
 namespace S4Analytics.Models
 {
@@ -45,7 +43,6 @@ namespace S4Analytics.Models
         // Default constructor
         public Agency()
         {
-
             //TODO
             IsActive = true;
             CrashReportAccess = CrashReportAccess.Unknown;

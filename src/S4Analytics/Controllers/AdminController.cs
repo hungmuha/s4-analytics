@@ -84,7 +84,7 @@ namespace S4Analytics.Controllers
             {
                 return new ObjectResult(new MemoryStream(Encoding.UTF8.GetBytes(@"<div>{filename} not found</div>")));
             }
-                        
+
             var stream = System.IO.File.Open(path, FileMode.Open);
 
             var file = File(stream, "application/pdf");
