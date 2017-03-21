@@ -48,6 +48,7 @@ namespace S4Analytics.Models
                             u.consultant_suffix AS consultantsuffixnm,
                             u.consultant_email_addr_tx AS consultantemail,
                             u.contractor_id AS contractorid,
+                            c.contractor_nm as contractornm,
                             u.new_contractor_nm AS newcontractornm,
                             u.new_contractor_email_domain_tx AS newcontractoremaildomain,
                             u.access_reason_tx AS accessreasontx,
