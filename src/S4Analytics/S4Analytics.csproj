@@ -21,6 +21,7 @@
     <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.24160419" />
     <PackageReference Include="System.Data.Common" Version="4.1.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
