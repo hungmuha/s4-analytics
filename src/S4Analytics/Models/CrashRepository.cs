@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace S4Analytics.Models
 {
@@ -55,49 +56,540 @@ namespace S4Analytics.Models
                 INNER JOIN navteq_2015q1.geocode_result
                   ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
                 LEFT JOIN s4_warehouse.dim_harmful_evt
-                  ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID
-                WHERE ";
+                  ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID";
+            var initialParameters = new { queryId };
 
+            // initialize where clause and query parameter collections
             var whereClauses = new List<string>();
-            var dynamicParameters = new DynamicParameters(new { queryId });
-            var generators = new List<Func<CrashQuery, (string whereClause, object parameters)>>();
+            var queryParameters = new DynamicParameters(initialParameters);
 
-            generators.Add(GenerateDateRangePredicate);
-            generators.Add(GenerateDayOfWeekPredicate);
+            // populate list with generator methods for all valid filters
+            var predicateMethods = GetPredicateMethods(query);
 
-            generators.ForEach(generator => {
-                (var whereClause, object parameters) = generator.Invoke(query);
+            // generate where clause and query parameters for each valid filter
+            predicateMethods.ForEach(generatePredicate => {
+                (var whereClause, var parameters) = generatePredicate.Invoke(query);
                 if (whereClause != null)
                 {
                     whereClauses.Add(whereClause);
-                    dynamicParameters.AddDynamicParams(parameters);
+                    queryParameters.AddDynamicParams(parameters);
                 }
             });
 
-            queryText += "(" + string.Join(") AND (", whereClauses) + ")";
+            // join where clauses; append to insert statement
+            queryText += " WHERE (" + string.Join(") AND (", whereClauses) + ")";
 
-            return (queryText, dynamicParameters);
+            return (queryText, queryParameters);
+        }
+
+        private List<Func<CrashQuery, (string, object)>> GetPredicateMethods(CrashQuery query)
+        {
+            bool hasDateRange = query.dateRange != null;
+            bool hasDayOfWeek = query.dayOfWeek != null && query.dayOfWeek.Count > 0;
+            bool hasTimeRange = query.timeRange != null;
+            bool hasDotDistrict = query.dotDistrict != null && query.dotDistrict.Count > 0;
+            bool hasMpoTpo = query.mpoTpo != null && query.mpoTpo.Count > 0;
+
+            var predicateMethods = new List<Func<CrashQuery, (string, object)>>();
+
+            if (hasDateRange) { predicateMethods.Add(GenerateDateRangePredicate); }
+            if (hasDayOfWeek) { predicateMethods.Add(GenerateDayOfWeekPredicate); }
+            if (hasTimeRange) { predicateMethods.Add(GenerateTimeRangePredicate); }
+
+            return predicateMethods;
         }
 
         private (string whereClause, object parameters) GenerateDateRangePredicate(CrashQuery query)
         {
+            // isolate relevant filter
+            var dateRange = query.dateRange;
+
+            // define where clause
             var whereClause = "FACT_CRASH_EVT.KEY_CRASH_DT BETWEEN :startDate AND :endDate";
+
+            // define oracle parameters
             var parameters = new {
-                startDate = new DateTime(query.dateRange.startDate.Year, query.dateRange.startDate.Month, query.dateRange.startDate.Day, 0, 0, 0, 0),
-                endDate = new DateTime(query.dateRange.endDate.Year, query.dateRange.endDate.Month, query.dateRange.endDate.Day, 23, 59, 59, 999)
+                startDate = new DateTime(dateRange.startDate.Year, dateRange.startDate.Month, dateRange.startDate.Day, 0, 0, 0, 0),
+                endDate = new DateTime(dateRange.endDate.Year, dateRange.endDate.Month, dateRange.endDate.Day, 23, 59, 59, 999)
             };
+
             return (whereClause, parameters);
         }
 
         private (string whereClause, object parameters) GenerateDayOfWeekPredicate(CrashQuery query)
         {
-            if (query.dayOfWeek != null && query.dayOfWeek.AsList().Count > 0)
-            {
-                var whereClause = "TO_CHAR(FACT_CRASH_EVT.KEY_CRASH_DT, 'D') IN :dayOfWeek";
-                var parameters = new { query.dayOfWeek };
-                return (whereClause, parameters);
-            }
-            return (null, null);
+            // isolate relevant filter
+            var dayOfWeek = query.dayOfWeek;
+
+            // define where clause
+            var whereClause = "TO_CHAR(FACT_CRASH_EVT.KEY_CRASH_DT, 'D') IN :dayOfWeek";
+
+            // define oracle parameters
+            var parameters = new { dayOfWeek };
+
+            return (whereClause, parameters);
         }
+
+        private (string whereClause, object parameters) GenerateTimeRangePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var startTime = query.timeRange.startTime;
+            var endTime = query.timeRange.endTime;
+
+            // define where clause
+            var whereClause = @"(
+                    :startTime <= :endTime -- same day
+                    AND TO_CHAR(CRASH_TM, 'HH24MI') BETWEEN :startTime AND :endTime
+                ) OR (
+                    :startTime > :endTime -- crosses midnight boundary
+                    AND TO_CHAR(CRASH_TM, 'HH24MI') >= :startTime OR TO_CHAR(CRASH_TM, 'HH24MI') <= :endTime
+                )";
+
+            // define oracle parameters
+            var parameters = new {
+                startTime = startTime.Hour*100 + startTime.Minute,
+                endTime = endTime.Hour*100 + endTime.Minute
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateDotDistrictPredicate(CrashQuery query)
+        {
+            // TODO: tag crashes with dot district in oracle
+
+            // isolate relevant filter
+            var dotDistrict = query.dotDistrict;
+
+            // map dot district codes to county codes
+            var countyCodeMap = new Dictionary<int, int[]>()
+            {
+                { 1, new[] { 5, 15, 16, 18, 27, 30, 34, 49, 53, 57, 60, 64 } },
+                { 2, new[] { 2, 11, 20, 22, 29, 31, 35, 37, 39, 41, 45, 48, 52, 54, 55, 56, 62, 63 } },
+                { 3, new[] { 9, 13, 21, 23, 25, 33, 36, 43, 46, 50, 51, 58, 59, 65, 66, 67 } },
+                { 4, new[] { 6, 10, 24, 32, 42 } },
+                { 5, new[] { 7, 8, 12, 14, 17, 19, 26, 44, 61 } },
+                { 6, new[] { 1, 38 } },
+                { 7, new[] { 3, 4, 28, 40, 47 } }
+            };
+            var dotDistrictCountyCodes = new List<int>();
+            foreach (var districtNumber in dotDistrict)
+            {
+                dotDistrictCountyCodes.AddRange(countyCodeMap[districtNumber]);
+            }
+
+            // define where clause
+            var whereClause = @"FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY / 100) IN :dotDistrictCountyCodes
+                OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY / 100) IN :dotDistrictCountyCodes";
+
+            // define oracle parameters
+            var parameters = new { dotDistrictCountyCodes };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateMpoTpoPredicate(CrashQuery query)
+        {
+            // TODO: tag crashes with mpo/tpo in oracle
+
+            // isolate relevant filter
+            var mpoTpo = query.mpoTpo;
+
+            // extract partial county mpo/tpo ids
+            var partialCountyMpos = new[]
+            {
+                6,  // Florida-Alabama TPO
+                7,  // Gainesville MTPO
+                10, // Indian River County MPO
+                18  // Okaloosa-Walton TPO
+            };
+            var partialCountyMpoIds = partialCountyMpos.Where(mpoId => mpoTpo.Contains<int>(mpoId)).AsList();
+
+            // map mpo/tpo ids to county codes
+            var countyCodeMap = new Dictionary<int, int[]>
+            {
+                { 1,  new[] { 23 } },                // Bay County MPO
+                { 2,  new[] { 10 } },                // Broward MPO
+                { 3,  new[] { 13, 21, 46, 65 } },    // Capital Region TPA
+                { 4,  new[] { 53 } },                // Charlotte County-Punta Gorda MPO
+                { 5,  new[] { 64 } },                // Collier County MPO
+                { 6,  new[] { 9, 33 } },             // Florida-Alabama TPO
+                { 7,  new[] { 11 } },                // Gainesville MTPO
+                { 8,  new[] { 40 } },                // Hernando County MPO
+                { 9,  new[] { 3 } },                 // Hillsborough County MPO
+                { 10, new[] { 32 } },                // Indian River County MPO
+                { 11, new[] { 12, 44 } },            // Lake-Sumter MPO
+                { 12, new[] { 18 } },                // Lee County MPO
+                { 13, new[] { 42 } },                // Martin County MPO
+                { 14, new[] { 7, 17, 26 } },         // Metroplan Orlando
+                { 15, new[] { 1 } },                 // Miami-Dade Urbanized Area MPO
+                { 16, new[] { 2, 20, 41, 48 } },     // North Florida TPO
+                { 17, new[] { 14 } },                // Ocala-Marion County TPO
+                { 18, new[] { 36, 43 } },            // Okaloosa-Walton TPO
+                { 19, new[] { 6 } },                 // Palm Beach County MPO
+                { 20, new[] { 28 } },                // Pasco County MPO
+                { 21, new[] { 4 } },                 // Pinellas County MPO
+                { 22, new[] { 5 } },                 // Polk TPO
+                { 23, new[] { 15, 16 } },            // Sarasota-Manatee MPO
+                { 24, new[] { 19 } },                // Space Coast TPO
+                { 25, new[] { 24 } },                // St Lucie TPO
+                { 26, new[] { 8 } }                  // Volusia County MPO
+            };
+            var mpoCountyCodes = new List<int>();
+            foreach (var mpoId in mpoTpo)
+            {
+                mpoCountyCodes.AddRange(countyCodeMap[mpoId]);
+            }
+
+            // define where clause
+            var whereClause = "FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes";
+            if (partialCountyMpoIds.Count > 0)
+            {
+                whereClause += " OR EXISTS (SELECT NULL FROM navteq_2015q1.ST_EXT WHERE LINK_ID = GEOCODE_RESULT.CRASH_SEG_ID AND MPO_BND_ID IN :partialCountyMpoIds)";
+            }
+
+            // define oracle parameters
+            var parameters = new { mpoCountyCodes, partialCountyMpoIds };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCountyPredicate(CrashQuery query)
+        {
+            // TODO: join to dim_geography rather than divide by 100 in where clause
+
+            // isolate relevant filter
+            var county = query.county;
+
+            // extract full county codes
+            var fullCountyCodes = county.Where(countyCode => countyCode < 100).ToList();
+
+            // extract unincorporated county codes
+            var unincorporatedCountyCodes = county.Where(countyCode => countyCode >= 100).ToList();
+
+            // define where clause
+            var whereClauses = new List<string>();
+            if (fullCountyCodes.Count > 0)
+            {
+                whereClauses.Add("FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY/100) IN :fullCountyCodes OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY/100) IN :fullCountyCodes");
+            }
+            if (unincorporatedCountyCodes.Count > 0)
+            {
+                whereClauses.Add("FACT_CRASH_EVT.KEY_GEOGRAPHY IN :unincorporatedCountyCodes OR GEOCODE_RESULT.KEY_GEOGRAPHY IN :unincorporatedCountyCodes");
+            }
+            var whereClause = string.Join(" OR ", whereClauses);
+
+            // define oracle parameters
+            var parameters = new { fullCountyCodes, unincorporatedCountyCodes };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCityPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var city = query.city;
+
+            // define where clause
+            var whereClause = "FACT_CRASH_EVT.KEY_GEOGRAPHY IN :cityCodes OR GEOCODE_RESULT.KEY_GEOGRAPHY IN :cityCodes";
+
+            // define oracle parameters
+            var parameters = new {
+                cityCodes = city
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCustomAreaPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var customArea = query.customArea;
+
+            var customAreaMinX = customArea.Min(coords => coords.x);
+            var customAreaMinY = customArea.Min(coords => coords.y);
+            var customAreaMaxX = customArea.Max(coords => coords.x);
+            var customAreaMaxY = customArea.Max(coords => coords.y);
+            var coordsAsText = customArea.Select(coords => string.Format("{0} {1}", coords.x, coords.y));
+            var customAreaPolygon = "POLYGON ((" + string.Join(", ", coordsAsText) + "))";
+            var customAreaSrid = 1234; // TODO: get SRID from somewhere
+
+            // define where clause
+            var whereClause = @"GEOCODE_RESULT.MAP_POINT_X BETWEEN :customAreaMinX AND :customAreaMaxX
+                AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :customAreaMinY AND :customAreaMaxY
+                AND SDE.ST_WITHIN(GEOCODE_RESULT.SHAPE, SDE.ST_GEOMETRY(:customAreaPolygon, :customAreaSrid)) = 1";
+
+            // define oracle parameters
+            var parameters = new {
+                customAreaMinX, customAreaMinY, customAreaMaxX, customAreaMaxY,
+                customAreaPolygon, customAreaSrid
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCustomExtentPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var customExtent = query.customExtent;
+
+            var customExtentMinX = Math.Min(customExtent.point1.x, customExtent.point2.x);
+            var customExtentMinY = Math.Min(customExtent.point1.y, customExtent.point2.y);
+            var customExtentMaxX = Math.Max(customExtent.point1.x, customExtent.point2.x);
+            var customExtentMaxY = Math.Max(customExtent.point1.y, customExtent.point2.y);
+
+            // define where clause
+            var whereClause = @"GEOCODE_RESULT.MAP_POINT_X BETWEEN :customExtentMinX AND :customExtentMaxX
+                AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :customExtentMinY AND :customExtentMaxY";
+
+            // define oracle parameters
+            var parameters = new {
+                customExtentMinX, customExtentMinY, customExtentMaxX, customExtentMaxY
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateIntersectionPredicate(CrashQuery query)
+        {
+            // TODO: don't hard code spatial schema name
+
+            // isolate relevant filter
+            var intersection = query.intersection;
+
+            var hasOffsetDirs = intersection.offsetDirection.Any();
+            var hasUnknownOffsetDir = intersection.offsetDirection.Any(dir => dir == "U");
+            var intersectionOffsetDirs = intersection.offsetDirection.Where(dir => dir != "U").ToList();
+
+            // define where clause
+            var whereClause = @"EXISTS (
+              SELECT NULL FROM navteq_2015q1.GEOCODE_RESULT
+              WHERE GEOCODE_RESULT.HSMV_RPT_NBR = FACT_CRASH_EVT.HSMV_RPT_NBR
+              AND GEOCODE_RESULT.NEAREST_INTRSECT_ID = :intersectionId
+              AND GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= :intersectionOffsetFeet
+            )";
+
+            if (hasOffsetDirs)
+            {
+                var dirWhereClauses = new List<string>();
+                if (intersectionOffsetDirs.Any())
+                {
+                    dirWhereClauses.Add("FACT_CRASH_EVT.OFFSET_DIR IN :intersectionOffsetDirs");
+                }
+                if (hasUnknownOffsetDir)
+                {
+                    dirWhereClauses.Add("FACT_CRASH_EVT.OFFSET_DIR IS NULL");
+                }
+                whereClause += " AND (" + string.Join(" OR ", dirWhereClauses) + ")";
+            }
+
+            // define oracle parameters
+            var parameters = new {
+                intersection.intersectionId,
+                intersectionOffsetFeet = intersection.offsetInFeet,
+                intersectionOffsetDirs
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateStreetPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var street = query.street;
+
+            // define where clause
+            var whereClause = "GEOCODE_RESULT.CRASH_SEG_ID IN :streetLinkIds";
+            if (street.includeCrossStreets)
+            {
+                whereClause += @" OR (
+                    GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= 100
+                    AND GEOCODE_RESULT.NEAREST_INTRSECT_ID IN (
+                    SELECT DISTINCT INTRSECT_NODE.INTERSECTION_ID
+                    FROM navteq_2015q1.INTRSECT_NODE
+                    WHERE INTRSECT_NODE.NODE_ID IN (
+                        SELECT ST.REF_IN_ID
+                        FROM navteq_2015q1.ST
+                        WHERE ST.LINK_ID IN :streetLinkIds
+                        UNION
+                        SELECT ST.NREF_IN_ID
+                        FROM navteq_2015q1.ST
+                        WHERE ST.LINK_ID IN :streetLinkIds
+                    )
+                  )
+                )";
+            }
+
+            // define oracle parameters
+            var parameters = new {
+                streetLinkIds = street.linkIds
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCustomNetworkPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var customNetwork = query.customNetwork;
+
+            // define where clause
+            var whereClause = "GEOCODE_RESULT.CRASH_SEG_ID IN :customNetworkLinkIds";
+
+            // define oracle parameters
+            var parameters = new {
+                customNetworkLinkIds = customNetwork
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GeneratePublicRoadPredicate(CrashQuery query)
+        {
+            // define where clause
+            var whereClause = "FACT_CRASH_EVT.KEY_RD_SYS_ID IN (140,141,142,143,144,145)";
+
+            // define oracle parameters
+            var parameters = new { };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateFormTypePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var formType = query.formType;
+
+            // define where clause
+            var whereClause = "FACT_CRASH_EVT.FORM_TYPE_CD IN :formType";
+
+            // define oracle parameters
+            var parameters = new { formType };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCodeablePredicate(CrashQuery query)
+        {
+            // define where clause
+            var whereClause = "FACT_CRASH_EVT.CODEABLE = 'T'";
+
+            // define oracle parameters
+            var parameters = new { };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateReportingAgencyPredicate(CrashQuery query)
+        {
+            // TODO: move fhp troop map to oracle
+
+            // isolate relevant filter
+            var reportingAgency = query.reportingAgency;
+
+            var fhpTroopMap = new Dictionary<int, string>()
+            {
+                {2, "A"},
+                {3, "B"},
+                {4, "C"},
+                {5, "D"},
+                {6, "E"},
+                {7, "F"},
+                {8, "G"},
+                {9, "H"},
+                {12, "I"},
+                {13, "J"},
+                {10, "K"},
+                {11, "L"},
+                {14, "Q"}
+            };
+            var agencyIds = reportingAgency
+                .Where(agencyId => agencyId == 1 || agencyId > 14)
+                .ToList();
+            var fhpTroops = reportingAgency
+                .Where(agencyId => agencyId > 1 && agencyId <= 14)
+                .Select(agencyId => fhpTroopMap[agencyId])
+                .ToList();
+
+            // define where clause
+            var whereClauses = new List<string>();
+            if (agencyIds.Count > 0)
+            {
+                whereClauses.Add("FACT_CRASH_EVT.KEY_RPTG_AGNCY IN :agencyIds");
+            }
+            if (fhpTroops.Count > 0)
+            {
+                whereClauses.Add("FACT_CRASH_EVT.KEY_RPTG_AGNCY = 1 AND FACT_CRASH_EVT.KEY_RPTG_UNIT IN :fhpTroops");
+            }
+            var whereClause = string.Join(" OR ", whereClauses);
+
+            // define oracle parameters
+            var parameters = new { agencyIds, fhpTroops };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateDriverGenderPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var driverGender = query.driverGender;
+
+            // define where clause
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM FACT_DRIVER
+                WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
+                AND FACT_DRIVER.KEY_GENDER IN :driverGender
+            )";
+
+            // define oracle parameters
+            var parameters = new { driverGender };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateDriverAgePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var driverAgeRange = query.driverAgeRange;
+
+            var unknownAge = driverAgeRange
+                .Where(ageRange => ageRange.ToUpper() == "U")
+                .Any();
+
+            var lessThanAge = driverAgeRange
+                .Where(ageRange => ageRange.Contains("<"))
+                .Select(ageRange => Int32.Parse(ageRange.Replace("<", "")))
+                .FirstOrDefault();
+
+            var ageRanges = driverAgeRange
+                .Where(ageRange => ageRange.Contains("-"))
+                .Select(ageRange => ageRange.Split('-').Select(ageText => Int32.Parse(ageText)));
+
+            // define where clause
+            var whereClause = "";
+
+            // define oracle parameters
+            var parameters = new { };
+
+            return (whereClause, parameters);
+        }
+
+        /*
+        TEMPLATE:
+
+        private (string whereClause, object parameters) GenerateXPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var x = query.x;
+
+            // define where clause
+            var whereClause = "";
+
+            // define oracle parameters
+            var parameters = new { };
+
+            return (whereClause, parameters);
+        }
+        */
     }
 }

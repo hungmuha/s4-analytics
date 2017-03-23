@@ -31,12 +31,12 @@ namespace S4Analytics.Models
     {
         public int intersectionId;
         public int offsetInFeet;
-        public IEnumerable<string> offsetDirection; // N(orth), S(outh), E(ast), W(est), U(nknown)
+        public IList<string> offsetDirection; // N(orth), S(outh), E(ast), W(est), U(nknown)
     }
 
     public class StreetParameters
     {
-        public IEnumerable<int> linkIds;
+        public IList<int> linkIds;
         public bool includeCrossStreets;
     }
 
@@ -96,40 +96,40 @@ namespace S4Analytics.Models
     public class CrashQuery
     {
         public DateRange dateRange;
-        public IEnumerable<int> dayOfWeek;
+        public IList<int> dayOfWeek;
         public TimeRange timeRange;
-        public IEnumerable<int> dotDistrict;
-        public IEnumerable<int> mpoTpo;
-        public IEnumerable<int> county;
-        public IEnumerable<int> city;
-        public IEnumerable<Coordinates> customArea;
+        public IList<int> dotDistrict;
+        public IList<int> mpoTpo;
+        public IList<int> county;
+        public IList<int> city;
+        public IList<Coordinates> customArea;
         public Extent customExtent;
         public IntersectionParameters intersection;
         public StreetParameters street;
-        public IEnumerable<int> customNetwork;
+        public IList<int> customNetwork;
         public bool? onPublicRoad;
-        public IEnumerable<string> formType; // L(ong), S(hort)
+        public IList<string> formType; // L(ong), S(hort)
         public bool? codeable;
-        public IEnumerable<int> reportingAgency;
-        public IEnumerable<string> driverGender; // M(ale), F(emale), U(nknown)
-        public IEnumerable<string> driverAgeRange; // <15, 15-19, 20-24, ..., U(nknown)
-        public IEnumerable<string> pedestrianAgeRange; // <5, 5-9, 10-14, ..., U(nknown)
-        public IEnumerable<string> cyclistAgeRange; // <5, 5-9, 10-14, ..., U(nknown)
+        public IList<int> reportingAgency;
+        public IList<int> driverGender;
+        public IList<string> driverAgeRange; // <15, 15-19, 20-24, ..., 90+, U(nknown)
+        public IList<string> pedestrianAgeRange; // <5, 5-9, 10-14, ..., 75+, U(nknown)
+        public IList<string> cyclistAgeRange; // <5, 5-9, 10-14, ..., 75+, U(nknown)
         public NonAutoModesOfTravel nonAutoModesOfTravel;
         public SourcesOfTransport sourcesOfTransport;
         public BehavioralFactors behavioralFactors;
         public CommonViolations commonViolations;
-        public IEnumerable<int> vehicleType;
-        public IEnumerable<int> crashTypeSimple;
-        public IEnumerable<int> crashTypeDetailed;
-        public IEnumerable<int> bikePedCrashType;
-        public IEnumerable<int> cmvConfiguration;
-        public IEnumerable<int> environmentalCircumstance;
-        public IEnumerable<int> roadCircumstance;
-        public IEnumerable<int> firstHarmfulEvent;
-        public IEnumerable<int> lightCondition;
-        public IEnumerable<int> roadSystemIdentifier;
-        public IEnumerable<int> weatherCondition;
+        public IList<int> vehicleType;
+        public IList<int> crashTypeSimple;
+        public IList<int> crashTypeDetailed;
+        public IList<int> bikePedCrashType;
+        public IList<int> cmvConfiguration;
+        public IList<int> environmentalCircumstance;
+        public IList<int> roadCircumstance;
+        public IList<int> firstHarmfulEvent;
+        public IList<int> lightCondition;
+        public IList<int> roadSystemIdentifier;
+        public IList<int> weatherCondition;
         public LaneDepartures laneDepartures;
         public OtherCircumstances otherCircumstances;
     }
