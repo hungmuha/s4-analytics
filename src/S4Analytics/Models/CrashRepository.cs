@@ -10,6 +10,8 @@ namespace S4Analytics.Models
     public class CrashRepository : ICrashRepository
     {
         private string _connStr;
+        private readonly IList<string> pseudoEmptyStringList = new List<string>() { "" };
+        private readonly IList<int> pseudoEmptyIntList = new List<int>() { -1 };
 
         public CrashRepository(IOptions<ServerOptions> serverOptions)
         {
@@ -109,8 +111,10 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new {
-                startDate = new DateTime(dateRange.startDate.Year, dateRange.startDate.Month, dateRange.startDate.Day, 0, 0, 0, 0),
-                endDate = new DateTime(dateRange.endDate.Year, dateRange.endDate.Month, dateRange.endDate.Day, 23, 59, 59, 999)
+                startDate = new DateTime(
+                    dateRange.startDate.Year, dateRange.startDate.Month, dateRange.startDate.Day, 0, 0, 0, 0),
+                endDate = new DateTime(
+                    dateRange.endDate.Year, dateRange.endDate.Month, dateRange.endDate.Day, 23, 59, 59, 999)
             };
 
             return (whereClause, parameters);
@@ -138,12 +142,12 @@ namespace S4Analytics.Models
 
             // define where clause
             var whereClause = @"(
-                    :startTime <= :endTime -- same day
-                    AND TO_CHAR(CRASH_TM, 'HH24MI') BETWEEN :startTime AND :endTime
-                ) OR (
-                    :startTime > :endTime -- crosses midnight boundary
-                    AND TO_CHAR(CRASH_TM, 'HH24MI') >= :startTime OR TO_CHAR(CRASH_TM, 'HH24MI') <= :endTime
-                )";
+                :startTime <= :endTime -- same day
+                AND TO_CHAR(CRASH_TM, 'HH24MI') BETWEEN :startTime AND :endTime
+            ) OR (
+                :startTime > :endTime -- crosses midnight boundary
+                AND TO_CHAR(CRASH_TM, 'HH24MI') >= :startTime OR TO_CHAR(CRASH_TM, 'HH24MI') <= :endTime
+            )";
 
             // define oracle parameters
             var parameters = new {
@@ -242,14 +246,19 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes";
-            if (partialCountyMpoIds.Count > 0)
-            {
-                whereClause += " OR EXISTS (SELECT NULL FROM navteq_2015q1.ST_EXT WHERE LINK_ID = GEOCODE_RESULT.CRASH_SEG_ID AND MPO_BND_ID IN :partialCountyMpoIds)";
-            }
+            var whereClause = @"FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes
+                OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes
+                OR EXISTS (
+                    SELECT NULL FROM navteq_2015q1.ST_EXT
+                    WHERE LINK_ID = GEOCODE_RESULT.CRASH_SEG_ID
+                    AND MPO_BND_ID IN :partialCountyMpoIds
+                )";
 
             // define oracle parameters
-            var parameters = new { mpoCountyCodes, partialCountyMpoIds };
+            var parameters = new {
+                mpoCountyCodes = mpoCountyCodes.Any() ? mpoCountyCodes : pseudoEmptyIntList,
+                partialCountyMpoIds = partialCountyMpoIds.Any() ? partialCountyMpoIds : pseudoEmptyIntList
+            };
 
             return (whereClause, parameters);
         }
@@ -268,19 +277,16 @@ namespace S4Analytics.Models
             var unincorporatedCountyCodes = county.Where(countyCode => countyCode >= 100).ToList();
 
             // define where clause
-            var whereClauses = new List<string>();
-            if (fullCountyCodes.Count > 0)
-            {
-                whereClauses.Add("FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY/100) IN :fullCountyCodes OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY/100) IN :fullCountyCodes");
-            }
-            if (unincorporatedCountyCodes.Count > 0)
-            {
-                whereClauses.Add("FACT_CRASH_EVT.KEY_GEOGRAPHY IN :unincorporatedCountyCodes OR GEOCODE_RESULT.KEY_GEOGRAPHY IN :unincorporatedCountyCodes");
-            }
-            var whereClause = string.Join(" OR ", whereClauses);
+            var whereClause = @"FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY/100) IN :fullCountyCodes
+                OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY/100) IN :fullCountyCodes
+                OR FACT_CRASH_EVT.KEY_GEOGRAPHY IN :unincorporatedCountyCodes
+                OR GEOCODE_RESULT.KEY_GEOGRAPHY IN :unincorporatedCountyCodes";
 
             // define oracle parameters
-            var parameters = new { fullCountyCodes, unincorporatedCountyCodes };
+            var parameters = new {
+                fullCountyCodes = fullCountyCodes.Any() ? fullCountyCodes : pseudoEmptyIntList,
+                unincorporatedCountyCodes = unincorporatedCountyCodes.Any() ? unincorporatedCountyCodes : pseudoEmptyIntList
+            };
 
             return (whereClause, parameters);
         }
@@ -357,37 +363,26 @@ namespace S4Analytics.Models
             // isolate relevant filter
             var intersection = query.intersection;
 
-            var hasOffsetDirs = intersection.offsetDirection.Any();
-            var hasUnknownOffsetDir = intersection.offsetDirection.Any(dir => dir == "U");
-            var intersectionOffsetDirs = intersection.offsetDirection.Where(dir => dir != "U").ToList();
+            var unknownOffsetDir = intersection.offsetDirection.Any(dir => dir == "Unknown");
+            var intersectionOffsetDirs = intersection.offsetDirection.Where(dir => dir != "Unknown").ToList();
 
             // define where clause
             var whereClause = @"EXISTS (
-              SELECT NULL FROM navteq_2015q1.GEOCODE_RESULT
-              WHERE GEOCODE_RESULT.HSMV_RPT_NBR = FACT_CRASH_EVT.HSMV_RPT_NBR
-              AND GEOCODE_RESULT.NEAREST_INTRSECT_ID = :intersectionId
-              AND GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= :intersectionOffsetFeet
+                SELECT NULL FROM navteq_2015q1.GEOCODE_RESULT
+                WHERE GEOCODE_RESULT.HSMV_RPT_NBR = FACT_CRASH_EVT.HSMV_RPT_NBR
+                AND GEOCODE_RESULT.NEAREST_INTRSECT_ID = :intersectionId
+                AND GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= :intersectionOffsetFeet
+            ) AND (
+                FACT_CRASH_EVT.OFFSET_DIR IN :intersectionOffsetDirs
+                OR (:matchUnknownOffsetDir = 1 AND FACT_CRASH_EVT.OFFSET_DIR IS NULL)
             )";
-
-            if (hasOffsetDirs)
-            {
-                var dirWhereClauses = new List<string>();
-                if (intersectionOffsetDirs.Any())
-                {
-                    dirWhereClauses.Add("FACT_CRASH_EVT.OFFSET_DIR IN :intersectionOffsetDirs");
-                }
-                if (hasUnknownOffsetDir)
-                {
-                    dirWhereClauses.Add("FACT_CRASH_EVT.OFFSET_DIR IS NULL");
-                }
-                whereClause += " AND (" + string.Join(" OR ", dirWhereClauses) + ")";
-            }
 
             // define oracle parameters
             var parameters = new {
                 intersection.intersectionId,
                 intersectionOffsetFeet = intersection.offsetInFeet,
-                intersectionOffsetDirs
+                intersectionOffsetDirs = intersectionOffsetDirs.Any() ? intersectionOffsetDirs : pseudoEmptyStringList,
+                matchUnknownOffsetDir = unknownOffsetDir ? 1 : 0
             };
 
             return (whereClause, parameters);
@@ -512,19 +507,14 @@ namespace S4Analytics.Models
                 .ToList();
 
             // define where clause
-            var whereClauses = new List<string>();
-            if (agencyIds.Count > 0)
-            {
-                whereClauses.Add("FACT_CRASH_EVT.KEY_RPTG_AGNCY IN :agencyIds");
-            }
-            if (fhpTroops.Count > 0)
-            {
-                whereClauses.Add("FACT_CRASH_EVT.KEY_RPTG_AGNCY = 1 AND FACT_CRASH_EVT.KEY_RPTG_UNIT IN :fhpTroops");
-            }
-            var whereClause = string.Join(" OR ", whereClauses);
+            var whereClause = @"FACT_CRASH_EVT.KEY_RPTG_AGNCY IN :agencyIds
+                OR (FACT_CRASH_EVT.KEY_RPTG_AGNCY = 1 AND FACT_CRASH_EVT.KEY_RPTG_UNIT IN :fhpTroops)";
 
             // define oracle parameters
-            var parameters = new { agencyIds, fhpTroops };
+            var parameters = new {
+                agencyIds = agencyIds.Any() ? agencyIds : pseudoEmptyIntList,
+                fhpTroops = fhpTroops.Any() ? fhpTroops : pseudoEmptyStringList
+            };
 
             return (whereClause, parameters);
         }
@@ -551,19 +541,145 @@ namespace S4Analytics.Models
         {
             // isolate relevant filter
             var driverAgeRange = query.driverAgeRange;
+            var unknownAge = driverAgeRange.Where(ageRange => ageRange == "Unknown").Any();
+            var ageRanges = driverAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
 
-            var unknownAge = driverAgeRange
-                .Where(ageRange => ageRange.ToUpper() == "U")
-                .Any();
+            // define where clause
+            var whereClause = @"(:matchUnknownDriverAge = 1
+                AND NOT EXISTS (
+                    SELECT NULL FROM FACT_DRIVER
+                    WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
+                )
+            ) OR EXISTS (
+                SELECT NULL FROM s4_warehouse.FACT_DRIVER
+                LEFT OUTER JOIN s4_warehouse.V_DRIVER_AGE_RNG
+                    ON FACT_DRIVER.KEY_AGE_RNG = V_DRIVER_AGE_RNG.ID
+                WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
+                AND (
+                    V_DRIVER_AGE_RNG.NM_ATTR_TX IN :driverAgeRanges
+                    OR (:matchUnknownDriverAge = 1 AND V_DRIVER_AGE_RNG.NM_ATTR_TX IS NULL)
+                )
+            )";
 
-            var lessThanAge = driverAgeRange
-                .Where(ageRange => ageRange.Contains("<"))
-                .Select(ageRange => Int32.Parse(ageRange.Replace("<", "")))
-                .FirstOrDefault();
+            // define oracle parameters
+            var parameters = new {
+                driverAgeRanges = ageRanges.Any() ? ageRanges : pseudoEmptyStringList,
+                matchUnknownDriverAge = unknownAge ? 1 : 0
+            };
 
-            var ageRanges = driverAgeRange
-                .Where(ageRange => ageRange.Contains("-"))
-                .Select(ageRange => ageRange.Split('-').Select(ageText => Int32.Parse(ageText)));
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GeneratePedestrianAgePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var pedestrianAgeRange = query.pedestrianAgeRange;
+            var unknownAge = pedestrianAgeRange.Where(ageRange => ageRange == "Unknown").Any();
+            var ageRanges = pedestrianAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
+
+            // define where clause
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM s4_warehouse.FACT_NON_MOTORIST
+                LEFT OUTER JOIN s4_warehouse.V_NM_AGE_RNG
+                    ON FACT_NON_MOTORIST.KEY_AGE_RNG = V_NM_AGE_RNG.ID
+                WHERE FACT_NON_MOTORIST.KEY_DESC IN (230, 231)
+                AND FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_NON_MOTORIST.HSMV_RPT_NBR
+                AND (
+                    V_NM_AGE_RNG.NM_ATTR_TX IN :pedestrianAgeRanges
+                    OR (:matchUnknownPedestrianAge = 1 AND V_NM_AGE_RNG.NM_ATTR_TX IS NULL)
+                )
+            )";
+
+            // define oracle parameters
+            var parameters = new {
+                pedestrianAgeRanges = ageRanges.Any() ? ageRanges : pseudoEmptyStringList,
+                matchUnknownPedestrianAge = unknownAge ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCyclistAgePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var cyclistAgeRange = query.cyclistAgeRange;
+
+            var unknownAge = cyclistAgeRange.Where(ageRange => ageRange == "Unknown").Any();
+            var ageRanges = cyclistAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
+
+            // define where clause
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM s4_warehouse.FACT_NON_MOTORIST
+                LEFT OUTER JOIN s4_warehouse.V_NM_AGE_RNG
+                    ON FACT_NON_MOTORIST.KEY_AGE_RNG = V_NM_AGE_RNG.ID
+                WHERE FACT_NON_MOTORIST.KEY_DESC IN (232, 233)
+                AND FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_NON_MOTORIST.HSMV_RPT_NBR
+                AND (
+                  V_NM_AGE_RNG.NM_ATTR_TX IN :cyclistAgeRanges
+                  OR (:matchUnknownCyclistAge = 1 AND V_NM_AGE_RNG.NM_ATTR_TX IS NULL)
+                )
+            )";
+
+            // define oracle parameters
+            var parameters = new {
+                cyclistAgeRanges = ageRanges.Any() ? ageRanges : pseudoEmptyStringList,
+                matchUnknownCyclistAge = unknownAge ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateNonAutoModeOfTravelPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var ped = query.nonAutoModesOfTravel.pedestrian == true;
+            var bike = query.nonAutoModesOfTravel.bicyclist == true;
+            var moped = query.nonAutoModesOfTravel.moped == true;
+            var motorcycle = query.nonAutoModesOfTravel.motorcycle == true;
+
+            // define where clause
+            var whereClause = @"(:matchNonAutoModePed = 1 AND FACT_CRASH_EVT.PED_CNT > 0)
+                OR (:matchNonAutoModeBike = 1 AND FACT_CRASH_EVT.BIKE_CNT > 0)
+                OR (:matchNonAutoModeMoped = 1 AND FACT_CRASH_EVT.MOPED_CNT > 0)
+                OR (:matchNonAutoModeMotorcycle = 1 AND FACT_CRASH_EVT.MOTORCYCLE_CNT > 0)";
+
+            // define oracle parameters
+            var parameters = new {
+                matchNonAutoModePed = ped ? 1 : 0,
+                matchNonAutoModeBike = bike ? 1 : 0,
+                matchNonAutoModeMoped = moped ? 1 : 0,
+                matchNonAutoModeMotorcycle = motorcycle ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateSourceOfTransportPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var ems = query.sourcesOfTransport.ems == true;
+            var lawEnforcement = query.sourcesOfTransport.lawEnforcement == true;
+            var other = query.sourcesOfTransport.other == true;
+
+            // define where clause
+            var whereClause = @"(:matchEmsTransport = 1 AND FACT_CRASH_EVT.TRANS_BY_EMS_CNT > 0)
+                OR (:matchLawEnforcementTransport = 1 AND FACT_CRASH_EVT.TRANS_BY_LE_CNT > 0)
+                OR (:matchOtherTransport = 1 AND FACT_CRASH_EVT.TRANS_BY_OTH_CNT > 0)";
+
+            // define oracle parameters
+            var parameters = new {
+                matchEmsTransport = ems ? 1 : 0,
+                matchLawEnforcementTransport = lawEnforcement ? 1 : 0,
+                matchOtherTransport = other ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateBehavioralFactorPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var behavioralFactors = query.behavioralFactors;
 
             // define where clause
             var whereClause = "";
