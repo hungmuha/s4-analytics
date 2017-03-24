@@ -45,7 +45,97 @@ namespace S4Analytics.Models
         }
 
         public IEnumerable<CrashResult> GetCrashes(int queryId) {
-            return new List<CrashResult>();
+            var queryText = @"SELECT
+              /* geocode_result.map_point_x,
+              geocode_result.map_point_y,
+              geocode_result.center_line_x,
+              geocode_result.center_line_y,
+              geocode_result.crash_seg_id,
+              geocode_result.nearest_intrsect_id,
+              geocode_result.nearest_intrsect_offset_ft,
+              geocode_result.nearest_intrsect_offset_dir,
+              geocode_result.ref_intrsect_id,
+              geocode_result.ref_intrsect_offset_ft,
+              geocode_result.ref_intrsect_offset_dir, */
+              fact_crash_evt.hsmv_rpt_nbr AS Id,
+              fact_crash_evt.hsmv_rpt_nbr AS HsmvReportNumber /*,
+              fact_crash_evt.key_crash_dt crash_date,
+              fact_crash_evt.key_crash_sev,
+              fact_crash_evt.key_crash_type,
+              v_crash_sev.crash_attr_tx crash_severity,
+              v_crash_type.crash_attr_tx crash_type,
+              v_crash_light_cond.crash_attr_tx light_cond,
+              v_crash_weather_cond.crash_attr_tx weather_cond,
+              fact_crash_evt.crash_tm crash_time,
+              dim_geography.cnty_nm county,
+              dim_geography.city_nm city,
+              geocode_result.st_nm street_name,
+              geocode_result.intrsect_st_nm intersecting_street,
+              fact_crash_evt.is_alc_rel is_alcohol_related,
+              fact_crash_evt.is_distracted,
+              fact_crash_evt.is_drug_rel is_drug_related,
+              fact_crash_evt.lat,
+              fact_crash_evt.lng,
+              fact_crash_evt.offset_dir,
+              fact_crash_evt.offset_ft,
+              fact_crash_evt.veh_cnt vehicle_count,
+              fact_crash_evt.nm_cnt nonmotorist_count,
+              fact_crash_evt.fatality_cnt fatality_count,
+              fact_crash_evt.inj_cnt injury_count,
+              fact_crash_evt.tot_dmg_amt,
+              dim_agncy.agncy_short_nm,
+              geocode_result.cnty_cd cnty_cd,
+              geocode_result.city_cd city_cd,
+              fact_crash_evt.agncy_rpt_nbr agency_report_number,
+              decode(fact_crash_evt.form_type_cd, 'L', 'Long', 'S', 'Short', '') form_type,
+              v_crash_type_simplified.crash_attr_tx crash_type_simple,
+              fact_crash_evt.crash_type_dir_tx,
+              v_crash_road_surf_cond.crash_attr_tx,
+              dim_harmful_evt.harmful_evt_tx,
+              fact_crash_evt.img_ext_tx,
+              geocode_result.sym_angle,
+              dim_agncy.ID,
+              CASE
+                WHEN v_bike_ped_crash_type.bike_or_ped IS NOT NULL THEN v_bike_ped_crash_type.bike_or_ped
+                WHEN (fact_crash_evt.ped_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedestrian') AND (fact_crash_evt.bike_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedalcycle') THEN '?'
+                WHEN fact_crash_evt.ped_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedestrian' THEN 'P'
+                WHEN fact_crash_evt.bike_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedalcycle' THEN 'B'
+              END AS bike_or_ped,
+              v_bike_ped_crash_type.crash_type_nm AS bike_ped_crash_type_nm,
+              fact_crash_evt.bike_cnt,
+              fact_crash_evt.ped_cnt */
+            FROM fact_crash_evt
+            INNER JOIN crash_query
+              ON crash_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
+            INNER JOIN navteq_2015q1.geocode_result
+              ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
+            LEFT JOIN dim_agncy
+              ON fact_crash_evt.key_rptg_agncy = dim_agncy.ID
+            LEFT JOIN dim_geography
+              ON fact_crash_evt.key_geography = dim_geography.ID
+            LEFT JOIN v_crash_sev
+              ON fact_crash_evt.key_crash_sev = v_crash_sev.ID
+            LEFT JOIN v_crash_weather_cond
+              ON fact_crash_evt.key_weather_cond = v_crash_weather_cond.ID
+            LEFT JOIN v_crash_light_cond
+              ON fact_crash_evt.key_light_cond = v_crash_light_cond.ID
+            LEFT JOIN v_crash_type_simplified
+              ON fact_crash_evt.key_crash_type = v_crash_type_simplified.ID
+            LEFT JOIN v_crash_type
+              ON fact_crash_evt.key_crash_type = v_crash_type.ID
+            LEFT JOIN v_crash_road_surf_cond
+              ON fact_crash_evt.key_rd_surf_cond = v_crash_road_surf_cond.ID
+            LEFT JOIN dim_harmful_evt
+              ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID
+            LEFT JOIN v_bike_ped_crash_type
+              ON fact_crash_evt.key_bike_ped_crash_type = v_bike_ped_crash_type.crash_type_id
+            WHERE crash_query.id = :queryId";
+
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var crashResults = conn.Query<CrashResult>(queryText, new { queryId });
+                return crashResults;
+            }
         }
 
         private (string, DynamicParameters) ConstructCrashQuery(int queryId, CrashQuery query)
@@ -358,7 +448,7 @@ namespace S4Analytics.Models
 
         private (string whereClause, object parameters) GenerateIntersectionPredicate(CrashQuery query)
         {
-            // TODO: don't hard code spatial schema name
+            // TODO: don't hard code schema names
 
             // isolate relevant filter
             var intersection = query.intersection;
@@ -390,6 +480,8 @@ namespace S4Analytics.Models
 
         private (string whereClause, object parameters) GenerateStreetPredicate(CrashQuery query)
         {
+            // TODO: refactor query to use WHERE EXISTS instead of IN
+
             // isolate relevant filter
             var street = query.street;
 
@@ -541,6 +633,7 @@ namespace S4Analytics.Models
         {
             // isolate relevant filter
             var driverAgeRange = query.driverAgeRange;
+
             var unknownAge = driverAgeRange.Where(ageRange => ageRange == "Unknown").Any();
             var ageRanges = driverAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
 
@@ -574,6 +667,7 @@ namespace S4Analytics.Models
         {
             // isolate relevant filter
             var pedestrianAgeRange = query.pedestrianAgeRange;
+
             var unknownAge = pedestrianAgeRange.Where(ageRange => ageRange == "Unknown").Any();
             var ageRanges = pedestrianAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
 
@@ -632,10 +726,7 @@ namespace S4Analytics.Models
         private (string whereClause, object parameters) GenerateNonAutoModeOfTravelPredicate(CrashQuery query)
         {
             // isolate relevant filter
-            var ped = query.nonAutoModesOfTravel.pedestrian == true;
-            var bike = query.nonAutoModesOfTravel.bicyclist == true;
-            var moped = query.nonAutoModesOfTravel.moped == true;
-            var motorcycle = query.nonAutoModesOfTravel.motorcycle == true;
+            var nonAutoModesOfTravel = query.nonAutoModesOfTravel;
 
             // define where clause
             var whereClause = @"(:matchNonAutoModePed = 1 AND FACT_CRASH_EVT.PED_CNT > 0)
@@ -645,10 +736,10 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new {
-                matchNonAutoModePed = ped ? 1 : 0,
-                matchNonAutoModeBike = bike ? 1 : 0,
-                matchNonAutoModeMoped = moped ? 1 : 0,
-                matchNonAutoModeMotorcycle = motorcycle ? 1 : 0
+                matchNonAutoModePed = nonAutoModesOfTravel.pedestrian == true ? 1 : 0,
+                matchNonAutoModeBike = nonAutoModesOfTravel.bicyclist == true ? 1 : 0,
+                matchNonAutoModeMoped = nonAutoModesOfTravel.moped == true ? 1 : 0,
+                matchNonAutoModeMotorcycle = nonAutoModesOfTravel.motorcycle == true ? 1 : 0
             };
 
             return (whereClause, parameters);
@@ -657,20 +748,18 @@ namespace S4Analytics.Models
         private (string whereClause, object parameters) GenerateSourceOfTransportPredicate(CrashQuery query)
         {
             // isolate relevant filter
-            var ems = query.sourcesOfTransport.ems == true;
-            var lawEnforcement = query.sourcesOfTransport.lawEnforcement == true;
-            var other = query.sourcesOfTransport.other == true;
+            var sourcesOfTransport = query.sourcesOfTransport;
 
             // define where clause
-            var whereClause = @"(:matchEmsTransport = 1 AND FACT_CRASH_EVT.TRANS_BY_EMS_CNT > 0)
-                OR (:matchLawEnforcementTransport = 1 AND FACT_CRASH_EVT.TRANS_BY_LE_CNT > 0)
-                OR (:matchOtherTransport = 1 AND FACT_CRASH_EVT.TRANS_BY_OTH_CNT > 0)";
+            var whereClause = @"(:matchTransportEms = 1 AND FACT_CRASH_EVT.TRANS_BY_EMS_CNT > 0)
+                OR (:matchTransportLawEnforcement = 1 AND FACT_CRASH_EVT.TRANS_BY_LE_CNT > 0)
+                OR (:matchTransportOther = 1 AND FACT_CRASH_EVT.TRANS_BY_OTH_CNT > 0)";
 
             // define oracle parameters
             var parameters = new {
-                matchEmsTransport = ems ? 1 : 0,
-                matchLawEnforcementTransport = lawEnforcement ? 1 : 0,
-                matchOtherTransport = other ? 1 : 0
+                matchTransportEms = sourcesOfTransport.ems == true ? 1 : 0,
+                matchTransportLawEnforcement = sourcesOfTransport.lawEnforcement == true ? 1 : 0,
+                matchTransportOther = sourcesOfTransport.other == true ? 1 : 0
             };
 
             return (whereClause, parameters);
@@ -682,10 +771,361 @@ namespace S4Analytics.Models
             var behavioralFactors = query.behavioralFactors;
 
             // define where clause
-            var whereClause = "";
+            var whereClause = @"(:matchBehavioralAlcohol = 1 AND FACT_CRASH_EVT.IS_ALC_REL = '1')
+                OR (:matchBehavioralDrugs = 1 AND FACT_CRASH_EVT.IS_DRUG_REL = '1')
+                OR (:matchBehavioralDistraction = 1 AND FACT_CRASH_EVT.IS_DISTRACTED = '1')
+                OR (:matchBehavioralAggressiveDriving = 1 AND FACT_CRASH_EVT.IS_AGGRESSIVE = '1')";
 
             // define oracle parameters
-            var parameters = new { };
+            var parameters = new {
+                matchBehavioralAlcohol = behavioralFactors.alcohol == true ? 1 : 0,
+                matchBehavioralDrugs = behavioralFactors.drugs == true ? 1 : 0,
+                matchBehavioralDistraction = behavioralFactors.distraction == true ? 1 : 0,
+                matchBehavioralAggressiveDriving = behavioralFactors.aggressiveDriving == true ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCommonViolationPredicate(CrashQuery query)
+        {
+            // TODO: tag crashes with common violation types in oracle
+
+            // isolate relevant filter
+            var commonViolations = query.commonViolations;
+
+            // define where clause
+            var whereClause = @"EXISTS (
+              SELECT NULL FROM s4_warehouse.FACT_VIOLATION
+              WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_VIOLATION.HSMV_RPT_NBR
+              AND (
+                (:matchViolationSpeed = 1 AND UPPER(FACT_VIOLATION.CHARGE) LIKE '%SPEED%')
+                OR (
+                  :matchViolationRightOfWay = 1
+                  AND (
+                    UPPER(FACT_VIOLATION.CHARGE) LIKE '%FAIL% TO YIELD%'
+                    OR UPPER(FACT_VIOLATION.CHARGE) LIKE '%RIGHT OF WAY%'
+                  )
+                )
+                OR (:matchViolationTrafficControlDevice = 1 AND UPPER(FACT_VIOLATION.CHARGE) LIKE '%TRAFFIC CONTROL%')
+                OR (:matchViolationCarelessDriving = 1 AND UPPER(FACT_VIOLATION.CHARGE) LIKE '%CARELESS%')
+                OR (
+                  :matchViolationDui = 1
+                  AND (
+                    REGEXP_LIKE(FACT_VIOLATION.FL_STATUTE_NBR, '^316(\.|-|\,| |)193(\.|-|\,| |\(|$)')
+                    OR (
+                      REGEXP_LIKE(UPPER(FACT_VIOLATION.FL_STATUTE_NBR), '^(|CHAPTER )316$')
+                      AND REGEXP_LIKE(UPPER(FACT_VIOLATION.CHARGE), '^D(|\.| )U(|\.| )I')
+                    )
+                  )
+                )
+                OR (:matchViolationRedLight = 1 AND OR UPPER(FACT_VIOLATION.FL_STATUTE_NBR) LIKE '316%075%1%C%')
+              )
+            )
+            OR (
+              :matchViolationRedLight = 1
+              AND EXISTS (
+                SELECT NULL FROM s4_warehouse.FACT_DRIVER FD
+                WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FD.HSMV_RPT_NBR
+                AND ( FD.KEY_ACTION1 = 7 OR FD.KEY_ACTION2 = 7 OR FD.KEY_ACTION3 = 7 OR FD.KEY_ACTION4 = 7 )
+              )
+            )";
+
+            // define oracle parameters
+            var parameters = new {
+                matchViolationSpeed = commonViolations.speed == true ? 1 : 0,
+                matchViolationRedLight = commonViolations.redLight == true ? 1 : 0,
+                matchViolationRightOfWay = commonViolations.rightOfWay == true ? 1 : 0,
+                matchViolationTrafficControlDevice = commonViolations.trafficControlDevice == true ? 1 : 0,
+                matchViolationCarelessDriving = commonViolations.carelessDriving == true ? 1 : 0,
+                matchViolationDui = commonViolations.dui == true ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateVehicleTypePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var vehicleType = query.vehicleType;
+
+            // define where clause
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM s4_warehouse.V_FACT_ALL_VEH
+                WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
+                AND V_FACT_ALL_VEH.KEY_VEH_TYPE IN :vehicleTypes
+            )";
+
+            // define oracle parameters
+            var parameters = new { vehicleTypes = vehicleType };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCrashTypeSimplePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var crashTypeSimple = query.crashTypeSimple;
+
+            // define where clause
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM s4_warehouse.V_CRASH_TYPE_SIMPLIFIED
+                WHERE FACT_CRASH_EVT.KEY_CRASH_TYPE = V_CRASH_TYPE_SIMPLIFIED.ID
+                AND V_CRASH_TYPE_SIMPLIFIED.CRASH_ATTR_TX IN :crashTypeSimple
+            )";
+
+            // define oracle parameters
+            var parameters = new {
+                crashTypeSimple
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCrashTypeDetailedPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var crashTypeDetailed = query.crashTypeDetailed;
+
+            // define where clause
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM s4_warehouse.V_CRASH_TYPE
+                WHERE FACT_CRASH_EVT.KEY_CRASH_TYPE = V_CRASH_TYPE.ID
+                AND V_CRASH_TYPE.ID IN :crashTypeDetailed
+            )";
+
+            // define oracle parameters
+            var parameters = new { crashTypeDetailed };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateBikePedCrashTypePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var bikePedCrashType = query.bikePedCrashType;
+
+            // define where clause
+            var whereClause = @"FACT_CRASH_EVT.KEY_BIKE_PED_CRASH_TYPE IN :bikePedCrashType
+            OR (
+                -- not typed yet
+                (
+                    FACT_CRASH_EVT.PED_CNT > 0
+                    OR FACT_CRASH_EVT.BIKE_CNT > 0
+                    OR DIM_HARMFUL_EVT.HARMFUL_EVT_TX IN ('Pedestrian', 'Pedalcycle')
+                )
+                AND FACT_CRASH_EVT.KEY_BIKE_PED_CRASH_TYPE IS NULL
+            )";
+
+            // define oracle parameters
+            var parameters = new { bikePedCrashType };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCmvConfigurationPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var cmvConfiguration = query.cmvConfiguration;
+
+            // define where clause
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM s4_warehouse.FACT_COMM_VEH
+                WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_COMM_VEH.HSMV_RPT_NBR
+                AND FACT_COMM_VEH.KEY_CMV_CONFIG IN :cmvConfiguration
+            )";
+
+            // define oracle parameters
+            var parameters = new { cmvConfiguration };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateEnvironmentalCircumstancePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var environmentalCircumstance = query.environmentalCircumstance;
+
+            // define where clause
+            var whereClause = @"FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_ENV1 IN :environmentalCircumstance
+                OR FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_ENV2 IN :environmentalCircumstance
+                OR FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_ENV3 IN :environmentalCircumstance";
+
+            // define oracle parameters
+            var parameters = new { environmentalCircumstance };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateRoadCircumstancePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var roadCircumstance = query.roadCircumstance;
+
+            // define where clause
+            var whereClause = @"FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_RD1 IN :roadCircumstance
+                OR FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_RD2 IN :roadCircumstance
+                OR FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_RD3 IN :roadCircumstance";
+
+            // define oracle parameters
+            var parameters = new { roadCircumstance };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateFirstHarmfulEventPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var firstHarmfulEvent = query.firstHarmfulEvent;
+
+            // define where clause
+            var whereClause = "FACT_CRASH_EVT.KEY_1ST_HE IN :firstHarmfulEvent";
+
+            // define oracle parameters
+            var parameters = new { firstHarmfulEvent };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateLightConditionPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var lightCondition = query.lightCondition;
+
+            // define where clause
+            var whereClause = @"FACT_CRASH_EVT.KEY_LIGHT_COND IN :lightCondition";
+
+            // define oracle parameters
+            var parameters = new { lightCondition };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateRoadSystemIdentifierPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var roadSystemIdentifier = query.roadSystemIdentifier;
+
+            // define where clause
+            var whereClause = @"FACT_CRASH_EVT.KEY_RD_SYS_ID IN :roadSystemIdentifier";
+
+            // define oracle parameters
+            var parameters = new { roadSystemIdentifier };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateWeatherConditionPredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var weatherCondition = query.weatherCondition;
+
+            // define where clause
+            var whereClause = @"FACT_CRASH_EVT.KEY_WEATHER_COND IN :weatherCondition";
+
+            // define oracle parameters
+            var parameters = new { weatherCondition };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateLaneDeparturePredicate(CrashQuery query)
+        {
+            // TODO: tag crashes with lane departure in oracle
+            // TODO: for off-road, we should join V_CRASH_TYPE and filter on V_CRASH_TYPE.CRASH_ATTR_CD = 6
+            // TODO: for collision with fixed object, we should join DIM_HARMFUL_EVT and filter on DIM_HARMFUL_EVT.HARMFUL_EVT_CD BETWEEN 19 AND 39 (except 20)
+
+            // isolate relevant filter
+            var laneDepartures = query.laneDepartures;
+
+            // define where clause
+            var whereClause = @"(:matchLaneDepartureOffRoad = 1 AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45)
+                OR (
+                    :matchLaneDepartureRollover = 1
+                    AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45
+                    AND (
+                        EXISTS (
+                            SELECT NULL FROM s4_warehouse.V_FACT_ALL_VEH
+                            WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
+                            AND (
+                                V_FACT_ALL_VEH.KEY_MOST_HE = 1
+                                OR V_FACT_ALL_VEH.KEY_HE1 = 1
+                                OR V_FACT_ALL_VEH.KEY_HE2 = 1
+                                OR V_FACT_ALL_VEH.KEY_HE3 = 1
+                                OR V_FACT_ALL_VEH.KEY_HE4 = 1
+                            )
+                        )
+                    )
+                )
+                OR (
+                    :matchLaneDepartureCollision = 1
+                    AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45
+                    AND (
+                        EXISTS (
+                            SELECT NULL FROM s4_warehouse.V_FACT_ALL_VEH
+                            WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
+                            AND (
+                                V_FACT_ALL_VEH.KEY_MOST_HE IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
+                                OR V_FACT_ALL_VEH.KEY_HE1 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
+                                OR V_FACT_ALL_VEH.KEY_HE2 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
+                                OR V_FACT_ALL_VEH.KEY_HE3 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
+                                OR V_FACT_ALL_VEH.KEY_HE4 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
+                            )
+                        )
+                    )
+                )
+                OR (:matchLaneDepartureOncoming = 1 AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 41)
+                OR (:matchLaneDepartureSideswipe = 1 AND FACT_CRASH_EVT.KEY_CRASH_TYPE IN (46,55))";
+
+            // define oracle parameters
+            var parameters = new {
+                matchLaneDepartureOffRoad = laneDepartures.offRoadAll == true ? 1 : 0,
+                matchLaneDepartureRollover = laneDepartures.offRoadRollover == true ? 1 : 0,
+                matchLaneDepartureCollision = laneDepartures.offRoadCollisionWithFixedObject == true ? 1 : 0,
+                matchLaneDepartureOncoming = laneDepartures.crossedIntoOncomingTraffic == true ? 1 : 0,
+                matchLaneDepartureSideswipe = laneDepartures.sideswipe == true ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateOtherCircumstancePredicate(CrashQuery query)
+        {
+            // isolate relevant filter
+            var otherCircumstances = query.otherCircumstances;
+
+            // define where clause
+            var whereClause = @"(:matchSchoolBusRelated = 1 AND FACT_CRASH_EVT.IS_SCH_BUS_REL = '1')
+                OR (
+                  :matchWithinCityLimits = 1
+                  AND (
+                    FACT_CRASH_EVT.IS_WITHIN_CITY_LIM = '1'
+                    OR MOD(GEOCODE_RESULT.KEY_GEOGRAPHY, 100) <> 0
+                  )
+                )
+                OR (:matchWithinInterchange = 1 AND FACT_CRASH_EVT.IS_1ST_HE_WITHIN_INTRCHG = '1')
+                OR (:matchWorkZoneRelated = 1 AND FACT_CRASH_EVT.IS_WORK_ZN_REL = '1')
+                OR (:matchWorkersInWorkZone = 1 AND FACT_CRASH_EVT.IS_WORKERS_IN_WORK_ZN = '1')
+                OR (:matchLawEnforcementInWorkZone = 1 AND FACT_CRASH_EVT.IS_LE_IN_WORK_ZN = '1')
+                OR (
+                  :matchHitAndRun = 1
+                  AND EXISTS (
+                    SELECT NULL FROM s4_warehouse.V_FACT_ALL_VEH
+                    WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
+                    AND V_FACT_ALL_VEH.IS_HIT_AND_RUN = '1'
+                  )
+                )";
+
+            // define oracle parameters
+            var parameters = new {
+                matchSchoolBusRelated = otherCircumstances.schoolBusRelated == true ? 1 : 0,
+                matchWithinCityLimits = otherCircumstances.withinCityLimits == true ? 1 : 0,
+                matchWithinInterchange = otherCircumstances.withinInterchange == true ? 1 : 0,
+                matchWorkZoneRelated = otherCircumstances.workZoneRelated == true ? 1 : 0,
+                matchWorkersInWorkZone = otherCircumstances.workersInWorkZone == true ? 1 : 0,
+                matchLawEnforcementInWorkZone = otherCircumstances.lawEnforcementInWorkZone == true ? 1 : 0,
+                matchHitAndRun = otherCircumstances.hitAndRun == true ? 1 : 0
+            };
 
             return (whereClause, parameters);
         }
@@ -699,7 +1139,7 @@ namespace S4Analytics.Models
             var x = query.x;
 
             // define where clause
-            var whereClause = "";
+            var whereClause = @"";
 
             // define oracle parameters
             var parameters = new { };

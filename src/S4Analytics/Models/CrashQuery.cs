@@ -85,16 +85,17 @@ namespace S4Analytics.Models
     public class OtherCircumstances
     {
         public bool? hitAndRun;
-        public bool? schoolBus;
+        public bool? schoolBusRelated;
         public bool? withinCityLimits;
         public bool? withinInterchange;
-        public bool? workZone;
+        public bool? workZoneRelated;
         public bool? workersInWorkZone;
         public bool? lawEnforcementInWorkZone;
     }
 
     public class CrashQuery
     {
+        // TODO: add inline docs
         public DateRange dateRange;
         public IList<int> dayOfWeek;
         public TimeRange timeRange;
@@ -120,7 +121,7 @@ namespace S4Analytics.Models
         public BehavioralFactors behavioralFactors;
         public CommonViolations commonViolations;
         public IList<int> vehicleType;
-        public IList<int> crashTypeSimple;
+        public IList<string> crashTypeSimple;
         public IList<int> crashTypeDetailed;
         public IList<int> bikePedCrashType;
         public IList<int> cmvConfiguration;
