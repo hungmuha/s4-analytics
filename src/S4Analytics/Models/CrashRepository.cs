@@ -10,8 +10,8 @@ namespace S4Analytics.Models
     public class CrashRepository : ICrashRepository
     {
         private string _connStr;
-        private readonly IList<string> pseudoEmptyStringList = new List<string>() { "" };
-        private readonly IList<int> pseudoEmptyIntList = new List<int>() { -1 };
+        private readonly IList<string> _PSEUDO_EMPTY_STRING_LIST = new List<string>() { "" };
+        private readonly IList<int> _PSEUDO_EMPTY_INT_LIST = new List<int>() { -1 };
 
         public CrashRepository(IOptions<ServerOptions> serverOptions)
         {
@@ -155,12 +155,12 @@ namespace S4Analytics.Models
             var whereClauses = new List<string>();
             var queryParameters = new DynamicParameters(initialParameters);
 
-            // populate list with generator methods for all valid filters
+            // get predicate methods
             var predicateMethods = GetPredicateMethods(query);
 
             // generate where clause and query parameters for each valid filter
             predicateMethods.ForEach(generatePredicate => {
-                (var whereClause, var parameters) = generatePredicate.Invoke(query);
+                (var whereClause, var parameters) = generatePredicate.Invoke();
                 if (whereClause != null)
                 {
                     whereClauses.Add(whereClause);
@@ -174,27 +174,57 @@ namespace S4Analytics.Models
             return (queryText, queryParameters);
         }
 
-        private List<Func<CrashQuery, (string, object)>> GetPredicateMethods(CrashQuery query)
+        private List<Func<(string, object)>> GetPredicateMethods(CrashQuery query)
         {
-            bool hasDateRange = query.dateRange != null;
-            bool hasDayOfWeek = query.dayOfWeek != null && query.dayOfWeek.Count > 0;
-            bool hasTimeRange = query.timeRange != null;
-            bool hasDotDistrict = query.dotDistrict != null && query.dotDistrict.Count > 0;
-            bool hasMpoTpo = query.mpoTpo != null && query.mpoTpo.Count > 0;
-
-            var predicateMethods = new List<Func<CrashQuery, (string, object)>>();
-
-            if (hasDateRange) { predicateMethods.Add(GenerateDateRangePredicate); }
-            if (hasDayOfWeek) { predicateMethods.Add(GenerateDayOfWeekPredicate); }
-            if (hasTimeRange) { predicateMethods.Add(GenerateTimeRangePredicate); }
-
-            return predicateMethods;
+            Func<(string, object)>[] predicateMethods =
+            {
+                () => GenerateDateRangePredicate(query.dateRange),
+                () => GenerateDayOfWeekPredicate(query.dayOfWeek),
+                () => GenerateTimeRangePredicate(query.timeRange),
+                () => GenerateDotDistrictPredicate(query.dotDistrict),
+                () => GenerateMpoTpoPredicate(query.mpoTpo),
+                () => GenerateCountyPredicate(query.county),
+                () => GenerateCityPredicate(query.city),
+                () => GenerateCustomAreaPredicate(query.customArea),
+                () => GenerateCustomExtentPredicate(query.customExtent),
+                () => GenerateIntersectionPredicate(query.intersection),
+                () => GenerateStreetPredicate(query.street),
+                () => GenerateCustomNetworkPredicate(query.customNetwork),
+                () => GeneratePublicRoadPredicate(query.onPublicRoad),
+                () => GenerateFormTypePredicate(query.formType),
+                () => GenerateCodeablePredicate(query.codeable),
+                () => GenerateReportingAgencyPredicate(query.reportingAgency),
+                () => GenerateDriverGenderPredicate(query.driverGender),
+                () => GenerateDriverAgePredicate(query.driverAgeRange),
+                () => GeneratePedestrianAgePredicate(query.pedestrianAgeRange),
+                () => GenerateCyclistAgePredicate(query.cyclistAgeRange),
+                () => GenerateNonAutoModeOfTravelPredicate(query.nonAutoModesOfTravel),
+                () => GenerateSourceOfTransportPredicate(query.sourcesOfTransport),
+                () => GenerateBehavioralFactorPredicate(query.behavioralFactors),
+                () => GenerateCommonViolationPredicate(query.commonViolations),
+                () => GenerateVehicleTypePredicate(query.vehicleType),
+                () => GenerateCrashTypeSimplePredicate(query.crashTypeSimple),
+                () => GenerateCrashTypeDetailedPredicate(query.crashTypeDetailed),
+                () => GenerateBikePedCrashTypePredicate(query.bikePedCrashType),
+                () => GenerateCmvConfigurationPredicate(query.cmvConfiguration),
+                () => GenerateEnvironmentalCircumstancePredicate(query.environmentalCircumstance),
+                () => GenerateRoadCircumstancePredicate(query.roadCircumstance),
+                () => GenerateFirstHarmfulEventPredicate(query.firstHarmfulEvent),
+                () => GenerateLightConditionPredicate(query.lightCondition),
+                () => GenerateRoadSystemIdentifierPredicate(query.roadSystemIdentifier),
+                () => GenerateWeatherConditionPredicate(query.weatherCondition),
+                () => GenerateLaneDeparturePredicate(query.laneDepartures),
+                () => GenerateOtherCircumstancePredicate(query.otherCircumstances)
+            };
+            return predicateMethods.ToList();
         }
 
-        private (string whereClause, object parameters) GenerateDateRangePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateDateRangePredicate(DateRange dateRange)
         {
-            // isolate relevant filter
-            var dateRange = query.dateRange;
+            // test for valid filter
+            if (dateRange == null) {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = "FACT_CRASH_EVT.KEY_CRASH_DT BETWEEN :startDate AND :endDate";
@@ -210,10 +240,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateDayOfWeekPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateDayOfWeekPredicate(IList<int> dayOfWeek)
         {
-            // isolate relevant filter
-            var dayOfWeek = query.dayOfWeek;
+            // test for valid filter
+            if (dayOfWeek == null || dayOfWeek.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = "TO_CHAR(FACT_CRASH_EVT.KEY_CRASH_DT, 'D') IN :dayOfWeek";
@@ -224,11 +257,12 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateTimeRangePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateTimeRangePredicate(TimeRange timeRange)
         {
-            // isolate relevant filter
-            var startTime = query.timeRange.startTime;
-            var endTime = query.timeRange.endTime;
+            // test for valid filter
+            if (timeRange == null) {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"(
@@ -241,19 +275,22 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new {
-                startTime = startTime.Hour*100 + startTime.Minute,
-                endTime = endTime.Hour*100 + endTime.Minute
+                startTime = timeRange.startTime.Hour*100 + timeRange.startTime.Minute,
+                endTime = timeRange.endTime.Hour*100 + timeRange.endTime.Minute
             };
 
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateDotDistrictPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateDotDistrictPredicate(IList<int> dotDistrict)
         {
             // TODO: tag crashes with dot district in oracle
 
-            // isolate relevant filter
-            var dotDistrict = query.dotDistrict;
+            // test for valid filter
+            if (dotDistrict == null || dotDistrict.Count == 0)
+            {
+                return (null, null);
+            }
 
             // map dot district codes to county codes
             var countyCodeMap = new Dictionary<int, int[]>()
@@ -282,12 +319,15 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateMpoTpoPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateMpoTpoPredicate(IList<int> mpoTpo)
         {
             // TODO: tag crashes with mpo/tpo in oracle
 
-            // isolate relevant filter
-            var mpoTpo = query.mpoTpo;
+            // test for valid filter
+            if (mpoTpo == null || mpoTpo.Count == 0)
+            {
+                return (null, null);
+            }
 
             // extract partial county mpo/tpo ids
             var partialCountyMpos = new[]
@@ -346,19 +386,22 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new {
-                mpoCountyCodes = mpoCountyCodes.Any() ? mpoCountyCodes : pseudoEmptyIntList,
-                partialCountyMpoIds = partialCountyMpoIds.Any() ? partialCountyMpoIds : pseudoEmptyIntList
+                mpoCountyCodes = mpoCountyCodes.Any() ? mpoCountyCodes : _PSEUDO_EMPTY_INT_LIST,
+                partialCountyMpoIds = partialCountyMpoIds.Any() ? partialCountyMpoIds : _PSEUDO_EMPTY_INT_LIST
             };
 
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCountyPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCountyPredicate(IList<int> county)
         {
             // TODO: join to dim_geography rather than divide by 100 in where clause
 
-            // isolate relevant filter
-            var county = query.county;
+            // test for valid filter
+            if (county == null || county.Count == 0)
+            {
+                return (null, null);
+            }
 
             // extract full county codes
             var fullCountyCodes = county.Where(countyCode => countyCode < 100).ToList();
@@ -374,17 +417,20 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new {
-                fullCountyCodes = fullCountyCodes.Any() ? fullCountyCodes : pseudoEmptyIntList,
-                unincorporatedCountyCodes = unincorporatedCountyCodes.Any() ? unincorporatedCountyCodes : pseudoEmptyIntList
+                fullCountyCodes = fullCountyCodes.Any() ? fullCountyCodes : _PSEUDO_EMPTY_INT_LIST,
+                unincorporatedCountyCodes = unincorporatedCountyCodes.Any() ? unincorporatedCountyCodes : _PSEUDO_EMPTY_INT_LIST
             };
 
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCityPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCityPredicate(IList<int> city)
         {
-            // isolate relevant filter
-            var city = query.city;
+            // test for valid filter
+            if (city == null || city.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = "FACT_CRASH_EVT.KEY_GEOGRAPHY IN :cityCodes OR GEOCODE_RESULT.KEY_GEOGRAPHY IN :cityCodes";
@@ -397,10 +443,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCustomAreaPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCustomAreaPredicate(IList<Coordinates> customArea)
         {
-            // isolate relevant filter
-            var customArea = query.customArea;
+            // test for valid filter
+            if (customArea == null || customArea.Count == 0)
+            {
+                return (null, null);
+            }
 
             var customAreaMinX = customArea.Min(coords => coords.x);
             var customAreaMinY = customArea.Min(coords => coords.y);
@@ -424,10 +473,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCustomExtentPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCustomExtentPredicate(Extent customExtent)
         {
-            // isolate relevant filter
-            var customExtent = query.customExtent;
+            // test for valid filter
+            if (customExtent == null || customExtent.point1 == null || customExtent.point2 == null)
+            {
+                return (null, null);
+            }
 
             var customExtentMinX = Math.Min(customExtent.point1.x, customExtent.point2.x);
             var customExtentMinY = Math.Min(customExtent.point1.y, customExtent.point2.y);
@@ -446,15 +498,15 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateIntersectionPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateIntersectionPredicate(IntersectionParameters intersection)
         {
             // TODO: don't hard code schema names
 
-            // isolate relevant filter
-            var intersection = query.intersection;
-
-            var unknownOffsetDir = intersection.offsetDirection.Any(dir => dir == "Unknown");
-            var intersectionOffsetDirs = intersection.offsetDirection.Where(dir => dir != "Unknown").ToList();
+            // test for valid filter
+            if (intersection == null)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"EXISTS (
@@ -462,28 +514,30 @@ namespace S4Analytics.Models
                 WHERE GEOCODE_RESULT.HSMV_RPT_NBR = FACT_CRASH_EVT.HSMV_RPT_NBR
                 AND GEOCODE_RESULT.NEAREST_INTRSECT_ID = :intersectionId
                 AND GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= :intersectionOffsetFeet
-            ) AND (
-                FACT_CRASH_EVT.OFFSET_DIR IN :intersectionOffsetDirs
-                OR (:matchUnknownOffsetDir = 1 AND FACT_CRASH_EVT.OFFSET_DIR IS NULL)
-            )";
+            )
+            AND (:matchAnyIntersectionOffsetDir = 1 OR FACT_CRASH_EVT.OFFSET_DIR IN :intersectionOffsetDirs)";
 
             // define oracle parameters
+            var anyOffsetDir = intersection.offsetDirection == null || intersection.offsetDirection.Count == 0;
             var parameters = new {
                 intersection.intersectionId,
                 intersectionOffsetFeet = intersection.offsetInFeet,
-                intersectionOffsetDirs = intersectionOffsetDirs.Any() ? intersectionOffsetDirs : pseudoEmptyStringList,
-                matchUnknownOffsetDir = unknownOffsetDir ? 1 : 0
+                intersectionOffsetDirs = anyOffsetDir ? _PSEUDO_EMPTY_STRING_LIST : intersection.offsetDirection,
+                matchAnyIntersectionOffsetDir = anyOffsetDir ? 1 : 0
             };
 
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateStreetPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateStreetPredicate(StreetParameters street)
         {
             // TODO: refactor query to use WHERE EXISTS instead of IN
 
-            // isolate relevant filter
-            var street = query.street;
+            // test for valid filter
+            if (street == null || street.linkIds == null || street.linkIds.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = "GEOCODE_RESULT.CRASH_SEG_ID IN :streetLinkIds";
@@ -515,10 +569,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCustomNetworkPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCustomNetworkPredicate(IList<int> customNetwork)
         {
-            // isolate relevant filter
-            var customNetwork = query.customNetwork;
+            // test for valid filter
+            if (customNetwork == null || customNetwork.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = "GEOCODE_RESULT.CRASH_SEG_ID IN :customNetworkLinkIds";
@@ -531,8 +588,14 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GeneratePublicRoadPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GeneratePublicRoadPredicate(bool? onPublicRoad)
         {
+            // test for valid filter
+            if (onPublicRoad != true)
+            {
+                return (null, null);
+            }
+
             // define where clause
             var whereClause = "FACT_CRASH_EVT.KEY_RD_SYS_ID IN (140,141,142,143,144,145)";
 
@@ -542,10 +605,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateFormTypePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateFormTypePredicate(IList<string> formType)
         {
-            // isolate relevant filter
-            var formType = query.formType;
+            // test for valid filter
+            if (formType == null || formType.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = "FACT_CRASH_EVT.FORM_TYPE_CD IN :formType";
@@ -556,8 +622,14 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCodeablePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCodeablePredicate(bool? codeable)
         {
+            // test for valid filter
+            if (codeable != true)
+            {
+                return (null, null);
+            }
+
             // define where clause
             var whereClause = "FACT_CRASH_EVT.CODEABLE = 'T'";
 
@@ -567,12 +639,15 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateReportingAgencyPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateReportingAgencyPredicate(IList<int> reportingAgency)
         {
             // TODO: move fhp troop map to oracle
 
-            // isolate relevant filter
-            var reportingAgency = query.reportingAgency;
+            // test for valid filter
+            if (reportingAgency == null || reportingAgency.Count == 0)
+            {
+                return (null, null);
+            }
 
             var fhpTroopMap = new Dictionary<int, string>()
             {
@@ -604,17 +679,20 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new {
-                agencyIds = agencyIds.Any() ? agencyIds : pseudoEmptyIntList,
-                fhpTroops = fhpTroops.Any() ? fhpTroops : pseudoEmptyStringList
+                agencyIds = agencyIds.Any() ? agencyIds : _PSEUDO_EMPTY_INT_LIST,
+                fhpTroops = fhpTroops.Any() ? fhpTroops : _PSEUDO_EMPTY_STRING_LIST
             };
 
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateDriverGenderPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateDriverGenderPredicate(IList<int> driverGender)
         {
-            // isolate relevant filter
-            var driverGender = query.driverGender;
+            // test for valid filter
+            if (driverGender == null || driverGender.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"EXISTS (
@@ -629,10 +707,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateDriverAgePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateDriverAgePredicate(IList<string> driverAgeRange)
         {
-            // isolate relevant filter
-            var driverAgeRange = query.driverAgeRange;
+            // test for valid filter
+            if (driverAgeRange == null || driverAgeRange.Count == 0)
+            {
+                return (null, null);
+            }
 
             var unknownAge = driverAgeRange.Where(ageRange => ageRange == "Unknown").Any();
             var ageRanges = driverAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
@@ -656,17 +737,20 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new {
-                driverAgeRanges = ageRanges.Any() ? ageRanges : pseudoEmptyStringList,
+                driverAgeRanges = ageRanges.Any() ? ageRanges : _PSEUDO_EMPTY_STRING_LIST,
                 matchUnknownDriverAge = unknownAge ? 1 : 0
             };
 
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GeneratePedestrianAgePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GeneratePedestrianAgePredicate(IList<string> pedestrianAgeRange)
         {
-            // isolate relevant filter
-            var pedestrianAgeRange = query.pedestrianAgeRange;
+            // test for valid filter
+            if (pedestrianAgeRange == null || pedestrianAgeRange.Count == 0)
+            {
+                return (null, null);
+            }
 
             var unknownAge = pedestrianAgeRange.Where(ageRange => ageRange == "Unknown").Any();
             var ageRanges = pedestrianAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
@@ -686,17 +770,20 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new {
-                pedestrianAgeRanges = ageRanges.Any() ? ageRanges : pseudoEmptyStringList,
+                pedestrianAgeRanges = ageRanges.Any() ? ageRanges : _PSEUDO_EMPTY_STRING_LIST,
                 matchUnknownPedestrianAge = unknownAge ? 1 : 0
             };
 
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCyclistAgePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCyclistAgePredicate(IList<string> cyclistAgeRange)
         {
-            // isolate relevant filter
-            var cyclistAgeRange = query.cyclistAgeRange;
+            // test for valid filter
+            if (cyclistAgeRange == null || cyclistAgeRange.Count == 0)
+            {
+                return (null, null);
+            }
 
             var unknownAge = cyclistAgeRange.Where(ageRange => ageRange == "Unknown").Any();
             var ageRanges = cyclistAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
@@ -716,17 +803,20 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new {
-                cyclistAgeRanges = ageRanges.Any() ? ageRanges : pseudoEmptyStringList,
+                cyclistAgeRanges = ageRanges.Any() ? ageRanges : _PSEUDO_EMPTY_STRING_LIST,
                 matchUnknownCyclistAge = unknownAge ? 1 : 0
             };
 
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateNonAutoModeOfTravelPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateNonAutoModeOfTravelPredicate(NonAutoModesOfTravel nonAutoModesOfTravel)
         {
-            // isolate relevant filter
-            var nonAutoModesOfTravel = query.nonAutoModesOfTravel;
+            // test for valid filter
+            if (nonAutoModesOfTravel == null)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"(:matchNonAutoModePed = 1 AND FACT_CRASH_EVT.PED_CNT > 0)
@@ -745,10 +835,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateSourceOfTransportPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateSourceOfTransportPredicate(SourcesOfTransport sourcesOfTransport)
         {
-            // isolate relevant filter
-            var sourcesOfTransport = query.sourcesOfTransport;
+            // test for valid filter
+            if (sourcesOfTransport == null)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"(:matchTransportEms = 1 AND FACT_CRASH_EVT.TRANS_BY_EMS_CNT > 0)
@@ -765,10 +858,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateBehavioralFactorPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateBehavioralFactorPredicate(BehavioralFactors behavioralFactors)
         {
-            // isolate relevant filter
-            var behavioralFactors = query.behavioralFactors;
+            // test for valid filter
+            if (behavioralFactors == null)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"(:matchBehavioralAlcohol = 1 AND FACT_CRASH_EVT.IS_ALC_REL = '1')
@@ -787,12 +883,15 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCommonViolationPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCommonViolationPredicate(CommonViolations commonViolations)
         {
             // TODO: tag crashes with common violation types in oracle
 
-            // isolate relevant filter
-            var commonViolations = query.commonViolations;
+            // test for valid filter
+            if (commonViolations == null)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"EXISTS (
@@ -844,10 +943,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateVehicleTypePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateVehicleTypePredicate(IList<int> vehicleType)
         {
-            // isolate relevant filter
-            var vehicleType = query.vehicleType;
+            // test for valid filter
+            if (vehicleType == null || vehicleType.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"EXISTS (
@@ -862,10 +964,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCrashTypeSimplePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCrashTypeSimplePredicate(IList<string> crashTypeSimple)
         {
-            // isolate relevant filter
-            var crashTypeSimple = query.crashTypeSimple;
+            // test for valid filter
+            if (crashTypeSimple == null || crashTypeSimple.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"EXISTS (
@@ -882,10 +987,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCrashTypeDetailedPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCrashTypeDetailedPredicate(IList<int> crashTypeDetailed)
         {
-            // isolate relevant filter
-            var crashTypeDetailed = query.crashTypeDetailed;
+            // test for valid filter
+            if (crashTypeDetailed == null || crashTypeDetailed.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"EXISTS (
@@ -900,10 +1008,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateBikePedCrashTypePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateBikePedCrashTypePredicate(IList<int> bikePedCrashType)
         {
-            // isolate relevant filter
-            var bikePedCrashType = query.bikePedCrashType;
+            // test for valid filter
+            if (bikePedCrashType == null || bikePedCrashType.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"FACT_CRASH_EVT.KEY_BIKE_PED_CRASH_TYPE IN :bikePedCrashType
@@ -923,10 +1034,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCmvConfigurationPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateCmvConfigurationPredicate(IList<int> cmvConfiguration)
         {
-            // isolate relevant filter
-            var cmvConfiguration = query.cmvConfiguration;
+            // test for valid filter
+            if (cmvConfiguration == null || cmvConfiguration.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"EXISTS (
@@ -941,10 +1055,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateEnvironmentalCircumstancePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateEnvironmentalCircumstancePredicate(IList<int> environmentalCircumstance)
         {
-            // isolate relevant filter
-            var environmentalCircumstance = query.environmentalCircumstance;
+            // test for valid filter
+            if (environmentalCircumstance == null || environmentalCircumstance.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_ENV1 IN :environmentalCircumstance
@@ -957,10 +1074,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateRoadCircumstancePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateRoadCircumstancePredicate(IList<int> roadCircumstance)
         {
-            // isolate relevant filter
-            var roadCircumstance = query.roadCircumstance;
+            // test for valid filter
+            if (roadCircumstance == null || roadCircumstance.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_RD1 IN :roadCircumstance
@@ -973,10 +1093,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateFirstHarmfulEventPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateFirstHarmfulEventPredicate(IList<int> firstHarmfulEvent)
         {
-            // isolate relevant filter
-            var firstHarmfulEvent = query.firstHarmfulEvent;
+            // test for valid filter
+            if (firstHarmfulEvent == null || firstHarmfulEvent.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = "FACT_CRASH_EVT.KEY_1ST_HE IN :firstHarmfulEvent";
@@ -987,10 +1110,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateLightConditionPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateLightConditionPredicate(IList<int> lightCondition)
         {
-            // isolate relevant filter
-            var lightCondition = query.lightCondition;
+            // test for valid filter
+            if (lightCondition == null || lightCondition.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"FACT_CRASH_EVT.KEY_LIGHT_COND IN :lightCondition";
@@ -1001,10 +1127,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateRoadSystemIdentifierPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateRoadSystemIdentifierPredicate(IList<int> roadSystemIdentifier)
         {
-            // isolate relevant filter
-            var roadSystemIdentifier = query.roadSystemIdentifier;
+            // test for valid filter
+            if (roadSystemIdentifier == null || roadSystemIdentifier.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"FACT_CRASH_EVT.KEY_RD_SYS_ID IN :roadSystemIdentifier";
@@ -1015,10 +1144,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateWeatherConditionPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateWeatherConditionPredicate(IList<int> weatherCondition)
         {
-            // isolate relevant filter
-            var weatherCondition = query.weatherCondition;
+            // test for valid filter
+            if (weatherCondition == null || weatherCondition.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"FACT_CRASH_EVT.KEY_WEATHER_COND IN :weatherCondition";
@@ -1029,14 +1161,17 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateLaneDeparturePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateLaneDeparturePredicate(LaneDepartures laneDepartures)
         {
             // TODO: tag crashes with lane departure in oracle
             // TODO: for off-road, we should join V_CRASH_TYPE and filter on V_CRASH_TYPE.CRASH_ATTR_CD = 6
             // TODO: for collision with fixed object, we should join DIM_HARMFUL_EVT and filter on DIM_HARMFUL_EVT.HARMFUL_EVT_CD BETWEEN 19 AND 39 (except 20)
 
-            // isolate relevant filter
-            var laneDepartures = query.laneDepartures;
+            // test for valid filter
+            if (laneDepartures == null)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"(:matchLaneDepartureOffRoad = 1 AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45)
@@ -1089,10 +1224,13 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateOtherCircumstancePredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateOtherCircumstancePredicate(OtherCircumstances otherCircumstances)
         {
-            // isolate relevant filter
-            var otherCircumstances = query.otherCircumstances;
+            // test for valid filter
+            if (otherCircumstances == null)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"(:matchSchoolBusRelated = 1 AND FACT_CRASH_EVT.IS_SCH_BUS_REL = '1')
@@ -1133,10 +1271,13 @@ namespace S4Analytics.Models
         /*
         TEMPLATE:
 
-        private (string whereClause, object parameters) GenerateXPredicate(CrashQuery query)
+        private (string whereClause, object parameters) GenerateXPredicate(IList<int> filter)
         {
-            // isolate relevant filter
-            var x = query.x;
+            // test for valid filter
+            if (filter == null || filter.Count == 0)
+            {
+                return (null, null);
+            }
 
             // define where clause
             var whereClause = @"";

@@ -31,7 +31,7 @@ namespace S4Analytics.Models
     {
         public int intersectionId;
         public int offsetInFeet;
-        public IList<string> offsetDirection; // N(orth), S(outh), E(ast), W(est), U(nknown)
+        public IList<string> offsetDirection; // N(orth), S(outh), E(ast), W(est)
     }
 
     public class StreetParameters
