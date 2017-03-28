@@ -267,10 +267,13 @@ namespace S4Analytics.Models
             // define where clause
             var whereClause = @"(
                 :startTime <= :endTime -- same day
-                AND TO_CHAR(CRASH_TM, 'HH24MI') BETWEEN :startTime AND :endTime
+                AND CAST(TO_CHAR(CRASH_TM, 'HH24MI') AS INTEGER) BETWEEN :startTime AND :endTime
             ) OR (
                 :startTime > :endTime -- crosses midnight boundary
-                AND TO_CHAR(CRASH_TM, 'HH24MI') >= :startTime OR TO_CHAR(CRASH_TM, 'HH24MI') <= :endTime
+                AND (
+                  CAST(TO_CHAR(CRASH_TM, 'HH24MI') AS INTEGER) >= :startTime
+                  OR CAST(TO_CHAR(CRASH_TM, 'HH24MI') AS INTEGER) <= :endTime
+                )
             )";
 
             // define oracle parameters
