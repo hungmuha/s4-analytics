@@ -73,6 +73,12 @@ namespace S4Analytics.Models
         public bool? dui;
     }
 
+    public class BikePedCrashType
+    {
+        public IList<int> bikePedCrashTypeIds;
+        public bool? includeUntyped;
+    }
+
     public class LaneDepartures
     {
         public bool? offRoadAll;
@@ -108,9 +114,9 @@ namespace S4Analytics.Models
         public IntersectionParameters intersection;
         public StreetParameters street;
         public IList<int> customNetwork;
-        public bool? onPublicRoad;
+        public bool? publicRoadOnly;
         public IList<string> formType; // L(ong), S(hort)
-        public bool? codeable;
+        public bool? codeableOnly;
         public IList<int> reportingAgency;
         public IList<int> driverGender;
         public IList<string> driverAgeRange; // <15, 15-19, 20-24, ..., 90+, U(nknown)
@@ -123,7 +129,7 @@ namespace S4Analytics.Models
         public IList<int> vehicleType;
         public IList<string> crashTypeSimple;
         public IList<int> crashTypeDetailed;
-        public IList<int> bikePedCrashType;
+        public BikePedCrashType bikePedCrashType;
         public IList<int> cmvConfiguration;
         public IList<int> environmentalCircumstance;
         public IList<int> roadCircumstance;

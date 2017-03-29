@@ -192,9 +192,9 @@ namespace S4Analytics.Models
                 () => GenerateIntersectionPredicate(query.intersection),
                 () => GenerateStreetPredicate(query.street),
                 () => GenerateCustomNetworkPredicate(query.customNetwork),
-                () => GeneratePublicRoadPredicate(query.onPublicRoad),
+                () => GeneratePublicRoadOnlyPredicate(query.publicRoadOnly),
                 () => GenerateFormTypePredicate(query.formType),
-                () => GenerateCodeablePredicate(query.codeable),
+                () => GenerateCodeableOnlyPredicate(query.codeableOnly),
                 () => GenerateReportingAgencyPredicate(query.reportingAgency),
                 () => GenerateDriverGenderPredicate(query.driverGender),
                 () => GenerateDriverAgePredicate(query.driverAgeRange),
@@ -591,10 +591,10 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GeneratePublicRoadPredicate(bool? onPublicRoad)
+        private (string whereClause, object parameters) GeneratePublicRoadOnlyPredicate(bool? publicRoadOnly)
         {
             // test for valid filter
-            if (onPublicRoad != true)
+            if (publicRoadOnly != true)
             {
                 return (null, null);
             }
@@ -625,10 +625,10 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateCodeablePredicate(bool? codeable)
+        private (string whereClause, object parameters) GenerateCodeableOnlyPredicate(bool? codeableOnly)
         {
             // test for valid filter
-            if (codeable != true)
+            if (codeableOnly != true)
             {
                 return (null, null);
             }
@@ -699,7 +699,7 @@ namespace S4Analytics.Models
 
             // define where clause
             var whereClause = @"EXISTS (
-                SELECT NULL FROM FACT_DRIVER
+                SELECT NULL FROM s4_warehouse.FACT_DRIVER
                 WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
                 AND FACT_DRIVER.KEY_GENDER IN :driverGender
             )";
@@ -712,6 +712,8 @@ namespace S4Analytics.Models
 
         private (string whereClause, object parameters) GenerateDriverAgePredicate(IList<string> driverAgeRange)
         {
+            // TODO: give age ranges a database identifier
+
             // test for valid filter
             if (driverAgeRange == null || driverAgeRange.Count == 0)
             {
@@ -724,7 +726,7 @@ namespace S4Analytics.Models
             // define where clause
             var whereClause = @"(:matchUnknownDriverAge = 1
                 AND NOT EXISTS (
-                    SELECT NULL FROM FACT_DRIVER
+                    SELECT NULL FROM s4_warehouse.FACT_DRIVER
                     WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
                 )
             ) OR EXISTS (
@@ -733,8 +735,8 @@ namespace S4Analytics.Models
                     ON FACT_DRIVER.KEY_AGE_RNG = V_DRIVER_AGE_RNG.ID
                 WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
                 AND (
-                    V_DRIVER_AGE_RNG.NM_ATTR_TX IN :driverAgeRanges
-                    OR (:matchUnknownDriverAge = 1 AND V_DRIVER_AGE_RNG.NM_ATTR_TX IS NULL)
+                    V_DRIVER_AGE_RNG.DRIVER_ATTR_TX IN :driverAgeRanges
+                    OR (:matchUnknownDriverAge = 1 AND V_DRIVER_AGE_RNG.DRIVER_ATTR_TX IS NULL)
                 )
             )";
 
@@ -873,14 +875,14 @@ namespace S4Analytics.Models
             var whereClause = @"(:matchBehavioralAlcohol = 1 AND FACT_CRASH_EVT.IS_ALC_REL = '1')
                 OR (:matchBehavioralDrugs = 1 AND FACT_CRASH_EVT.IS_DRUG_REL = '1')
                 OR (:matchBehavioralDistraction = 1 AND FACT_CRASH_EVT.IS_DISTRACTED = '1')
-                OR (:matchBehavioralAggressiveDriving = 1 AND FACT_CRASH_EVT.IS_AGGRESSIVE = '1')";
+                OR (:matchBehavioralAggressive = 1 AND FACT_CRASH_EVT.IS_AGGRESSIVE = '1')";
 
             // define oracle parameters
             var parameters = new {
                 matchBehavioralAlcohol = behavioralFactors.alcohol == true ? 1 : 0,
                 matchBehavioralDrugs = behavioralFactors.drugs == true ? 1 : 0,
                 matchBehavioralDistraction = behavioralFactors.distraction == true ? 1 : 0,
-                matchBehavioralAggressiveDriving = behavioralFactors.aggressiveDriving == true ? 1 : 0
+                matchBehavioralAggressive = behavioralFactors.aggressiveDriving == true ? 1 : 0
             };
 
             return (whereClause, parameters);
@@ -909,7 +911,7 @@ namespace S4Analytics.Models
                     OR UPPER(FACT_VIOLATION.CHARGE) LIKE '%RIGHT OF WAY%'
                   )
                 )
-                OR (:matchViolationTrafficControlDevice = 1 AND UPPER(FACT_VIOLATION.CHARGE) LIKE '%TRAFFIC CONTROL%')
+                OR (:matchViolationTrafficControl = 1 AND UPPER(FACT_VIOLATION.CHARGE) LIKE '%TRAFFIC CONTROL%')
                 OR (:matchViolationCarelessDriving = 1 AND UPPER(FACT_VIOLATION.CHARGE) LIKE '%CARELESS%')
                 OR (
                   :matchViolationDui = 1
@@ -921,7 +923,7 @@ namespace S4Analytics.Models
                     )
                   )
                 )
-                OR (:matchViolationRedLight = 1 AND OR UPPER(FACT_VIOLATION.FL_STATUTE_NBR) LIKE '316%075%1%C%')
+                OR (:matchViolationRedLight = 1 AND UPPER(FACT_VIOLATION.FL_STATUTE_NBR) LIKE '316%075%1%C%')
               )
             )
             OR (
@@ -938,7 +940,7 @@ namespace S4Analytics.Models
                 matchViolationSpeed = commonViolations.speed == true ? 1 : 0,
                 matchViolationRedLight = commonViolations.redLight == true ? 1 : 0,
                 matchViolationRightOfWay = commonViolations.rightOfWay == true ? 1 : 0,
-                matchViolationTrafficControlDevice = commonViolations.trafficControlDevice == true ? 1 : 0,
+                matchViolationTrafficControl = commonViolations.trafficControlDevice == true ? 1 : 0,
                 matchViolationCarelessDriving = commonViolations.carelessDriving == true ? 1 : 0,
                 matchViolationDui = commonViolations.dui == true ? 1 : 0
             };
@@ -1011,10 +1013,10 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateBikePedCrashTypePredicate(IList<int> bikePedCrashType)
+        private (string whereClause, object parameters) GenerateBikePedCrashTypePredicate(BikePedCrashType bikePedCrashType)
         {
             // test for valid filter
-            if (bikePedCrashType == null || bikePedCrashType.Count == 0)
+            if (bikePedCrashType == null)
             {
                 return (null, null);
             }
@@ -1022,8 +1024,8 @@ namespace S4Analytics.Models
             // define where clause
             var whereClause = @"FACT_CRASH_EVT.KEY_BIKE_PED_CRASH_TYPE IN :bikePedCrashType
             OR (
-                -- not typed yet
-                (
+                :matchBikePedUntyped = 1
+                AND (
                     FACT_CRASH_EVT.PED_CNT > 0
                     OR FACT_CRASH_EVT.BIKE_CNT > 0
                     OR DIM_HARMFUL_EVT.HARMFUL_EVT_TX IN ('Pedestrian', 'Pedalcycle')
@@ -1032,7 +1034,10 @@ namespace S4Analytics.Models
             )";
 
             // define oracle parameters
-            var parameters = new { bikePedCrashType };
+            var parameters = new {
+                bikePedCrashType.bikePedCrashTypeIds,
+                matchBikePedUntyped = bikePedCrashType.includeUntyped == true ? 1 : 0
+            };
 
             return (whereClause, parameters);
         }
