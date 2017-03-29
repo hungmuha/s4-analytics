@@ -25,6 +25,7 @@ namespace S4Analytics
     {
         public string WarehouseConnStr { get; set; }
         public string SpatialConnStr { get; set; }
+        public int EsriSrid { get; set; }
     }
 
     public class ClientOptions
@@ -126,6 +127,7 @@ namespace S4Analytics
             {
                 serverOptions.WarehouseConnStr = Configuration.GetConnectionString("Warehouse");
                 serverOptions.SpatialConnStr = Configuration.GetConnectionString("Spatial");
+                serverOptions.EsriSrid = Configuration.GetValue<int>("EsriSrid");
             });
             services.Configure<ClientOptions>(clientOptions =>
             {

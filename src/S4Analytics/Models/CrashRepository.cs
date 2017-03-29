@@ -10,12 +10,14 @@ namespace S4Analytics.Models
     public class CrashRepository : ICrashRepository
     {
         private string _connStr;
+        private int _esriSrid;
         private readonly IList<string> _PSEUDO_EMPTY_STRING_LIST = new List<string>() { "" };
         private readonly IList<int> _PSEUDO_EMPTY_INT_LIST = new List<int>() { -1 };
 
         public CrashRepository(IOptions<ServerOptions> serverOptions)
         {
             _connStr = serverOptions.Value.WarehouseConnStr;
+            _esriSrid = serverOptions.Value.EsriSrid;
         }
 
         public int CreateQuery(CrashQuery query) {
@@ -460,7 +462,6 @@ namespace S4Analytics.Models
             var customAreaMaxY = customArea.Max(coords => coords.y);
             var coordsAsText = customArea.Select(coords => string.Format("{0} {1}", coords.x, coords.y));
             var customAreaPolygon = "POLYGON ((" + string.Join(", ", coordsAsText) + "))";
-            var customAreaSrid = 1234; // TODO: get SRID from somewhere
 
             // define where clause
             var whereClause = @"GEOCODE_RESULT.MAP_POINT_X BETWEEN :customAreaMinX AND :customAreaMaxX
@@ -470,7 +471,7 @@ namespace S4Analytics.Models
             // define oracle parameters
             var parameters = new {
                 customAreaMinX, customAreaMinY, customAreaMaxX, customAreaMaxY,
-                customAreaPolygon, customAreaSrid
+                customAreaPolygon, customAreaSrid = _esriSrid
             };
 
             return (whereClause, parameters);
@@ -543,12 +544,11 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "GEOCODE_RESULT.CRASH_SEG_ID IN :streetLinkIds";
-            if (street.includeCrossStreets)
-            {
-                whereClause += @" OR (
-                    GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= 100
-                    AND GEOCODE_RESULT.NEAREST_INTRSECT_ID IN (
+            var whereClause = @"GEOCODE_RESULT.CRASH_SEG_ID IN :streetLinkIds
+                OR (
+                  :matchCrossStreets = 1
+                  AND GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= 100
+                  AND GEOCODE_RESULT.NEAREST_INTRSECT_ID IN (
                     SELECT DISTINCT INTRSECT_NODE.INTERSECTION_ID
                     FROM navteq_2015q1.INTRSECT_NODE
                     WHERE INTRSECT_NODE.NODE_ID IN (
@@ -562,11 +562,11 @@ namespace S4Analytics.Models
                     )
                   )
                 )";
-            }
 
             // define oracle parameters
             var parameters = new {
-                streetLinkIds = street.linkIds
+                streetLinkIds = street.linkIds,
+                matchCrossStreets = street.includeCrossStreets ? 1 : 0
             };
 
             return (whereClause, parameters);
