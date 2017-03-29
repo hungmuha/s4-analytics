@@ -36,6 +36,14 @@ namespace S4Analytics.Models
             }
         }
 
+        public (string, DynamicParameters) CreateQueryTest(CrashQuery query)
+        {
+            using (var conn = new OracleConnection(_connStr))
+            {
+                return ConstructCrashQuery(0, query);
+            }
+        }
+
         public bool QueryExists(int queryId)
         {
             using (var conn = new OracleConnection(_connStr))
@@ -151,11 +159,11 @@ namespace S4Analytics.Models
                   ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
                 LEFT JOIN s4_warehouse.dim_harmful_evt
                   ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID";
-            var initialParameters = new { queryId };
 
             // initialize where clause and query parameter collections
             var whereClauses = new List<string>();
-            var queryParameters = new DynamicParameters(initialParameters);
+            var queryParameters = new DynamicParameters();
+            queryParameters.Add(new { queryId });
 
             // get predicate methods
             var predicateMethods = GetPredicateMethods(query);
@@ -166,12 +174,12 @@ namespace S4Analytics.Models
                 if (whereClause != null)
                 {
                     whereClauses.Add(whereClause);
-                    queryParameters.AddDynamicParams(parameters);
+                    queryParameters.Add(parameters);
                 }
             });
 
             // join where clauses; append to insert statement
-            queryText += " WHERE (" + string.Join(") AND (", whereClauses) + ")";
+            queryText += "\r\nWHERE (" + string.Join(")\r\nAND (", whereClauses) + ")";
 
             return (queryText, queryParameters);
         }
