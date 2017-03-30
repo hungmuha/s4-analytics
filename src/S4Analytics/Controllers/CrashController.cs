@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace S4Analytics.Controllers
 {
@@ -29,6 +27,7 @@ namespace S4Analytics.Controllers
         [HttpPost("query")]
         public IActionResult CreateQuery([FromBody] CrashQuery query)
         {
+            // TODO: implement mechanism to clean up old query results
             var queryId = _crashRepo.CreateQuery(query);
             return CreatedAtRoute("GetQuery", new { queryId }, query);
         }
@@ -36,6 +35,7 @@ namespace S4Analytics.Controllers
         [HttpPost("query-test")]
         public IActionResult CreateQueryTest([FromBody] CrashQuery query)
         {
+            // TODO: remove this endpoint once testing is complete
             (var queryText, var parameters) = _crashRepo.CreateQueryTest(query);
             return Content(queryText + "\r\n" + parameters.DumpText());
         }

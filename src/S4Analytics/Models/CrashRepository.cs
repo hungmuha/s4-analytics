@@ -38,6 +38,7 @@ namespace S4Analytics.Models
 
         public (string, DynamicParameters) CreateQueryTest(CrashQuery query)
         {
+            // TODO: remove this method once testing is complete
             using (var conn = new OracleConnection(_connStr))
             {
                 return ConstructCrashQuery(0, query);
@@ -174,7 +175,10 @@ namespace S4Analytics.Models
                 if (whereClause != null)
                 {
                     whereClauses.Add(whereClause);
-                    queryParameters.Add(parameters);
+                    if (parameters != null)
+                    {
+                        queryParameters.Add(parameters);
+                    }
                 }
             });
 
@@ -610,10 +614,7 @@ namespace S4Analytics.Models
             // define where clause
             var whereClause = "FACT_CRASH_EVT.KEY_RD_SYS_ID IN (140,141,142,143,144,145)";
 
-            // define oracle parameters
-            var parameters = new { };
-
-            return (whereClause, parameters);
+            return (whereClause, null);
         }
 
         private (string whereClause, object parameters) GenerateFormTypePredicate(IList<string> formType)
@@ -644,10 +645,7 @@ namespace S4Analytics.Models
             // define where clause
             var whereClause = "FACT_CRASH_EVT.CODEABLE = 'T'";
 
-            // define oracle parameters
-            var parameters = new { };
-
-            return (whereClause, parameters);
+            return (whereClause, null);
         }
 
         private (string whereClause, object parameters) GenerateReportingAgencyPredicate(IList<int> reportingAgency)
