@@ -13,42 +13,29 @@ namespace S4Analytics.Controllers
             _crashRepo = repo;
         }
 
-        [HttpGet("query/{queryId}", Name = "GetQuery")]
-        public IActionResult GetQuery(int queryId)
+        [HttpPost("query-test")]
+        public IActionResult CreateQueryTest([FromBody] CrashQuery query)
         {
-            var queryExists = _crashRepo.QueryExists(queryId);
-            if (!queryExists)
-            {
-                return NotFound();
-            }
-            return new ObjectResult(new { queryId });
+            (var queryText, var parameters) = _crashRepo.CreateQueryTest(query);
+            return Content(queryText + "\r\n" + parameters.DumpText());
         }
 
         [HttpPost("query")]
         public IActionResult CreateQuery([FromBody] CrashQuery query)
         {
-            // TODO: implement mechanism to clean up old query results
-            var queryId = _crashRepo.CreateQuery(query);
-            return CreatedAtRoute("GetQuery", new { queryId }, query);
+            var queryToken = _crashRepo.CreateQuery(query);
+            return CreatedAtRoute("GetCrashes", new { queryToken }, query);
         }
 
-        [HttpPost("query-test")]
-        public IActionResult CreateQueryTest([FromBody] CrashQuery query)
+        [HttpGet("{queryToken}", Name = "GetCrashes")]
+        public IActionResult GetCrashes(string queryToken)
         {
-            // TODO: remove this endpoint once testing is complete
-            (var queryText, var parameters) = _crashRepo.CreateQueryTest(query);
-            return Content(queryText + "\r\n" + parameters.DumpText());
-        }
-
-        [HttpGet("{queryId}")]
-        public IActionResult GetCrashes(int queryId)
-        {
-            var queryExists = _crashRepo.QueryExists(queryId);
+            var queryExists = _crashRepo.QueryExists(queryToken);
             if (!queryExists)
             {
                 return NotFound();
             }
-            var results = _crashRepo.GetCrashes(queryId);
+            var results = _crashRepo.GetCrashes(queryToken);
             var data = AjaxSafeData(results);
             return new ObjectResult(data);
         }

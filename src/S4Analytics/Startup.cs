@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Net;
 using System.Security.Claims;
@@ -65,6 +64,15 @@ namespace S4Analytics
                 var showExceptionDetail = _env.EnvironmentName == "Local";
                 mvcOptions.Filters.Add(
                     new CustomJsonExceptionFilter(showExceptionDetail));
+            });
+
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.CookieName = ".S4Analytics.Session";
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                options.CookieHttpOnly = true;
             });
 
             // Do not redirect to login for unauthorized API call; return Unauthorized status code instead.
@@ -163,6 +171,8 @@ namespace S4Analytics
             app.UseStaticFiles();
 
             app.UseIdentity();
+
+            app.UseSession();
 
             app.UseMvc(routes =>
             {

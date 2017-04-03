@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -11,51 +12,59 @@ namespace S4Analytics.Models
     {
         private string _connStr;
         private int _esriSrid;
+        private IHttpContextAccessor _httpContextAccessor;
         private readonly IList<string> _PSEUDO_EMPTY_STRING_LIST = new List<string>() { "" };
         private readonly IList<int> _PSEUDO_EMPTY_INT_LIST = new List<int>() { -1 };
 
-        public CrashRepository(IOptions<ServerOptions> serverOptions)
+        public CrashRepository(
+            IOptions<ServerOptions> serverOptions,
+            IHttpContextAccessor httpContextAccessor)
         {
             _connStr = serverOptions.Value.WarehouseConnStr;
             _esriSrid = serverOptions.Value.EsriSrid;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public int CreateQuery(CrashQuery query) {
-            using (var conn = new OracleConnection(_connStr))
-            {
-                // get query id
-                var cmdText = "SELECT crash_query_seq.nextval FROM dual";
-                var queryId = conn.QuerySingle<int>(cmdText);
-
-                // populate crash query table with matching crash ids
-                DynamicParameters parameters;
-                (cmdText, parameters) = ConstructCrashQuery(queryId, query);
-                conn.Execute(cmdText, parameters);
-
-                return queryId;
-            }
-        }
-
-        public (string, DynamicParameters) CreateQueryTest(CrashQuery query)
+        private class PreparedQuery
         {
-            // TODO: remove this method once testing is complete
-            using (var conn = new OracleConnection(_connStr))
+            public string queryText;
+            public Dictionary<string, object> queryParameters;
+            public DynamicParameters DynamicParams
             {
-                return ConstructCrashQuery(0, query);
+                get
+                {
+                    var dynamicParams = new DynamicParameters();
+                    dynamicParams.Add(queryParameters);
+                    return dynamicParams;
+                }
+            }
+            public PreparedQuery(string queryText, Dictionary<string, object> queryParameters)
+            {
+                this.queryText = queryText;
+                this.queryParameters = queryParameters;
             }
         }
 
-        public bool QueryExists(int queryId)
+        public (string, Dictionary<string, object>) CreateQueryTest(CrashQuery query)
         {
-            using (var conn = new OracleConnection(_connStr))
-            {
-                var cmdText = "SELECT 1 FROM crash_query WHERE id = :queryId";
-                var exists = conn.QuerySingleOrDefault<int>(cmdText, new { queryId }) == 1;
-                return exists;
-            }
+            var queryToken = Guid.NewGuid().ToString();
+            var preparedQuery = PrepareCrashQuery(query);
+            return (preparedQuery.queryText, preparedQuery.queryParameters);
         }
 
-        public IEnumerable<CrashResult> GetCrashes(int queryId) {
+        public string CreateQuery(CrashQuery query) {
+            var queryToken = Guid.NewGuid().ToString();
+            var preparedQuery = PrepareCrashQuery(query);
+            _httpContextAccessor.HttpContext.Session.Set(queryToken, preparedQuery);
+            return queryToken;
+        }
+
+        public bool QueryExists(string queryToken)
+        {
+            return _httpContextAccessor.HttpContext.Session.Keys.Contains(queryToken);
+        }
+
+        public IEnumerable<CrashResult> GetCrashes(string queryToken) {
             var queryText = @"SELECT
               /* geocode_result.map_point_x,
               geocode_result.map_point_y,
@@ -115,10 +124,10 @@ namespace S4Analytics.Models
               v_bike_ped_crash_type.crash_type_nm AS bike_ped_crash_type_nm,
               fact_crash_evt.bike_cnt,
               fact_crash_evt.ped_cnt */
-            FROM fact_crash_evt
-            INNER JOIN crash_query
-              ON crash_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-            INNER JOIN navteq_2015q1.geocode_result
+            FROM s4_warehouse.fact_crash_evt
+            INNER JOIN ({0}) prepared_query
+              ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
+            /* INNER JOIN navteq_2015q1.geocode_result
               ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
             LEFT JOIN dim_agncy
               ON fact_crash_evt.key_rptg_agncy = dim_agncy.ID
@@ -139,21 +148,22 @@ namespace S4Analytics.Models
             LEFT JOIN dim_harmful_evt
               ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID
             LEFT JOIN v_bike_ped_crash_type
-              ON fact_crash_evt.key_bike_ped_crash_type = v_bike_ped_crash_type.crash_type_id
-            WHERE crash_query.id = :queryId";
+              ON fact_crash_evt.key_bike_ped_crash_type = v_bike_ped_crash_type.crash_type_id */";
+
+            var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
+            var innerQueryText = preparedQuery.queryText;
+            queryText = string.Format(queryText, innerQueryText);
 
             using (var conn = new OracleConnection(_connStr))
             {
-                var crashResults = conn.Query<CrashResult>(queryText, new { queryId });
+                var crashResults = conn.Query<CrashResult>(queryText, preparedQuery.DynamicParams);
                 return crashResults;
             }
         }
 
-        private (string, DynamicParameters) ConstructCrashQuery(int queryId, CrashQuery query)
+        private PreparedQuery PrepareCrashQuery(CrashQuery query)
         {
-            var queryText = @"INSERT INTO crash_query (id, crash_id)
-                SELECT
-                  :queryId,
+            var queryText = @"SELECT
                   fact_crash_evt.hsmv_rpt_nbr
                 FROM s4_warehouse.fact_crash_evt
                 INNER JOIN navteq_2015q1.geocode_result
@@ -163,8 +173,7 @@ namespace S4Analytics.Models
 
             // initialize where clause and query parameter collections
             var whereClauses = new List<string>();
-            var queryParameters = new DynamicParameters();
-            queryParameters.Add(new { queryId });
+            var queryParameters = new Dictionary<string, object>();
 
             // get predicate methods
             var predicateMethods = GetPredicateMethods(query);
@@ -185,7 +194,7 @@ namespace S4Analytics.Models
             // join where clauses; append to insert statement
             queryText += "\r\nWHERE (" + string.Join(")\r\nAND (", whereClauses) + ")";
 
-            return (queryText, queryParameters);
+            return new PreparedQuery(queryText, queryParameters);
         }
 
         private List<Func<(string, object)>> GetPredicateMethods(CrashQuery query)

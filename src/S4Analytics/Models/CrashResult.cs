@@ -8,7 +8,7 @@ namespace S4Analytics.Models
 {
     public class CrashResult
     {
-        int Id; // surrogate key
-        int? HsmvReportNumber;
+        public int id; // surrogate key
+        public int? hsmvReportNumber;
     }
 }
