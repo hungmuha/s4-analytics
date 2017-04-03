@@ -8,11 +8,11 @@ namespace S4Analytics.Models
     public static class ExtensionMethods
     {
         /// <summary>
-        /// Extension method that adds Dictionary contents to DynamicParameters instance.
+        /// Add Dictionary contents to DynamicParameters instance.
         /// </summary>
-        /// <param name="dynamicParams">DynamicParameters instance</param>
-        /// <param name="parameters">Dictionary whose values should be added to the DynamicParameters instance</param>
-        public static void Add(this DynamicParameters dynamicParams, Dictionary<string, object> parameters)
+        /// <param name="dynamicParams">DynamicParameters instance.</param>
+        /// <param name="parameters">Dictionary whose values should be added to the DynamicParameters instance.</param>
+        public static void AddDict(this DynamicParameters dynamicParams, Dictionary<string, object> parameters)
         {
             // add a parameter for each field in the template object
             foreach (var key in parameters.Keys)
@@ -22,47 +22,41 @@ namespace S4Analytics.Models
         }
 
         /// <summary>
-        /// Extension method that allows fields of an object to be added to a dictionary.
+        /// Add all fields of an object to a dictionary.
         /// </summary>
-        /// <param name="paramDict">Dictionary to be added to</param>
-        /// <param name="parameters">Parameters object whose fields should be added to the Dictionary instance</param>
-        public static void Add(this Dictionary<string, object> paramDict, object parameters)
+        /// <param name="dict">Dictionary instance.</param>
+        /// <param name="item">Item whose fields should be added to the Dictionary instance.</param>
+        public static void AddFields(this Dictionary<string, object> dict, object item)
         {
             // add a parameter for each field in the template object
-            foreach (var prop in parameters.GetType().GetProperties())
+            foreach (var prop in item.GetType().GetProperties())
             {
-                paramDict.Add(prop.Name, prop.GetValue(parameters));
+                dict.Add(prop.Name, prop.GetValue(item));
             }
         }
 
         /// <summary>
-        /// Generate a text dump of Dictionary keys and values.
+        /// Serialize object to JSON.
         /// </summary>
-        /// <param name="dict">Dictionary instance</param>
-        /// <returns>Text dump of Dictionary keys and values</returns>
-        public static string DumpText(this Dictionary<string, object> dict)
+        /// <param name="obj">Object to serialize.</param>
+        /// <returns>JSON representation of object.</returns>
+        public static string ToJson(this object obj)
         {
-            var lines = new List<string>();
-            foreach (var key in dict.Keys)
+            return JsonConvert.SerializeObject(obj);
+        }
+
+        /// <summary>
+        /// Serialize object to pretty JSON.
+        /// </summary>
+        /// <param name="obj">Object to serialize.</param>
+        /// <returns>Pretty JSON representation of object.</returns>
+        public static string ToPrettyJson(this object obj)
+        {
+            var serializerSettings = new JsonSerializerSettings()
             {
-                var value = dict[key];
-                string valueStr;
-                if (value.GetType() == typeof(List<int>))
-                {
-                    valueStr = string.Join(", ", ((List<int>)value).ToArray());
-                }
-                else if (value.GetType() == typeof(List<string>))
-                {
-                    valueStr = string.Join(", ", ((List<string>)value).ToArray());
-                }
-                else
-                {
-                    valueStr = value.ToString();
-                }
-                lines.Add(string.Format("{0}: {1}", key, valueStr));
-            }
-            var text = string.Join("\r\n", lines);
-            return text;
+                Formatting = Formatting.Indented
+            };
+            return JsonConvert.SerializeObject(obj, serializerSettings);
         }
 
         public static void Set<T>(this ISession session, string key, T value)

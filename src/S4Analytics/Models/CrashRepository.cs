@@ -34,7 +34,7 @@ namespace S4Analytics.Models
                 get
                 {
                     var dynamicParams = new DynamicParameters();
-                    dynamicParams.Add(queryParameters);
+                    dynamicParams.AddDict(queryParameters);
                     return dynamicParams;
                 }
             }
@@ -186,7 +186,7 @@ namespace S4Analytics.Models
                     whereClauses.Add(whereClause);
                     if (parameters != null)
                     {
-                        queryParameters.Add(parameters);
+                        queryParameters.AddFields(parameters);
                     }
                 }
             });

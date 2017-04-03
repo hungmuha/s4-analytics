@@ -17,7 +17,7 @@ namespace S4Analytics.Controllers
         public IActionResult CreateQueryTest([FromBody] CrashQuery query)
         {
             (var queryText, var parameters) = _crashRepo.CreateQueryTest(query);
-            return Content(queryText + "\r\n" + parameters.DumpText());
+            return Content(queryText + "\r\n\r\n" + parameters.ToPrettyJson());
         }
 
         [HttpPost("query")]
