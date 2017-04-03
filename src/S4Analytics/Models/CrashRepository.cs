@@ -66,89 +66,101 @@ namespace S4Analytics.Models
 
         public IEnumerable<CrashResult> GetCrashes(string queryToken) {
             var queryText = @"SELECT
-              /* geocode_result.map_point_x,
-              geocode_result.map_point_y,
-              geocode_result.center_line_x,
-              geocode_result.center_line_y,
-              geocode_result.crash_seg_id,
-              geocode_result.nearest_intrsect_id,
-              geocode_result.nearest_intrsect_offset_ft,
-              geocode_result.nearest_intrsect_offset_dir,
-              geocode_result.ref_intrsect_id,
-              geocode_result.ref_intrsect_offset_ft,
-              geocode_result.ref_intrsect_offset_dir, */
-              fact_crash_evt.hsmv_rpt_nbr AS Id,
-              fact_crash_evt.hsmv_rpt_nbr AS HsmvReportNumber /*,
-              fact_crash_evt.key_crash_dt crash_date,
-              fact_crash_evt.key_crash_sev,
-              fact_crash_evt.key_crash_type,
-              v_crash_sev.crash_attr_tx crash_severity,
-              v_crash_type.crash_attr_tx crash_type,
-              v_crash_light_cond.crash_attr_tx light_cond,
-              v_crash_weather_cond.crash_attr_tx weather_cond,
-              fact_crash_evt.crash_tm crash_time,
-              dim_geography.cnty_nm county,
-              dim_geography.city_nm city,
-              geocode_result.st_nm street_name,
-              geocode_result.intrsect_st_nm intersecting_street,
-              fact_crash_evt.is_alc_rel is_alcohol_related,
-              fact_crash_evt.is_distracted,
-              fact_crash_evt.is_drug_rel is_drug_related,
-              fact_crash_evt.lat,
-              fact_crash_evt.lng,
-              fact_crash_evt.offset_dir,
-              fact_crash_evt.offset_ft,
-              fact_crash_evt.veh_cnt vehicle_count,
-              fact_crash_evt.nm_cnt nonmotorist_count,
-              fact_crash_evt.fatality_cnt fatality_count,
-              fact_crash_evt.inj_cnt injury_count,
-              fact_crash_evt.tot_dmg_amt,
-              dim_agncy.agncy_short_nm,
-              geocode_result.cnty_cd cnty_cd,
-              geocode_result.city_cd city_cd,
-              fact_crash_evt.agncy_rpt_nbr agency_report_number,
-              decode(fact_crash_evt.form_type_cd, 'L', 'Long', 'S', 'Short', '') form_type,
-              v_crash_type_simplified.crash_attr_tx crash_type_simple,
-              fact_crash_evt.crash_type_dir_tx,
-              v_crash_road_surf_cond.crash_attr_tx,
-              dim_harmful_evt.harmful_evt_tx,
-              fact_crash_evt.img_ext_tx,
-              geocode_result.sym_angle,
-              dim_agncy.ID,
-              CASE
-                WHEN v_bike_ped_crash_type.bike_or_ped IS NOT NULL THEN v_bike_ped_crash_type.bike_or_ped
-                WHEN (fact_crash_evt.ped_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedestrian') AND (fact_crash_evt.bike_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedalcycle') THEN '?'
-                WHEN fact_crash_evt.ped_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedestrian' THEN 'P'
-                WHEN fact_crash_evt.bike_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedalcycle' THEN 'B'
-              END AS bike_or_ped,
-              v_bike_ped_crash_type.crash_type_nm AS bike_ped_crash_type_nm,
-              fact_crash_evt.bike_cnt,
-              fact_crash_evt.ped_cnt */
+            fact_crash_evt.hsmv_rpt_nbr AS id,
+            fact_crash_evt.key_crash_dt AS crashDate,
+            fact_crash_evt.crash_tm AS crashTime,
+            fact_crash_evt.hsmv_rpt_nbr AS hsmvReportNumber,
+            fact_crash_evt.hsmv_rpt_nbr AS hsmvReportNumberDsp,
+            fact_crash_evt.agncy_rpt_nbr AS agencyReportNumber,
+            fact_crash_evt.agncy_rpt_nbr AS agencyReportNumberDsp,
+            geocode_result.map_point_x AS mapPointX,
+            geocode_result.map_point_y AS mapPointY,
+            geocode_result.center_line_x AS centerLineX,
+            geocode_result.center_line_y AS centerLineY,
+            geocode_result.sym_angle AS symbolAngle,
+            geocode_result.crash_seg_id AS crashSegId,
+            geocode_result.nearest_intrsect_id AS nearestIntrsectId,
+            geocode_result.nearest_intrsect_offset_ft AS nearestIntrsectOffsetFt,
+            geocode_result.ref_intrsect_id AS refIntrsectId,
+            geocode_result.ref_intrsect_offset_ft AS refIntrsectOffsetFt,
+            geocode_result.nearest_intrsect_offset_dir AS nearIntrsectOffsetDir,
+            geocode_result.ref_intrsect_offset_dir AS refIntrsectOffsetDir,
+            fact_crash_evt.img_ext_tx AS imgExtTx,
+            decode(fact_crash_evt.form_type_cd, 'L', 'Long', 'S', 'Short', '') AS formType,
+            fact_crash_evt.key_crash_sev AS keyCrashSev,
+            fact_crash_evt.key_crash_sev_dtl AS keyCrashSevDtl,
+            fact_crash_evt.key_crash_type AS keyCrashType,
+            v_crash_sev.crash_attr_tx AS crashSeverity,
+            CASE v_crash_sev_dtl.crash_attr_tx WHEN 'No Injuries Coded' THEN 'No Injury' ELSE v_crash_sev_dtl.crash_attr_tx END AS crashSeverityDetailed,
+            v_crash_type_simplified.crash_attr_tx AS crashType,
+            v_crash_type.crash_attr_tx AS crashTypeDetail,
+            v_crash_light_cond.crash_attr_tx AS lightCond,
+            v_crash_weather_cond.crash_attr_tx AS weatherCond,
+            dim_geography.cnty_nm AS county,
+            dim_geography.city_nm AS city,
+            geocode_result.st_nm AS streetName,
+            geocode_result.intrsect_st_nm AS intersectingStreet,
+            fact_crash_evt.is_alc_rel AS isAlcoholRelated,
+            fact_crash_evt.is_distracted AS isDistracted,
+            fact_crash_evt.is_drug_rel AS isDrugRelated,
+            fact_crash_evt.lat AS lat,
+            fact_crash_evt.lng AS lng,
+            fact_crash_evt.offset_dir AS offsetDir,
+            fact_crash_evt.offset_ft AS offsetFt,
+            fact_crash_evt.veh_cnt AS vehicleCount,
+            fact_crash_evt.nm_cnt AS nonmotoristCount,
+            fact_crash_evt.fatality_cnt AS fatalityCount,
+            fact_crash_evt.inj_cnt AS injuryCount,
+            fact_crash_evt.tot_dmg_amt AS totDmgAmt,
+            dim_agncy.agncy_short_nm AS agncyNm,
+            dim_agncy.ID AS agncyId,
+            geocode_result.cnty_cd AS cntyCd,
+            geocode_result.city_cd AS cityCd,
+            fact_crash_evt.crash_type_dir_tx AS crashTypeDir,
+            v_crash_road_surf_cond.crash_attr_tx AS crashRoadSurfCond,
+            dim_harmful_evt.harmful_evt_tx AS firstHarmfulEvent,
+            CASE
+              WHEN v_bike_ped_crash_type.bike_or_ped IS NOT NULL THEN v_bike_ped_crash_type.bike_or_ped
+              WHEN (fact_crash_evt.ped_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedestrian') AND (fact_crash_evt.bike_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedalcycle') THEN '?'
+              WHEN fact_crash_evt.ped_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedestrian' THEN 'P'
+              WHEN fact_crash_evt.bike_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedalcycle' THEN 'B'
+            END AS bikeOrPed,
+            v_bike_ped_crash_type.crash_type_nm AS bikePedCrashTypeName,
+            fact_crash_evt.bike_cnt AS bikeCount,
+            fact_crash_evt.ped_cnt AS pedCount,
+            fact_crash_evt.inj_none_cnt as injuryNoneCount,
+            fact_crash_evt.inj_possible_cnt AS injuryPossibleCount,
+            fact_crash_evt.inj_non_incapacitating_cnt AS injuryNonIncapacitatingCount,
+            fact_crash_evt.inj_incapacitating_cnt AS injuryIncapacitatingCount,
+            fact_crash_evt.inj_fatal_30_cnt as injuryFatal30Count,
+            fact_crash_evt.inj_fatal_non_traffic_cnt AS injuryFatalNonTrafficCount
             FROM s4_warehouse.fact_crash_evt
             INNER JOIN ({0}) prepared_query
               ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-            /* INNER JOIN navteq_2015q1.geocode_result
+            INNER JOIN navteq_2015q1.geocode_result
               ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-            LEFT JOIN dim_agncy
+            LEFT JOIN s4_warehouse.dim_agncy
               ON fact_crash_evt.key_rptg_agncy = dim_agncy.ID
-            LEFT JOIN dim_geography
+            LEFT JOIN s4_warehouse.dim_geography
               ON fact_crash_evt.key_geography = dim_geography.ID
-            LEFT JOIN v_crash_sev
+            LEFT JOIN s4_warehouse.v_crash_sev
               ON fact_crash_evt.key_crash_sev = v_crash_sev.ID
-            LEFT JOIN v_crash_weather_cond
+            LEFT JOIN s4_warehouse.v_crash_sev_dtl
+              ON fact_crash_evt.key_crash_sev_dtl = v_crash_sev_dtl.ID
+            LEFT JOIN s4_warehouse.v_crash_weather_cond
               ON fact_crash_evt.key_weather_cond = v_crash_weather_cond.ID
-            LEFT JOIN v_crash_light_cond
+            LEFT JOIN s4_warehouse.v_crash_light_cond
               ON fact_crash_evt.key_light_cond = v_crash_light_cond.ID
-            LEFT JOIN v_crash_type_simplified
+            LEFT JOIN s4_warehouse.v_crash_type_simplified
               ON fact_crash_evt.key_crash_type = v_crash_type_simplified.ID
-            LEFT JOIN v_crash_type
+            LEFT JOIN s4_warehouse.v_crash_type
               ON fact_crash_evt.key_crash_type = v_crash_type.ID
-            LEFT JOIN v_crash_road_surf_cond
+            LEFT JOIN s4_warehouse.v_crash_road_surf_cond
               ON fact_crash_evt.key_rd_surf_cond = v_crash_road_surf_cond.ID
-            LEFT JOIN dim_harmful_evt
+            LEFT JOIN s4_warehouse.dim_harmful_evt
               ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID
-            LEFT JOIN v_bike_ped_crash_type
-              ON fact_crash_evt.key_bike_ped_crash_type = v_bike_ped_crash_type.crash_type_id */";
+            LEFT JOIN s4_warehouse.v_bike_ped_crash_type
+              ON fact_crash_evt.key_bike_ped_crash_type = v_bike_ped_crash_type.crash_type_id";
 
             var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
             var innerQueryText = preparedQuery.queryText;
@@ -163,7 +175,7 @@ namespace S4Analytics.Models
 
         private PreparedQuery PrepareCrashQuery(CrashQuery query)
         {
-            var queryText = @"SELECT
+            var queryText = @"SELECT /*+ RESULT_CACHE */
                   fact_crash_evt.hsmv_rpt_nbr
                 FROM s4_warehouse.fact_crash_evt
                 INNER JOIN navteq_2015q1.geocode_result
