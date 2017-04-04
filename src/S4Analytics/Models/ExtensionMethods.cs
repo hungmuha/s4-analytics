@@ -8,6 +8,22 @@ namespace S4Analytics.Models
     public static class ExtensionMethods
     {
         /// <summary>
+        /// Extension method that works like AddDynamicParams() but
+        /// does not have the limitation/bug that parameter names are
+        /// missing from the ParameterNames collection.
+        /// </summary>
+        /// <param name="dynamicParams">DynamicParameters instance</param>
+        /// <param name="item">Parameters object whose fields should be added to the DynamicParameters instance</param>
+        public static void Add(this DynamicParameters dynamicParams, object item)
+        {
+            // add a parameter for each field in the template object
+            foreach (var prop in item.GetType().GetProperties())
+            {
+                dynamicParams.Add(prop.Name, prop.GetValue(item));
+            }
+        }
+
+        /// <summary>
         /// Add Dictionary contents to DynamicParameters instance.
         /// </summary>
         /// <param name="dynamicParams">DynamicParameters instance.</param>

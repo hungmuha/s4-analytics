@@ -40,6 +40,24 @@ namespace S4Analytics.Controllers
             return new ObjectResult(data);
         }
 
+        [HttpGet("{queryToken}/point")]
+        public IActionResult GetCrashPoints(
+            string queryToken,
+            [FromQuery] double x1,
+            [FromQuery] double y1,
+            [FromQuery] double x2,
+            [FromQuery] double y2)
+        {
+            var queryExists = _crashRepo.QueryExists(queryToken);
+            var extent = new Extent(x1, y1, x2, y2);
+
+            if (!queryExists) { return NotFound(); }
+            // if (!extent.IsValid) { return BadRequest(); }
+
+            var results = _crashRepo.GetCrashPointCollection(queryToken, extent);
+            return new ObjectResult(results);
+        }
+
         // TODO: parameterize the specific attribute(s) to summarize
         [HttpGet("{queryToken}/summary/crash-severity")]
         public IActionResult GetCrashSeveritySummary(string queryToken)

@@ -203,6 +203,100 @@ namespace S4Analytics.Models
             }
         }
 
+        public EventPointCollection GetCrashPointCollection(string queryToken, Extent mapExtent)
+        {
+            const int maxPoints = 10000;
+
+            var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
+            var innerQueryText = preparedQuery.queryText;
+
+            var dynamicParams = preparedQuery.DynamicParams;
+            dynamicParams.Add(new
+            {
+                mapExtentMinX = Math.Min(mapExtent.point1.x, mapExtent.point2.x),
+                mapExtentMinY = Math.Min(mapExtent.point1.y, mapExtent.point2.y),
+                mapExtentMaxX = Math.Max(mapExtent.point1.x, mapExtent.point2.x),
+                mapExtentMaxY = Math.Max(mapExtent.point1.y, mapExtent.point2.y)
+            });
+
+            var countQueryText = @"SELECT
+                COUNT(*) count, withinExtent
+                FROM (
+                  SELECT CASE
+                    WHEN
+                      GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                      AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY THEN 'Y'
+                    ELSE 'N'
+                  END AS within_extent
+                  FROM s4_warehouse.fact_crash_evt
+                  INNER JOIN ({0}) prepared_query
+                    ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
+                  INNER JOIN navteq_2015q1.geocode_result
+                    ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
+                )
+                GROUP BY within_extent";
+            countQueryText = string.Format(countQueryText, innerQueryText);
+
+            int queryCount;
+            int extentCount;
+
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var counts = conn.Query(countQueryText);
+                queryCount = counts.Sum(row => row.count);
+                extentCount = counts.Where(row => row.withinExtent == "Y").Sum(row => row.count);
+            }
+
+            /* If query count <= 10000, get all points regardless of extent.
+             * If extent count <= 10000, get all points for the extent.
+             * If extent count > 10000, sample 10000 points for the extent. */
+            var sampleForExtent = extentCount > maxPoints;
+            var subsetForQuery = !sampleForExtent && queryCount > maxPoints;
+
+            var queryText = @"SELECT
+                fact_crash_evt.hsmv_rpt_nbr AS eventId,
+                geocode_result.map_point_x AS x,
+                geocode_result.map_point_y AS y
+                FROM s4_warehouse.fact_crash_evt
+                INNER JOIN ({0}) prepared_query
+                    ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
+                INNER JOIN navteq_2015q1.geocode_result
+                    ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr";
+            queryText = string.Format(queryText, innerQueryText);
+
+            if (sampleForExtent)
+            {
+                var samplePercentage = 100 * maxPoints / extentCount;
+                queryText += string.Format("\r\nSAMPLE({0})", samplePercentage);
+            }
+            if (sampleForExtent || subsetForQuery)
+            {
+                queryText += @"\r\nWHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+            }
+
+            IEnumerable<EventPoint> points;
+
+            using (var conn = new OracleConnection(_connStr))
+            {
+                points = conn.Query<EventPoint>(queryText, preparedQuery.DynamicParams);
+            }
+
+            var pointColl = new EventPointCollection()
+            {
+                eventType = "crash",
+                isSampleForExtent = sampleForExtent,
+                isSubsetForQuery = subsetForQuery,
+                queryEventCount = queryCount,
+                extentEventCount = subsetForQuery ? extentCount : 0,
+                sampleEventCount = sampleForExtent ? points.Count() : 0,
+                sampleMultiplier = sampleForExtent ? extentCount / points.Count() : 0,
+                points = points
+            };
+
+            return pointColl;
+        }
+
         private PreparedQuery PrepareCrashQuery(CrashQuery query)
         {
             var queryText = @"SELECT /*+ RESULT_CACHE */

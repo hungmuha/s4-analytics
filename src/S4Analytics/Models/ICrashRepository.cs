@@ -9,5 +9,6 @@ namespace S4Analytics.Models
         bool QueryExists(string queryToken);
         IEnumerable<CrashResult> GetCrashes(string queryToken);
         IEnumerable<AttributeSummary> GetCrashSeveritySummary(string queryToken);
+        EventPointCollection GetCrashPointCollection(string queryToken, Extent mapExtent);
     }
 }
