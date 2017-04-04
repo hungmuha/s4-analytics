@@ -173,6 +173,36 @@ namespace S4Analytics.Models
             }
         }
 
+        public IEnumerable<AttributeSummary> GetCrashSeveritySummary(string queryToken)
+        {
+            // TODO: move to a new repository for summary results?
+            // TODO: parameterize the specific attribute(s) to summarize
+            // TODO: store natural sort order in database
+            var queryText = @"SELECT attribute, COUNT(*) AS count
+                FROM (
+                  SELECT
+                  CASE v_crash_sev_dtl.ID WHEN 220 THEN 221 ELSE v_crash_sev_dtl.ID END AS sort_order,
+                  CASE v_crash_sev_dtl.crash_attr_tx WHEN 'No Injuries Coded' THEN 'No Injury' ELSE v_crash_sev_dtl.crash_attr_tx END AS attribute
+                  FROM s4_warehouse.fact_crash_evt
+                  INNER JOIN ({0}) prepared_query
+                    ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
+                  LEFT JOIN s4_warehouse.v_crash_sev_dtl
+                    ON fact_crash_evt.key_crash_sev_dtl = v_crash_sev_dtl.ID
+                )
+                GROUP BY attribute, sort_order
+                ORDER BY sort_order";
+
+            var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
+            var innerQueryText = preparedQuery.queryText;
+            queryText = string.Format(queryText, innerQueryText);
+
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var summary = conn.Query<AttributeSummary>(queryText, preparedQuery.DynamicParams);
+                return summary;
+            }
+        }
+
         private PreparedQuery PrepareCrashQuery(CrashQuery query)
         {
             var queryText = @"SELECT /*+ RESULT_CACHE */

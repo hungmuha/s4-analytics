@@ -39,5 +39,19 @@ namespace S4Analytics.Controllers
             var data = AjaxSafeData(results);
             return new ObjectResult(data);
         }
+
+        // TODO: parameterize the specific attribute(s) to summarize
+        [HttpGet("{queryToken}/summary/crash-severity")]
+        public IActionResult GetCrashSeveritySummary(string queryToken)
+        {
+            var queryExists = _crashRepo.QueryExists(queryToken);
+            if (!queryExists)
+            {
+                return NotFound();
+            }
+            var results = _crashRepo.GetCrashSeveritySummary(queryToken);
+            var data = AjaxSafeData(results);
+            return new ObjectResult(data);
+        }
     }
 }
