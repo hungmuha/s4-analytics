@@ -220,7 +220,7 @@ namespace S4Analytics.Models
             });
 
             var countQueryText = @"SELECT
-                COUNT(*) count, withinExtent
+                COUNT(*) count, within_extent
                 FROM (
                   SELECT CASE
                     WHEN
@@ -242,9 +242,9 @@ namespace S4Analytics.Models
 
             using (var conn = new OracleConnection(_connStr))
             {
-                var counts = conn.Query(countQueryText);
-                queryCount = counts.Sum(row => row.count);
-                extentCount = counts.Where(row => row.withinExtent == "Y").Sum(row => row.count);
+                var counts = conn.Query(countQueryText, dynamicParams);
+                queryCount = counts.Sum(row => Convert.ToInt32(row.COUNT));
+                extentCount = counts.Where(row => row.WITHIN_EXTENT == "Y").Sum(row => Convert.ToInt32(row.COUNT));
             }
 
             /* If query count <= 10000, get all points regardless of extent.
@@ -253,6 +253,7 @@ namespace S4Analytics.Models
             var sampleForExtent = extentCount > maxPoints;
             var subsetForQuery = !sampleForExtent && queryCount > maxPoints;
 
+            // TODO: try using WITH clause to fix problem with SAMPLE
             var queryText = @"SELECT
                 fact_crash_evt.hsmv_rpt_nbr AS eventId,
                 geocode_result.map_point_x AS x,
@@ -271,7 +272,8 @@ namespace S4Analytics.Models
             }
             if (sampleForExtent || subsetForQuery)
             {
-                queryText += @"\r\nWHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                queryText += @"
+                WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
                 AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
             }
 
@@ -279,7 +281,7 @@ namespace S4Analytics.Models
 
             using (var conn = new OracleConnection(_connStr))
             {
-                points = conn.Query<EventPoint>(queryText, preparedQuery.DynamicParams);
+                points = conn.Query<EventPoint>(queryText, dynamicParams);
             }
 
             var pointColl = new EventPointCollection()
