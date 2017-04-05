@@ -7,7 +7,7 @@ namespace S4Analytics.Models
         (string, Dictionary<string, object>) CreateQueryTest(CrashQuery query);
         string CreateQuery(CrashQuery query);
         bool QueryExists(string queryToken);
-        IEnumerable<CrashResult> GetCrashes(string queryToken);
+        IEnumerable<CrashResult> GetCrashes(string queryToken, int fromIndex, int toIndex);
         IEnumerable<AttributeSummary> GetCrashSeveritySummary(string queryToken);
         EventPointCollection GetCrashPointCollection(string queryToken, Extent mapExtent);
     }

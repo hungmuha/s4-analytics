@@ -28,14 +28,14 @@ namespace S4Analytics.Controllers
         }
 
         [HttpGet("{queryToken}", Name = "GetCrashes")]
-        public IActionResult GetCrashes(string queryToken)
+        public IActionResult GetCrashes(string queryToken, int fromIndex, int toIndex)
         {
             var queryExists = _crashRepo.QueryExists(queryToken);
             if (!queryExists)
             {
                 return NotFound();
             }
-            var results = _crashRepo.GetCrashes(queryToken);
+            var results = _crashRepo.GetCrashes(queryToken, fromIndex, toIndex);
             var data = AjaxSafeData(results);
             return new ObjectResult(data);
         }
