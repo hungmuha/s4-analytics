@@ -31,10 +31,11 @@ namespace S4Analytics.Controllers
         public IActionResult GetCrashes(string queryToken, int fromIndex, int toIndex)
         {
             var queryExists = _crashRepo.QueryExists(queryToken);
-            if (!queryExists)
-            {
-                return NotFound();
-            }
+            var badIndices = fromIndex <= 0 || toIndex <= 0 || toIndex < fromIndex;
+
+            if (!queryExists) { return NotFound(); }
+            if (badIndices) { return BadRequest(); }
+
             var results = _crashRepo.GetCrashes(queryToken, fromIndex, toIndex);
             var data = AjaxSafeData(results);
             return new ObjectResult(data);
@@ -52,7 +53,7 @@ namespace S4Analytics.Controllers
             var extent = new Extent(x1, y1, x2, y2);
 
             if (!queryExists) { return NotFound(); }
-            // if (!extent.IsValid) { return BadRequest(); }
+            if (!extent.IsValid) { return BadRequest(); }
 
             var results = _crashRepo.GetCrashPointCollection(queryToken, extent);
             return new ObjectResult(results);
