@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace S4Analytics.Controllers
 {
     [Route("api/[controller]")]
-    public class OptionsController : S4Controller
+    public class OptionsController : Controller
     {
         private IOptions<ClientOptions> _clientOptions;
 
@@ -21,8 +21,7 @@ namespace S4Analytics.Controllers
         [HttpGet]
         public IActionResult GetOptions()
         {
-            var data = AjaxSafeData(_clientOptions.Value);
-            return new ObjectResult(data);
+            return new ObjectResult(_clientOptions.Value);
         }
     }
 }

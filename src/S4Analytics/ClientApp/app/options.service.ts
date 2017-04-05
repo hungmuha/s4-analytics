@@ -19,7 +19,7 @@ export class OptionsService {
         if (this.cachedOptions === undefined) {
             let url = 'api/options';
             return this.http.get(url)
-                .map(response => response.json().data as Options)
+                .map(response => response.json() as Options)
                 .do(options => this.cachedOptions = options);
         }
         else {
