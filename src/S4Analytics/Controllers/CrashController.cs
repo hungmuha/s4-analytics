@@ -4,7 +4,7 @@ using S4Analytics.Models;
 namespace S4Analytics.Controllers
 {
     [Route("api/[controller]")]
-    public class CrashController : S4Controller
+    public class CrashController : Controller
     {
         private ICrashRepository _crashRepo;
 
@@ -37,8 +37,7 @@ namespace S4Analytics.Controllers
             if (badIndices) { return BadRequest(); }
 
             var results = _crashRepo.GetCrashes(queryToken, fromIndex, toIndex);
-            var data = AjaxSafeData(results);
-            return new ObjectResult(data);
+            return new ObjectResult(results);
         }
 
         [HttpGet("{queryToken}/point")]
@@ -69,8 +68,7 @@ namespace S4Analytics.Controllers
                 return NotFound();
             }
             var results = _crashRepo.GetCrashSeveritySummary(queryToken);
-            var data = AjaxSafeData(results);
-            return new ObjectResult(data);
+            return new ObjectResult(results);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace S4Analytics.Controllers
     }
 
     [Route("api/[controller]")]
-    public class AdminController : S4Controller
+    public class AdminController : Controller
     {
         private INewUserRequestRepository _newUserRequestRepo;
 
@@ -48,9 +48,7 @@ namespace S4Analytics.Controllers
         public IActionResult GetAllNewUserRequests()
         {
             var info = _newUserRequestRepo.GetAll();
-
-            var data = AjaxSafeData(info);
-            return new ObjectResult(data);
+            return new ObjectResult(info);
         }
 
         /// <summary>
@@ -66,8 +64,7 @@ namespace S4Analytics.Controllers
             {
                 return NotFound();
             }
-            var data = AjaxSafeData(info);
-            return new ObjectResult(data);
+            return new ObjectResult(info);
         }
 
         [HttpPatch("new-user-request/{id}/approve")]
