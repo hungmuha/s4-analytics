@@ -163,8 +163,8 @@ namespace S4Analytics.Models
               ON fact_crash_evt.key_bike_ped_crash_type = v_bike_ped_crash_type.crash_type_id";
 
             var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
-            var innerQueryText = preparedQuery.queryText;
-            queryText = string.Format(queryText, innerQueryText);
+            var preparedQueryText = preparedQuery.queryText;
+            queryText = string.Format(queryText, preparedQueryText);
 
             using (var conn = new OracleConnection(_connStr))
             {
@@ -193,8 +193,8 @@ namespace S4Analytics.Models
                 ORDER BY sort_order";
 
             var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
-            var innerQueryText = preparedQuery.queryText;
-            queryText = string.Format(queryText, innerQueryText);
+            var preparedQueryText = preparedQuery.queryText;
+            queryText = string.Format(queryText, preparedQueryText);
 
             using (var conn = new OracleConnection(_connStr))
             {
@@ -205,10 +205,10 @@ namespace S4Analytics.Models
 
         public EventPointCollection GetCrashPointCollection(string queryToken, Extent mapExtent)
         {
-            const int maxPoints = 10000;
+            const int maxPoints = 1000;
 
             var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
-            var innerQueryText = preparedQuery.queryText;
+            var preparedQueryText = preparedQuery.queryText;
 
             var dynamicParams = preparedQuery.DynamicParams;
             dynamicParams.Add(new
@@ -219,62 +219,62 @@ namespace S4Analytics.Models
                 mapExtentMaxY = Math.Max(mapExtent.point1.y, mapExtent.point2.y)
             });
 
-            var countQueryText = @"SELECT
-                COUNT(*) count, within_extent
-                FROM (
-                  SELECT CASE
-                    WHEN
-                      GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                      AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY THEN 'Y'
-                    ELSE 'N'
-                  END AS within_extent
-                  FROM s4_warehouse.fact_crash_evt
-                  INNER JOIN ({0}) prepared_query
-                    ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                  INNER JOIN navteq_2015q1.geocode_result
-                    ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                )
-                GROUP BY within_extent";
-            countQueryText = string.Format(countQueryText, innerQueryText);
+            var countQueryText = @"SELECT COUNT(*)
+                FROM s4_warehouse.fact_crash_evt
+                INNER JOIN ({0}) prepared_query
+                  ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
+                INNER JOIN navteq_2015q1.geocode_result
+                  ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
+                WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                  AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+            countQueryText = string.Format(countQueryText, preparedQueryText);
 
-            int queryCount;
-            int extentCount;
+            int eventCount;
 
             using (var conn = new OracleConnection(_connStr))
             {
-                var counts = conn.Query(countQueryText, dynamicParams);
-                queryCount = counts.Sum(row => Convert.ToInt32(row.COUNT));
-                extentCount = counts.Where(row => row.WITHIN_EXTENT == "Y").Sum(row => Convert.ToInt32(row.COUNT));
+                eventCount = conn.QuerySingleOrDefault<int>(countQueryText, dynamicParams);
             }
 
-            /* If query count <= 10000, get all points regardless of extent.
-             * If extent count <= 10000, get all points for the extent.
-             * If extent count > 10000, sample 10000 points for the extent. */
-            var sampleForExtent = extentCount > maxPoints;
-            var subsetForQuery = !sampleForExtent && queryCount > maxPoints;
-
-            // TODO: try using WITH clause to fix problem with SAMPLE
-            var queryText = @"SELECT
-                fact_crash_evt.hsmv_rpt_nbr AS eventId,
-                geocode_result.map_point_x AS x,
-                geocode_result.map_point_y AS y
+            string queryText;
+            var useSample = eventCount > maxPoints;
+            if (useSample)
+            {
+                queryText = @"WITH sample_evts AS (
+                  SELECT hsmv_rpt_nbr
+                  FROM s4_warehouse.fact_crash_evt
+                  SAMPLE({0})
+                )
+                SELECT
+                  NULL AS eventId, -- do not retrieve ids for sample
+                  geocode_result.map_point_x AS x,
+                  geocode_result.map_point_y AS y
+                FROM s4_warehouse.fact_crash_evt
+                INNER JOIN sample_evts
+                  ON sample_evts.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
+                INNER JOIN ({1}) prepared_query
+                    ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
+                INNER JOIN navteq_2015q1.geocode_result
+                    ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
+                WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                var samplePercentage = 100.0 * maxPoints / eventCount;
+                queryText = string.Format(queryText, samplePercentage, preparedQueryText);
+            }
+            else
+            {
+                queryText = @"SELECT
+                  fact_crash_evt.hsmv_rpt_nbr AS eventId,
+                  geocode_result.map_point_x AS x,
+                  geocode_result.map_point_y AS y
                 FROM s4_warehouse.fact_crash_evt
                 INNER JOIN ({0}) prepared_query
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN navteq_2015q1.geocode_result
-                    ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr";
-            queryText = string.Format(queryText, innerQueryText);
-
-            if (sampleForExtent)
-            {
-                var samplePercentage = 100 * maxPoints / extentCount;
-                queryText += string.Format("\r\nSAMPLE({0})", samplePercentage);
-            }
-            if (sampleForExtent || subsetForQuery)
-            {
-                queryText += @"
+                    ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
                 WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
                 AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                queryText = string.Format(queryText, preparedQueryText);
             }
 
             IEnumerable<EventPoint> points;
@@ -287,12 +287,10 @@ namespace S4Analytics.Models
             var pointColl = new EventPointCollection()
             {
                 eventType = "crash",
-                isSampleForExtent = sampleForExtent,
-                isSubsetForQuery = subsetForQuery,
-                queryEventCount = queryCount,
-                extentEventCount = subsetForQuery ? extentCount : 0,
-                sampleEventCount = sampleForExtent ? points.Count() : 0,
-                sampleMultiplier = sampleForExtent ? extentCount / points.Count() : 0,
+                isSample = useSample,
+                eventCount = eventCount,
+                sampleSize = useSample ? points.Count() : 0,
+                sampleMultiplier = useSample ? (double)eventCount / points.Count() : 0.0,
                 points = points
             };
 
