@@ -22,6 +22,8 @@ namespace S4Analytics
 {
     public class ServerOptions
     {
+        public string WarehouseSchema { get; set; }
+        public string SpatialSchema { get; set; }
         public string WarehouseConnStr { get; set; }
         public string SpatialConnStr { get; set; }
         public int EsriSrid { get; set; }
@@ -133,8 +135,10 @@ namespace S4Analytics
             services.AddOptions();
             services.Configure<ServerOptions>(serverOptions =>
             {
-                serverOptions.WarehouseConnStr = Configuration.GetConnectionString("Warehouse");
-                serverOptions.SpatialConnStr = Configuration.GetConnectionString("Spatial");
+                serverOptions.WarehouseSchema = Configuration["WarehouseSchema"];
+                serverOptions.SpatialSchema = Configuration["SpatialSchema"];
+                serverOptions.WarehouseConnStr = Configuration.GetConnectionString(serverOptions.WarehouseSchema);
+                serverOptions.SpatialConnStr = Configuration.GetConnectionString(serverOptions.SpatialSchema);
                 serverOptions.EsriSrid = Configuration.GetValue<int>("EsriSrid");
             });
             services.Configure<ClientOptions>(clientOptions =>

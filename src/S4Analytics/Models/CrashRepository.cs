@@ -10,9 +10,11 @@ namespace S4Analytics.Models
 {
     public class CrashRepository : ICrashRepository
     {
-        private string _connStr;
-        private int _esriSrid;
-        private IHttpContextAccessor _httpContextAccessor;
+        private readonly string _connStr;
+        private readonly int _esriSrid;
+        private readonly string _warehouseSchema;
+        private readonly string _spatialSchema;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IList<string> _PSEUDO_EMPTY_STRING_LIST = new List<string>() { "" };
         private readonly IList<int> _PSEUDO_EMPTY_INT_LIST = new List<int>() { -1 };
 
@@ -22,6 +24,8 @@ namespace S4Analytics.Models
         {
             _connStr = serverOptions.Value.WarehouseConnStr;
             _esriSrid = serverOptions.Value.EsriSrid;
+            _warehouseSchema = serverOptions.Value.WarehouseSchema;
+            _spatialSchema = serverOptions.Value.SpatialSchema;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -144,32 +148,32 @@ namespace S4Analytics.Models
                 fact_crash_evt.inj_fatal_30_cnt as injuryFatal30Count,
                 fact_crash_evt.inj_fatal_non_traffic_cnt AS injuryFatalNonTrafficCount,
                 ROWNUM AS rnum
-                FROM s4_warehouse.fact_crash_evt
+                FROM {_warehouseSchema}.fact_crash_evt
                 INNER JOIN ({preparedQuery.queryText}) prepared_query
                   ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                INNER JOIN navteq_2015q1.geocode_result
+                INNER JOIN {_spatialSchema}.geocode_result
                   ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                LEFT JOIN s4_warehouse.dim_agncy
+                LEFT JOIN {_warehouseSchema}.dim_agncy
                   ON fact_crash_evt.key_rptg_agncy = dim_agncy.ID
-                LEFT JOIN s4_warehouse.dim_geography
+                LEFT JOIN {_warehouseSchema}.dim_geography
                   ON fact_crash_evt.key_geography = dim_geography.ID
-                LEFT JOIN s4_warehouse.v_crash_sev
+                LEFT JOIN {_warehouseSchema}.v_crash_sev
                   ON fact_crash_evt.key_crash_sev = v_crash_sev.ID
-                LEFT JOIN s4_warehouse.v_crash_sev_dtl
+                LEFT JOIN {_warehouseSchema}.v_crash_sev_dtl
                   ON fact_crash_evt.key_crash_sev_dtl = v_crash_sev_dtl.ID
-                LEFT JOIN s4_warehouse.v_crash_weather_cond
+                LEFT JOIN {_warehouseSchema}.v_crash_weather_cond
                   ON fact_crash_evt.key_weather_cond = v_crash_weather_cond.ID
-                LEFT JOIN s4_warehouse.v_crash_light_cond
+                LEFT JOIN {_warehouseSchema}.v_crash_light_cond
                   ON fact_crash_evt.key_light_cond = v_crash_light_cond.ID
-                LEFT JOIN s4_warehouse.v_crash_type_simplified
+                LEFT JOIN {_warehouseSchema}.v_crash_type_simplified
                   ON fact_crash_evt.key_crash_type = v_crash_type_simplified.ID
-                LEFT JOIN s4_warehouse.v_crash_type
+                LEFT JOIN {_warehouseSchema}.v_crash_type
                   ON fact_crash_evt.key_crash_type = v_crash_type.ID
-                LEFT JOIN s4_warehouse.v_crash_road_surf_cond
+                LEFT JOIN {_warehouseSchema}.v_crash_road_surf_cond
                   ON fact_crash_evt.key_rd_surf_cond = v_crash_road_surf_cond.ID
-                LEFT JOIN s4_warehouse.dim_harmful_evt
+                LEFT JOIN {_warehouseSchema}.dim_harmful_evt
                   ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID
-                LEFT JOIN s4_warehouse.v_bike_ped_crash_type
+                LEFT JOIN {_warehouseSchema}.v_bike_ped_crash_type
                   ON fact_crash_evt.key_bike_ped_crash_type = v_bike_ped_crash_type.crash_type_id
                 WHERE ROWNUM <= :toIndex
             )
@@ -198,10 +202,10 @@ namespace S4Analytics.Models
                   SELECT
                   CASE v_crash_sev_dtl.ID WHEN 220 THEN 221 ELSE v_crash_sev_dtl.ID END AS sort_order,
                   CASE v_crash_sev_dtl.crash_attr_tx WHEN 'No Injuries Coded' THEN 'No Injury' ELSE v_crash_sev_dtl.crash_attr_tx END AS attribute
-                  FROM s4_warehouse.fact_crash_evt
+                  FROM {_warehouseSchema}.fact_crash_evt
                   INNER JOIN ({preparedQuery.queryText}) prepared_query
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                  LEFT JOIN s4_warehouse.v_crash_sev_dtl
+                  LEFT JOIN {_warehouseSchema}.v_crash_sev_dtl
                     ON fact_crash_evt.key_crash_sev_dtl = v_crash_sev_dtl.ID
                 )
                 GROUP BY attribute, sort_order
@@ -230,10 +234,10 @@ namespace S4Analytics.Models
             });
 
             var countQueryText = $@"SELECT COUNT(*)
-                FROM s4_warehouse.fact_crash_evt
+                FROM {_warehouseSchema}.fact_crash_evt
                 INNER JOIN ({preparedQuery.queryText}) prepared_query
                   ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                INNER JOIN navteq_2015q1.geocode_result
+                INNER JOIN {_spatialSchema}.geocode_result
                   ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
                 WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
                   AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
@@ -252,19 +256,19 @@ namespace S4Analytics.Models
                 var samplePercentage = 100.0 * maxPoints / eventCount;
                 queryText = $@"WITH sample_evts AS (
                   SELECT hsmv_rpt_nbr
-                  FROM s4_warehouse.fact_crash_evt
+                  FROM {_warehouseSchema}.fact_crash_evt
                   SAMPLE({samplePercentage})
                 )
                 SELECT
                   NULL AS eventId, -- do not retrieve ids for sample
                   geocode_result.map_point_x AS x,
                   geocode_result.map_point_y AS y
-                FROM s4_warehouse.fact_crash_evt
+                FROM {_warehouseSchema}.fact_crash_evt
                 INNER JOIN sample_evts
                   ON sample_evts.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN ({preparedQuery.queryText}) prepared_query
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                INNER JOIN navteq_2015q1.geocode_result
+                INNER JOIN {_spatialSchema}.geocode_result
                     ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
                 WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
                 AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
@@ -275,10 +279,10 @@ namespace S4Analytics.Models
                   fact_crash_evt.hsmv_rpt_nbr AS eventId,
                   geocode_result.map_point_x AS x,
                   geocode_result.map_point_y AS y
-                FROM s4_warehouse.fact_crash_evt
+                FROM {_warehouseSchema}.fact_crash_evt
                 INNER JOIN ({preparedQuery.queryText}) prepared_query
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                INNER JOIN navteq_2015q1.geocode_result
+                INNER JOIN {_spatialSchema}.geocode_result
                     ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
                 WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
                 AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
@@ -306,12 +310,12 @@ namespace S4Analytics.Models
 
         private PreparedQuery PrepareCrashQuery(CrashQuery query)
         {
-            var queryText = @"SELECT /*+ RESULT_CACHE */
+            var queryText = $@"SELECT /*+ RESULT_CACHE */
                   fact_crash_evt.hsmv_rpt_nbr
-                FROM s4_warehouse.fact_crash_evt
-                INNER JOIN navteq_2015q1.geocode_result
+                FROM {_warehouseSchema}.fact_crash_evt
+                INNER JOIN {_spatialSchema}.geocode_result
                   ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                LEFT JOIN s4_warehouse.dim_harmful_evt
+                LEFT JOIN {_warehouseSchema}.dim_harmful_evt
                   ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID";
 
             // initialize where clause and query parameter collections
@@ -545,10 +549,10 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes
+            var whereClause = $@"FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes
                 OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes
                 OR EXISTS (
-                    SELECT NULL FROM navteq_2015q1.ST_EXT
+                    SELECT NULL FROM {_spatialSchema}.ST_EXT
                     WHERE LINK_ID = GEOCODE_RESULT.CRASH_SEG_ID
                     AND MPO_BND_ID IN :partialCountyMpoIds
                 )";
@@ -668,8 +672,6 @@ namespace S4Analytics.Models
 
         private (string whereClause, object parameters) GenerateIntersectionPredicate(IntersectionParameters intersection)
         {
-            // TODO: don't hard code schema names
-
             // test for valid filter
             if (intersection == null)
             {
@@ -677,8 +679,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"EXISTS (
-                SELECT NULL FROM navteq_2015q1.GEOCODE_RESULT
+            var whereClause = $@"EXISTS (
+                SELECT NULL FROM {_spatialSchema}.GEOCODE_RESULT
                 WHERE GEOCODE_RESULT.HSMV_RPT_NBR = FACT_CRASH_EVT.HSMV_RPT_NBR
                 AND GEOCODE_RESULT.NEAREST_INTRSECT_ID = :intersectionId
                 AND GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= :intersectionOffsetFeet
@@ -708,20 +710,20 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"GEOCODE_RESULT.CRASH_SEG_ID IN :streetLinkIds
+            var whereClause = $@"GEOCODE_RESULT.CRASH_SEG_ID IN :streetLinkIds
                 OR (
                   :matchCrossStreets = 1
                   AND GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= 100
                   AND GEOCODE_RESULT.NEAREST_INTRSECT_ID IN (
                     SELECT DISTINCT INTRSECT_NODE.INTERSECTION_ID
-                    FROM navteq_2015q1.INTRSECT_NODE
+                    FROM {_spatialSchema}.INTRSECT_NODE
                     WHERE INTRSECT_NODE.NODE_ID IN (
                         SELECT ST.REF_IN_ID
-                        FROM navteq_2015q1.ST
+                        FROM {_spatialSchema}.ST
                         WHERE ST.LINK_ID IN :streetLinkIds
                         UNION
                         SELECT ST.NREF_IN_ID
-                        FROM navteq_2015q1.ST
+                        FROM {_spatialSchema}.ST
                         WHERE ST.LINK_ID IN :streetLinkIds
                     )
                   )
@@ -856,8 +858,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"EXISTS (
-                SELECT NULL FROM s4_warehouse.FACT_DRIVER
+            var whereClause = $@"EXISTS (
+                SELECT NULL FROM {_warehouseSchema}.FACT_DRIVER
                 WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
                 AND FACT_DRIVER.KEY_GENDER IN :driverGender
             )";
@@ -882,14 +884,14 @@ namespace S4Analytics.Models
             var ageRanges = driverAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
 
             // define where clause
-            var whereClause = @"(:matchUnknownDriverAge = 1
+            var whereClause = $@"(:matchUnknownDriverAge = 1
                 AND NOT EXISTS (
-                    SELECT NULL FROM s4_warehouse.FACT_DRIVER
+                    SELECT NULL FROM {_warehouseSchema}.FACT_DRIVER
                     WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
                 )
             ) OR EXISTS (
-                SELECT NULL FROM s4_warehouse.FACT_DRIVER
-                LEFT OUTER JOIN s4_warehouse.V_DRIVER_AGE_RNG
+                SELECT NULL FROM {_warehouseSchema}.FACT_DRIVER
+                LEFT OUTER JOIN {_warehouseSchema}.V_DRIVER_AGE_RNG
                     ON FACT_DRIVER.KEY_AGE_RNG = V_DRIVER_AGE_RNG.ID
                 WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
                 AND (
@@ -919,9 +921,9 @@ namespace S4Analytics.Models
             var ageRanges = pedestrianAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
 
             // define where clause
-            var whereClause = @"EXISTS (
-                SELECT NULL FROM s4_warehouse.FACT_NON_MOTORIST
-                LEFT OUTER JOIN s4_warehouse.V_NM_AGE_RNG
+            var whereClause = $@"EXISTS (
+                SELECT NULL FROM {_warehouseSchema}.FACT_NON_MOTORIST
+                LEFT OUTER JOIN {_warehouseSchema}.V_NM_AGE_RNG
                     ON FACT_NON_MOTORIST.KEY_AGE_RNG = V_NM_AGE_RNG.ID
                 WHERE FACT_NON_MOTORIST.KEY_DESC IN (230, 231)
                 AND FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_NON_MOTORIST.HSMV_RPT_NBR
@@ -952,9 +954,9 @@ namespace S4Analytics.Models
             var ageRanges = cyclistAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
 
             // define where clause
-            var whereClause = @"EXISTS (
-                SELECT NULL FROM s4_warehouse.FACT_NON_MOTORIST
-                LEFT OUTER JOIN s4_warehouse.V_NM_AGE_RNG
+            var whereClause = $@"EXISTS (
+                SELECT NULL FROM {_warehouseSchema}.FACT_NON_MOTORIST
+                LEFT OUTER JOIN {_warehouseSchema}.V_NM_AGE_RNG
                     ON FACT_NON_MOTORIST.KEY_AGE_RNG = V_NM_AGE_RNG.ID
                 WHERE FACT_NON_MOTORIST.KEY_DESC IN (232, 233)
                 AND FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_NON_MOTORIST.HSMV_RPT_NBR
@@ -1057,8 +1059,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"EXISTS (
-              SELECT NULL FROM s4_warehouse.FACT_VIOLATION
+            var whereClause = $@"EXISTS (
+              SELECT NULL FROM {_warehouseSchema}.FACT_VIOLATION
               WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_VIOLATION.HSMV_RPT_NBR
               AND (
                 (:matchViolationSpeed = 1 AND UPPER(FACT_VIOLATION.CHARGE) LIKE '%SPEED%')
@@ -1087,7 +1089,7 @@ namespace S4Analytics.Models
             OR (
               :matchViolationRedLight = 1
               AND EXISTS (
-                SELECT NULL FROM s4_warehouse.FACT_DRIVER FD
+                SELECT NULL FROM {_warehouseSchema}.FACT_DRIVER FD
                 WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FD.HSMV_RPT_NBR
                 AND ( FD.KEY_ACTION1 = 7 OR FD.KEY_ACTION2 = 7 OR FD.KEY_ACTION3 = 7 OR FD.KEY_ACTION4 = 7 )
               )
@@ -1115,8 +1117,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"EXISTS (
-                SELECT NULL FROM s4_warehouse.V_FACT_ALL_VEH
+            var whereClause = $@"EXISTS (
+                SELECT NULL FROM {_warehouseSchema}.V_FACT_ALL_VEH
                 WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
                 AND V_FACT_ALL_VEH.KEY_VEH_TYPE IN :vehicleTypes
             )";
@@ -1136,8 +1138,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"EXISTS (
-                SELECT NULL FROM s4_warehouse.V_CRASH_TYPE_SIMPLIFIED
+            var whereClause = $@"EXISTS (
+                SELECT NULL FROM {_warehouseSchema}.V_CRASH_TYPE_SIMPLIFIED
                 WHERE FACT_CRASH_EVT.KEY_CRASH_TYPE = V_CRASH_TYPE_SIMPLIFIED.ID
                 AND V_CRASH_TYPE_SIMPLIFIED.CRASH_ATTR_TX IN :crashTypeSimple
             )";
@@ -1159,8 +1161,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"EXISTS (
-                SELECT NULL FROM s4_warehouse.V_CRASH_TYPE
+            var whereClause = $@"EXISTS (
+                SELECT NULL FROM {_warehouseSchema}.V_CRASH_TYPE
                 WHERE FACT_CRASH_EVT.KEY_CRASH_TYPE = V_CRASH_TYPE.ID
                 AND V_CRASH_TYPE.ID IN :crashTypeDetailed
             )";
@@ -1209,8 +1211,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"EXISTS (
-                SELECT NULL FROM s4_warehouse.FACT_COMM_VEH
+            var whereClause = $@"EXISTS (
+                SELECT NULL FROM {_warehouseSchema}.FACT_COMM_VEH
                 WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_COMM_VEH.HSMV_RPT_NBR
                 AND FACT_COMM_VEH.KEY_CMV_CONFIG IN :cmvConfiguration
             )";
@@ -1340,13 +1342,13 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"(:matchLaneDepartureOffRoad = 1 AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45)
+            var whereClause = $@"(:matchLaneDepartureOffRoad = 1 AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45)
                 OR (
                     :matchLaneDepartureRollover = 1
                     AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45
                     AND (
                         EXISTS (
-                            SELECT NULL FROM s4_warehouse.V_FACT_ALL_VEH
+                            SELECT NULL FROM {_warehouseSchema}.V_FACT_ALL_VEH
                             WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
                             AND (
                                 V_FACT_ALL_VEH.KEY_MOST_HE = 1
@@ -1363,7 +1365,7 @@ namespace S4Analytics.Models
                     AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45
                     AND (
                         EXISTS (
-                            SELECT NULL FROM s4_warehouse.V_FACT_ALL_VEH
+                            SELECT NULL FROM {_warehouseSchema}.V_FACT_ALL_VEH
                             WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
                             AND (
                                 V_FACT_ALL_VEH.KEY_MOST_HE IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
@@ -1399,7 +1401,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"(:matchSchoolBusRelated = 1 AND FACT_CRASH_EVT.IS_SCH_BUS_REL = '1')
+            var whereClause = $@"(:matchSchoolBusRelated = 1 AND FACT_CRASH_EVT.IS_SCH_BUS_REL = '1')
                 OR (
                   :matchWithinCityLimits = 1
                   AND (
@@ -1414,7 +1416,7 @@ namespace S4Analytics.Models
                 OR (
                   :matchHitAndRun = 1
                   AND EXISTS (
-                    SELECT NULL FROM s4_warehouse.V_FACT_ALL_VEH
+                    SELECT NULL FROM {_warehouseSchema}.V_FACT_ALL_VEH
                     WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
                     AND V_FACT_ALL_VEH.IS_HIT_AND_RUN = '1'
                   )
