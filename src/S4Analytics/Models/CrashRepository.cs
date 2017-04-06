@@ -70,7 +70,9 @@ namespace S4Analytics.Models
             var maxRows = 1000;
             toIndex = Math.Min(toIndex, fromIndex + maxRows - 1);
 
-            var queryText = @"SELECT *
+            var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
+
+            var queryText = $@"SELECT *
             FROM (
                 SELECT
                 fact_crash_evt.hsmv_rpt_nbr AS id,
@@ -143,7 +145,7 @@ namespace S4Analytics.Models
                 fact_crash_evt.inj_fatal_non_traffic_cnt AS injuryFatalNonTrafficCount,
                 ROWNUM AS rnum
                 FROM s4_warehouse.fact_crash_evt
-                INNER JOIN ({0}) prepared_query
+                INNER JOIN ({preparedQuery.queryText}) prepared_query
                   ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN navteq_2015q1.geocode_result
                   ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
@@ -173,10 +175,6 @@ namespace S4Analytics.Models
             )
             WHERE rnum >= :fromIndex";
 
-            var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
-            var preparedQueryText = preparedQuery.queryText;
-            queryText = string.Format(queryText, preparedQueryText);
-
             var dynamicParams = preparedQuery.DynamicParams;
             dynamicParams.Add(new { fromIndex, toIndex });
 
@@ -192,23 +190,22 @@ namespace S4Analytics.Models
             // TODO: move to a new repository for summary results?
             // TODO: parameterize the specific attribute(s) to summarize
             // TODO: store natural sort order in database
-            var queryText = @"SELECT attribute, COUNT(*) AS count
+
+            var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
+
+            var queryText = $@"SELECT attribute, COUNT(*) AS count
                 FROM (
                   SELECT
                   CASE v_crash_sev_dtl.ID WHEN 220 THEN 221 ELSE v_crash_sev_dtl.ID END AS sort_order,
                   CASE v_crash_sev_dtl.crash_attr_tx WHEN 'No Injuries Coded' THEN 'No Injury' ELSE v_crash_sev_dtl.crash_attr_tx END AS attribute
                   FROM s4_warehouse.fact_crash_evt
-                  INNER JOIN ({0}) prepared_query
+                  INNER JOIN ({preparedQuery.queryText}) prepared_query
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                   LEFT JOIN s4_warehouse.v_crash_sev_dtl
                     ON fact_crash_evt.key_crash_sev_dtl = v_crash_sev_dtl.ID
                 )
                 GROUP BY attribute, sort_order
                 ORDER BY sort_order";
-
-            var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
-            var preparedQueryText = preparedQuery.queryText;
-            queryText = string.Format(queryText, preparedQueryText);
 
             using (var conn = new OracleConnection(_connStr))
             {
@@ -222,7 +219,6 @@ namespace S4Analytics.Models
             const int maxPoints = 1000;
 
             var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
-            var preparedQueryText = preparedQuery.queryText;
 
             var dynamicParams = preparedQuery.DynamicParams;
             dynamicParams.Add(new
@@ -233,15 +229,14 @@ namespace S4Analytics.Models
                 mapExtentMaxY = Math.Max(mapExtent.point1.y, mapExtent.point2.y)
             });
 
-            var countQueryText = @"SELECT COUNT(*)
+            var countQueryText = $@"SELECT COUNT(*)
                 FROM s4_warehouse.fact_crash_evt
-                INNER JOIN ({0}) prepared_query
+                INNER JOIN ({preparedQuery.queryText}) prepared_query
                   ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN navteq_2015q1.geocode_result
                   ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
                 WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
                   AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
-            countQueryText = string.Format(countQueryText, preparedQueryText);
 
             int eventCount;
 
@@ -254,10 +249,11 @@ namespace S4Analytics.Models
             var useSample = eventCount > maxPoints;
             if (useSample)
             {
-                queryText = @"WITH sample_evts AS (
+                var samplePercentage = 100.0 * maxPoints / eventCount;
+                queryText = $@"WITH sample_evts AS (
                   SELECT hsmv_rpt_nbr
                   FROM s4_warehouse.fact_crash_evt
-                  SAMPLE({0})
+                  SAMPLE({samplePercentage})
                 )
                 SELECT
                   NULL AS eventId, -- do not retrieve ids for sample
@@ -266,29 +262,26 @@ namespace S4Analytics.Models
                 FROM s4_warehouse.fact_crash_evt
                 INNER JOIN sample_evts
                   ON sample_evts.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                INNER JOIN ({1}) prepared_query
+                INNER JOIN ({preparedQuery.queryText}) prepared_query
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN navteq_2015q1.geocode_result
                     ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
                 WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
                 AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
-                var samplePercentage = 100.0 * maxPoints / eventCount;
-                queryText = string.Format(queryText, samplePercentage, preparedQueryText);
             }
             else
             {
-                queryText = @"SELECT
+                queryText = $@"SELECT
                   fact_crash_evt.hsmv_rpt_nbr AS eventId,
                   geocode_result.map_point_x AS x,
                   geocode_result.map_point_y AS y
                 FROM s4_warehouse.fact_crash_evt
-                INNER JOIN ({0}) prepared_query
+                INNER JOIN ({preparedQuery.queryText}) prepared_query
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN navteq_2015q1.geocode_result
                     ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
                 WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
                 AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
-                queryText = string.Format(queryText, preparedQueryText);
             }
 
             IEnumerable<EventPoint> points;
@@ -631,8 +624,8 @@ namespace S4Analytics.Models
             var customAreaMinY = customArea.Min(coords => coords.y);
             var customAreaMaxX = customArea.Max(coords => coords.x);
             var customAreaMaxY = customArea.Max(coords => coords.y);
-            var coordsAsText = customArea.Select(coords => string.Format("{0} {1}", coords.x, coords.y));
-            var customAreaPolygon = "POLYGON ((" + string.Join(", ", coordsAsText) + "))";
+            var coordsAsText = customArea.Select(coords => $"{coords.x} {coords.y}");
+            var customAreaPolygon = $"POLYGON (({string.Join(", ", coordsAsText)}))";
 
             // define where clause
             var whereClause = @"GEOCODE_RESULT.MAP_POINT_X BETWEEN :customAreaMinX AND :customAreaMaxX
