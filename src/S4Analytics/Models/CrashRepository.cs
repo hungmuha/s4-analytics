@@ -220,7 +220,7 @@ namespace S4Analytics.Models
 
         public EventPointCollection GetCrashPointCollection(string queryToken, Extent mapExtent)
         {
-            const int maxPoints = 1000;
+            const int maxPoints = 100000;
 
             var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
 
@@ -239,8 +239,9 @@ namespace S4Analytics.Models
                   ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN {_spatialSchema}.geocode_result
                   ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                  AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                --WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                --  AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY
+                WHERE fact_crash_evt.lng <> 0 AND fact_crash_evt.lat <> 0";
 
             int eventCount;
 
@@ -261,8 +262,10 @@ namespace S4Analytics.Models
                 )
                 SELECT
                   NULL AS eventId, -- do not retrieve ids for sample
-                  geocode_result.map_point_x AS x,
-                  geocode_result.map_point_y AS y
+                  fact_crash_evt.lng AS x,
+                  fact_crash_evt.lat AS y
+                  --geocode_result.map_point_x AS x,
+                  --geocode_result.map_point_y AS y
                 FROM {_warehouseSchema}.fact_crash_evt
                 INNER JOIN sample_evts
                   ON sample_evts.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
@@ -270,22 +273,26 @@ namespace S4Analytics.Models
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN {_spatialSchema}.geocode_result
                     ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                --WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                --AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY
+                WHERE fact_crash_evt.lng <> 0 AND fact_crash_evt.lat <> 0";
             }
             else
             {
                 queryText = $@"SELECT
                   fact_crash_evt.hsmv_rpt_nbr AS eventId,
-                  geocode_result.map_point_x AS x,
-                  geocode_result.map_point_y AS y
+                  fact_crash_evt.lng AS x,
+                  fact_crash_evt.lat AS y
+                  --geocode_result.map_point_x AS x,
+                  --geocode_result.map_point_y AS y
                 FROM {_warehouseSchema}.fact_crash_evt
                 INNER JOIN ({preparedQuery.queryText}) prepared_query
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN {_spatialSchema}.geocode_result
                     ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                --WHERE GEOCODE_RESULT.MAP_POINT_X BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                --AND GEOCODE_RESULT.MAP_POINT_Y BETWEEN :mapExtentMinY AND :mapExtentMaxY
+                WHERE fact_crash_evt.lng <> 0 AND fact_crash_evt.lat <> 0";
             }
 
             IEnumerable<EventPoint> points;

@@ -2,6 +2,8 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { EventAnalysisComponent } from './event-analysis.component';
+import { EventMapComponent } from './event-map.component';
+import { CrashService } from './shared';
 
 @NgModule({
     imports: [
@@ -9,7 +11,11 @@ import { EventAnalysisComponent } from './event-analysis.component';
         CommonModule
     ],
     declarations: [
-        EventAnalysisComponent
+        EventAnalysisComponent,
+        EventMapComponent
+    ],
+    providers: [
+        CrashService
     ]
 })
 export class EventAnalysisModule { }

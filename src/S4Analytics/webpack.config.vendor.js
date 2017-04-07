@@ -37,6 +37,7 @@ module.exports = (env) => {
                 'lodash',
                 'moment',
                 'openlayers',
+                'openlayers/dist/ol.css',
                 'rxjs',
                 'zone.js'
             ]
