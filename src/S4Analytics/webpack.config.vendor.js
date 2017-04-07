@@ -36,6 +36,7 @@ module.exports = (env) => {
                 'font-awesome/css/font-awesome.css',
                 'lodash',
                 'moment',
+                'openlayers',
                 'rxjs',
                 'zone.js'
             ]
