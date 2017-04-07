@@ -2,12 +2,11 @@ import { Routes } from '@angular/router';
 import { IndexComponent } from './index.component';
 import { LoginComponent } from './login.component';
 import { AnalyticsComponent } from './analytics.component';
-import { EventAnalysisComponent } from './event-analysis/event-analysis.component';
-import { NetworkAnalysisComponent } from './network-analysis/network-analysis.component';
-import { ReportingComponent } from './reporting/reporting.component';
-import { TrendAnalysisComponent } from './trend-analysis/trend-analysis.component';
-import { AdminComponent } from './admin/admin.component';
-import { RequestQueueComponent } from './admin/new-user-request/request-queue.component';
+import { EventAnalysisComponent } from './event-analysis';
+import { NetworkAnalysisComponent } from './network-analysis';
+import { ReportingComponent } from './reporting';
+import { TrendAnalysisComponent } from './trend-analysis';
+import { AdminComponent, RequestQueueComponent } from './admin';
 
 export const routes: Routes = [
     {
