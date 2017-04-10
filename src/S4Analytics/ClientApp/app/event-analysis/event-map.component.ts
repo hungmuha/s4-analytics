@@ -15,7 +15,7 @@ export class EventMapComponent implements OnInit {
 
     ngOnInit() {
         let query: any = {
-            dateRange: { "startDate": "2016-03-23", "endDate": "2017-03-22" }
+            dateRange: { startDate: '2016-03-23', endDate: '2017-03-22' }
         };
         this.crashService.getCrashPoints(query).subscribe(pointColl => {
             let features = pointColl.points.map(point => new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([point.x, point.y]))));
