@@ -1,6 +1,7 @@
 ﻿import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import * as ol from 'openlayers';
 import { CrashService } from './shared';
+import { OptionsService } from '../options.service';
 
 @Component({
     selector: 'event-map',
@@ -10,12 +11,21 @@ export class EventMapComponent implements OnInit {
     @Input() mapId: string;
 
     private olMap: ol.Map;
+    private olView: ol.View;
+    private olExtent: ol.Extent;
 
-    constructor(private element: ElementRef, private crashService: CrashService) { }
+    constructor(
+        private element: ElementRef,
+        private crashService: CrashService,
+        optionService: OptionsService) {
+        optionService.getOptions().subscribe(options => {
+            this.olExtent = options.mapExtent as ol.Extent;
+        });
+    }
 
     ngOnInit() {
         let query: any = {
-            dateRange: { startDate: '2016-03-23', endDate: '2017-03-22' }
+            dateRange: { startDate: '2017-04-01', endDate: '2017-04-07' }
         };
         this.crashService.getCrashPoints(query).subscribe(pointColl => {
             let features = pointColl.points.map(point => new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([point.x, point.y]))));
@@ -66,14 +76,20 @@ export class EventMapComponent implements OnInit {
                 source: new ol.source.OSM()
             });
 
+            this.olView = new ol.View({
+                center: [0, 0],
+                zoom: 2,
+                extent: this.olExtent
+            });
+
             this.olMap = new ol.Map({
                 layers: [raster, clusters],
                 target: this.element.nativeElement.firstElementChild,
-                view: new ol.View({
-                    center: [0, 0],
-                    zoom: 2
-                })
+                view: this.olView
             });
+
+            // zoom to extent
+            this.olView.fit(this.olExtent, this.olMap.getSize());
         });
     }
 }

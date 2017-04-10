@@ -11,12 +11,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Lib.Identity;
 using Lib.Identity.Models;
 using S4Analytics.Models;
+using System.Collections.Generic;
 
 namespace S4Analytics
 {
@@ -36,6 +38,7 @@ namespace S4Analytics
         public string Version { get; set; }
         public string BaseUrl { get; set; }
         public string SilverlightBaseUrl { get; set; }
+        public IEnumerable<int> MapExtent { get; set; }
     }
 
     public class Startup
@@ -146,6 +149,7 @@ namespace S4Analytics
                 clientOptions.Version = Configuration["Version"];
                 clientOptions.BaseUrl = Configuration["BaseUrl"];
                 clientOptions.SilverlightBaseUrl = Configuration["SilverlightBaseUrl"];
+                clientOptions.MapExtent = new[] { 0, 1, 2, 3 }.Select(i => Configuration.GetValue<int>($"MapExtent:{i}"));
             });
 
             // Add repositories.
