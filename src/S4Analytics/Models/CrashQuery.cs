@@ -19,19 +19,33 @@ namespace S4Analytics.Models
     {
         public double x;
         public double y;
-        public bool IsValid { get { return x != 0 && y != 0; } }
+
+        public bool IsValid {
+            get {
+                return x != 0 && y != 0;
+            }
+        }
     }
 
     public class Extent
     {
-        public Coordinates point1;
-        public Coordinates point2;
-        public bool IsValid { get { return point1.IsValid && point2.IsValid; } }
-        public Extent() { }
-        public Extent(double x1, double y1, double x2, double y2)
+        public double minX;
+        public double minY;
+        public double maxX;
+        public double maxY;
+
+        public Extent(double minX, double minY, double maxX, double maxY)
         {
-            point1 = new Coordinates() { x = x1, y = y1 };
-            point2 = new Coordinates() { x = x2, y = y2 };
+            this.minX = minX;
+            this.minY = minY;
+            this.maxX = maxX;
+            this.maxY = maxY;
+        }
+
+        public bool IsValid {
+            get {
+                return minX != 0 && minY != 0 && maxX != 0 && maxY != 0;
+            }
         }
     }
 

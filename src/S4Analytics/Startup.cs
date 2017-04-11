@@ -38,7 +38,7 @@ namespace S4Analytics
         public string Version { get; set; }
         public string BaseUrl { get; set; }
         public string SilverlightBaseUrl { get; set; }
-        public IEnumerable<int> MapExtent { get; set; }
+        public Extent MapExtent { get; set; }
     }
 
     public class Startup
@@ -149,7 +149,13 @@ namespace S4Analytics
                 clientOptions.Version = Configuration["Version"];
                 clientOptions.BaseUrl = Configuration["BaseUrl"];
                 clientOptions.SilverlightBaseUrl = Configuration["SilverlightBaseUrl"];
-                clientOptions.MapExtent = new[] { 0, 1, 2, 3 }.Select(i => Configuration.GetValue<int>($"MapExtent:{i}"));
+                var mapExtentSection = Configuration.GetSection("MapExtent");
+                clientOptions.MapExtent = new Extent(
+                    mapExtentSection.GetValue<int>("MinX"),
+                    mapExtentSection.GetValue<int>("MinY"),
+                    mapExtentSection.GetValue<int>("MaxX"),
+                    mapExtentSection.GetValue<int>("MaxY")
+                );
             });
 
             // Add repositories.

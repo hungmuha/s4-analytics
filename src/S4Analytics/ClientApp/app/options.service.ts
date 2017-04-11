@@ -7,7 +7,7 @@ export interface Options {
     version: string;
     baseUrl: string;
     silverlightBaseUrl: string;
-    mapExtent: [number, number, number, number];
+    mapExtent: { minX: number, minY: number, maxX: number, maxY: number };
 }
 
 @Injectable()

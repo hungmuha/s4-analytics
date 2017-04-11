@@ -43,13 +43,13 @@ namespace S4Analytics.Controllers
         [HttpGet("{queryToken}/point")]
         public IActionResult GetCrashPoints(
             string queryToken,
-            [FromQuery] double x1,
-            [FromQuery] double y1,
-            [FromQuery] double x2,
-            [FromQuery] double y2)
+            [FromQuery] double minX,
+            [FromQuery] double minY,
+            [FromQuery] double maxX,
+            [FromQuery] double maxY)
         {
             var queryExists = _crashRepo.QueryExists(queryToken);
-            var extent = new Extent(x1, y1, x2, y2);
+            var extent = new Extent(minX, minY, maxX, maxY);
 
             if (!queryExists) { return NotFound(); }
             if (!extent.IsValid) { return BadRequest(); }

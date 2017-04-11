@@ -14,8 +14,10 @@ export class Coordinates {
 }
 
 export class Extent {
-    point1: Coordinates;
-    point2: Coordinates;
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
 }
 
 export class IntersectionParameters {

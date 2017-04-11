@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import { Extent } from 'openlayers';
+import * as ol from 'openlayers';
 import { EventPointCollection } from './event-point-collection';
 import { CrashQuery } from './crash-query';
 
@@ -9,11 +9,16 @@ import { CrashQuery } from './crash-query';
 export class CrashService {
     constructor(private http: Http) { }
 
-    getCrashPoints(query: CrashQuery, extent: Extent): Observable<EventPointCollection> {
+    getCrashPoints(query: CrashQuery, extent: ol.Extent): Observable<EventPointCollection> {
+        let minX = extent[0];
+        let minY = extent[1];
+        let maxX = extent[2];
+        let maxY = extent[3];
+
         return this.http
             .post('api/crash/query', query)
             .map(response => response.headers.get('Location'))
-            .switchMap(url => this.http.get(`${url}/point?x1=${extent[0]}&y1=${extent[1]}&x2=${extent[2]}&y2=${extent[3]}`))
+            .switchMap(url => this.http.get(`${url}/point?minX=${minX}&minY=${minY}&maxX=${maxX}&maxY=${maxY}`))
             .map(response => response.json() as EventPointCollection);
     }
 }

@@ -227,10 +227,10 @@ namespace S4Analytics.Models
             var dynamicParams = preparedQuery.DynamicParams;
             dynamicParams.Add(new
             {
-                mapExtentMinX = Math.Min(mapExtent.point1.x, mapExtent.point2.x),
-                mapExtentMinY = Math.Min(mapExtent.point1.y, mapExtent.point2.y),
-                mapExtentMaxX = Math.Max(mapExtent.point1.x, mapExtent.point2.x),
-                mapExtentMaxY = Math.Max(mapExtent.point1.y, mapExtent.point2.y)
+                mapExtentMinX = mapExtent.minX,
+                mapExtentMinY = mapExtent.minY,
+                mapExtentMaxX = mapExtent.maxX,
+                mapExtentMaxY = mapExtent.maxY
             });
 
             var countQueryText = $@"SELECT COUNT(*)
@@ -648,15 +648,10 @@ namespace S4Analytics.Models
         private (string whereClause, object parameters) GenerateCustomExtentPredicate(Extent customExtent)
         {
             // test for valid filter
-            if (customExtent == null || customExtent.point1 == null || customExtent.point2 == null)
+            if (customExtent == null || !customExtent.IsValid)
             {
                 return (null, null);
             }
-
-            var customExtentMinX = Math.Min(customExtent.point1.x, customExtent.point2.x);
-            var customExtentMinY = Math.Min(customExtent.point1.y, customExtent.point2.y);
-            var customExtentMaxX = Math.Max(customExtent.point1.x, customExtent.point2.x);
-            var customExtentMaxY = Math.Max(customExtent.point1.y, customExtent.point2.y);
 
             // define where clause
             var whereClause = @"GEOCODE_RESULT.MAP_POINT_X BETWEEN :customExtentMinX AND :customExtentMaxX
@@ -664,7 +659,10 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new {
-                customExtentMinX, customExtentMinY, customExtentMaxX, customExtentMaxY
+                customExtentMinX = customExtent.minX,
+                customExtentMinY = customExtent.minY,
+                customExtentMaxX = customExtent.maxX,
+                customExtentMaxY = customExtent.maxY
             };
 
             return (whereClause, parameters);
