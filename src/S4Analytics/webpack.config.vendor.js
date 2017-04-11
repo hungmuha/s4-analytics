@@ -38,6 +38,7 @@ module.exports = (env) => {
                 'moment',
                 'openlayers',
                 'openlayers/dist/ol.css',
+                'proj4',
                 'rxjs',
                 'zone.js'
             ]
