@@ -1,100 +1,36 @@
-﻿export class DateRange {
-    startDate: Date;
-    endDate: Date;
-}
-
-export class TimeRange {
-    startTime: Date;
-    endTime: Date;
-}
-
-export class Coordinates {
-    x: number;
-    y: number;
-}
-
-export class Extent {
-    minX: number;
-    minY: number;
-    maxX: number;
-    maxY: number;
-}
-
-export class IntersectionParameters {
-    intersectionId: number;
-    offsetInFeet: number;
-    offsetDirection?: string[];
-}
-
-export class StreetParameters {
-    linkIds: number[];
-    includeCrossStreets: boolean;
-}
-
-export class NonAutoModesOfTravel {
-    pedestrian?: boolean;
-    bicyclist?: boolean;
-    moped?: boolean;
-    motorcycle?: boolean;
-}
-
-export class SourcesOfTransport {
-    ems?: boolean;
-    lawEnforcement?: boolean;
-    other?: boolean;
-}
-
-export class BehavioralFactors {
-    alcohol?: boolean;
-    drugs?: boolean;
-    distraction?: boolean;
-    aggressiveDriving?: boolean;
-}
-
-export class CommonViolations {
-    speed?: boolean;
-    redLight?: boolean;
-    rightOfWay?: boolean;
-    trafficControlDevice?: boolean;
-    carelessDriving?: boolean;
-    dui?: boolean;
-}
-
-export class BikePedCrashType {
-    bikePedCrashTypeIds: number[];
-    includeUntyped?: boolean;
-}
-
-export class LaneDepartures {
-    offRoadAll?: boolean;
-    offRoadRollover?: boolean;
-    offRoadCollisionWithFixedObject?: boolean;
-    crossedIntoOncomingTraffic?: boolean;
-    sideswipe?: boolean;
-}
-
-export class OtherCircumstances {
-    hitAndRun?: boolean;
-    schoolBusRelated?: boolean;
-    withinCityLimits?: boolean;
-    withinInterchange?: boolean;
-    workZoneRelated?: boolean;
-    workersInWorkZone?: boolean;
-    lawEnforcementInWorkZone?: boolean;
-}
-
-export class CrashQuery {
-    dateRange: DateRange;
+﻿export class CrashQuery {
+    dateRange: {
+        startDate: Date,
+        endDate: Date
+    };
     dayOfWeek?: number[];
-    timeRange?: TimeRange;
+    timeRange?: {
+        startTime: Date,
+        endTime: Date
+    };
     dotDistrict?: number[];
     mpoTpo?: number[];
     county?: number[];
     city?: number[];
-    customArea?: Coordinates[];
-    customExtent?: Extent;
-    intersection?: IntersectionParameters;
-    street?: StreetParameters;
+    customArea?: {
+        x: number,
+        y: number
+    }[];
+    customExtent?: {
+        minX: number,
+        minY: number,
+        maxX: number,
+        maxY: number
+    };
+    intersection?: {
+        intersectionId: number,
+        offsetInFeet: number,
+        offsetDirection?: string[];
+    };
+    street?: {
+        linkIds: number[],
+        includeCrossStreets: boolean;
+    };
     customNetwork?: number[];
     publicRoadOnly?: boolean;
     formType?: string[];
@@ -104,14 +40,38 @@ export class CrashQuery {
     driverAgeRange?: string[];
     pedestrianAgeRange?: string[];
     cyclistAgeRange?: string[];
-    nonAutoModesOfTravel?: NonAutoModesOfTravel;
-    sourcesOfTransport?: SourcesOfTransport;
-    behavioralFactors?: BehavioralFactors;
-    commonViolations?: CommonViolations;
+    nonAutoModesOfTravel?: {
+        pedestrian?: boolean,
+        bicyclist?: boolean,
+        moped?: boolean,
+        motorcycle?: boolean;
+    };
+    sourcesOfTransport?: {
+        ems?: boolean,
+        lawEnforcement?: boolean,
+        other?: boolean;
+    };
+    behavioralFactors?: {
+        alcohol?: boolean,
+        drugs?: boolean,
+        distraction?: boolean,
+        aggressiveDriving?: boolean;
+    };
+    commonViolations?: {
+        speed?: boolean,
+        redLight?: boolean,
+        rightOfWay?: boolean,
+        trafficControlDevice?: boolean,
+        carelessDriving?: boolean,
+        dui?: boolean;
+    };
     vehicleType?: number[];
     crashTypeSimple?: string[];
     crashTypeDetailed?: number[];
-    bikePedCrashType?: BikePedCrashType;
+    bikePedCrashType?: {
+        bikePedCrashTypeIds: number[],
+        includeUntyped?: boolean;
+    };
     cmvConfiguration?: number[];
     environmentalCircumstance?: number[];
     roadCircumstance?: number[];
@@ -119,6 +79,20 @@ export class CrashQuery {
     lightCondition?: number[];
     roadSystemIdentifier?: number[];
     weatherCondition?: number[];
-    laneDepartures?: LaneDepartures;
-    otherCircumstances?: OtherCircumstances;
+    laneDepartures?: {
+        offRoadAll?: boolean,
+        offRoadRollover?: boolean,
+        offRoadCollisionWithFixedObject?: boolean,
+        crossedIntoOncomingTraffic?: boolean,
+        sideswipe?: boolean;
+    };
+    otherCircumstances?: {
+        hitAndRun?: boolean,
+        schoolBusRelated?: boolean,
+        withinCityLimits?: boolean,
+        withinInterchange?: boolean,
+        workZoneRelated?: boolean,
+        workersInWorkZone?: boolean,
+        lawEnforcementInWorkZone?: boolean;
+    };
 }

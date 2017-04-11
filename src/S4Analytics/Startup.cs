@@ -11,14 +11,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Lib.Identity;
 using Lib.Identity.Models;
 using S4Analytics.Models;
-using System.Collections.Generic;
 
 namespace S4Analytics
 {
