@@ -104,7 +104,7 @@ export class EventMapComponent implements OnInit {
                     });
 
                     // zoom to extent
-                    this.olView.fit(this.olExtent);
+                    this.olView.fit(this.olExtent, this.olMap.getSize());
                 });
             });
     }
