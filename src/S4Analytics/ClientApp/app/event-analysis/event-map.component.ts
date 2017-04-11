@@ -1,7 +1,7 @@
 ﻿import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import * as ol from 'openlayers';
 import * as proj4x from 'proj4';
-import { CrashService } from './shared';
+import { CrashService, CrashQuery } from './shared';
 import { OptionsService } from '../options.service';
 
 // the typings haven't caught up with a recent change to proj4
@@ -25,8 +25,8 @@ export class EventMapComponent implements OnInit {
         private optionService: OptionsService) { }
 
     ngOnInit() {
-        let query: any = {
-            dateRange: { startDate: '2017-04-01', endDate: '2017-04-07' }
+        let query: CrashQuery = {
+            dateRange: { startDate: new Date('2017-04-01'), endDate: new Date('2017-04-07') }
         };
 
         // TODO: move projection details somewhere common / perform transforms in Oracle instead
@@ -104,7 +104,7 @@ export class EventMapComponent implements OnInit {
                     });
 
                     // zoom to extent
-                    this.olView.fit(this.olExtent, this.olMap.getSize());
+                    this.olView.fit(this.olExtent);
                 });
             });
     }
