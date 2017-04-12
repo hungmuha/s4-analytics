@@ -3,6 +3,7 @@ import { enableProdMode } from '@angular/core';
 import { platformUniversalDynamic } from 'angular2-universal';
 import { AppModule } from './app/app.module';
 import './site.css';
+const rootElemTagName = 'app'; // Update this if you change your root component selector
 
 // Boot the application, either now or when the DOM content is loaded
 const platform = platformUniversalDynamic();
@@ -17,7 +18,13 @@ if (document.readyState === 'complete') {
 declare var module: any;
 if (module['hot']) {
     module['hot'].accept();
-    module['hot'].dispose(() => { platform.destroy(); });
+    module['hot'].dispose(() => {
+        // Before restarting the app, we create a new root element and dispose the old one
+        const oldRootElem = document.querySelector(rootElemTagName);
+        const newRootElem = document.createElement(rootElemTagName);
+        oldRootElem.parentNode.insertBefore(newRootElem, oldRootElem);
+        platform.destroy();
+    });
 } else {
     enableProdMode();
 }
