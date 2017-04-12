@@ -28,8 +28,8 @@ export class EventMapComponent implements OnInit {
         // TODO: move projection details somewhere common / perform transforms in Oracle instead
         ol.proj.setProj4(proj4);
         proj4.defs('EPSG:3087', '+proj=aea +lat_1=24 +lat_2=31.5 +lat_0=24 +lon_0=-84 +x_0=400000 +y_0=0 +ellps=GRS80 +units=m +no_defs');
-        let baseProj = ol.proj.get('EPSG:3857'); // web mercator
-        let dataProj = ol.proj.get('EPSG:3087'); // fgdl albers
+        let baseProj = ol.proj.get('EPSG:3857'); // web mercator: http://spatialreference.org/ref/sr-org/6928/
+        let dataProj = ol.proj.get('EPSG:3087'); // fgdl albers: http://spatialreference.org/ref/epsg/3087/
 
         let query: CrashQuery = {
             dateRange: { startDate: new Date('2017-04-01'), endDate: new Date('2017-04-07') }
