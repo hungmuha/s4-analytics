@@ -23,7 +23,6 @@ namespace S4Analytics.Models
             IHttpContextAccessor httpContextAccessor)
         {
             _connStr = serverOptions.Value.WarehouseConnStr;
-            _esriSrid = serverOptions.Value.EsriSrid;
             _warehouseSchema = serverOptions.Value.WarehouseSchema;
             _spatialSchema = serverOptions.Value.SpatialSchema;
             _httpContextAccessor = httpContextAccessor;
@@ -86,8 +85,8 @@ namespace S4Analytics.Models
                 fact_crash_evt.hsmv_rpt_nbr AS hsmvReportNumberDsp,
                 fact_crash_evt.agncy_rpt_nbr AS agencyReportNumber,
                 fact_crash_evt.agncy_rpt_nbr AS agencyReportNumberDsp,
-                geocode_result.shape.sdo_point.x AS mapPointX,
-                geocode_result.shape.sdo_point.y AS mapPointY,
+                geocode_result.shape_web_mercator.sdo_point.x AS mapPointX,
+                geocode_result.shape_web_mercator.sdo_point.y AS mapPointY,
                 geocode_result.center_line_x AS centerLineX,
                 geocode_result.center_line_y AS centerLineY,
                 geocode_result.sym_angle AS symbolAngle,
@@ -239,8 +238,8 @@ namespace S4Analytics.Models
                   ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN {_spatialSchema}.geocode_result geocode_result
                   ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                WHERE geocode_result.shape.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                  AND geocode_result.shape.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                WHERE geocode_result.shape_web_mercator.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                  AND geocode_result.shape_web_mercator.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
 
             int eventCount;
 
@@ -261,8 +260,8 @@ namespace S4Analytics.Models
                 )
                 SELECT
                   NULL AS eventId, -- do not retrieve ids for sample
-                  geocode_result.shape.sdo_point.x AS x,
-                  geocode_result.shape.sdo_point.y AS y
+                  geocode_result.shape_web_mercator.sdo_point.x AS x,
+                  geocode_result.shape_web_mercator.sdo_point.y AS y
                 FROM {_warehouseSchema}.fact_crash_evt
                 INNER JOIN sample_evts
                   ON sample_evts.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
@@ -270,22 +269,22 @@ namespace S4Analytics.Models
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN {_spatialSchema}.geocode_result geocode_result
                     ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                WHERE geocode_result.shape.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                AND geocode_result.shape.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                WHERE geocode_result.shape_web_mercator.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                AND geocode_result.shape_web_mercator.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
             }
             else
             {
                 queryText = $@"SELECT
                   fact_crash_evt.hsmv_rpt_nbr AS eventId,
-                  geocode_result.shape.sdo_point.x AS x,
-                  geocode_result.shape.sdo_point.y AS y
+                  geocode_result.shape_web_mercator.sdo_point.x AS x,
+                  geocode_result.shape_web_mercator.sdo_point.y AS y
                 FROM {_warehouseSchema}.fact_crash_evt
                 INNER JOIN ({preparedQuery.queryText}) prepared_query
                     ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
                 INNER JOIN {_spatialSchema}.geocode_result geocode_result
                     ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                WHERE geocode_result.shape.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                AND geocode_result.shape.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                WHERE geocode_result.shape_web_mercator.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                AND geocode_result.shape_web_mercator.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
             }
 
             IEnumerable<EventPoint> points;
@@ -632,9 +631,9 @@ namespace S4Analytics.Models
             var customAreaPolygon = $"POLYGON (({string.Join(", ", coordsAsText)}))";
 
             // define where clause
-            var whereClause = @"geocode_result.shape.sdo_point.x BETWEEN :customAreaMinX AND :customAreaMaxX
-                geocode_result.shape.sdo_point.y BETWEEN :customAreaMinY AND :customAreaMaxY
-                AND sdo_relate(geocode_result.shape, sdo_geometry(:customAreaPolygon, :customAreaSrid)) = 'TRUE'";
+            var whereClause = @"geocode_result.shape_web_mercator.sdo_point.x BETWEEN :customAreaMinX AND :customAreaMaxX
+                geocode_result.shape_web_mercator.sdo_point.y BETWEEN :customAreaMinY AND :customAreaMaxY
+                AND sdo_relate(geocode_result.shape_web_mercator, sdo_geometry(:customAreaPolygon, :customAreaSrid)) = 'TRUE'";
 
             // define oracle parameters
             var parameters = new {
@@ -654,8 +653,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"geocode_result.shape.sdo_point.x BETWEEN :customExtentMinX AND :customExtentMaxX
-                AND geocode_result.shape.sdo_point.y BETWEEN :customExtentMinY AND :customExtentMaxY";
+            var whereClause = @"geocode_result.shape_web_mercator.sdo_point.x BETWEEN :customExtentMinX AND :customExtentMaxX
+                AND geocode_result.shape_web_mercator.sdo_point.y BETWEEN :customExtentMinY AND :customExtentMaxY";
 
             // define oracle parameters
             var parameters = new {

@@ -1,12 +1,7 @@
 ﻿import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import * as ol from 'openlayers';
-import * as proj4x from 'proj4';
 import { CrashService, CrashQuery } from './shared';
 import { OptionsService } from '../options.service';
-
-// the typings haven't caught up with a recent change to proj4
-// (see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/15663)
-let proj4 = (proj4x as any).default;
 
 @Component({
     selector: 'event-map',
@@ -25,11 +20,6 @@ export class EventMapComponent implements OnInit {
         private optionService: OptionsService) { }
 
     ngOnInit() {
-        // TODO: move projection details somewhere common / perform transforms in Oracle instead
-        ol.proj.setProj4(proj4);
-        proj4.defs('EPSG:3087', '+proj=aea +lat_1=24 +lat_2=31.5 +lat_0=24 +lon_0=-84 +x_0=400000 +y_0=0 +ellps=GRS80 +units=m +no_defs');
-        let baseProj = ol.proj.get('EPSG:3857'); // web mercator: http://spatialreference.org/ref/sr-org/6928/
-        let dataProj = ol.proj.get('EPSG:3087'); // fgdl albers: http://spatialreference.org/ref/epsg/3087/
 
         let query: CrashQuery = {
             dateRange: { startDate: new Date('2017-04-01'), endDate: new Date('2017-04-07') }
@@ -38,12 +28,10 @@ export class EventMapComponent implements OnInit {
         this.optionService
             .getOptions()
             .subscribe(options => {
-                this.olExtent = [options.mapExtent.minX, options.mapExtent.minY, options.mapExtent.maxX, options.mapExtent.maxY];
-                let albersMinXY = ol.proj.transform([options.mapExtent.minX, options.mapExtent.minY], baseProj, dataProj);
-                let albersMaxXY = ol.proj.transform([options.mapExtent.maxX, options.mapExtent.maxY], baseProj, dataProj);
-                let albersExtent: ol.Extent = [albersMinXY[0], albersMinXY[1], albersMaxXY[0], albersMaxXY[1]];
-                this.crashService.getCrashPoints(query, albersExtent).subscribe(pointColl => {
-                    let features = pointColl.points.map(point => new ol.Feature(new ol.geom.Point(ol.proj.transform([point.x, point.y], dataProj, baseProj))));
+                let coordSys = options.coordinateSystems['WebMercator'];
+                this.olExtent = [coordSys.mapExtent.minX, coordSys.mapExtent.minY, coordSys.mapExtent.maxX, coordSys.mapExtent.maxY];
+                this.crashService.getCrashPoints(query, this.olExtent).subscribe(pointColl => {
+                    let features = pointColl.points.map(point => new ol.Feature(new ol.geom.Point([point.x, point.y])));
 
                     let source = new ol.source.Vector({
                         features: features

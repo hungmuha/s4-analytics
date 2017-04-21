@@ -20,25 +20,6 @@ using S4Analytics.Models;
 
 namespace S4Analytics
 {
-    public class ServerOptions
-    {
-        public string WarehouseSchema { get; set; }
-        public string SpatialSchema { get; set; }
-        public string WarehouseConnStr { get; set; }
-        public string SpatialConnStr { get; set; }
-        public int EsriSrid { get; set; }
-    }
-
-    public class ClientOptions
-    {
-        // Members of this class are exposed via REST API to the Angular app.
-        // Don't include anything sensitive here, especially passwords.
-        public string Version { get; set; }
-        public string BaseUrl { get; set; }
-        public string SilverlightBaseUrl { get; set; }
-        public Extent MapExtent { get; set; }
-    }
-
     public class Startup
     {
         private readonly IHostingEnvironment _env;
@@ -134,27 +115,8 @@ namespace S4Analytics
 
             // Add options.
             services.AddOptions();
-            services.Configure<ServerOptions>(serverOptions =>
-            {
-                serverOptions.WarehouseSchema = Configuration["WarehouseSchema"];
-                serverOptions.SpatialSchema = Configuration["SpatialSchema"];
-                serverOptions.WarehouseConnStr = Configuration.GetConnectionString(serverOptions.WarehouseSchema);
-                serverOptions.SpatialConnStr = Configuration.GetConnectionString(serverOptions.SpatialSchema);
-                serverOptions.EsriSrid = Configuration.GetValue<int>("EsriSrid");
-            });
-            services.Configure<ClientOptions>(clientOptions =>
-            {
-                clientOptions.Version = Configuration["Version"];
-                clientOptions.BaseUrl = Configuration["BaseUrl"];
-                clientOptions.SilverlightBaseUrl = Configuration["SilverlightBaseUrl"];
-                var mapExtentSection = Configuration.GetSection("MapExtent");
-                clientOptions.MapExtent = new Extent(
-                    mapExtentSection.GetValue<int>("MinX"),
-                    mapExtentSection.GetValue<int>("MinY"),
-                    mapExtentSection.GetValue<int>("MaxX"),
-                    mapExtentSection.GetValue<int>("MaxY")
-                );
-            });
+            services.Configure<ServerOptions>(Configuration.GetSection("App"));
+            services.Configure<ClientOptions>(Configuration.GetSection("App"));
 
             // Add repositories.
             services.AddSingleton<INewUserRequestRepository, NewUserRequestRepository>();

@@ -7,7 +7,14 @@ export interface Options {
     version: string;
     baseUrl: string;
     silverlightBaseUrl: string;
-    mapExtent: { minX: number, minY: number, maxX: number, maxY: number };
+    coordinateSystems: {
+        [key: string]: {
+            type: string,
+            epsgCode: string,
+            proj4Def: string,
+            mapExtent: { minX: number, minY: number, maxX: number, maxY: number }
+        }
+    };
 }
 
 @Injectable()
