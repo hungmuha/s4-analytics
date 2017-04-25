@@ -43,7 +43,7 @@ export class NewUserRequestService {
         let url = 'api/admin/new-user-request';
         return this.http
             .get(url)
-            .map((r: Response) => r.json().data as NewUserRequest[]);
+            .map((r: Response) => r.json() as NewUserRequest[]);
     }
 
     filterNewUserRequestsBy(i: string): Observable<NewUserRequest[]> {
@@ -51,7 +51,7 @@ export class NewUserRequestService {
 
         return this.http
             .get(url)
-            .map((r: Response) => r.json().data as NewUserRequest[]);
+            .map((r: Response) => r.json() as NewUserRequest[]);
     }
 
     approve(currentStatus: NewUserRequestStatus, requestActionResults: RequestActionResults): Observable<NewUserRequest> {
