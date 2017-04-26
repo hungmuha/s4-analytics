@@ -27,10 +27,8 @@ module.exports = (env) => {
                 '@angular/platform-browser-dynamic',
                 '@angular/router',
                 '@ng-bootstrap/ng-bootstrap',
-                'angular2-universal',
-                'angular2-universal-polyfills',
                 'bootstrap/dist/css/bootstrap.css',
-                'es6-shim',
+                'core-js',
                 'es6-promise',
                 'event-source-polyfill',
                 'font-awesome/css/font-awesome.css',
@@ -38,6 +36,7 @@ module.exports = (env) => {
                 'moment',
                 'openlayers',
                 'openlayers/dist/ol.css',
+                'reflect-metadata',
                 'rxjs',
                 'zone.js'
             ]

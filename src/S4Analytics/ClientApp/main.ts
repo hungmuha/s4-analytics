@@ -1,21 +1,32 @@
-import 'angular2-universal-polyfills/browser';
+import 'zone.js/dist/zone';
+import 'reflect-metadata';
+import 'core-js/es6/symbol';
+import 'core-js/es6/object';
+import 'core-js/es6/function';
+import 'core-js/es6/parse-int';
+import 'core-js/es6/parse-float';
+import 'core-js/es6/number';
+import 'core-js/es6/math';
+import 'core-js/es6/string';
+import 'core-js/es6/date';
+import 'core-js/es6/array';
+import 'core-js/es6/regexp';
+import 'core-js/es6/map';
+import 'core-js/es6/set';
+import 'core-js/es6/reflect';
+import 'core-js/es7/reflect';
 import { enableProdMode } from '@angular/core';
-import { platformUniversalDynamic } from 'angular2-universal';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 import './site.css';
+
+declare var module: any;
+
 const rootElemTagName = 'app'; // Update this if you change your root component selector
 
-// Boot the application, either now or when the DOM content is loaded
-const platform = platformUniversalDynamic();
-const bootApplication = () => { platform.bootstrapModule(AppModule); };
-if (document.readyState === 'complete') {
-    bootApplication();
-} else {
-    document.addEventListener('DOMContentLoaded', bootApplication);
-}
+const modulePromise = platformBrowserDynamic().bootstrapModule(AppModule);
 
-// Enable either Hot Module Reloading or production mode
-declare var module: any;
+// // Enable either Hot Module Reloading or production mode
 if (module['hot']) {
     module['hot'].accept();
     module['hot'].dispose(() => {
@@ -23,7 +34,7 @@ if (module['hot']) {
         const oldRootElem = document.querySelector(rootElemTagName);
         const newRootElem = document.createElement(rootElemTagName);
         oldRootElem.parentNode.insertBefore(newRootElem, oldRootElem);
-        platform.destroy();
+        modulePromise.then(appModule => appModule.destroy());
     });
 } else {
     enableProdMode();
