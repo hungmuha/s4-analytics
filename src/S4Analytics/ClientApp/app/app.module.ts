@@ -1,5 +1,5 @@
 ﻿import { NgModule } from '@angular/core';
-import { BrowserModule, __platform_browser_private__ } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -25,7 +25,6 @@ import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
         LoginComponent
     ],
     providers: [
-        __platform_browser_private__.BROWSER_SANITIZATION_PROVIDERS,
         OptionsService,
         KeepSilverlightAliveService
     ],
