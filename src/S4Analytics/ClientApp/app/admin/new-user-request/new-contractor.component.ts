@@ -15,12 +15,13 @@ export class NewContractorComponent {
     approved(approved: boolean) {
 
         if (approved) {
-            console.log('approved');
             this.state.currentRequestActionResults.rejectionReason = '';
         }
     }
 
     openContractViewer() {
-        this.state.contractViewerWindow = window.open('', '', 'width=400,height=200');
+        // construct the path and query string for the image handler  \uploads
+
+        this.state.contractViewerWindow = window.open('', '_blank', 'width=400,height=200');
     }
 }

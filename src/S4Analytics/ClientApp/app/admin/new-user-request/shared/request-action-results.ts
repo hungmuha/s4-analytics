@@ -2,17 +2,10 @@
     public requestNumber: number;
     public approved: boolean;
     public rejectionReason: string;
+    public lea: boolean;
+    public accessBefore70Days: boolean;
 
     constructor(id: number) {
         this.requestNumber = id;
     }
-}
-
-export class NewAgencyActionResults extends RequestActionResults {
-    public lea: boolean;
-    public accessBefore70Days: boolean;
-}
-
-export class NewConsultantActionResults extends RequestActionResults {
-    public accessBefore70Days: boolean;
 }
