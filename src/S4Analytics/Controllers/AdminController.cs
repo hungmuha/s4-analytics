@@ -18,17 +18,16 @@ namespace S4Analytics.Controllers
         public NewUserRequest SelectedRequest { get; set; }
         public NewUserRequestStatus NewStatus { get; set; }
         public NewUserRequestStatus CurrentStatus { get; set; }
-    }
-
-    public class NewAgencyRequestApproval : RequestApproval
-    {
-        public bool Before70Days { get; set;}
+        public bool Before70Days { get; set; }
         public bool Lea { get; set; }
     }
 
-    public class NewConsultantRequestApproval : RequestApproval
+    public class RequestRejection
     {
-        public bool Before70Days { get; set; }
+        public int RequestNumber{ get; set;}
+        public NewUserRequest SelectedRequest{ get; set;}
+        public string RejectionReason { get; set; }
+        public NewUserRequestStatus NewStatus { get; set; }
     }
 
     [Route("api/[controller]")]
@@ -78,35 +77,33 @@ namespace S4Analytics.Controllers
             switch(currentStatus)
             {
                 case NewUserRequestStatus.NewUser:
-                    _newUserRequestRepo.ApproveNewUser(id, newStatus, selectedRequest);
-                    break;
+                    return new ObjectResult(_newUserRequestRepo.ApproveNewUser(id, approval));
                 case NewUserRequestStatus.NewContractor:
-                    _newUserRequestRepo.ApproveNewContractor(id, newStatus, selectedRequest);
-                    break;
+                    return new ObjectResult(_newUserRequestRepo.ApproveNewContractor(id, approval));
                 case NewUserRequestStatus.CreateAgency:
-                    _newUserRequestRepo.ApproveCreatedNewAgency(id, newStatus, selectedRequest);
-                    break;
+                    return new ObjectResult(_newUserRequestRepo.ApproveCreatedNewAgency(id, approval));
             }
 
             return null;
         }
 
         [HttpPatch("new-user-request/{id}/approve/consultant")]
-        public IActionResult ApproveConsultant(int id, [FromBody]NewConsultantRequestApproval approval)
+        public IActionResult ApproveConsultant(int id, [FromBody]RequestApproval approval)
         {
-            _newUserRequestRepo.ApproveNewConsultant(id, approval.Before70Days, approval.NewStatus, approval.SelectedRequest);
-
-            return null;
+            return new ObjectResult(_newUserRequestRepo.ApproveNewConsultant(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/approve/agency")]
-        public IActionResult ApproveAgency(int id, [FromBody]NewAgencyRequestApproval approval)
+        public IActionResult ApproveAgency(int id, [FromBody]RequestApproval approval)
         {
-            _newUserRequestRepo.ApproveAgency(id, approval.Before70Days, approval.Lea, approval.NewStatus, approval.SelectedRequest);
-
-            return null;
+            return new ObjectResult(_newUserRequestRepo.ApproveAgency(id, approval));
         }
 
+        [HttpPatch("new-user-request/{id}/reject")]
+        public IActionResult Reject(int id, [FromBody]RequestRejection rejection)
+        {
+            return new ObjectResult(_newUserRequestRepo.Reject(id,  rejection));
+        }
     }
 
 }

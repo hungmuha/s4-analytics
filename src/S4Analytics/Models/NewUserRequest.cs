@@ -1,6 +1,6 @@
 ﻿using System;
 using Lib.Identity;
-
+using Lib.Identity.Models;
 
 namespace S4Analytics.Models
 {
@@ -42,17 +42,17 @@ namespace S4Analytics.Models
         public NewUserRequestType RequestType { get; set; }
         public NewUserRequestStatus RequestStatus { get; set; }
         public DateTime? UserCreatedDt { get; set; }
+        public int AgncyId { get; set; }
+        public AgencyType AgncyTypeCd { get; set; }
         public string AgncyNm { get; set; }
-        public AgencyType? NewAgncyTypeCd { get; set; }
-        public string NewAgncyNm { get; set; }
-        public string NewAgncyEmailDomain { get; set; }
+        public string AgncyEmailDomain { get; set; }
         public string RequestorFirstNm { get; set; }
         public string RequestorLastNm { get; set; }
         public string RequestorSuffixNm { get; set; }
         public string RequestorEmail { get; set; }
+        public int ContractorId { get; set; }
         public string ContractorNm { get; set; }
-        public string NewContractorNm { get; set; }
-        public string NewContractorEmailDomain { get; set; }
+        public string ContractorEmailDomain { get; set; }
         public string ConsultantFirstNm { get; set; }
         public string ConsultantLastNm { get; set; }
         public string ConsultantSuffixNm { get; set; }
@@ -65,5 +65,7 @@ namespace S4Analytics.Models
         public bool WarnConsultantEmailCd { get; set; }
         public string AdminComment { get; set; }
         public bool AccessBefore70Days { get; set; }
+        public string CreatedBy { get; set; }
+        public bool UserManagerCd { get; set; }
     }
 }

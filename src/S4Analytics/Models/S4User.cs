@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using Lib.Identity;
 
 namespace S4Analytics.Models
 {
@@ -50,6 +50,7 @@ namespace S4Analytics.Models
 
         #region Public Properties
 
+        public S4IdentityUser IdentityUser { get; set; }
         public DateTime? AccountExpirationDate { get; set; }
         public DateTime? AccountStartDate { get; set; }
         public bool Active { get; set; }
@@ -102,7 +103,7 @@ namespace S4Analytics.Models
             CreatedDate = null;
             EmailAddress = string.Empty;
             FirstName = string.Empty;
-            ForcePasswordChange = false;
+            ForcePasswordChange = true;
             LastName = string.Empty;
             ModifiedBy = string.Empty;
             ModifiedDate = null;

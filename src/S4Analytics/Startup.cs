@@ -36,6 +36,16 @@ namespace S4Analytics
         public string SilverlightBaseUrl { get; set; }
     }
 
+    public class EmailOptions
+    {
+        public string SmtpServer { get; set; }
+        public string PrimaryDomain { get;set;}
+        public int SmtpPort { get; set; }
+        public bool EnableSsl { get; set; }
+        public string GlobalAdminEmail { get; set; }
+        public string SupportEmail { get; set; }
+    }
+
     public class Startup
     {
         private readonly IHostingEnvironment _env;
@@ -132,6 +142,15 @@ namespace S4Analytics
                 clientOptions.Version = Configuration["Version"];
                 clientOptions.BaseUrl = Configuration["BaseUrl"];
                 clientOptions.SilverlightBaseUrl = Configuration["SilverlightBaseUrl"];
+            });
+            services.Configure<EmailOptions>(emailOptions =>
+            {
+                emailOptions.SmtpServer = Configuration["EmailOptions:SmtpServer"];
+                emailOptions.SmtpPort = Configuration.GetValue<int>("EmailOptions:SmtpPort");
+                emailOptions.PrimaryDomain = Configuration["EmailOptions:PrimaryDomain"];
+                emailOptions.EnableSsl = Configuration.GetValue<bool>("EmailOptions:EnableSsl");
+                emailOptions.GlobalAdminEmail = Configuration["EmailOptions:GlobalAdminEmail"];
+                emailOptions.SupportEmail = Configuration["EmailOptions:SupportEmail"];
             });
 
             // Add repositories.
