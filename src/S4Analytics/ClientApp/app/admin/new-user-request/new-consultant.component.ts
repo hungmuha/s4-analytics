@@ -2,7 +2,6 @@
 import { NewUserRequestStateService } from './shared';
 import * as moment from 'moment';
 
-
 @Component({
     selector: 'new-consultant-component',
     templateUrl: './new-consultant.component.html'

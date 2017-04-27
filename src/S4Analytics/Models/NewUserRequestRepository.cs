@@ -81,7 +81,7 @@ namespace S4Analytics.Models
                             ON c.contractor_id = u.contractor_id
                             WHERE req_nbr = :reqnbr", selectTxt);
 
-             var results = _conn.QueryFirstOrDefault<NewUserRequest>(cmdText, new { REQNBR = reqNbr });
+            var results = _conn.QueryFirstOrDefault<NewUserRequest>(cmdText, new { REQNBR = reqNbr });
             return results;
         }
 
@@ -104,7 +104,6 @@ namespace S4Analytics.Models
             StoreUserCounties(s4User);
 
             var passwordText = _userStore.GenerateRandomPassword(8, 0);
-
             var identityUser = CreateIdentityUser(request, userName, request.RequestorEmail, passwordText);
             identityUser.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
             identityUser.Active = true;
@@ -125,6 +124,7 @@ namespace S4Analytics.Models
                         prompted to read and accept Signal Four Analytics user agreement before 
                         using the system.<br><br>
                         Please let me know if you need further assistance.<br><br></div>", request.RequestorFirstNm, userName, passwordText);
+
 
             var closing = GetEmailNotificationClosing();
 
@@ -222,6 +222,7 @@ namespace S4Analytics.Models
             {
                 Active = true
             };
+
             var token = new CancellationToken();
             var result = _userStore.UpdateAsync(identityUser, token);
 
@@ -286,7 +287,6 @@ namespace S4Analytics.Models
 
             request.RequestStatus = newStatus;
             request.AccessBefore70Days = before70days;
-
             UpdateApprovedNewUserRequest(request);
             return request;
         }
@@ -432,8 +432,8 @@ namespace S4Analytics.Models
                                 ADMIN_COMMENT = :adminComment
                             WHERE REQ_NBR = :requestNbr";
 
-            var rowsUpdated = _conn.Execute(updateTxt, new
-            {
+           var rowsUpdated = _conn.Execute(updateTxt, new
+           {
                 request.RequestStatus,
                 request.AdminComment,
                 request.RequestNbr
@@ -670,6 +670,7 @@ namespace S4Analytics.Models
                 CrashReportAccess = (request.AccessBefore70Days)?CrashReportAccess.Within60Days:CrashReportAccess.After60Days,
                 Agency = GetAgency(request.AgncyId)
             };
+
             user.ViewableCounties = user.Agency.DefaultViewableCounties;
             user.CrashReportAccess = user.Agency.CrashReportAccess;
             return user;
@@ -691,6 +692,7 @@ namespace S4Analytics.Models
                 Agency = GetAgency(request.AgncyId),
                 ContractorCompany = GetContractor(request.ContractorId)
             };
+
             user.ViewableCounties = user.Agency.DefaultViewableCounties;
             user.TimeLimitedAccount = true;
 
@@ -706,6 +708,7 @@ namespace S4Analytics.Models
                 EmailDomain = request.ContractorEmailDomain,
                 IsActive = true
             };
+
             return contractor;
         }
 
@@ -718,6 +721,7 @@ namespace S4Analytics.Models
                 CreatedBy = "tbd", //TODO
                 CreatedDate = new Occurrence()
             };
+
             user.AddRole(role);
 
             if (request.UserManagerCd)
@@ -727,13 +731,14 @@ namespace S4Analytics.Models
                     CreatedBy = "tbd", //TODO
                     CreatedDate = new Occurrence()
                 };  //TODO: changing name to UserManager role
+
                 user.AddRole(role);
             }
         }
 
         private Agency GetAgency(int agencyId)
         {
-            var selectTxt = @"SELECT
+           var selectTxt = @"SELECT
                                 agncy_id AS AGENCYID,
                                 agncy_nm AS AGENCYNAME,
                                 agncy_type_cd AS AGENCYTYPECD,
@@ -746,11 +751,9 @@ namespace S4Analytics.Models
                                 FROM S4_AGNCY WHERE AGNCY_ID = :agencyid";
 
             var agency = _conn.QueryFirstOrDefault<Agency>(selectTxt, new { AGENCYID = agencyId });
-
             agency.DefaultViewableCounties = GetCountiesForAgency(agency.AgencyId);
             return agency;
         }
-
 
         private Contractor GetContractor(int id)
         {
@@ -783,12 +786,11 @@ namespace S4Analytics.Models
 
         private int GetNextContractorId()
         {
-
             var selectTxt = @"SELECT CONTRACTOR_ID FROM CONTRACTOR " +
                         "WHERE ROWNUM = 1 ORDER BY CONTRACTOR_ID DESC";
 
             var results = _conn.QueryFirstOrDefault<int>(selectTxt);
-            return results+1;
+           return results+1;
         }
 
         private string GetEmailNotificationClosing()
@@ -804,7 +806,6 @@ namespace S4Analytics.Models
 
         private List<string> GetAgencyAdmin(int agencyId)
         {
-
             var emails = new List<string>();
 
             var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
@@ -825,8 +826,6 @@ namespace S4Analytics.Models
 
         private List<string> GetFDOTAdmin()
         {
-
-
             var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
                                 JOIN USER_ROLE R ON R.ROLE_NM = 'FDOT Admin' 
                                 AND R.USER_NM = U.USER_NM";
@@ -844,7 +843,7 @@ namespace S4Analytics.Models
 
         private List<string> GetHSMVAdmin()
         {
-            var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
+           var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
                                 JOIN USER_ROLE R ON R.ROLE_NM = 'HSMV Admin' 
                                 AND R.USER_NM = U.USER_NM";
 
@@ -866,11 +865,9 @@ namespace S4Analytics.Models
 
         private int VerifyAgencyCreated(string agencyNm)
         {
-
             var selectTxt = @"SELECT AGNCY_ID FROM S4_AGNCY WHERE AGNCY_NM = :agencyNm";
 
             var result = _conn.QueryFirstOrDefault<int>(selectTxt, new { AGENCYNM = agencyNm });
-
             return result;
         }
 
@@ -881,7 +878,7 @@ namespace S4Analytics.Models
             {
                 IsBodyHtml = true
             };
-            var fromEmail = new MailAddress(from);
+           var fromEmail = new MailAddress(from);
             msg.From = fromEmail;
             //msg.To.Add(new MailAddress(to));
 
