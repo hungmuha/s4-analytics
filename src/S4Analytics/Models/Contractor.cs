@@ -14,6 +14,10 @@ namespace S4Analytics.Models
         public string EmailDomain { get; set; }
 
         #endregion
+        public Contractor()
+        {
+
+        }
 
         public Contractor(string contractorNm, int contractorId)
         {

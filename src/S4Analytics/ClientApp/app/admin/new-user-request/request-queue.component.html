@@ -17,10 +17,10 @@
         </div>
         <!-- filter button toolbar-->
         <div class="btn-group btn-group-sm pull-right" role="group">
-            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(queueFilter.All)">All</button>
-            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(queueFilter.Pending)">Pending</button>
-            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(queueFilter.Completed)">Completed</button>
-            <button type="button" class="btn btn-secondary" (click)="filterQueueBy(queueFilter.Rejected)">Rejected</button>
+            <button type="button" class="btn btn-outline-primary active" (click)="filterQueueBy(queueFilter.All)">All</button>
+            <button type="button" class="btn btn-outline-primary active" (click)="filterQueueBy(queueFilter.Pending)">Pending</button>
+            <button type="button" class="btn btn-outline-primary active" (click)="filterQueueBy(queueFilter.Completed)">Completed</button>
+            <button type="button" class="btn btn-outline-primary active" (click)="filterQueueBy(queueFilter.Rejected)">Rejected</button>
         </div>
         <!-- queue -->
         <table class="pull-right" border="1" style="width:90%" align="center">
@@ -45,11 +45,11 @@
                     <td style="width: 10%">{{newUserReq.requestorFirstNm + " " + newUserReq.requestorLastNm}}</td>
                     <td style="width: 20%">{{displayAgencyNm(newUserReq)}}</td>
                     <td style="width: 5%">{{newUserReq.requestStatus | requestStatus }}</td>
-                    <td style="width: 10%"></td>
+                    <td style="width: 10%">{{newUserReq.userCreatedDt | date:"MM/dd/yy"}}</td>
                     <td style="width: 10%">
                         <button [hidden]= "hideProcessRequestButton(newUserReq)" (click)="openActionModal(content, newUserReq)">Process Request</button>
                     </td>
-                    <td style="width: 20%"></td>
+                    <td style="width: 20%">{{newUserReq.adminComment}}</td>
                 </tr>
             </tbody>
         </table>

@@ -1,5 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { NewUserRequestStateService, NewAgencyActionResults } from './shared';
+import { NewUserRequestStateService } from './shared';
 
 @Component({
     selector: 'new-agency-component',
@@ -8,13 +8,12 @@ import { NewUserRequestStateService, NewAgencyActionResults } from './shared';
 
 export class NewAgencyComponent {
 
-    newAgencyResults = this.state.currentRequestActionResults as NewAgencyActionResults;
 
     constructor(public state: NewUserRequestStateService) {
     }
 
     disableRejectRb() {
-        return this.newAgencyResults.lea === undefined;
+        return this.state.currentRequestActionResults.lea === undefined;
     }
 
     approved(approved: boolean) {
@@ -23,8 +22,8 @@ export class NewAgencyComponent {
             this.state.currentRequestActionResults.rejectionReason = '';
         }
         else {
-            this.newAgencyResults.lea = undefined;
-            this.newAgencyResults.accessBefore70Days = false;
+            this.state.currentRequestActionResults.lea = undefined;
+            this.state.currentRequestActionResults.accessBefore70Days = false;
         }
     }
 
