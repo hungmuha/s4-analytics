@@ -24,14 +24,7 @@ declare var module: any;
 
 const rootElemTagName = 'app'; // Update this if you change your root component selector
 
-// Boot the application, either now or when the DOM content is loaded
-const platform = platformUniversalDynamic();
-const bootApplication = () => { platform.bootstrapModule(AppModule); };
-if (document.readyState === 'complete') {
-    bootApplication();
-} else {
-    document.addEventListener('DOMContentLoaded', bootApplication);
-}
+const modulePromise = platformBrowserDynamic().bootstrapModule(AppModule);
 
 // // Enable either Hot Module Reloading or production mode
 if (module['hot']) {

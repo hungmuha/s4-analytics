@@ -63,7 +63,7 @@ export class RequestQueueComponent {
 
     filterQueueBy(filter: QueueFilter) {
         this.filteredRequests = _.filter(this.state.newUserRequests,
-            function (nur) {
+            (nur: any) => {
                 switch (filter.valueOf()) {
                     case QueueFilter.Completed:
                         return nur.requestStatus === NewUserRequestStatus.Completed;
