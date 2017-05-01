@@ -29,7 +29,6 @@ module.exports = (env) => {
                 '@ng-bootstrap/ng-bootstrap',
                 'bootstrap/dist/css/bootstrap.css',
                 'core-js',
-                'es6-promise',
                 'event-source-polyfill',
                 'font-awesome/css/font-awesome.css',
                 'lodash',
@@ -49,7 +48,6 @@ module.exports = (env) => {
         },
         plugins: [
             new webpack.ContextReplacementPlugin(/\@angular\b.*\b(bundles|linker)/, path.join(__dirname, './ClientApp')), // Workaround for https://github.com/angular/angular/issues/11580
-            new webpack.IgnorePlugin(/^vertx$/), // Workaround for https://github.com/stefanpenner/es6-promise/issues/100
             extractCSS,
             new webpack.DllPlugin({
                 path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
