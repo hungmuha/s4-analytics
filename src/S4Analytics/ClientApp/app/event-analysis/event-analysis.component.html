@@ -1,2 +1,20 @@
 ﻿<div>Event Analysis</div>
 <event-map mapId="event-map"></event-map>
+<kendo-grid [data]="gridData"
+            [sortable]="{ mode: 'multiple' }"
+            [sort]="sort"
+            [skip]="skip"
+            [pageSize]="pageSize"
+            [selectable]="true"
+            [scrollable]="'virtual'"
+            [rowHeight]="35"
+            [height]="450"
+            (sortChange)="sortChange($event)"
+            (selectionChange)="selectionChange($event)"
+            (pageChange)="pageChange($event)">
+    <kendo-grid-column field="hsmvReportNumber" title="HSMV Report Number"></kendo-grid-column>
+    <kendo-grid-column field="crashDate" title="Date"></kendo-grid-column>
+    <kendo-grid-column field="crashTime" title="Time"></kendo-grid-column>
+    <kendo-grid-column field="city" title="City"></kendo-grid-column>
+    <kendo-grid-column field="county" title="County"></kendo-grid-column>
+</kendo-grid>

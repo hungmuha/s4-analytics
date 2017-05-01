@@ -174,9 +174,9 @@ namespace S4Analytics.Models
                   ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID
                 LEFT JOIN {_warehouseSchema}.v_bike_ped_crash_type
                   ON fact_crash_evt.key_bike_ped_crash_type = v_bike_ped_crash_type.crash_type_id
-                WHERE ROWNUM <= :toIndex
+                WHERE ROWNUM <= :toIndex + 1
             )
-            WHERE rnum >= :fromIndex";
+            WHERE rnum >= :fromIndex + 1";
 
             var dynamicParams = preparedQuery.DynamicParams;
             dynamicParams.Add(new { fromIndex, toIndex });

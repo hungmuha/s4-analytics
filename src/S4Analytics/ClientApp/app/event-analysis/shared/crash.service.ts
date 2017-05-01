@@ -21,4 +21,12 @@ export class CrashService {
             .switchMap(url => this.http.get(`${url}/point?minX=${minX}&minY=${minY}&maxX=${maxX}&maxY=${maxY}`))
             .map(response => response.json() as EventPointCollection);
     }
+
+    getCrashData(query: CrashQuery, fromIndex: number, toIndex: number): Observable<any> {
+        return this.http
+            .post('api/crash/query', query)
+            .map(response => response.headers.get('Location'))
+            .switchMap(url => this.http.get(`${url}?fromIndex=${fromIndex}&toIndex=${toIndex}`))
+            .map(response => response.json());
+    }
 }

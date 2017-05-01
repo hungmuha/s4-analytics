@@ -31,7 +31,7 @@ namespace S4Analytics.Controllers
         public IActionResult GetCrashes(string queryToken, int fromIndex, int toIndex)
         {
             var queryExists = _crashRepo.QueryExists(queryToken);
-            var badIndices = fromIndex <= 0 || toIndex <= 0 || toIndex < fromIndex;
+            var badIndices = fromIndex < 0 || toIndex < 0 || toIndex < fromIndex;
 
             if (!queryExists) { return NotFound(); }
             if (badIndices) { return BadRequest(); }
