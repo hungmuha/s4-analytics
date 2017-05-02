@@ -125,7 +125,6 @@ namespace S4Analytics.Models
                         using the system.<br><br>
                         Please let me know if you need further assistance.<br><br></div>", request.RequestorFirstNm, userName, passwordText);
 
-
             var closing = GetEmailNotificationClosing();
 
             SendEmail(s4User.EmailAddress, null, _supportEmail, subject, body, closing);
@@ -210,7 +209,6 @@ namespace S4Analytics.Models
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
             var before70days = approval.Before70Days;
-
             var userName = request.UserId;
             var s4User = CreateS4User(request, userName);
             s4User.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
@@ -287,6 +285,7 @@ namespace S4Analytics.Models
 
             request.RequestStatus = newStatus;
             request.AccessBefore70Days = before70days;
+
             UpdateApprovedNewUserRequest(request);
             return request;
         }
@@ -474,7 +473,8 @@ namespace S4Analytics.Models
                             CASE WHEN u.warn_consultant_email_cd = 'Y' THEN 1 ELSE 0 END AS warnconsultantemailcd,
                             CASE WHEN u.warn_duplicate_email_cd = 'Y' THEN 1 ELSE 0 END as warnduplicateemailcd,
                             CASE WHEN u.user_manager_cd = 'Y' THEN 1 ELSE 0 END AS usermanagercd,
-                            u.admin_comment AS admincomment";
+                            u.admin_comment AS admincomment,
+                            u.contract_pdf_nm as contractpdfnm";
         }
 
         private S4IdentityUser CreateIdentityUser(NewUserRequest request, string userName, string email, string passwordText)

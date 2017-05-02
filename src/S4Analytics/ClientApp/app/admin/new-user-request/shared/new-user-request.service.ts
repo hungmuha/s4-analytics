@@ -3,12 +3,8 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { NewUserRequest } from './new-user-request';
 import { NewUserRequestStatus } from './new-user-request-enum';
-<<<<<<< HEAD
 import { RequestActionResults } from './request-action-results';
 import { OptionsService, Options } from './.././../../options.service';
-=======
-import { RequestActionResults} from './request-action-results';
->>>>>>> Tied in Lib.Identity fully for updating database, updates queue with next step after approval/rejection
 
 class RequestApproval {
     constructor(
@@ -151,6 +147,11 @@ export class NewUserRequestService {
             .patch(url, reqWrapper)
             .map(res => res.json())
             .catch(this.handleError);
+    }
+
+    getPath(): string {
+        console.log(this.options.baseUrl);
+        return this.options.baseUrl;
     }
 
     private handleError(error: any) {
