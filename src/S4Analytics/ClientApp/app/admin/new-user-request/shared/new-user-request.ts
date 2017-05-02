@@ -25,5 +25,5 @@ export class NewUserRequest {
     warnConsultantEmailCd: boolean;
     adminComment: string;
     accessBefore70Days: boolean = false;
-
+    contractPdfNm: string;
 }
