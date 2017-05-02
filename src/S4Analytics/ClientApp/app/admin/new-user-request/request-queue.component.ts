@@ -22,7 +22,7 @@ export class RequestQueueComponent {
         let queueFilter = this.state.queueFilter;
 
         return _.filter(this.state.newUserRequests,
-            function (nur) {
+            (nur: any) => {
                 switch (queueFilter) {
                     case QueueFilter.Completed:
                         return nur.requestStatus === NewUserRequestStatus.Completed;

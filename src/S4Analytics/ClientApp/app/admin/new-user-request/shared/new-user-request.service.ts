@@ -3,7 +3,8 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { NewUserRequest } from './new-user-request';
 import { NewUserRequestStatus } from './new-user-request-enum';
-import { RequestActionResults} from './request-action-results';
+import { RequestActionResults } from './request-action-results';
+import { OptionsService, Options } from './.././../../options.service';
 
 class RequestApproval {
     constructor(
@@ -46,7 +47,14 @@ class RequestRejection {
 
 @Injectable()
 export class NewUserRequestService {
-    constructor(private http: Http) { }
+    private options: Options;
+    constructor(private http: Http,
+        private optionsService: OptionsService) {
+
+        this.optionsService.getOptions()
+            .first()
+            .subscribe(options => this.options = options);
+    }
 
     getNewUserRequests(): Observable<NewUserRequest[]> {
         let url = 'api/admin/new-user-request';
@@ -139,6 +147,11 @@ export class NewUserRequestService {
             .patch(url, reqWrapper)
             .map(res => res.json())
             .catch(this.handleError);
+    }
+
+    getPath(): string {
+        console.log(this.options.baseUrl);
+        return this.options.baseUrl;
     }
 
     private handleError(error: any) {

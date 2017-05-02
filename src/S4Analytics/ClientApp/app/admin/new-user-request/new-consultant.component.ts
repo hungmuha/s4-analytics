@@ -23,6 +23,8 @@ export class NewConsultantComponent  {
     }
 
     openContractViewer() {
+        console.log('pdf = ' + this.state.selectedRequest.contractPdfNm);
+
         this.state.contractViewerWindow = window.open('', '', 'width=200,height=100');
     }
 }
