@@ -23,6 +23,7 @@ export class NewUserRequest {
     userId: string;
     warnRequestorEmailCd: boolean;
     warnConsultantEmailCd: boolean;
+    warnDuplicateEmailCd: boolean;
     adminComment: string;
     accessBefore70Days: boolean = false;
     contractPdfNm: string;
