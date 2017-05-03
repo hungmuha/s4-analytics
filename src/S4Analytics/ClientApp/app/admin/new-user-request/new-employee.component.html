@@ -14,6 +14,7 @@
 </div>
 <div class="row">
     <label [hidden]="!state.selectedRequest.warnRequestorEmailCd" class="warning-message">Warning: Requestor's email domain does not match agency's email domain</label>
+    <label [hidden]="!state.selectedRequest.warnDuplicateEmailCd" class="warning-message">Warning: An account with requestor's email already exists</label>
 </div>
 <hr />
 <div class="row">

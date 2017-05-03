@@ -25,6 +25,6 @@ export class NewContractorComponent {
         // construct the path and query string for the image handler  \uploads
         console.log('pdf = ' + this.state.selectedRequest.contractPdfNm);
 
-        this.state.contractViewerWindow = window.open('', '_blank', 'width=400,height=200')
+        this.state.contractViewerWindow = window.open('', '_blank', 'width=400,height=200');
     }
 }

@@ -63,6 +63,7 @@ namespace S4Analytics.Models
         public string UserId { get; set; }
         public bool WarnRequestorEmailCd { get; set; }
         public bool WarnConsultantEmailCd { get; set; }
+        public bool WarnDuplicateEmailCd { get; set; }
         public string AdminComment { get; set; }
         public bool AccessBefore70Days { get; set; }
         public string CreatedBy { get; set; }
