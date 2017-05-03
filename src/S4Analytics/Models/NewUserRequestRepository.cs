@@ -115,17 +115,17 @@ namespace S4Analytics.Models
 
             // Send password cred to new user.
             var subject = "Signal Four Analytics user account created";
-            var body = string.Format(@"<div>Dear {0}, \n\n
+            var body = string.Format(@"<div>Dear {0}, <br><br>
                         Your Signal Four Analytics individual account has been created. 
                         You can access the system at http://s4.geoplan.ufl.edu/. 
                         To login click on the Login link at the upper right of the screen 
-                        and enter the information below: \n
-                        username = {1} \n
-                        password = {2} \n\n
+                        and enter the information below: <br>
+                        username = {1} <br>
+                        password = {2} <br><br>
                         Upon login you will be prompted to change your password. You will also be 
                         prompted to read and accept Signal Four Analytics user agreement before 
-                        using the system.\n\n
-                        Please let me know if you need further assistance.\n\n</div>", request.RequestorFirstNm, userName, passwordText);
+                        using the system.<br><br>
+                        Please let me know if you need further assistance.<br><br></div>", request.RequestorFirstNm, userName, passwordText);
 
             var closing = GetEmailNotificationClosing();
 
@@ -151,6 +151,7 @@ namespace S4Analytics.Models
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
+            var before70days = approval.Before70Days;
 
             if (request.UserId != null)
             {
@@ -160,6 +161,7 @@ namespace S4Analytics.Models
             var preferredUserName = (request.RequestorFirstNm[0] + request.RequestorLastNm).ToLower();
             var userName = GenerateUserName(preferredUserName);
             var s4User = CreateS4User(request, userName);
+            s4User.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
             StoreS4User(s4User);
             StoreUserCounties(s4User);
@@ -188,14 +190,15 @@ namespace S4Analytics.Models
                 Upon login you will be prompted to change your password. You will also be
                 prompted to read and accept Signal Four Analytics user agreement before
                 using the system.<br><br>
-                Note that this account will expire on {3).
-                Please let me know if you need further assistance.<br><br></div> ", request.ConsultantFirstNm, userName, passwordText, request.ContractEndDt);
+                Note that this account will expire on {3}).
+                Please let me know if you need further assistance.<br><br></div> ", request.ConsultantFirstNm, userName, passwordText, request.ContractEndDt.ToString());
 
             var closing = GetEmailNotificationClosing();
 
             SendEmail(s4User.EmailAddress, null, _supportEmail, subject, body.ToString(), closing);
 
             request.RequestStatus = newStatus;
+            request.AccessBefore70Days = before70days;
             request.UserId = userName;
             request.UserCreatedDt = DateTime.Now;
             request.CreatedBy = "tbd"; //TODO
@@ -207,11 +210,13 @@ namespace S4Analytics.Models
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
+            var before70days = approval.Before70Days;
 
             var userName = request.UserId;
             var s4User = CreateS4User(request, userName);
+            s4User.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
-            UpdateS4UserConsultant(request);
+            UpdateS4UserConsultant(s4User);
 
             var passwordText = _userStore.GenerateRandomPassword(8, 0);
             var identityUser = new S4IdentityUser(userName, request.ConsultantEmail, passwordText);
@@ -237,13 +242,14 @@ namespace S4Analytics.Models
                         using the system.<br><br>
                         Note that this account will expire on {3}. <br><br>
                         Please let me know if you need further assistance.<br><br></div>", request.ConsultantFirstNm, userName, passwordText,
-                        request.ContractEndDt);
+                        request.ContractEndDt.ToString());
 
             var closing = GetEmailNotificationClosing();
 
             SendEmail(s4User.EmailAddress, null, _supportEmail, subject, body, closing);
 
             request.RequestStatus = newStatus;
+            request.AccessBefore70Days = before70days;
             request.UserCreatedDt = DateTime.Now;
             request.CreatedBy = "tbd"; //TODO
             UpdateApprovedNewUserRequest(request);
@@ -531,28 +537,30 @@ namespace S4Analytics.Models
 
         }
 
-        private bool UpdateS4UserConsultant(NewUserRequest request)
+        private bool UpdateS4UserConsultant(S4User user)
         {
             var conn = new OracleConnection(_connStr);
 
             var updateTxt = @"UPDATE S4_USER
                             SET 
-                                ACCOUNT_START_DT = :contractStartDt,
-                                ACCOUNT_EXPIRATION_DT = :contractEndDt,
+                                ACCOUNT_START_DT = :accountStartDate,
+                                ACCOUNT_EXPIRATION_DT = :accountExpirationDate,
                                 MODIFIED_BY = :modifiedBy,
                                 MODIFIED_DT = :modifiedDt,
-                                FORCE_PASSWORD_CHANGE = :pwdChange
-                            WHERE USER_NM = :userId";
+                                FORCE_PASSWORD_CHANGE = :pwdChange,
+                                CAN_VIEW = :reportAccess
+                            WHERE USER_NM = :userName";
 
             var rowsUpdated = conn.Execute(updateTxt,
                 new
                 {
-                    request.UserId,
-                    request.ContractStartDt,
-                    request.ContractEndDt,
+                    user.UserName,
+                    user.AccountStartDate,
+                    user.AccountExpirationDate,
                     modifiedDt = DateTime.Now,
                     modifiedBy = "tbd",
-                    pwdChange = "Y"
+                    pwdChange = "Y",
+                    reportAccess = user.CrashReportAccess
                 }
              );
 

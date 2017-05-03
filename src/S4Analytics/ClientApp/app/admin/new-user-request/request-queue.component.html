@@ -23,7 +23,7 @@
             <button type="button" class="btn btn-outline-primary active" (click)="filterQueueBy(queueFilter.Rejected)">Rejected</button>
         </div>
         <!-- queue -->
-        <table class="pull-right" border="1" style="width:90%" align="center">
+        <table class="pull-right" border="1" style="width:100%" align="center" >
             <thead>
                 <tr>
                     <th name="reqNbr" id="xxx" style="width: 5%" (click)="sortColumn(queueColumn.ReqNbr)">Request Nbr</th>
@@ -40,12 +40,12 @@
             <tbody>
                 <tr *ngFor="let newUserReq of (filteredRequests | orderby:state.sortField)">
                     <td style="width: 5%">{{newUserReq.requestNbr}}</td>
-                    <td style="width: 10%">{{newUserReq.requestDt | date:"MM/dd/yy"}}</td>
+                    <td style="width: 7%">{{newUserReq.requestDt | date:"MM/dd/yy"}}</td>
                     <td style="width: 10%">{{newUserReq.requestType | requestType }}</td>
                     <td style="width: 10%">{{newUserReq.requestorFirstNm + " " + newUserReq.requestorLastNm}}</td>
                     <td style="width: 20%">{{displayAgencyNm(newUserReq)}}</td>
                     <td style="width: 5%">{{newUserReq.requestStatus | requestStatus }}</td>
-                    <td style="width: 10%">{{newUserReq.userCreatedDt | date:"MM/dd/yy"}}</td>
+                    <td style="width: 7%">{{newUserReq.userCreatedDt | date:"MM/dd/yy"}}</td>
                     <td style="width: 10%">
                         <button [hidden]= "hideProcessRequestButton(newUserReq)" (click)="openActionModal(content, newUserReq)">Process Request</button>
                     </td>
