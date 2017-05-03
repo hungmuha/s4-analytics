@@ -790,7 +790,7 @@ namespace S4Analytics.Models
                         "WHERE ROWNUM = 1 ORDER BY CONTRACTOR_ID DESC";
 
             var results = _conn.QueryFirstOrDefault<int>(selectTxt);
-           return results+1;
+            return results+1;
         }
 
         private string GetEmailNotificationClosing()
@@ -878,7 +878,7 @@ namespace S4Analytics.Models
             {
                 IsBodyHtml = true
             };
-           var fromEmail = new MailAddress(from);
+            var fromEmail = new MailAddress(from);
             msg.From = fromEmail;
             //msg.To.Add(new MailAddress(to));
 
