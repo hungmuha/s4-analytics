@@ -40,8 +40,8 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
-        [HttpGet("{queryToken}/point")]
-        public IActionResult GetCrashPoints(
+        [HttpGet("{queryToken}/feature")]
+        public IActionResult GetCrashFeatures(
             string queryToken,
             [FromQuery] double minX,
             [FromQuery] double minY,
@@ -54,7 +54,7 @@ namespace S4Analytics.Controllers
             if (!queryExists) { return NotFound(); }
             if (!extent.IsValid) { return BadRequest(); }
 
-            var results = _crashRepo.GetCrashPointCollection(queryToken, extent);
+            var results = _crashRepo.GetCrashFeatureCollection(queryToken, extent);
             return new ObjectResult(results);
         }
 

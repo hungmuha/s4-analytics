@@ -30,16 +30,12 @@ export class EventMapComponent implements OnInit {
             .subscribe(options => {
                 let coordSys = options.coordinateSystems['WebMercator'];
                 this.olExtent = [coordSys.mapExtent.minX, coordSys.mapExtent.minY, coordSys.mapExtent.maxX, coordSys.mapExtent.maxY];
-                this.crashService.getCrashPoints(query, this.olExtent).subscribe(pointColl => {
-                    let features = pointColl.points.map(point => new ol.Feature(new ol.geom.Point([point.x, point.y])));
-
-                    let source = new ol.source.Vector({
-                        features: features
-                    });
-
+                this.crashService.getCrashFeatures(query, this.olExtent).subscribe(eventResultSet => {
                     let clusterSource = new ol.source.Cluster({
                         distance: 100,
-                        source: source
+                        source: new ol.source.Vector({
+                            features: (new ol.format.GeoJSON()).readFeatures(eventResultSet.featureCollection)
+                        })
                     });
 
                     let styleCache = {};
@@ -47,8 +43,8 @@ export class EventMapComponent implements OnInit {
                         source: clusterSource,
                         style: function (feature) {
                             let size = feature.get('features').length as number;
-                            if (pointColl.sampleMultiplier) {
-                                size = Math.round(size * pointColl.sampleMultiplier);
+                            if (eventResultSet.sampleMultiplier) {
+                                size = Math.round(size * eventResultSet.sampleMultiplier);
                             }
                             let style = (styleCache as any)[size];
                             if (!style) {

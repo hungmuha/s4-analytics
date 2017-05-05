@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using GeoJSON.Net.Feature;
+using GeoJSON.Net.Geometry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
@@ -217,7 +219,7 @@ namespace S4Analytics.Models
             }
         }
 
-        public EventPointCollection GetCrashPointCollection(string queryToken, Extent mapExtent)
+        public EventFeatureSet GetCrashFeatureCollection(string queryToken, Extent mapExtent)
         {
             const int maxPoints = 100000;
 
@@ -287,24 +289,27 @@ namespace S4Analytics.Models
                 AND geocode_result.shape_web_mercator.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
             }
 
-            IEnumerable<EventPoint> points;
-
+            List<EventPoint> eventPoints;
             using (var conn = new OracleConnection(_connStr))
             {
-                points = conn.Query<EventPoint>(queryText, dynamicParams);
+                eventPoints = conn.Query<EventPoint>(queryText, dynamicParams)
+                    .ToList();
             }
+            var features = eventPoints
+                    .Select(eventPoint => eventPoint.ToFeature())
+                    .ToList();
 
-            var pointColl = new EventPointCollection()
+            var eventFeatureColl = new EventFeatureSet()
             {
                 eventType = "crash",
                 isSample = useSample,
                 eventCount = eventCount,
-                sampleSize = useSample ? points.Count() : 0,
-                sampleMultiplier = useSample ? (double)eventCount / points.Count() : 0.0,
-                points = points
+                sampleSize = useSample ? features.Count : 0,
+                sampleMultiplier = useSample ? (double)eventCount / features.Count : 0.0,
+                featureCollection = new FeatureCollection(features)
             };
 
-            return pointColl;
+            return eventFeatureColl;
         }
 
         private PreparedQuery PrepareCrashQuery(CrashQuery query)
