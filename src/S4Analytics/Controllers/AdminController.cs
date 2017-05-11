@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
+using System.IO;
 
 namespace S4Analytics.Controllers
 {
@@ -65,6 +66,36 @@ namespace S4Analytics.Controllers
                 return NotFound();
             }
             return new ObjectResult(info);
+        }
+
+        [HttpGet("new-user-request/contract-path")]
+        public IActionResult GetContractPath()
+        {
+            var info = _newUserRequestRepo.GetContractPath();
+            if (info == null)
+            {
+                return NotFound();
+            }
+            return new ObjectResult(new { info });
+        }
+
+        [HttpGet("new-user-request/contract-pdf/{fileName}")]
+        public IActionResult GetContractPdf(string fileName)
+        {
+            // TODO: get correct path here
+            var path = $@"D:\Git\S4-Analytics\S4.Analytics.Web\Uploads\{fileName}";
+            //TODO:  error handling if file does not exist
+            var stream = System.IO.File.Open(path, FileMode.Open);
+
+            var file = File(stream, "application/pdf");
+            return new ObjectResult(file.FileStream);
+
+            // --- Cannot access a closed Stream error ---
+            //using (var stream = new FileStream(path, FileMode.Open))
+            //{
+            //    var file = File(stream, "application/pdf", fileName);
+            //    return new ObjectResult(file.FileStream);
+            //}
         }
 
         [HttpPatch("new-user-request/{id}/approve")]

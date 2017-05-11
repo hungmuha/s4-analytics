@@ -149,11 +149,6 @@ export class NewUserRequestService {
             .catch(this.handleError);
     }
 
-    getPath(): string {
-        console.log(this.options.baseUrl);
-        return this.options.baseUrl;
-    }
-
     private handleError(error: any) {
         let errMsg = (error.message) ? error.message :
             error.status ? `${error.status} - ${error.statusText}` : 'Server error';
