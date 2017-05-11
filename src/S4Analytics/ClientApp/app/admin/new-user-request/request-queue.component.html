@@ -1,9 +1,11 @@
 ﻿<ng-template #content let-c="close" let-d="dismiss">
     <div class="container-fluid">
         <div class="modal-header">
-            <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-                <span aria-hidden="true">{{this.state.selectedRequest.requestStatus | requestStatus }}</span>
-            </button>
+            <span aria-hidden="true">{{this.state.selectedRequest.requestStatus | requestStatus }}</span>
+            <div class="text-right font-weight-bold">
+                # {{state.selectedRequest.requestNbr}}
+            </div>
+            <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">X</button>
         </div>
         <request-action-component></request-action-component>
     </div>
