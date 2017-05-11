@@ -68,6 +68,5 @@ namespace S4Analytics.Models
         public bool AccessBefore70Days { get; set; }
         public string CreatedBy { get; set; }
         public bool UserManagerCd { get; set; }
-        public string ContractPdfNm { get; set; }
     }
 }

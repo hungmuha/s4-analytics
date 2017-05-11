@@ -86,6 +86,16 @@ namespace S4Analytics.Models
         }
 
         /// <summary>
+        /// Return the path where the contract pdfs are stored when a request
+        /// is made for a new Consultant
+        /// </summary>
+        /// <returns></returns>
+        public string GetContractPath()
+        {
+            return "This is the wrong path";
+        }
+
+        /// <summary>
         /// Create new user in S4_USER, USER_CNTY, USER_ROLE
         /// </summary>
         /// <param name="id"></param>
@@ -470,8 +480,7 @@ namespace S4Analytics.Models
                             CASE WHEN u.warn_consultant_email_cd = 'Y' THEN 1 ELSE 0 END AS warnconsultantemailcd,
                             CASE WHEN u.warn_duplicate_email_cd = 'Y' THEN 1 ELSE 0 END as warnduplicateemailcd,
                             CASE WHEN u.user_manager_cd = 'Y' THEN 1 ELSE 0 END AS usermanagercd,
-                            u.admin_comment AS admincomment,
-                            u.contract_pdf_nm as contractpdfnm";
+                            u.admin_comment AS admincomment";
         }
 
         private S4IdentityUser CreateIdentityUser(NewUserRequest request, string userName, string email, string passwordText)

@@ -8,6 +8,7 @@ namespace S4Analytics.Models
     {
         IEnumerable<NewUserRequest> GetAll();
         NewUserRequest Find(int reqNbr);
+        string GetContractPath();
         NewUserRequest ApproveNewUser(int id, RequestApproval approval);
         NewUserRequest ApproveNewConsultant(int id, RequestApproval approval);
         NewUserRequest ApproveAgency(int id, RequestApproval approval);
