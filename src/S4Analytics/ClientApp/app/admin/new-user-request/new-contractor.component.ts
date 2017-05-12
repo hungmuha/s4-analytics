@@ -1,6 +1,6 @@
 ﻿import { Component } from '@angular/core';
 import { NewUserRequestStateService } from './shared';
-
+import * as moment from 'moment';
 
 
 @Component({
