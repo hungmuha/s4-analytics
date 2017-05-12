@@ -86,6 +86,7 @@ namespace S4Analytics.Models
         }
 
         /// <summary>
+
         /// Create new user in S4_USER, USER_CNTY, USER_ROLE
         /// </summary>
         /// <param name="id"></param>
