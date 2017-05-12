@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
 using System.IO;
+using System.Text;
 
 namespace S4Analytics.Controllers
 {
@@ -68,23 +69,22 @@ namespace S4Analytics.Controllers
             return new ObjectResult(info);
         }
 
-        [HttpGet("new-user-request/contract-path")]
-        public IActionResult GetContractPath()
-        {
-            var info = _newUserRequestRepo.GetContractPath();
-            if (info == null)
-            {
-                return NotFound();
-            }
-            return new ObjectResult(new { info });
-        }
-
+        /// <summary>
+        /// Return file stream for the requested contract
+        /// </summary>
+        /// <param name="fileName">contract name</param>
+        /// <returns></returns>
         [HttpGet("new-user-request/contract-pdf/{fileName}")]
         public IActionResult GetContractPdf(string fileName)
         {
             // TODO: get correct path here
             var path = $@"D:\Git\S4-Analytics\S4.Analytics.Web\Uploads\{fileName}";
-            //TODO:  error handling if file does not exist
+
+            if (!System.IO.File.Exists(path))
+            {
+                return new ObjectResult(new MemoryStream(Encoding.UTF8.GetBytes(@"<div>{filename} not found</div>")));
+            }
+                        
             var stream = System.IO.File.Open(path, FileMode.Open);
 
             var file = File(stream, "application/pdf");

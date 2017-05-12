@@ -31,6 +31,7 @@ namespace S4Analytics.Models
                 "S4_Analytics",
                 "User Id=s4_warehouse_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));",
             null);
+
             // TODO:  Temporary
             _userStore.MembershipConnection = new OracleConnection("User Id=app_security_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));");
 
@@ -85,17 +86,7 @@ namespace S4Analytics.Models
             return results;
         }
 
-        /// <summary>
-        /// Return the path where the contract pdfs are stored when a request
-        /// is made for a new Consultant
-        /// </summary>
-        /// <returns></returns>
-        public string GetContractPath()
-        {
-            return "This is the wrong path";
-        }
-
-        /// <summary>
+       /// <summary>
         /// Create new user in S4_USER, USER_CNTY, USER_ROLE
         /// </summary>
         /// <param name="id"></param>
@@ -357,22 +348,26 @@ namespace S4Analytics.Models
                 return null;
             }
 
-            // Notify appropriate admin they need to approve user by email
-            var adminEmails = GetAgencyAdmin(request.AgncyId);
-            var subject = "New user request for your agency in Signal Four Analytics";
-            var body = string.Format(@"<div>There is a new request from {0} {1} from your agency.<br><br>
-                    As the user account manager of {2}, please goto the User Request Queue in Signal Four Analytics
-                    to review request and if ok, approve it.<br><br></div>", request.RequestorFirstNm, request.RequestorLastNm,
-                    request.AgncyNm);
+            /// User will be created automatically after agency created because there is no one in
+            /// the agency since its new. Therefore no one with an account in that agency to approve them
+            return ApproveNewUser(id, approval);
 
-            var closing = GetEmailNotificationClosing();
+            ////// Notify appropriate admin they need to approve user by email
+            ////var adminEmails = GetAgencyAdmin(request.AgncyId);
+            ////var subject = "New user request for your agency in Signal Four Analytics";
+            ////var body = string.Format(@"<div>There is a request for a new user account from {0} {1} from your agency.<br><br>
+            ////        As the user account manager of {2}, please goto the User Request Queue in Signal Four Analytics
+            ////        to review request and if ok, approve it.<br><br></div>", request.RequestorFirstNm, request.RequestorLastNm,
+            ////        request.AgncyNm);
 
-            SendEmail(adminEmails[0], adminEmails.GetRange(1, adminEmails.Count - 1), _supportEmail, subject, body, closing);
+            ////var closing = GetEmailNotificationClosing();
 
-            request.RequestStatus = newStatus;
-            request.AgncyId = newAgencyId;
-            UpdateApprovedNewUserRequest(request);
-            return request;
+            ////SendEmail(adminEmails[0], adminEmails.GetRange(1, adminEmails.Count - 1), _supportEmail, subject, body, closing);
+
+            ////request.RequestStatus = newStatus;
+            ////request.AgncyId = newAgencyId;
+            ////UpdateApprovedNewUserRequest(request);
+            ////return request;
         }
 
         public NewUserRequest Reject(int id, RequestRejection rejection)
