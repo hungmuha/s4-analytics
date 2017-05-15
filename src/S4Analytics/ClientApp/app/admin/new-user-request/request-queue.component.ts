@@ -20,7 +20,6 @@ export class RequestQueueComponent {
 
     get filteredRequests(): NewUserRequest[] {
         let queueFilter = this.state.queueFilter;
-
         return _.filter(this.state.newUserRequests,
             (nur: any) => {
                 switch (queueFilter) {
@@ -80,12 +79,21 @@ export class RequestQueueComponent {
     }
 
     displayAgencyNm(nur: NewUserRequest): string {
-
         return nur.agncyNm;
     }
 
     hideProcessRequestButton(request: NewUserRequest) {
         return request.requestStatus === NewUserRequestStatus.Completed || request.requestStatus === NewUserRequestStatus.Rejected;
+    }
+
+    totalRequestCount(): number {
+        if (this.state.newUserRequests === undefined) { return 0; }
+        return this.state.newUserRequests.length;
+    }
+
+    requestShowingCount(): number {
+        if (this.filteredRequests === undefined) { return 0; }
+        return this.filteredRequests.length;
     }
 
 }
