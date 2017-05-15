@@ -1,7 +1,7 @@
 ﻿<ng-template #content let-c="close" let-d="dismiss">
     <div class="container-fluid">
         <div class="modal-header">
-            <span aria-hidden="true">{{this.state.selectedRequest.requestStatus | requestStatus }}</span>
+            <span aria-hidden="true">{{state.selectedRequest.requestStatus | requestStatus }}</span>
             <div class="text-right font-weight-bold">
                 # {{state.selectedRequest.requestNbr}}
             </div>
@@ -24,6 +24,8 @@
             <button type="button" class="btn btn-outline-primary active" (click)="filterQueueBy(queueFilter.Completed)">Completed</button>
             <button type="button" class="btn btn-outline-primary active" (click)="filterQueueBy(queueFilter.Rejected)">Rejected</button>
         </div>
+        <!-- queue count -->
+        <div><b>Showing {{requestShowingCount()}} out of {{totalRequestCount()}} records</b></div>
         <!-- queue -->
         <table class="pull-right" border="1" style="width:100%" align="center" >
             <thead>
