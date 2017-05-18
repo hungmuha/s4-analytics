@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { IndexComponent } from './index.component';
 import { LoginComponent } from './login.component';
 import { AnalyticsComponent } from './analytics.component';
-import { EventAnalysisComponent, KendoPocComponent, NgxDatatablePocComponent, AgGridPocComponent } from './event-analysis';
+import { EventAnalysisComponent } from './event-analysis';
 import { NetworkAnalysisComponent } from './network-analysis';
 import { ReportingComponent } from './reporting';
 import { TrendAnalysisComponent } from './trend-analysis';
@@ -19,9 +19,6 @@ export const routes: Routes = [
                 children: [
                     { path: '', redirectTo: 'event', pathMatch: 'full' },
                     { path: 'event', component: EventAnalysisComponent },
-                    { path: 'kendo-poc', component: KendoPocComponent },
-                    { path: 'ngx-datatable-poc', component: NgxDatatablePocComponent },
-                    { path: 'ag-grid-poc', component: AgGridPocComponent },
                     { path: 'network', component: NetworkAnalysisComponent },
                     { path: 'reporting', component: ReportingComponent },
                     { path: 'trend', component: TrendAnalysisComponent }
