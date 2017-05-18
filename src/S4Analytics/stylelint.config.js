@@ -11,7 +11,7 @@ For a complete list of rules, visit http://stylelint.io/user-guide/rules/.
 module.exports = {
   "rules": {
     "at-rule-empty-line-before": [ "always", {
-      except: [ "blockless-group", "first-nested" ],
+      except: [ "blockless-after-blockless", "first-nested" ],
       ignore: ["after-comment"],
     } ],
     "at-rule-name-case": "lower",
@@ -34,7 +34,6 @@ module.exports = {
     "comment-whitespace-inside": "always",
     "declaration-bang-space-after": "never",
     "declaration-bang-space-before": "always",
-    "declaration-block-no-ignored-properties": true,
     "declaration-block-no-shorthand-property-overrides": true,
     "declaration-block-semicolon-newline-after": "always-multi-line",
     "declaration-block-semicolon-space-after": "always-single-line",
@@ -60,7 +59,6 @@ module.exports = {
     "max-empty-lines": 1,
     "media-feature-colon-space-after": "always",
     "media-feature-colon-space-before": "never",
-    "media-feature-no-missing-punctuation": true,
     "media-feature-parentheses-space-inside": "never",
     "media-feature-range-operator-space-after": "always",
     "media-feature-range-operator-space-before": "always",
@@ -75,7 +73,7 @@ module.exports = {
     "number-leading-zero": "always",
     "number-no-trailing-zeros": true,
     "property-case": "lower",
-    "rule-non-nested-empty-line-before": [ "always-multi-line", {
+    "rule-empty-line-before": [ "always-multi-line", {
       ignore: ["after-comment"],
     } ],
     "selector-attribute-brackets-space-inside": "never",

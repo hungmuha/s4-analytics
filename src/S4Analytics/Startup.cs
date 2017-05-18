@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Net;
 using System.Security.Claims;
@@ -21,21 +20,6 @@ using S4Analytics.Models;
 
 namespace S4Analytics
 {
-    public class ServerOptions
-    {
-        public string WarehouseConnStr { get; set; }
-        public string SpatialConnStr { get; set; }
-    }
-
-    public class ClientOptions
-    {
-        // Members of this class are exposed via REST API to the Angular app.
-        // Don't include anything sensitive here, especially passwords.
-        public string Version { get; set; }
-        public string BaseUrl { get; set; }
-        public string SilverlightBaseUrl { get; set; }
-    }
-
     public class Startup
     {
         private readonly IHostingEnvironment _env;
@@ -64,6 +48,15 @@ namespace S4Analytics
                 var showExceptionDetail = _env.EnvironmentName == "Local";
                 mvcOptions.Filters.Add(
                     new CustomJsonExceptionFilter(showExceptionDetail));
+            });
+
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.CookieName = ".S4Analytics.Session";
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                options.CookieHttpOnly = true;
             });
 
             // Do not redirect to login for unauthorized API call; return Unauthorized status code instead.
@@ -122,20 +115,13 @@ namespace S4Analytics
 
             // Add options.
             services.AddOptions();
-            services.Configure<ServerOptions>(serverOptions =>
-            {
-                serverOptions.WarehouseConnStr = Configuration.GetConnectionString("Warehouse");
-                serverOptions.SpatialConnStr = Configuration.GetConnectionString("Spatial");
-            });
-            services.Configure<ClientOptions>(clientOptions =>
-            {
-                clientOptions.Version = Configuration["Version"];
-                clientOptions.BaseUrl = Configuration["BaseUrl"];
-                clientOptions.SilverlightBaseUrl = Configuration["SilverlightBaseUrl"];
-            });
+            services.Configure<ServerOptions>(Configuration.GetSection("App"));
+            services.Configure<ClientOptions>(Configuration.GetSection("App"));
 
             // Add repositories.
             services.AddSingleton<INewUserRequestRepository, NewUserRequestRepository>();
+            services.AddSingleton<ICrashRepository, CrashRepository>();
+            services.AddSingleton<IViolationRepository, ViolationRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -159,6 +145,8 @@ namespace S4Analytics
             app.UseStaticFiles();
 
             app.UseIdentity();
+
+            app.UseSession();
 
             app.UseMvc(routes =>
             {
