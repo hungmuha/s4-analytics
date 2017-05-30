@@ -1,3 +1,4 @@
+using Lib.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,13 +11,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Lib.Identity;
-using Lib.Identity.Models;
 using S4Analytics.Models;
+using System;
+using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace S4Analytics
 {
@@ -86,12 +85,20 @@ namespace S4Analytics
             // Add and configure Oracle user store.
             services.AddSingleton<IUserStore<S4IdentityUser>>(provider => {
                 var options = provider.GetService<IOptions<ServerOptions>>();
-                var connStr = options.Value.WarehouseConnStr;
-                return new S4UserStore<S4IdentityUser>("S4_Analytics", connStr, null);
+                return new S4UserStore<S4IdentityUser>(
+                    "S4_Analytics",
+                    options.Value.WarehouseConnStr,
+                    options.Value.MembershipConnStr,
+                    "");
             });
 
             // Add and configure Oracle role store.
-            services.AddSingleton<IRoleStore<S4UserRole>, S4RoleStore<S4UserRole>>();
+            services.AddSingleton<IRoleStore<S4IdentityRole>>(provider => {
+                var options = provider.GetService<IOptions<ServerOptions>>();
+                return new S4RoleStore<S4IdentityRole>(
+                    "S4_Analytics",
+                    options.Value.WarehouseConnStr);
+            });
 
             // Configure sign-in scheme to use cookies.
             services.AddAuthentication(authOptions =>
@@ -104,14 +111,16 @@ namespace S4Analytics
             services.AddSingleton<IdentityMarkerService>();
             services.AddSingleton<IUserValidator<S4IdentityUser>, UserValidator<S4IdentityUser>>();
             services.AddSingleton<IPasswordValidator<S4IdentityUser>, PasswordValidator<S4IdentityUser>>();
-            services.AddSingleton<IPasswordHasher<S4IdentityUser>, PasswordHasher<S4IdentityUser>>();
+            services.AddSingleton<IPasswordHasher<S4IdentityUser>, S4PasswordHasher<S4IdentityUser>>();
             services.AddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
             services.AddSingleton<IdentityErrorDescriber>();
-            services.AddSingleton<ISecurityStampValidator, SecurityStampValidator<S4IdentityUser>>();
-            services.AddSingleton<IUserClaimsPrincipalFactory<S4IdentityUser>, UserClaimsPrincipalFactory<S4IdentityUser>>();
             services.AddSingleton<UserManager<S4IdentityUser>>();
-            services.AddSingleton<RoleManager<S4UserRole>>();
+            services.AddSingleton<RoleManager<S4IdentityRole>>();
             services.AddScoped<SignInManager<S4IdentityUser>>();
+
+            services.AddIdentity<S4IdentityUser, S4IdentityRole>()
+                .AddUserStore<S4UserStore<S4IdentityUser>>()
+                .AddDefaultTokenProviders();
 
             // Add options.
             services.AddOptions();
@@ -158,66 +167,6 @@ namespace S4Analytics
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
-        }
-
-        private class UserClaimsPrincipalFactory<TUser> : IUserClaimsPrincipalFactory<TUser>
-            where TUser : class
-        {
-            public UserClaimsPrincipalFactory(
-                UserManager<TUser> userManager,
-                IOptions<IdentityOptions> optionsAccessor)
-            {
-                if (userManager == null)
-                {
-                    throw new ArgumentNullException(nameof(userManager));
-                }
-                if (optionsAccessor == null || optionsAccessor.Value == null)
-                {
-                    throw new ArgumentNullException(nameof(optionsAccessor));
-                }
-
-                UserManager = userManager;
-                Options = optionsAccessor.Value;
-            }
-
-            public UserManager<TUser> UserManager { get; private set; }
-
-            public IdentityOptions Options { get; private set; }
-
-            public virtual async Task<ClaimsPrincipal> CreateAsync(TUser user)
-            {
-                if (user == null)
-                {
-                    throw new ArgumentNullException(nameof(user));
-                }
-
-                var userId = await UserManager.GetUserIdAsync(user);
-                var userName = await UserManager.GetUserNameAsync(user);
-                var id = new ClaimsIdentity(Options.Cookies.ApplicationCookieAuthenticationScheme,
-                    Options.ClaimsIdentity.UserNameClaimType,
-                    Options.ClaimsIdentity.RoleClaimType);
-                id.AddClaim(new Claim(Options.ClaimsIdentity.UserIdClaimType, userId));
-                id.AddClaim(new Claim(Options.ClaimsIdentity.UserNameClaimType, userName));
-                if (UserManager.SupportsUserSecurityStamp)
-                {
-                    id.AddClaim(new Claim(Options.ClaimsIdentity.SecurityStampClaimType,
-                        await UserManager.GetSecurityStampAsync(user)));
-                }
-                if (UserManager.SupportsUserRole)
-                {
-                    var roles = await UserManager.GetRolesAsync(user);
-                    foreach (var roleName in roles)
-                    {
-                        id.AddClaim(new Claim(Options.ClaimsIdentity.RoleClaimType, roleName));
-                    }
-                }
-                if (UserManager.SupportsUserClaim)
-                {
-                    id.AddClaims(await UserManager.GetClaimsAsync(user));
-                }
-
-                return new ClaimsPrincipal(id);
-            }
         }
 
         private class CustomJsonExceptionFilter : ExceptionFilterAttribute
