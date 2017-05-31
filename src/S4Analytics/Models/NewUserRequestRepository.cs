@@ -23,7 +23,7 @@ namespace S4Analytics.Models
         private string _globalAdminEmail;
         private string _supportEmail;
 
-        public NewUserRequestRepository(IOptions<ServerOptions> serverOptions, IOptions<EmailOptions> emailOptions)
+        public NewUserRequestRepository(IOptions<ServerOptions> serverOptions)
         {
             _connStr = serverOptions.Value.WarehouseConnStr;
             _conn = new OracleConnection(_connStr);
@@ -37,13 +37,13 @@ namespace S4Analytics.Models
 
             _smtp = new SmtpClient
             {
-                EnableSsl = emailOptions.Value.EnableSsl,
-                Host = emailOptions.Value.SmtpServer,
-                Port = emailOptions.Value.SmtpPort,
+                EnableSsl = serverOptions.Value.EmailOptions.EnableSsl,
+                Host = serverOptions.Value.EmailOptions.SmtpServer,
+                Port = serverOptions.Value.EmailOptions.SmtpPort,
             };
 
-            _globalAdminEmail = emailOptions.Value.GlobalAdminEmail;
-            _supportEmail = emailOptions.Value.SupportEmail;
+            _globalAdminEmail = serverOptions.Value.EmailOptions.GlobalAdminEmail;
+            _supportEmail = serverOptions.Value.EmailOptions.SupportEmail;
         }
 
         /// <summary>
