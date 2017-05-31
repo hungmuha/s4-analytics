@@ -86,7 +86,6 @@ namespace S4Analytics.Models
         }
 
         /// <summary>
-
         /// Create new user in S4_USER, USER_CNTY, USER_ROLE
         /// </summary>
         /// <param name="id"></param>
@@ -166,7 +165,6 @@ namespace S4Analytics.Models
             StoreUserCounties(s4User);
 
             var passwordText = _userStore.GenerateRandomPassword(8, 0);
-
             var identityUser = CreateIdentityUser(request, userName, request.ConsultantEmail, passwordText);
 
             identityUser.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
@@ -221,7 +219,6 @@ namespace S4Analytics.Models
             {
                 Active = true
             };
-
             var token = new CancellationToken();
             var result = _userStore.UpdateAsync(identityUser, token);
 
