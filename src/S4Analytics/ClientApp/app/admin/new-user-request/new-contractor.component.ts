@@ -30,6 +30,6 @@ export class NewContractorComponent {
         let request = this.state.selectedRequest;
         let requestDate = this.state.selectedRequest.requestDt;
         let formatDate = moment(requestDate).format('MMDDYYYY');
-        return request.requestNbr + request.consultantFirstNm[0].toString() + request.consultantLastNm + formatDate + ".pdf";
+        return request.requestNbr + request.consultantFirstNm[0].toString() + request.consultantLastNm + formatDate + '.pdf';
     }
 }
