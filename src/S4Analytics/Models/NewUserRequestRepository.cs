@@ -44,6 +44,7 @@ namespace S4Analytics.Models
 
             _globalAdminEmail = serverOptions.Value.EmailOptions.GlobalAdminEmail;
             _supportEmail = serverOptions.Value.EmailOptions.SupportEmail;
+
         }
 
         /// <summary>
@@ -167,7 +168,6 @@ namespace S4Analytics.Models
             StoreUserCounties(s4User);
 
             var passwordText = _userStore.GenerateRandomPassword(8, 0);
-
             var identityUser = CreateIdentityUser(request, userName, request.ConsultantEmail, passwordText);
 
             identityUser.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
@@ -424,7 +424,7 @@ namespace S4Analytics.Models
 
             return rowsUpdated == 1;
         }
-
+        
         private bool UpdateRejectedNewUserRequest(NewUserRequest request)
         {
             var updateTxt = @"UPDATE NEW_USER_REQ_NEW 
