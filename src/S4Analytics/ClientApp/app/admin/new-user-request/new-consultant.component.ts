@@ -31,11 +31,11 @@ export class NewConsultantComponent  {
             '_blank', 'width=400,height=200');
     }
 
-    private getContractPdfFileName():string {
+    private getContractPdfFileName(): string {
         let request = this.state.selectedRequest;
         let requestDate = this.state.selectedRequest.requestDt;
         let formatDate = moment(requestDate).format('MMDDYYYY');
-        return request.requestNbr + request.consultantFirstNm[0].toString() + request.consultantLastNm + formatDate + ".pdf";
+        return request.requestNbr + request.consultantFirstNm[0].toString() + request.consultantLastNm + formatDate + '.pdf';
     }
 }
 
