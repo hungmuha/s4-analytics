@@ -69,35 +69,6 @@ namespace S4Analytics.Controllers
             return new ObjectResult(info);
         }
 
-        /// <summary>
-        /// Return file stream for the requested contract
-        /// </summary>
-        /// <param name="fileName">contract name</param>
-        /// <returns></returns>
-        [HttpGet("new-user-request/contract-pdf/{fileName}")]
-        public IActionResult GetContractPdf(string fileName)
-        {
-            // TODO: get correct path here
-            var path = $@"D:\Git\S4-Analytics\S4.Analytics.Web\Uploads\{fileName}";
-
-            if (!System.IO.File.Exists(path))
-            {
-                return new ObjectResult(new MemoryStream(Encoding.UTF8.GetBytes(@"<div>{filename} not found</div>")));
-            }
-
-            var stream = System.IO.File.Open(path, FileMode.Open);
-
-            var file = File(stream, "application/pdf");
-            return new ObjectResult(file.FileStream);
-
-            // --- Cannot access a closed Stream error ---
-            //using (var stream = new FileStream(path, FileMode.Open))
-            //{
-            //    var file = File(stream, "application/pdf", fileName);
-            //    return new ObjectResult(file.FileStream);
-            //}
-        }
-
         [HttpPatch("new-user-request/{id}/approve")]
         public IActionResult ApproveOther(int id, [FromBody]RequestApproval approval)
         {

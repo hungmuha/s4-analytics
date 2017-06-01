@@ -54,7 +54,7 @@ export class RequestActionComponent  {
     }
 
     private processOKResult(): void {
-        this.newUserRequestService.approve(this.state.selectedRequest.requestStatus, this.state.currentRequestActionResults, this.state.selectedRequest)
+        this.newUserRequestService.approve(this.state.selectedRequest, this.state.currentRequestActionResults)
             .subscribe(
             result => {
                 this.state.selectedRequest = result;
@@ -65,8 +65,6 @@ export class RequestActionComponent  {
     }
 
     private processRejectedResult(): void {
-        console.log(this.state.currentRequestActionResults.rejectionReason);
-
         this.newUserRequestService.reject(this.state.currentRequestActionResults, this.state.selectedRequest)
             .subscribe(
             result => {

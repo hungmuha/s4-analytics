@@ -71,10 +71,10 @@ export class NewUserRequestService {
             .map((r: Response) => r.json() as NewUserRequest[]);
     }
 
-    approve(currentStatus: NewUserRequestStatus,
-        requestActionResults: RequestActionResults,
-        selectedRequest: NewUserRequest): Observable<NewUserRequest> {
+    approve(selectedRequest: NewUserRequest,
+        requestActionResults: RequestActionResults): Observable<NewUserRequest> {
 
+        let currentStatus = selectedRequest.requestStatus;
         let reqWrapper: RequestApproval;
 
         switch (currentStatus) {
@@ -142,7 +142,7 @@ export class NewUserRequestService {
             NewUserRequestStatus.Rejected);
 
         let url = `api/admin/new-user-request/${requestActionResults.requestNumber}/reject`;
-        console.log(url);
+
         return this.http
             .patch(url, reqWrapper)
             .map(res => res.json())
@@ -152,7 +152,7 @@ export class NewUserRequestService {
     private handleError(error: any) {
         let errMsg = (error.message) ? error.message :
             error.status ? `${error.status} - ${error.statusText}` : 'Server error';
-        console.error(errMsg);
+
         return Observable.throw(errMsg);
     }
 
