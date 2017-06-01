@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lib.Identity;
+using Lib.Identity.Models;
 
 namespace S4Analytics.Models
 {
@@ -50,7 +50,7 @@ namespace S4Analytics.Models
 
         #region Public Properties
 
-        public S4IdentityUser IdentityUser { get; set; }
+        public S4IdentityUser<S4UserProfile> IdentityUser { get; set; }
         public DateTime? AccountExpirationDate { get; set; }
         public DateTime? AccountStartDate { get; set; }
         public bool Active { get; set; }

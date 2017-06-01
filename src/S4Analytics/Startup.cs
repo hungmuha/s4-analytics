@@ -1,4 +1,5 @@
 using Lib.Identity;
+using Lib.Identity.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -83,13 +84,14 @@ namespace S4Analytics
             });
 
             // Add and configure Oracle user store.
-            services.AddSingleton<IUserStore<S4IdentityUser>>(provider => {
+            services.AddSingleton<IUserStore<S4IdentityUser<S4UserProfile>>>(provider => {
                 var options = provider.GetService<IOptions<ServerOptions>>();
-                return new S4UserStore<S4IdentityUser>(
+                return new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(
                     "S4_Analytics",
                     options.Value.WarehouseConnStr,
                     options.Value.MembershipConnStr,
-                    "");
+                    "",
+                    null);
             });
 
             // Add and configure Oracle role store.
@@ -109,17 +111,17 @@ namespace S4Analytics
             // Add identity services.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IdentityMarkerService>();
-            services.AddSingleton<IUserValidator<S4IdentityUser>, UserValidator<S4IdentityUser>>();
-            services.AddSingleton<IPasswordValidator<S4IdentityUser>, PasswordValidator<S4IdentityUser>>();
-            services.AddSingleton<IPasswordHasher<S4IdentityUser>, S4PasswordHasher<S4IdentityUser>>();
+            services.AddSingleton<IUserValidator<S4IdentityUser<S4UserProfile>>, UserValidator<S4IdentityUser<S4UserProfile>>>();
+            services.AddSingleton<IPasswordValidator<S4IdentityUser<S4UserProfile>>, PasswordValidator<S4IdentityUser<S4UserProfile>>>();
+            services.AddSingleton<IPasswordHasher<S4IdentityUser<S4UserProfile>>, S4PasswordHasher<S4IdentityUser<S4UserProfile>>>();
             services.AddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
             services.AddSingleton<IdentityErrorDescriber>();
-            services.AddSingleton<UserManager<S4IdentityUser>>();
+            services.AddSingleton<UserManager<S4IdentityUser<S4UserProfile>>>();
             services.AddSingleton<RoleManager<S4IdentityRole>>();
-            services.AddScoped<SignInManager<S4IdentityUser>>();
+            services.AddScoped<SignInManager<S4IdentityUser<S4UserProfile>>>();
 
-            services.AddIdentity<S4IdentityUser, S4IdentityRole>()
-                .AddUserStore<S4UserStore<S4IdentityUser>>()
+            services.AddIdentity<S4IdentityUser<S4UserProfile>, S4IdentityRole>()
+                .AddUserStore<S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>>()
                 .AddDefaultTokenProviders();
 
             // Add options.

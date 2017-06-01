@@ -18,7 +18,7 @@ namespace S4Analytics.Models
         private const string _applicationName = "S4_Analytics";
         private string _connStr;
         private OracleConnection _conn;
-        private S4UserStore<S4IdentityUser> _userStore;
+        private S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile> _userStore;
         private SmtpClient _smtp;
         private string _globalAdminEmail;
         private string _supportEmail;
@@ -27,12 +27,12 @@ namespace S4Analytics.Models
         {
             _connStr = serverOptions.Value.WarehouseConnStr;
             _conn = new OracleConnection(_connStr);
-            _userStore = new S4UserStore<S4IdentityUser>(
+            _userStore = new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(
                 "S4_Analytics",
-                serverOptions.Value.WarehouseConnStr, null);
-
-            // TODO:  Temporary
-            _userStore.MembershipConnection = new OracleConnection("User Id=app_security_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));");
+                "User Id=s4_warehouse_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));",
+                "User Id=app_security_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));",
+                "",
+                null);
 
             _smtp = new SmtpClient
             {
@@ -214,7 +214,7 @@ namespace S4Analytics.Models
             UpdateS4UserConsultant(s4User);
 
             var passwordText = _userStore.GenerateRandomPassword(8, 0);
-            var identityUser = new S4IdentityUser(userName, request.ConsultantEmail, passwordText)
+            var identityUser = new S4IdentityUser<S4UserProfile>(userName, request.ConsultantEmail, passwordText)
             {
                 Active = true
             };
@@ -457,10 +457,9 @@ namespace S4Analytics.Models
                             u.contract_pdf_nm AS contractPdfNm";
         }
 
-        private S4IdentityUser CreateIdentityUser(NewUserRequest request, string userName, string email, string passwordText)
+        private S4IdentityUser<S4UserProfile> CreateIdentityUser(NewUserRequest request, string userName, string email, string passwordText)
         {
-            S4IdentityUser user;
-            user = new S4IdentityUser(userName, email, passwordText);
+            var user = new S4IdentityUser<S4UserProfile>(userName, email, passwordText);
             CreateRoles(request, user);
 
             return user;
@@ -489,12 +488,12 @@ namespace S4Analytics.Models
             return user;
         }
 
-    /// <summary>
-    /// Generate a unique user name
-    /// </summary>
-    /// <param name="userName"></param>
-    /// <returns></returns>
-    private string GenerateUserName(string userName)
+        /// <summary>
+        /// Generate a unique user name
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        private string GenerateUserName(string userName)
         {
             var done = false;
             var token = new CancellationToken();
@@ -692,7 +691,7 @@ namespace S4Analytics.Models
             return contractor;
         }
 
-        private void CreateRoles(NewUserRequest request, S4IdentityUser user)
+        private void CreateRoles(NewUserRequest request, S4IdentityUser<S4UserProfile> user)
         {
             // TODO: need to be more generic here -hard coded for testing
             // TODO: If user is for a New Agency, then also need to create an Agency Admin role

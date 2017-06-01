@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Lib.Identity;
+using Lib.Identity.Models;
 using Microsoft.AspNetCore.Identity;
+using S4Analytics.Models;
 using System.IO;
 using System.Text;
 
@@ -15,9 +16,9 @@ namespace S4Analytics.Controllers
     public class HomeController : Controller
     {
         private readonly IHostingEnvironment _env;
-        SignInManager<S4IdentityUser> _signInManager;
+        SignInManager<S4IdentityUser<S4UserProfile>> _signInManager;
 
-        public HomeController(SignInManager<S4IdentityUser> signInManager, IHostingEnvironment env)
+        public HomeController(SignInManager<S4IdentityUser<S4UserProfile>> signInManager, IHostingEnvironment env)
         {
             _signInManager = signInManager;
             _env = env;
@@ -43,7 +44,7 @@ namespace S4Analytics.Controllers
         {
             if (_env.EnvironmentName == "Local")
             {
-                await _signInManager.SignInAsync(new S4IdentityUser(userName), isPersistent: false);
+                await _signInManager.SignInAsync(new S4IdentityUser<S4UserProfile>(userName), isPersistent: false);
             }
             return new NoContentResult();
         }
