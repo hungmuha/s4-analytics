@@ -13,15 +13,11 @@
             </div>
         </div>
         <div class="row">
-            <b>Agency Name:</b>{{state.selectedRequest.newAgncyNm}}
+            <b>New Agency Name:</b>{{state.selectedRequest.agncyNm}}
         </div>
         <div class="row">
             <b>Agency Email Domain:</b>
-            {{state.selectedRequest.newAgncyEmailDomain}}
-        </div>
-        <div class="row">
-            <b>Agency:</b>
-            {{state.selectedRequest.newAgncyNm}}
+            {{state.selectedRequest.agncyEmailDomain}}
         </div>
         <div class="row">
             <!-- requestor info-->
@@ -62,5 +58,4 @@
                    [value]="true" /> Report Access Before 70 days
         </div>
     </div>
-    <hr />
 </form>

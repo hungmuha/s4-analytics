@@ -3,11 +3,13 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { NewUserRequest } from './new-user-request';
 import { NewUserRequestStatus } from './new-user-request-enum';
-import { RequestActionResults, NewAgencyActionResults, NewConsultantActionResults } from './request-action-results';
+import { RequestActionResults } from './request-action-results';
+import { OptionsService, Options } from './.././../../options.service';
 
 class RequestApproval {
     constructor(
         public requestNumber: number,
+        public selectedRequest: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus) { }
 }
@@ -15,29 +17,44 @@ class RequestApproval {
 class NewAgencyRequestApproval extends RequestApproval {
     constructor(
         public requestNumber: number,
+        public selectedRequest: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
         public before70Days: boolean,
         public lea: boolean) {
-        super(requestNumber, currentStatus, newStatus);
+        super(requestNumber, selectedRequest, currentStatus, newStatus);
         }
 }
 
 class NewConsultantRequestApproval extends RequestApproval {
     constructor(
         public requestNumber: number,
+        public selectedRequest: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
         public before70Days: boolean) {
-        super(requestNumber, currentStatus, newStatus);
+        super(requestNumber, selectedRequest, currentStatus, newStatus);
         }
 }
 
-
+class RequestRejection {
+    constructor(
+        public requestNumber: number,
+        public selectedRequest: NewUserRequest,
+        public rejectionReason: string,
+        public newStatus: NewUserRequestStatus) { }
+}
 
 @Injectable()
 export class NewUserRequestService {
-    constructor(private http: Http) { }
+    private options: Options;
+    constructor(private http: Http,
+        private optionsService: OptionsService) {
+
+        this.optionsService.getOptions()
+            .first()
+            .subscribe(options => this.options = options);
+    }
 
     getNewUserRequests(): Observable<NewUserRequest[]> {
         let url = 'api/admin/new-user-request';
@@ -46,54 +63,86 @@ export class NewUserRequestService {
             .map((r: Response) => r.json() as NewUserRequest[]);
     }
 
-    filterNewUserRequestsBy(i: string): Observable<NewUserRequest[]> {
-        let url = `api/admin/new-user-request/filter/${i}`;
+    filterNewUserRequestsBy(s: string): Observable<NewUserRequest[]> {
+        let url = `api/admin/new-user-request/filter/${s}`;
 
         return this.http
             .get(url)
             .map((r: Response) => r.json() as NewUserRequest[]);
     }
 
-    approve(currentStatus: NewUserRequestStatus, requestActionResults: RequestActionResults): Observable<NewUserRequest> {
+    approve(currentStatus: NewUserRequestStatus,
+        requestActionResults: RequestActionResults,
+        selectedRequest: NewUserRequest): Observable<NewUserRequest> {
 
         let reqWrapper: RequestApproval;
 
         switch (currentStatus) {
             case NewUserRequestStatus.NewContractor:
-                reqWrapper = new RequestApproval(requestActionResults.requestNumber, NewUserRequestStatus.NewContractor, NewUserRequestStatus.NewConsultant);
+                reqWrapper = new RequestApproval(requestActionResults.requestNumber,
+                    selectedRequest,
+                    NewUserRequestStatus.NewContractor,
+                    NewUserRequestStatus.NewConsultant);
                 break;
             case NewUserRequestStatus.NewAgency:
 
                 reqWrapper = new NewAgencyRequestApproval(
                     requestActionResults.requestNumber,
+                    selectedRequest,
                     NewUserRequestStatus.NewAgency,
                     NewUserRequestStatus.CreateAgency,
-                    (requestActionResults as NewAgencyActionResults).accessBefore70Days,
-                    (requestActionResults as NewAgencyActionResults).lea
+                    requestActionResults.accessBefore70Days,
+                    requestActionResults.lea
                 );
 
                 break;
             case NewUserRequestStatus.CreateAgency:
-                reqWrapper = new RequestApproval(requestActionResults.requestNumber, NewUserRequestStatus.CreateAgency, NewUserRequestStatus.NewUser);
+                reqWrapper = new RequestApproval(
+                    requestActionResults.requestNumber,
+                    selectedRequest,
+                    NewUserRequestStatus.CreateAgency,
+                    NewUserRequestStatus.NewUser);
                 break;
             case NewUserRequestStatus.NewConsultant:
 
                 reqWrapper = new NewConsultantRequestApproval(
                     requestActionResults.requestNumber,
+                    selectedRequest,
                     NewUserRequestStatus.NewConsultant,
                     NewUserRequestStatus.Completed,
-                    (requestActionResults as NewConsultantActionResults).accessBefore70Days
+                    requestActionResults.accessBefore70Days
                 );
 
                 break;
             default:
-                reqWrapper = new RequestApproval(requestActionResults.requestNumber, currentStatus.valueOf(), NewUserRequestStatus.Completed);
+                reqWrapper = new RequestApproval(
+                    requestActionResults.requestNumber,
+                    selectedRequest,
+                    currentStatus.valueOf(),
+                    NewUserRequestStatus.Completed);
                 break;
         }
 
         let approveType = this.getApproveType(currentStatus);
         let url = `api/admin/new-user-request/${requestActionResults.requestNumber}/approve/${approveType}`;
 
+        return this.http
+            .patch(url, reqWrapper)
+            .map(res => res.json())
+            .catch(this.handleError);
+    }
+
+    reject(requestActionResults: RequestActionResults, selectedRequest: NewUserRequest): Observable<NewUserRequest> {
+        let reqWrapper: RequestRejection;
+
+        reqWrapper = new RequestRejection(
+            requestActionResults.requestNumber,
+            selectedRequest,
+            requestActionResults.rejectionReason,
+            NewUserRequestStatus.Rejected);
+
+        let url = `api/admin/new-user-request/${requestActionResults.requestNumber}/reject`;
+        console.log(url);
         return this.http
             .patch(url, reqWrapper)
             .map(res => res.json())

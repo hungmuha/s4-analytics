@@ -1,4 +1,11 @@
-﻿export enum QueueColumn {
+﻿export enum QueueFilter {
+    All,
+    Pending,
+    Completed,
+    Rejected
+}
+
+export enum QueueColumn {
     ReqNbr,
     ReqDt,
     ReqType,

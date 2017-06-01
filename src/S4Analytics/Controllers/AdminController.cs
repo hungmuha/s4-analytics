@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
+using System.IO;
+using System.Text;
 
 namespace S4Analytics.Controllers
 {
@@ -15,19 +17,19 @@ namespace S4Analytics.Controllers
     public class RequestApproval
     {
         public int RequestNumber { get; set; }
+        public NewUserRequest SelectedRequest { get; set; }
         public NewUserRequestStatus NewStatus { get; set; }
         public NewUserRequestStatus CurrentStatus { get; set; }
-    }
-
-    public class NewAgencyRequestApproval : RequestApproval
-    {
-        public bool Before70Days { get; set;}
+        public bool Before70Days { get; set; }
         public bool Lea { get; set; }
     }
 
-    public class NewConsultantRequestApproval : RequestApproval
+    public class RequestRejection
     {
-        public bool Before70Days { get; set; }
+        public int RequestNumber{ get; set;}
+        public NewUserRequest SelectedRequest{ get; set;}
+        public string RejectionReason { get; set; }
+        public NewUserRequestStatus NewStatus { get; set; }
     }
 
     [Route("api/[controller]")]
@@ -67,44 +69,72 @@ namespace S4Analytics.Controllers
             return new ObjectResult(info);
         }
 
-        [HttpPatch("new-user-request/{id}/approve")]
-        public IActionResult ApproveOther(int id, [FromBody]RequestApproval wrapper)
+        /// <summary>
+        /// Return file stream for the requested contract
+        /// </summary>
+        /// <param name="fileName">contract name</param>
+        /// <returns></returns>
+        [HttpGet("new-user-request/contract-pdf/{fileName}")]
+        public IActionResult GetContractPdf(string fileName)
         {
-            var currentStatus = wrapper.CurrentStatus;
-            var newStatus = wrapper.NewStatus;
+            // TODO: get correct path here
+            var path = $@"D:\Git\S4-Analytics\S4.Analytics.Web\Uploads\{fileName}";
+
+            if (!System.IO.File.Exists(path))
+            {
+                return new ObjectResult(new MemoryStream(Encoding.UTF8.GetBytes(@"<div>{filename} not found</div>")));
+            }
+
+            var stream = System.IO.File.Open(path, FileMode.Open);
+
+            var file = File(stream, "application/pdf");
+            return new ObjectResult(file.FileStream);
+
+            // --- Cannot access a closed Stream error ---
+            //using (var stream = new FileStream(path, FileMode.Open))
+            //{
+            //    var file = File(stream, "application/pdf", fileName);
+            //    return new ObjectResult(file.FileStream);
+            //}
+        }
+
+        [HttpPatch("new-user-request/{id}/approve")]
+        public IActionResult ApproveOther(int id, [FromBody]RequestApproval approval)
+        {
+            var currentStatus = approval.CurrentStatus;
+            var newStatus = approval.NewStatus;
+            var selectedRequest = approval.SelectedRequest;
 
             switch(currentStatus)
             {
                 case NewUserRequestStatus.NewUser:
-                    _newUserRequestRepo.ApproveNewUser(id, newStatus);
-                    break;
+                    return new ObjectResult(_newUserRequestRepo.ApproveNewUser(id, approval));
                 case NewUserRequestStatus.NewContractor:
-                    _newUserRequestRepo.ApproveNewContractor(id, newStatus);
-                    break;
+                    return new ObjectResult(_newUserRequestRepo.ApproveNewContractor(id, approval));
                 case NewUserRequestStatus.CreateAgency:
-                    _newUserRequestRepo.ApproveCreateNewAgency(id, newStatus);
-                    break;
+                    return new ObjectResult(_newUserRequestRepo.ApproveCreatedNewAgency(id, approval));
             }
 
             return null;
         }
 
         [HttpPatch("new-user-request/{id}/approve/consultant")]
-        public IActionResult ApproveConsultant(int id, [FromBody]NewConsultantRequestApproval wrapper)
+        public IActionResult ApproveConsultant(int id, [FromBody]RequestApproval approval)
         {
-            _newUserRequestRepo.ApproveNewConsultant(id, wrapper.Before70Days, wrapper.NewStatus);
-
-            return null;
+            return new ObjectResult(_newUserRequestRepo.ApproveNewConsultant(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/approve/agency")]
-        public IActionResult ApproveAgency(int id, [FromBody]NewAgencyRequestApproval wrapper)
+        public IActionResult ApproveAgency(int id, [FromBody]RequestApproval approval)
         {
-            _newUserRequestRepo.ApproveNewAgency(id, wrapper.Before70Days, wrapper.Lea, wrapper.NewStatus);
-
-            return null;
+            return new ObjectResult(_newUserRequestRepo.ApproveAgency(id, approval));
         }
 
+        [HttpPatch("new-user-request/{id}/reject")]
+        public IActionResult Reject(int id, [FromBody]RequestRejection rejection)
+        {
+            return new ObjectResult(_newUserRequestRepo.Reject(id,  rejection));
+        }
     }
 
 }

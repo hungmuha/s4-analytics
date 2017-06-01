@@ -1,4 +1,4 @@
-﻿import { AgencyType, NewUserRequestType, NewUserRequestStatus } from './new-user-request-enum';
+﻿import { NewUserRequestType, NewUserRequestStatus } from './new-user-request-enum';
 
 export class NewUserRequest {
     requestNbr: number;
@@ -8,16 +8,11 @@ export class NewUserRequest {
     requestStatus: NewUserRequestStatus;
     userCreatedDt: Date;
     agncyNm: string;
-    newAgncyTypeCd: AgencyType;
-    newAgncyNm: string;
-    newAgncyEmailDomain: string;
     requestorFirstNm: string;
     requestorLastNm:  string;
     requestorSuffixNm: string;
     requestorEmail: string;
     contractorNm: string;
-    newContractorNm: string;
-    newContractorEmailDomain: string;
     consultantFirstNm: string;
     consultantLastNm:  string;
     consultantSuffixNm: string;
@@ -28,7 +23,7 @@ export class NewUserRequest {
     userId: string;
     warnRequestorEmailCd: boolean;
     warnConsultantEmailCd: boolean;
+    warnDuplicateEmailCd: boolean;
     adminComment: string;
     accessBefore70Days: boolean = false;
-
 }

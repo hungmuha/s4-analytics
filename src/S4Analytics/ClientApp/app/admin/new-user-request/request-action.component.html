@@ -1,7 +1,7 @@
 ﻿<form #actionForm="ngForm"  (ngSubmit)="submit()" #spy2>
-    <!--<div class="modal-header">
-        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')"></button>
-    </div>-->
+    <div>
+        <div class="justify-content-start font-weight-bold">Request Number: # {{state.selectedRequest.requestNbr}}</div>
+    </div>
     <div class="modal-body">
         <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)" #actionTypeRef></new-employee-component>
         <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)" #actionTypeRef></new-agency-component>
@@ -17,8 +17,8 @@
                   [readonly]="state.currentRequestActionResults.approved"
                   [required]="!state.currentRequestActionResults.approved"
                   [(ngModel)]="state.currentRequestActionResults.rejectionReason"
-                  placeholder="Type reason for rejection here (REQUIRED)"
-                  ></textarea>
+                  placeholder="Type reason for rejection here (REQUIRED)">
+        </textarea>
     </div>
     <div class="modal-footer">
         <button type="submit" class="btn btn-secondary" [disabled]="!actionForm.valid">

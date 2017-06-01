@@ -14,3 +14,10 @@ body {
 .warning-message {
     color: red;
 }
+
+.action-modal-header {
+    margin: 0;
+    height: 1rem;
+    background-color: lightgray;
+    font-weight: bold;
+}

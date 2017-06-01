@@ -2,7 +2,7 @@
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
     NewUserRequestStateService, NewUserRequestService,
-    RequestActionResults, NewUserRequestStatus
+    RequestActionResults, NewUserRequestStatus, QueueFilter
 } from './shared';
 
 
@@ -54,16 +54,27 @@ export class RequestActionComponent  {
     }
 
     private processOKResult(): void {
-
-        this.newUserRequestService.approve(this.state.selectedRequest.requestStatus, this.state.currentRequestActionResults)
+        this.newUserRequestService.approve(this.state.selectedRequest.requestStatus, this.state.currentRequestActionResults, this.state.selectedRequest)
             .subscribe(
-            result => console.log(result));
+            result => {
+                this.state.selectedRequest = result;
+                let index = this.state.newUserRequests.findIndex(newUserReq => newUserReq.requestNbr === this.state.selectedRequest.requestNbr);
+                this.state.newUserRequests[index] = this.state.selectedRequest;
+                this.state.queueFilter = QueueFilter.Pending;
+            });
     }
 
     private processRejectedResult(): void {
-        this.state.selectedRequest.requestStatus = NewUserRequestStatus.Rejected;
-        this.state.selectedRequest.adminComment = this.state.currentRequestActionResults.rejectionReason;
+        console.log(this.state.currentRequestActionResults.rejectionReason);
 
+        this.newUserRequestService.reject(this.state.currentRequestActionResults, this.state.selectedRequest)
+            .subscribe(
+            result => {
+                this.state.selectedRequest = result;
+                let index = this.state.newUserRequests.findIndex(newUserReq => newUserReq.requestNbr === this.state.selectedRequest.requestNbr);
+                this.state.newUserRequests[index] = this.state.selectedRequest;
+                this.state.queueFilter = QueueFilter.Pending;
+            });
     }
 
 
