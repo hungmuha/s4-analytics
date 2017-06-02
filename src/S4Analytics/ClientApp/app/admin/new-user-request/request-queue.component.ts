@@ -21,7 +21,7 @@ export class RequestQueueComponent {
     get filteredRequests(): NewUserRequest[] {
         let queueFilter = this.state.queueFilter;
         return _.filter(this.state.newUserRequests,
-            (nur: any) => {
+            (nur: NewUserRequest) => {
                 switch (queueFilter) {
                     case QueueFilter.Completed:
                         return nur.requestStatus === NewUserRequestStatus.Completed;
@@ -78,22 +78,16 @@ export class RequestQueueComponent {
         this.state.currentActionForm = this.modalService.open(content, { backdrop: 'static', keyboard: false });
     }
 
-    displayAgencyNm(nur: NewUserRequest): string {
-        return nur.agncyNm;
-    }
-
     hideProcessRequestButton(request: NewUserRequest) {
         return request.requestStatus === NewUserRequestStatus.Completed || request.requestStatus === NewUserRequestStatus.Rejected;
     }
 
     totalRequestCount(): number {
-        if (this.state.newUserRequests === undefined) { return 0; }
-        return this.state.newUserRequests.length;
+        return (this.state.newUserRequests === undefined) ? 0 : this.state.newUserRequests.length;
     }
 
     requestShowingCount(): number {
-        if (this.filteredRequests === undefined) { return 0; }
-        return this.filteredRequests.length;
+        return (this.filteredRequests === undefined) ?  0 : this.filteredRequests.length;
     }
 
 }

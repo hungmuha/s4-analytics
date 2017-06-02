@@ -1,6 +1,5 @@
 ﻿import { Component } from '@angular/core';
 import { NewUserRequestStateService } from './shared';
-import * as moment from 'moment';
 
 @Component({
     selector: 'new-consultant-component',
@@ -25,16 +24,9 @@ export class NewConsultantComponent  {
     }
 
     openContractViewer() {
-        let contractPdfFileNm = this.getContractPdfFileName();
-        this.state.contractViewerWindow = window.open(`api/admin/new-user-request/contract-pdf/${contractPdfFileNm}`,
+        let contractPdfFileNm = this.state.selectedRequest.contractPdfNm;
+        this.state.contractViewerWindow = window.open(`admin/new-user-request/contract-pdf/${contractPdfFileNm}`,
             '_blank', 'width=400,height=200');
-    }
-
-    private getContractPdfFileName(): string {
-        let request = this.state.selectedRequest;
-        let requestDate = this.state.selectedRequest.requestDt;
-        let formatDate = moment(requestDate).format('MMDDYYYY');
-        return request.requestNbr + request.consultantFirstNm[0].toString() + request.consultantLastNm + formatDate + '.pdf';
     }
 }
 

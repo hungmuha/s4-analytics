@@ -29,8 +29,7 @@ namespace S4Analytics.Models
             _conn = new OracleConnection(_connStr);
             _userStore = new S4UserStore<S4IdentityUser>(
                 "S4_Analytics",
-                "User Id=s4_warehouse_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));",
-            null);
+                serverOptions.Value.WarehouseConnStr, null);
 
             // TODO:  Temporary
             _userStore.MembershipConnection = new OracleConnection("User Id=app_security_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));");
@@ -53,12 +52,12 @@ namespace S4Analytics.Models
         public IEnumerable<NewUserRequest> GetAll()
         {
             var selectTxt = GetRequestSelectQuery();
-            var cmdTxt = string.Format(@"{0}  
+            var cmdTxt = $@"{selectTxt}
                             FROM new_user_req_new u
                             LEFT JOIN s4_agncy a
                             ON u.agncy_id = a.agncy_id
                             LEFT JOIN contractor c
-                            ON c.contractor_id = u.contractor_id", selectTxt);
+                            ON c.contractor_id = u.contractor_id";
 
             var results = _conn.Query<NewUserRequest>(cmdTxt);
             return results;
@@ -73,7 +72,7 @@ namespace S4Analytics.Models
         {
             var selectTxt = GetRequestSelectQuery();
 
-            var cmdText = string.Format( @"{0}
+            var cmdText = string.Format(@"{0}
                             FROM new_user_req_new u
                             LEFT JOIN s4_agncy a
                             ON u.agncy_id = a.agncy_id
@@ -316,7 +315,7 @@ namespace S4Analytics.Models
 
             var closing = GetEmailNotificationClosing();
 
-            SendEmail(adminEmails[0], adminEmails.GetRange(1,adminEmails.Count-1), _supportEmail, subject, body, closing);
+            SendEmail(adminEmails[0], adminEmails.GetRange(1, adminEmails.Count - 1), _supportEmail, subject, body, closing);
 
             request.RequestStatus = newStatus;
             request.ContractorId = contractor.ContractorId;
@@ -347,23 +346,6 @@ namespace S4Analytics.Models
             /// User will be created automatically after agency created because there is no one in
             /// the agency since its new. Therefore no one with an account in that agency to approve them
             return ApproveNewUser(id, approval);
-
-            ////// Notify appropriate admin they need to approve user by email
-            ////var adminEmails = GetAgencyAdmin(request.AgncyId);
-            ////var subject = "New user request for your agency in Signal Four Analytics";
-            ////var body = string.Format(@"<div>There is a request for a new user account from {0} {1} from your agency.<br><br>
-            ////        As the user account manager of {2}, please goto the User Request Queue in Signal Four Analytics
-            ////        to review request and if ok, approve it.<br><br></div>", request.RequestorFirstNm, request.RequestorLastNm,
-            ////        request.AgncyNm);
-
-            ////var closing = GetEmailNotificationClosing();
-
-            ////SendEmail(adminEmails[0], adminEmails.GetRange(1, adminEmails.Count - 1), _supportEmail, subject, body, closing);
-
-            ////request.RequestStatus = newStatus;
-            ////request.AgncyId = newAgencyId;
-            ////UpdateApprovedNewUserRequest(request);
-            ////return request;
         }
 
         public NewUserRequest Reject(int id, RequestRejection rejection)
@@ -409,14 +391,14 @@ namespace S4Analytics.Models
                             WHERE REQ_NBR = :requestNbr";
 
             var rowsUpdated = _conn.Execute(updateTxt, new
-                                {
-                                    request.RequestStatus,
-                                    request.AgncyId,
-                                    request.ContractorId,
-                                    request.UserCreatedDt,
-                                    request.UserId,
-                                    request.RequestNbr
-                                });
+            {
+                request.RequestStatus,
+                request.AgncyId,
+                request.ContractorId,
+                request.UserCreatedDt,
+                request.UserId,
+                request.RequestNbr
+            });
 
             return rowsUpdated == 1;
         }
@@ -429,8 +411,8 @@ namespace S4Analytics.Models
                                 ADMIN_COMMENT = :adminComment
                             WHERE REQ_NBR = :requestNbr";
 
-           var rowsUpdated = _conn.Execute(updateTxt, new
-           {
+            var rowsUpdated = _conn.Execute(updateTxt, new
+            {
                 request.RequestStatus,
                 request.AdminComment,
                 request.RequestNbr
@@ -462,8 +444,8 @@ namespace S4Analytics.Models
                             u.consultant_suffix AS consultantsuffixnm,
                             u.consultant_email_addr_tx AS consultantemail,
                             u.contractor_id AS contractorid,
-                            CASE WHEN u.contractor_id IS NULL THEN u.new_contractor_nm ELSE c.contractor_nm END contractornm,
-                            CASE WHEN u.contractor_id IS NULL THEN u.new_contractor_email_domain_tx ELSE c.email_domain END ContractorEmailDomain,
+                            CASE WHEN u.contractor_id = 0 THEN u.new_contractor_nm ELSE c.contractor_nm END contractornm,
+                            CASE WHEN u.contractor_id = 0 THEN u.new_contractor_email_domain_tx ELSE c.email_domain END ContractorEmailDomain,
                             u.access_reason_tx AS accessreasontx,
                             u.contract_end_dt AS contractstartdt,
                             u.contract_start_dt AS contractenddt,
@@ -471,7 +453,8 @@ namespace S4Analytics.Models
                             CASE WHEN u.warn_consultant_email_cd = 'Y' THEN 1 ELSE 0 END AS warnconsultantemailcd,
                             CASE WHEN u.warn_duplicate_email_cd = 'Y' THEN 1 ELSE 0 END as warnduplicateemailcd,
                             CASE WHEN u.user_manager_cd = 'Y' THEN 1 ELSE 0 END AS usermanagercd,
-                            u.admin_comment AS admincomment";
+                            u.admin_comment AS admincomment,
+                            u.contract_pdf_nm AS contractPdfNm";
         }
 
         private S4IdentityUser CreateIdentityUser(NewUserRequest request, string userName, string email, string passwordText)
@@ -506,12 +489,12 @@ namespace S4Analytics.Models
             return user;
         }
 
-        /// <summary>
-        /// Generate a unique user name
-        /// </summary>
-        /// <param name="userName"></param>
-        /// <returns></returns>
-        private string GenerateUserName(string userName)
+    /// <summary>
+    /// Generate a unique user name
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <returns></returns>
+    private string GenerateUserName(string userName)
         {
             var done = false;
             var token = new CancellationToken();
@@ -783,11 +766,10 @@ namespace S4Analytics.Models
 
         private int GetNextContractorId()
         {
-            var selectTxt = @"SELECT CONTRACTOR_ID FROM CONTRACTOR " +
-                        "WHERE ROWNUM = 1 ORDER BY CONTRACTOR_ID DESC";
+            var selectTxt = @"SELECT SEQ_CONTRACTOR_ID.NEXTVAL FROM DUAL";
 
             var results = _conn.QueryFirstOrDefault<int>(selectTxt);
-            return results+1;
+            return results;
         }
 
         private string GetEmailNotificationClosing()
@@ -801,16 +783,16 @@ namespace S4Analytics.Models
 
         }
 
-        private List<string> GetAgencyAdmin(int agencyId)
+        private List<string> GetAgencyAdminEmails(int agencyId)
         {
             var emails = new List<string>();
 
             var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
-                                JOIN USER_ROLE R ON R.ROLE_NM = 'Agency Admin' 
+                                JOIN USER_ROLE R ON R.ROLE_NM = 'Agency Admin'
                                 AND R.USER_NM = U.USER_NM
                                 WHERE U.AGNCY_ID = :agencyId";
 
-            var results = (_conn.Query<string>(selectTxt, new { AGENCYID = agencyId })).Cast<string>().ToList(); ;
+            var results = (_conn.Query<string>(selectTxt, new { AGENCYID = agencyId })).ToList(); ;
 
             // if no admin for agency, send notification to s4 global admin
             if (results.Count == 0)
@@ -827,7 +809,7 @@ namespace S4Analytics.Models
                                 JOIN USER_ROLE R ON R.ROLE_NM = 'FDOT Admin' 
                                 AND R.USER_NM = U.USER_NM";
 
-            var emails = (_conn.Query<string>(selectTxt)).Cast<string>().ToList();
+            var emails = (_conn.Query<string>(selectTxt)).ToList();
 
             // if no FDOT admin, send notification to s4 global admin
             if (emails.Count == 0)
@@ -844,7 +826,7 @@ namespace S4Analytics.Models
                                 JOIN USER_ROLE R ON R.ROLE_NM = 'HSMV Admin' 
                                 AND R.USER_NM = U.USER_NM";
 
-            var emails = (_conn.Query<string>(selectTxt)).Cast<string>().ToList();
+            var emails = (_conn.Query<string>(selectTxt)).ToList();
 
             // if no FDOT admin, send notification to s4 global admin
             if (emails.Count == 0)
