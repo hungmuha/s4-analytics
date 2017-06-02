@@ -11,6 +11,8 @@ using System.Net.Mail;
 using System.Text;
 using S4Analytics.Controllers;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Cryptography;
 
 namespace S4Analytics.Models
 {
@@ -19,21 +21,31 @@ namespace S4Analytics.Models
         private const string _applicationName = "S4_Analytics";
         private string _connStr;
         private OracleConnection _conn;
-        private S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile> _userStore;
+        private IUserStore<S4IdentityUser<S4UserProfile>> _userStore;
+        private IUserEmailStore<S4IdentityUser<S4UserProfile>> _userEmailStore;
+        private IUserPasswordStore<S4IdentityUser<S4UserProfile>> _userPasswordStore;
+        private IUserRoleStore<S4IdentityUser<S4UserProfile>> _userRoleStore;
+        private IPasswordHasher<S4BaseUser> _passwordHasher;
         private SmtpClient _smtp;
         private string _globalAdminEmail;
         private string _supportEmail;
 
-        public NewUserRequestRepository(IOptions<ServerOptions> serverOptions)
+        public NewUserRequestRepository(
+            IOptions<ServerOptions> serverOptions,
+            IUserStore<S4IdentityUser<S4UserProfile>> userStore,
+            IUserEmailStore<S4IdentityUser<S4UserProfile>> userEmailStore,
+            IUserPasswordStore<S4IdentityUser<S4UserProfile>> userPasswordStore,
+            IUserRoleStore<S4IdentityUser<S4UserProfile>> userRoleStore,
+            IPasswordHasher<S4BaseUser> passwordHasher)
         {
             _connStr = serverOptions.Value.WarehouseConnStr;
             _conn = new OracleConnection(_connStr);
-            _userStore = new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(
-                "S4_Analytics",
-                "User Id=s4_warehouse_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));",
-                "User Id=app_security_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));",
-                "",
-                null);
+
+            _userStore = userStore;
+            _userEmailStore = userEmailStore;
+            _userPasswordStore = userPasswordStore;
+            _userRoleStore = userRoleStore;
+            _passwordHasher = passwordHasher;
 
             _smtp = new SmtpClient
             {
@@ -91,23 +103,34 @@ namespace S4Analytics.Models
         /// <param name="id"></param>
         /// <param name="newStatus"></param>
         /// <returns></returns>
-        public NewUserRequest ApproveNewUser(int id, RequestApproval approval)
+        public async Task<NewUserRequest> ApproveNewUser(int id, RequestApproval approval)
         {
+            var token = new CancellationToken();
+
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
 
             var preferredUserName = (request.RequestorFirstNm[0] + request.RequestorLastNm).ToLower();
             var userName = GenerateUserName(preferredUserName);
+
             var user = new S4IdentityUser<S4UserProfile>(userName);
+
             user.Profile = CreateS4UserProfile(request);
 
-            var passwordText = _userStore.GenerateRandomPassword(8, 0);
-            // var identityUser = CreateIdentityUser(request, userName, request.RequestorEmail, passwordText);
-            // TODO: set email, hashed password, and roles
-            user.Profile.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
-            user.Profile.Active = true;
+            var passwordText = GenerateRandomPassword(8, 0);
+            var passwordHash = _passwordHasher.HashPassword(user, passwordText);
+            await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
 
-            var token = new CancellationToken();
+            await _userEmailStore.SetEmailAsync(user, request.RequestorEmail, token);
+
+            // TODO: need to be more generic here -hard coded for testing
+            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
+            await _userRoleStore.AddToRoleAsync(user, "User", token);
+            if (request.UserManagerCd)
+            {
+                await _userRoleStore.AddToRoleAsync(user, "Agency Admin", token);
+            }
+
             var result = _userStore.CreateAsync(user, token);
 
             // Send password cred to new user.
@@ -146,6 +169,8 @@ namespace S4Analytics.Models
         /// <returns></returns>
         public async Task<NewUserRequest> ApproveNewConsultant(int id, RequestApproval approval)
         {
+            var token = new CancellationToken();
+
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
             var before70days = approval.Before70Days;
@@ -158,17 +183,26 @@ namespace S4Analytics.Models
 
             var preferredUserName = (request.RequestorFirstNm[0] + request.RequestorLastNm).ToLower();
             var userName = GenerateUserName(preferredUserName);
+
             var user = new S4IdentityUser<S4UserProfile>(userName);
+
             user.Profile = CreateS4UserProfile(request);
             user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
-            var passwordText = _userStore.GenerateRandomPassword(8, 0);
-            // var identityUser = CreateIdentityUser(request, userName, request.ConsultantEmail, passwordText);
-            // TODO: set email, hashed password, and roles
-            user.Profile.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
-            user.Profile.Active = true;
+            var passwordText = GenerateRandomPassword(8, 0);
+            var passwordHash = _passwordHasher.HashPassword(user, passwordText);
+            await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
 
-            var token = new CancellationToken();
+            await _userEmailStore.SetEmailAsync(user, request.ConsultantEmail, token);
+
+            // TODO: need to be more generic here -hard coded for testing
+            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
+            await _userRoleStore.AddToRoleAsync(user, "User", token);
+            if (request.UserManagerCd)
+            {
+                await _userRoleStore.AddToRoleAsync(user, "Agency Admin", token);
+            }
+
             var result = _userStore.CreateAsync(user, token);
 
             // Send the approval the emails here.  Send password cred to new user.
@@ -210,15 +244,24 @@ namespace S4Analytics.Models
 
             var token = new CancellationToken();
             var user = await _userStore.FindByNameAsync(userName, token);
-            user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
-            var passwordText = _userStore.GenerateRandomPassword(8, 0);
-            //var identityUser = new S4IdentityUser<S4UserProfile>(userName, request.ConsultantEmail, passwordText)
-            //{
-            //    Active = true
-            //};
-            // TODO: set email, hashed password, and roles
+            user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
             user.Profile.Active = true;
+
+            var passwordText = GenerateRandomPassword(8, 0);
+            var passwordHash = _passwordHasher.HashPassword(user, passwordText);
+            await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
+
+            await _userEmailStore.SetEmailAsync(user, request.ConsultantEmail, token);
+
+            // TODO: need to be more generic here -hard coded for testing
+            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
+            await _userRoleStore.AddToRoleAsync(user, "User", token);
+            if (request.UserManagerCd)
+            {
+                await _userRoleStore.AddToRoleAsync(user, "Agency Admin", token);
+            }
+
             var result = await _userStore.UpdateAsync(user, token);
 
             // Send the approval the emails here.  Send password cred to new user.
@@ -330,7 +373,7 @@ namespace S4Analytics.Models
         /// <param name="newStatus"></param>
         /// <param name="selectedRequest"></param>
         /// <returns></returns>
-        public NewUserRequest ApproveCreatedNewAgency(int id, RequestApproval approval)
+        public async Task<NewUserRequest> ApproveCreatedNewAgency(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
@@ -345,7 +388,7 @@ namespace S4Analytics.Models
 
             /// User will be created automatically after agency created because there is no one in
             /// the agency since its new. Therefore no one with an account in that agency to approve them
-            return ApproveNewUser(id, approval);
+            return await ApproveNewUser(id, approval);
         }
 
         public NewUserRequest Reject(int id, RequestRejection rejection)
@@ -457,14 +500,6 @@ namespace S4Analytics.Models
                             u.contract_pdf_nm AS contractPdfNm";
         }
 
-        //private S4IdentityUser<S4UserProfile> CreateIdentityUser(NewUserRequest request, string userName, string email, string passwordText)
-        //{
-        //    var user = new S4IdentityUser<S4UserProfile>(userName, email, passwordText);
-        //    CreateRoles(request, user);
-
-        //    return user;
-        //}
-
         private S4UserProfile CreateS4UserProfile(NewUserRequest request)
         {
             S4UserProfile profile;
@@ -472,16 +507,16 @@ namespace S4Analytics.Models
             switch (request.RequestType)
             {
                 case NewUserRequestType.FlPublicAgencyEmployee:
-                    profile = CreateEmployee(request);
+                    profile = CreateEmployeeProfile(request);
                     break;
                 case NewUserRequestType.FlPublicAgencyMgr:
-                    profile = CreateConsultant(request);
+                    profile = CreateConsultantProfile(request);
                     break;
                 default:
                     return null;
             }
 
-            profile.CreatedBy = "tbd";
+            profile.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
             profile.CreatedDate = DateTime.Now;
             profile.Active = true;
 
@@ -538,7 +573,7 @@ namespace S4Analytics.Models
             return rowsInserted == 1;
         }
 
-        private S4UserProfile CreateEmployee(NewUserRequest request)
+        private S4UserProfile CreateEmployeeProfile(NewUserRequest request)
         {
             var profile = new S4UserProfile()
             {
@@ -555,7 +590,7 @@ namespace S4Analytics.Models
             return profile;
         }
 
-        private S4UserProfile CreateConsultant(NewUserRequest request)
+        private S4UserProfile CreateConsultantProfile(NewUserRequest request)
         {
             var profile = new S4UserProfile()
             {
@@ -588,30 +623,6 @@ namespace S4Analytics.Models
 
             return contractor;
         }
-
-        //private void CreateRoles(NewUserRequest request, S4IdentityUser<S4UserProfile> user)
-        //{
-        //    // TODO: need to be more generic here -hard coded for testing
-        //    // TODO: If user is for a New Agency, then also need to create an Agency Admin role
-        //    var role = new S4UserRole("User")
-        //    {
-        //        CreatedBy = "tbd", //TODO
-        //        CreatedDate = new Occurrence()
-        //    };
-
-        //    user.AddRole(role);
-
-        //    if (request.UserManagerCd)
-        //    {
-        //        role = new S4UserRole("Agency Admin")
-        //        {
-        //            CreatedBy = "tbd", //TODO
-        //            CreatedDate = new Occurrence()
-        //        };  //TODO: changing name to UserManager role
-
-        //        user.AddRole(role);
-        //    }
-        //}
 
         private Agency GetAgency(int agencyId)
         {
@@ -781,6 +792,74 @@ namespace S4Analytics.Models
             msg.Body = completedText.ToString();
 
             _smtp.Send(msg);
+        }
+
+        /// <summary>
+        /// Utility function to generate a random password.
+        /// This function exists purely for convenience. It does not implement any interface method.
+        /// Modified and converted from Basic from http://www.4guysfromrolla.com/articles/101205-1.aspx
+        /// </summary>
+        /// <param name="length">Length of password to generate</param>
+        /// <param name="numberOfNonAlphanumericCharacters">Number of non-alphanumeric characters to include in password</param>
+        /// <returns>Generated password</returns>
+        private string GenerateRandomPassword(int length, int numberOfNonAlphanumericCharacters)
+        {
+            int nonANcount = 0;
+            byte[] buffer1 = new byte[length];
+
+            //chPassword contains the password's characters as it's built up
+            char[] chPassword = new char[length];
+
+            //chPunctionations contains the list of legal non-alphanumeric characters
+            char[] chPunctuations = "!@#$%^*()_-+=[{]};:<>|./?".ToCharArray();
+
+            //Get a cryptographically strong series of bytes
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(buffer1);
+
+            for (int i = 0; i < length; i++)
+            {
+                //Convert each byte into its representative character
+                int rndChr = buffer1[i] % 87;
+                if (rndChr < 10)
+                {
+                    chPassword[i] = Convert.ToChar(Convert.ToUInt16(48 + rndChr));
+                }
+                else
+                if (rndChr < 36)
+                {
+
+                    chPassword[i] = Convert.ToChar(Convert.ToUInt16((65 + rndChr) - 10));
+                }
+                else
+                if (rndChr < 62)
+                {
+
+                    chPassword[i] = Convert.ToChar(Convert.ToUInt16((97 + rndChr) - 36));
+                }
+                else
+                {
+                    chPassword[i] = chPunctuations[rndChr - 62];
+                    nonANcount += 1;
+                }
+            }
+
+            if (nonANcount < numberOfNonAlphanumericCharacters)
+            {
+                Random rndNumber = new Random();
+                for (int i = 0; i < (numberOfNonAlphanumericCharacters - nonANcount); i++)
+                {
+                    int passwordPos;
+                    do
+                    {
+                        passwordPos = rndNumber.Next(0, length);
+                    }
+                    while (!char.IsLetterOrDigit(chPassword[passwordPos]));
+                    chPassword[passwordPos] = chPunctuations[rndNumber.Next(0, chPunctuations.Length)];
+                }
+            }
+
+            return new String(chPassword);
         }
 
         #endregion

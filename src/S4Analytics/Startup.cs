@@ -94,6 +94,13 @@ namespace S4Analytics
                     null);
             });
 
+            services.AddSingleton(
+                provider => (IUserEmailStore<S4IdentityUser<S4UserProfile>>)provider.GetService<IUserStore<S4IdentityUser<S4UserProfile>>>());
+            services.AddSingleton(
+                provider => (IUserPasswordStore<S4IdentityUser<S4UserProfile>>)provider.GetService<IUserStore<S4IdentityUser<S4UserProfile>>>());
+            services.AddSingleton(
+                provider => (IUserRoleStore<S4IdentityUser<S4UserProfile>>)provider.GetService<IUserStore<S4IdentityUser<S4UserProfile>>>());
+
             // Add and configure Oracle role store.
             services.AddSingleton<IRoleStore<S4IdentityRole>>(provider => {
                 var options = provider.GetService<IOptions<ServerOptions>>();
@@ -113,7 +120,7 @@ namespace S4Analytics
             services.AddSingleton<IdentityMarkerService>();
             services.AddSingleton<IUserValidator<S4IdentityUser<S4UserProfile>>, UserValidator<S4IdentityUser<S4UserProfile>>>();
             services.AddSingleton<IPasswordValidator<S4IdentityUser<S4UserProfile>>, PasswordValidator<S4IdentityUser<S4UserProfile>>>();
-            services.AddSingleton<IPasswordHasher<S4IdentityUser<S4UserProfile>>, S4PasswordHasher<S4IdentityUser<S4UserProfile>>>();
+            services.AddSingleton<IPasswordHasher<S4BaseUser>, S4PasswordHasher<S4BaseUser>>();
             services.AddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
             services.AddSingleton<IdentityErrorDescriber>();
             services.AddSingleton<UserManager<S4IdentityUser<S4UserProfile>>>();
