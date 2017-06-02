@@ -454,10 +454,7 @@ namespace S4Analytics.Models
                             CASE WHEN u.warn_duplicate_email_cd = 'Y' THEN 1 ELSE 0 END as warnduplicateemailcd,
                             CASE WHEN u.user_manager_cd = 'Y' THEN 1 ELSE 0 END AS usermanagercd,
                             u.admin_comment AS admincomment,
-                            CASE WHEN u.contractor_id != 0
-                                THEN u.req_nbr||SUBSTR(u.consultant_first_nm,0,1)||u.consultant_last_nm||to_char(req_dt,'MMDDYYYY')||'.pdf'
-                                ELSE ''
-                            END AS contractPdfNm";
+                            u.contract_pdf_nm AS contractPdfNm";
         }
 
         private S4IdentityUser CreateIdentityUser(NewUserRequest request, string userName, string email, string passwordText)
