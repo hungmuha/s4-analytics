@@ -1,18 +1,17 @@
 ﻿using Dapper;
-using Lib.Identity;
+using Lib.Identity.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
+using S4Analytics.Controllers;
 using System;
 using System.Collections.Generic;
-using Lib.Identity.Models;
-using System.Threading;
 using System.Linq;
 using System.Net.Mail;
-using System.Text;
-using S4Analytics.Controllers;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace S4Analytics.Models
 {
