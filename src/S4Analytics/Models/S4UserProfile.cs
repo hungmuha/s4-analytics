@@ -37,31 +37,12 @@ namespace S4Analytics.Models
         public string MpoTpoScope { get; set; }
     }
 
-    public class AgreementNames
-    {
-        public const string UserAgreement = "User Agreement";
-        public const string UserManagerAgreement = "User Manager Agreement";
-    }
-
-    public class Agreement
-    {
-        public string AgreementName { get; set; }
-        public DateTime? SignedDate { get; set; }
-        public DateTime? ExpirationDate { get; set; }
-        public bool IsExpired {
-            get
-            {
-                return ExpirationDate == null || ExpirationDate <= DateTime.Now;
-            }
-        }
-    }
-
     public class S4UserProfile
     {
         public DateTime? AccountExpirationDate { get; set; }
         public DateTime? AccountStartDate { get; set; }
         public bool Active { get; set; }
-        public List<Agreement> Agreements { get; set; }
+        public List<UserAgreement> Agreements { get; set; }
         public Agency Agency { get; set; }
         public Contractor ContractorCompany { get; set; }
         public string CreatedBy { get; set; }
@@ -121,7 +102,7 @@ namespace S4Analytics.Models
             AccountExpirationDate = null;
             AccountStartDate = null;
             Active = true;
-            Agreements = new List<Agreement>();
+            Agreements = new List<UserAgreement>();
             Agency = null;
             ContractorCompany = null;
             CreatedBy = string.Empty;

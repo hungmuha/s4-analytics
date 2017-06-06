@@ -638,7 +638,7 @@ namespace S4Analytics.Models
                                 email_domain AS EMAILDOMAIN
                                 FROM S4_AGNCY WHERE AGNCY_ID = :agencyid";
 
-            var agency = _conn.QueryFirstOrDefault<Agency>(selectTxt, new { AGENCYID = agencyId });
+            var agency = _conn.QueryFirstOrDefault<Agency>(selectTxt, new { agencyId });
             agency.DefaultViewableCounties = GetCountiesForAgency(agency.AgencyId);
             return agency;
         }
@@ -655,19 +655,19 @@ namespace S4Analytics.Models
                               FROM CONTRACTOR
                               WHERE CONTRACTOR_ID = :id";
 
-            var contractor = _conn.QueryFirstOrDefault<Contractor>(selectTxt, new { id = id });
+            var contractor = _conn.QueryFirstOrDefault<Contractor>(selectTxt, new { id });
             return contractor;
         }
 
         private List<UserCounty> GetCountiesForAgency(int agencyId)
         {
             var selectTxt = @"SELECT
-                        cnty_cd AS CNTYCD,
-                        CASE WHEN can_edit = 'Y' THEN 1 ELSE 0 END AS CANEDIT
+                        cnty_cd AS CountyCode,
+                        CASE WHEN can_edit = 'Y' THEN 1 ELSE 0 END AS CanEdit
                         FROM AGNCY_CNTY
                         WHERE AGNCY_ID = :agencyId";
 
-            var results = _conn.Query<UserCounty>(selectTxt, new { AGENCYID = agencyId });
+            var results = _conn.Query<UserCounty>(selectTxt, new { agencyId });
 
             return results.ToList();
         }
@@ -700,7 +700,7 @@ namespace S4Analytics.Models
                                 AND R.USER_NM = U.USER_NM
                                 WHERE U.AGNCY_ID = :agencyId";
 
-            var results = (_conn.Query<string>(selectTxt, new { AGENCYID = agencyId })).ToList(); ;
+            var results = (_conn.Query<string>(selectTxt, new { agencyId })).ToList(); ;
 
             // if no admin for agency, send notification to s4 global admin
             if (results.Count == 0)
@@ -754,7 +754,7 @@ namespace S4Analytics.Models
         {
             var selectTxt = @"SELECT AGNCY_ID FROM S4_AGNCY WHERE AGNCY_NM = :agencyNm";
 
-            var result = _conn.QueryFirstOrDefault<int>(selectTxt, new { AGENCYNM = agencyNm });
+            var result = _conn.QueryFirstOrDefault<int>(selectTxt, new { agencyNm });
             return result;
         }
 
