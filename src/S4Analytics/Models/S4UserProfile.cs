@@ -35,7 +35,25 @@ namespace S4Analytics.Models
         public string GeographicExtent { get; set; }
         public string IntrsectOffsetDistFt { get; set; }
         public string MpoTpoScope { get; set; }
+    }
 
+    public class AgreementNames
+    {
+        public const string UserAgreement = "User Agreement";
+        public const string UserManagerAgreement = "User Manager Agreement";
+    }
+
+    public class Agreement
+    {
+        public string AgreementName { get; set; }
+        public DateTime? SignedDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
+        public bool IsExpired {
+            get
+            {
+                return ExpirationDate == null || ExpirationDate <= DateTime.Now;
+            }
+        }
     }
 
     public class S4UserProfile
@@ -43,8 +61,7 @@ namespace S4Analytics.Models
         public DateTime? AccountExpirationDate { get; set; }
         public DateTime? AccountStartDate { get; set; }
         public bool Active { get; set; }
-        public DateTime? AdminAgreementExpirationDate { get; set; }
-        public DateTime? AdminAgreementSignedDate { get; set; }
+        public List<Agreement> Agreements { get; set; }
         public Agency Agency { get; set; }
         public Contractor ContractorCompany { get; set; }
         public string CreatedBy { get; set; }
@@ -53,24 +70,46 @@ namespace S4Analytics.Models
         public string FirstName { get; set; }
         public string SuffixName { get; set; }
         public bool ForcePasswordChange { get; set; }
-        public bool IsAdminAgreementExpired { get { return (AdminAgreementExpirationDate <= DateTime.Now); } set { } }
-        public bool IsTimeLimitedAccountExpired { get { return (TimeLimitedAccount && AccountExpirationDate <= DateTime.Now); } set { } }
-        public bool IsUserAgreementExpired { get { return (UserAgreementExpirationDate <= DateTime.Now); } set { } }
         public string LastName { get; set; }
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public bool ReadOnly { get; set; }
         public bool TimeLimitedAccount { get; set; }
-        public DateTime? UserAgreementSignedDate { get; set; }
-        public DateTime? UserAgreementExpirationDate { get; set; }
         public StickySettings StickySettings { get; set; }
         public CrashReportAccess CrashReportAccess { get; set; }
         public List<UserCounty> ViewableCounties { get; set; }
+
         public IList<UserCounty> EditableCounties
         {
             get
             {
                 return ViewableCounties.Where(cnty => cnty.CanEdit).ToList().AsReadOnly();
+            }
+        }
+
+        public bool IsTimeLimitedAccountExpired
+        {
+            get
+            {
+                return (TimeLimitedAccount && AccountExpirationDate <= DateTime.Now);
+            }
+        }
+
+        public bool IsAdminAgreementExpired
+        {
+            get
+            {
+                var agreement = Agreements.FirstOrDefault(a => a.AgreementName == AgreementNames.UserManagerAgreement);
+                return (agreement == null || agreement.IsExpired);
+            }
+        }
+
+        public bool IsUserAgreementExpired
+        {
+            get
+            {
+                var agreement = Agreements.FirstOrDefault(a => a.AgreementName == AgreementNames.UserAgreement);
+                return (agreement == null || agreement.IsExpired);
             }
         }
 
@@ -82,8 +121,7 @@ namespace S4Analytics.Models
             AccountExpirationDate = null;
             AccountStartDate = null;
             Active = true;
-            AdminAgreementSignedDate = null;
-            AdminAgreementExpirationDate = null;
+            Agreements = new List<Agreement>();
             Agency = null;
             ContractorCompany = null;
             CreatedBy = string.Empty;
@@ -97,8 +135,6 @@ namespace S4Analytics.Models
             ReadOnly = true;
             SuffixName = string.Empty;
             TimeLimitedAccount = false;
-            UserAgreementSignedDate = null;
-            UserAgreementExpirationDate = null;
             ViewableCounties = new List<UserCounty>();
             CrashReportAccess = CrashReportAccess.Unknown;
         }
