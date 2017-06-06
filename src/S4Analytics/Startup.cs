@@ -87,7 +87,7 @@ namespace S4Analytics
             services.AddSingleton<IUserStore<S4IdentityUser<S4UserProfile>>>(provider => {
                 var options = provider.GetService<IOptions<ServerOptions>>();
                 return new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(
-                    "S4_Analytics",
+                    options.Value.MembershipApplicationName,
                     options.Value.WarehouseConnStr,
                     options.Value.MembershipConnStr,
                     "",
@@ -105,7 +105,7 @@ namespace S4Analytics
             services.AddSingleton<IRoleStore<S4IdentityRole>>(provider => {
                 var options = provider.GetService<IOptions<ServerOptions>>();
                 return new S4RoleStore<S4IdentityRole>(
-                    "S4_Analytics",
+                    options.Value.MembershipApplicationName,
                     options.Value.WarehouseConnStr);
             });
 

@@ -17,7 +17,7 @@ namespace S4Analytics.Models
 {
     public class NewUserRequestRepository : INewUserRequestRepository
     {
-        private const string _applicationName = "S4_Analytics";
+        private string _applicationName;
         private string _connStr;
         private OracleConnection _conn;
         private IUserStore<S4IdentityUser<S4UserProfile>> _userStore;
@@ -37,6 +37,7 @@ namespace S4Analytics.Models
             IUserRoleStore<S4IdentityUser<S4UserProfile>> userRoleStore,
             IPasswordHasher<S4BaseUser> passwordHasher)
         {
+            _applicationName = serverOptions.Value.MembershipApplicationName;
             _connStr = serverOptions.Value.WarehouseConnStr;
             _conn = new OracleConnection(_connStr);
 
@@ -84,15 +85,15 @@ namespace S4Analytics.Models
         {
             var selectTxt = GetRequestSelectQuery();
 
-            var cmdText = string.Format(@"{0}
+            var cmdTxt = $@"{selectTxt}
                             FROM new_user_req_new u
                             LEFT JOIN s4_agncy a
                             ON u.agncy_id = a.agncy_id
                             LEFT JOIN contractor c
                             ON c.contractor_id = u.contractor_id
-                            WHERE req_nbr = :reqnbr", selectTxt);
+                            WHERE req_nbr = :reqnbr";
 
-            var results = _conn.QueryFirstOrDefault<NewUserRequest>(cmdText, new { REQNBR = reqNbr });
+            var results = _conn.QueryFirstOrDefault<NewUserRequest>(cmdTxt, new { REQNBR = reqNbr });
             return results;
         }
 
@@ -347,7 +348,7 @@ namespace S4Analytics.Models
             var result = StoreContractor(contractor);
 
             // Notify appropriate admin by email they need to approve user
-            var adminEmails = IsFDOTRequest(request) ? GetFDOTAdmin() : GetHSMVAdmin();
+            var adminEmails = IsFDOTRequest(request) ? GetFDOTAdminEmails() : GetHSMVAdminEmails();
 
             var subject = string.Format("New consultant working under {0} needs approval for Signal Four Account", request.AgncyNm);
             var body = string.Format(@"<div>There is a new request from {0} {1} from {2} for a contract with {3}.<br><br>
@@ -423,8 +424,8 @@ namespace S4Analytics.Models
 
         private bool UpdateApprovedNewUserRequest(NewUserRequest request)
         {
-            var updateTxt = @"UPDATE NEW_USER_REQ_NEW 
-                            SET 
+            var updateTxt = @"UPDATE NEW_USER_REQ_NEW
+                            SET
                                 REQ_STATUS = :requestStatus,
                                 AGNCY_ID = :agncyId,
                                 CONTRACTOR_ID = :contractorId,
@@ -447,8 +448,8 @@ namespace S4Analytics.Models
 
         private bool UpdateRejectedNewUserRequest(NewUserRequest request)
         {
-            var updateTxt = @"UPDATE NEW_USER_REQ_NEW 
-                            SET 
+            var updateTxt = @"UPDATE NEW_USER_REQ_NEW
+                            SET
                                 REQ_STATUS = :requestStatus,
                                 ADMIN_COMMENT = :adminComment
                             WHERE REQ_NBR = :requestNbr";
@@ -710,10 +711,10 @@ namespace S4Analytics.Models
             return emails;
         }
 
-        private List<string> GetFDOTAdmin()
+        private List<string> GetFDOTAdminEmails()
         {
             var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
-                                JOIN USER_ROLE R ON R.ROLE_NM = 'FDOT Admin' 
+                                JOIN USER_ROLE R ON R.ROLE_NM = 'FDOT Admin'
                                 AND R.USER_NM = U.USER_NM";
 
             var emails = (_conn.Query<string>(selectTxt)).ToList();
@@ -727,10 +728,10 @@ namespace S4Analytics.Models
             return emails;
         }
 
-        private List<string> GetHSMVAdmin()
+        private List<string> GetHSMVAdminEmails()
         {
            var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
-                                JOIN USER_ROLE R ON R.ROLE_NM = 'HSMV Admin' 
+                                JOIN USER_ROLE R ON R.ROLE_NM = 'HSMV Admin'
                                 AND R.USER_NM = U.USER_NM";
 
             var emails = (_conn.Query<string>(selectTxt)).ToList();

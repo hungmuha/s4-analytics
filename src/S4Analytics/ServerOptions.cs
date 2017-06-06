@@ -18,6 +18,7 @@ namespace S4Analytics
         public string WarehouseConnStr { get { return ConnectionStrings[WarehouseSchema]; } }
         public Dictionary<string, CoordinateSystem_Server> CoordinateSystems { get; set; }
         public EmailOptions EmailOptions { get; set;}
+        public string MembershipApplicationName { get; set; }
     }
 
     public class EmailOptions
