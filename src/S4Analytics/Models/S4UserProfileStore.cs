@@ -4,7 +4,6 @@ using Lib.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Oracle.ManagedDataAccess.Client;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +12,8 @@ namespace S4Analytics.Models
 {
     public class S4UserProfileStore : IProfileStore<S4UserProfile>
     {
+        // TODO: add persistence for sticky settings
+
         private OracleConnection _conn;
         private string _applicationName;
 
@@ -24,33 +25,95 @@ namespace S4Analytics.Models
 
         public async Task<S4UserProfile> FindProfileForUserAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
-            var selectText = @"SELECT
-                  FIRST_NM AS FirstName,
-                  LAST_NM AS LastName,
-                  NAME_SUFFIX AS SuffixName,
-                  CREATED_BY AS CreatedBy,
-                  MODIFIED_BY AS ModifiedBy,
-                  MODIFIED_DT AS ModifiedDate,
-                  CASE FORCE_PASSWORD_CHANGE WHEN 'Y' THEN 1 ELSE 0 END AS ForcePasswordChange,
-                  CASE TIME_LIMITED_ACCOUNT_CD WHEN 'Y' THEN 1 ELSE 0 END AS TimeLimitedAccount,
-                  ACCOUNT_START_DT AS AccountStartDate,
-                  ACCOUNT_EXPIRATION_DT AS AccountExpirationDate,
-                  EMAIL AS EmailAddress,
-                  CREATED_DT AS CreatedDate,
-                  CAN_VIEW AS CrashReportAccess
-                FROM
-                  S4_USER
+            var selectText = @"BEGIN
+              OPEN :q1 FOR
+                SELECT
+                FIRST_NM AS FirstName,
+                LAST_NM AS LastName,
+                NAME_SUFFIX AS SuffixName,
+                CREATED_BY AS CreatedBy,
+                MODIFIED_BY AS ModifiedBy,
+                MODIFIED_DT AS ModifiedDate,
+                CASE FORCE_PASSWORD_CHANGE WHEN 'Y' THEN 1 ELSE 0 END AS ForcePasswordChange,
+                CASE TIME_LIMITED_ACCOUNT_CD WHEN 'Y' THEN 1 ELSE 0 END AS TimeLimitedAccount,
+                ACCOUNT_START_DT AS AccountStartDate,
+                ACCOUNT_EXPIRATION_DT AS AccountExpirationDate,
+                EMAIL AS EmailAddress,
+                CREATED_DT AS CreatedDate,
+                CAN_VIEW AS CrashReportAccess
+                FROM S4_USER
                 WHERE APPLICATION_NM = :appName
-                AND USER_NM = :userName";
+                AND USER_NM = :userName;
+              OPEN :q2 FOR
+                SELECT
+                  uc.CNTY_CD AS CountyCode,
+                  s4_cnty.cnty_nm AS CountyName,
+                  uc.CAN_VIEW AS CrashReportAccess,
+                  CASE uc.CAN_EDIT WHEN 'Y' THEN 1 ELSE 0 END AS CanEdit,
+                  uc.CREATED_BY AS CreatedBy,
+                  uc.CREATED_DT AS CreatedDate,
+                  uc.MODIFIED_BY AS ModifiedBy,
+                  uc.MODIFIED_DT AS ModifiedDate
+                FROM
+                  USER_CNTY uc
+                INNER JOIN S4_CNTY
+                  ON S4_CNTY.CNTY_CD = uc.CNTY_CD
+                WHERE APPLICATION_NM = :appName
+                AND USER_NM = :userName;
+              OPEN :q3 FOR
+                SELECT
+                ag.agncy_id AS AGENCYID,
+                ag.agncy_nm AS AGENCYNAME,
+                ag.agncy_type_cd AS AGENCYTYPECD,
+                ag.created_by AS CREATEDBY,
+                ag.created_dt AS CREATEDDT,
+                CASE WHEN ag.is_active = 'Y' THEN 1 ELSE 0 END AS ISACTIVE,
+                ag.parent_agncy_id AS PARENTAGENCYID,
+                ag.can_view AS CRASHREPORTACCESS,
+                ag.email_domain AS EMAILDOMAIN
+                FROM S4_AGNCY ag
+                INNER JOIN s4_user u
+                    ON u.agncy_id = ag.agncy_id
+                WHERE APPLICATION_NM = :appName
+                AND u.user_nm = :userName;
+              OPEN :q4 FOR
+                SELECT
+                co.CONTRACTOR_ID as contractorId,
+                co.CONTRACTOR_NM as contractorName,
+                co.CREATED_BY as createdBy,
+                co.CREATED_DT as createdDate,
+                co.EMAIL_DOMAIN as emailDomain,
+                CASE WHEN co.IS_ACTIVE = 'Y' THEN 1 ELSE 0 END AS isActive
+                FROM CONTRACTOR co
+                INNER JOIN s4_user u
+                ON u.contractor_id = co.contractor_id
+                WHERE APPLICATION_NM = :appName
+                AND u.user_nm = :userName;
+              OPEN :q5 FOR
+                SELECT
+                  AGREEMENT_NM AS AgreementName,
+                  AGREEMENT_SIGNED_DT AS SignedDate,
+                  AGREEMENT_EXPIRATION_DT AS ExpirationDate
+                FROM
+                  USER_AGREEMENT
+                WHERE APPLICATION_NM = :appName
+                AND USER_NM = :userName;
+            END;";
 
-            var profile = await _conn.QueryFirstOrDefaultAsync<S4UserProfile>(selectText, new { appName = _applicationName, user.UserName });
+            string[] refCursorNames = { "q1", "q2", "q3", "q4", "q5" };
+            var queryParams = new OracleDynamicParameters(new { appName = _applicationName, user.UserName }, refCursorNames);
 
-            if (profile != null)
+            S4UserProfile profile;
+            using (var multi = await _conn.QueryMultipleAsync(selectText, queryParams))
             {
-                profile.ViewableCounties = GetCountiesForUser(user.UserName);
-                profile.Agency = GetAgencyForUser(user.UserName);
-                profile.ContractorCompany = GetContractorForUser(user.UserName);
-                profile.Agreements = GetAgreementsForUser(user.UserName);
+                profile = multi.ReadFirstOrDefault<S4UserProfile>();
+                if (profile != null)
+                {
+                    profile.ViewableCounties = multi.Read<UserCounty>().ToList();
+                    profile.Agency = multi.ReadFirstOrDefault<Agency>();
+                    profile.ContractorCompany = multi.ReadFirstOrDefault<Contractor>();
+                    profile.Agreements = multi.Read<UserAgreement>().ToList();
+                }
             }
 
             return profile;
@@ -58,6 +121,11 @@ namespace S4Analytics.Models
 
         public async Task<IdentityResult> CreateProfileAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
+            if (user.NormalizedEmail != user.Profile.EmailAddress.ToLower())
+            {
+                throw new Exception("User and profile email addresses are not in sync.");
+            }
+
             // INSERT INTO S4_USER
             var insertTxt = @"INSERT INTO S4_USER
                 (APPLICATION_NM, USER_NM, FIRST_NM, LAST_NM, NAME_SUFFIX,
@@ -76,36 +144,29 @@ namespace S4Analytics.Models
                     user.Profile.FirstName,
                     user.Profile.LastName,
                     user.Profile.SuffixName,
-                    user.Profile.CreatedBy,
+                    createdBy = "TBD",
+                    createdDate = DateTime.Now,
                     forcePasswordChange = user.Profile.ForcePasswordChange ? "Y" : "N",
                     timeLimitedAccount = user.Profile.TimeLimitedAccount ? "Y" : "N",
                     user.Profile.AccountStartDate,
                     user.Profile.AccountExpirationDate,
-                    agencyId = user.Profile.Agency.AgencyId,
+                    agencyId = user.Profile.Agency == null ? null : (int?)user.Profile.Agency.AgencyId,
                     contractorId = user.Profile.ContractorCompany == null ? null : (int?)user.Profile.ContractorCompany.ContractorId,
                     emailAddress = user.Profile.EmailAddress,
-                    createdDate = user.Profile.CreatedDate,
                     user.Profile.CrashReportAccess,
                     appNm = _applicationName
                 });
 
-            // INSERT INTO USER_CNTY
-            insertTxt = @"INSERT INTO USER_CNTY
-			(APPLICATION_NM, USER_NM, CNTY_CD, CAN_VIEW, CAN_EDIT, CREATED_BY, CREATED_DT)
-			VALUES (:appNm, :userName, :cntyCd, :canView, :canEdit, :createdBy, :createdDate)";
-
-            foreach (UserCounty cnty in user.Profile.ViewableCounties)
+            // MERGE INTO USER_CNTY
+            foreach (var county in user.Profile.ViewableCounties)
             {
-                await _conn.ExecuteAsync(insertTxt, new
-                {
-                    user.UserName,
-                    cnty.CountyCode,
-                    canView = cnty.CrashReportAccess,
-                    canEdit = cnty.CanEdit ? "Y" : "N",
-                    cnty.CreatedBy,
-                    cnty.CreatedDate,
-                    appNm = _applicationName
-                });
+                MergeUserCounty(user.UserName, county);
+            }
+
+            // MERGE INTO USER_AGREEMENT
+            foreach (var agreement in user.Profile.Agreements)
+            {
+                MergeUserAgreement(user.UserName, agreement);
             }
 
             return IdentityResult.Success;
@@ -113,33 +174,51 @@ namespace S4Analytics.Models
 
         public async Task<IdentityResult> UpdateProfileAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
-            // UPDATE S4_USER
+            if (user.NormalizedEmail != user.Profile.EmailAddress.ToLower())
+            {
+                throw new Exception("User and profile email addresses are not in sync.");
+            }
+
+            // TODO: UPDATE S4_USER
             var updateTxt = @"UPDATE S4_USER
-                            SET ACCOUNT_START_DT = :accountStartDate,
-                                ACCOUNT_EXPIRATION_DT = :accountExpirationDate,
-                                MODIFIED_BY = :modifiedBy,
-                                MODIFIED_DT = :modifiedDt,
-                                FORCE_PASSWORD_CHANGE = :pwdChange,
-                                CAN_VIEW = :reportAccess
-                            WHERE USER_NM = :userName";
+                SET FIRST_NM = :firstName,
+                    LAST_NM = :lastName,
+                    NAME_SUFFIX = :suffixName,
+                    FORCE_PASSWORD_CHANGE = :forcePasswordChange,
+                    TIME_LIMITED_ACCOUNT_CD = :timeLimitedAccount,
+                    ACCOUNT_START_DT = :accountStartDate,
+                    ACCOUNT_EXPIRATION_DT = :accountExpirationDate,
+                    AGNCY_ID = :agencyId,
+                    CONTRACTOR_ID = :contractorId,
+                    EMAIL = :emailAddress,
+                    CAN_VIEW = :crashReportAccess,
+                    MODIFIED_BY = :modifiedBy,
+                    MODIFIED_DT = :modifiedDate
+                WHERE APPLICATION_NM = :appName
+                AND USER_NM = :userName";
 
-            await _conn.ExecuteAsync(updateTxt,
-                new
-                {
-                    user.UserName,
-                    user.Profile.AccountStartDate,
-                    user.Profile.AccountExpirationDate,
-                    modifiedDt = DateTime.Now,
-                    modifiedBy = "tbd",
-                    pwdChange = "Y",
-                    reportAccess = user.Profile.CrashReportAccess
-                }
-             );
+            await _conn.ExecuteAsync(updateTxt, new {
+                user.Profile.FirstName,
+                user.Profile.LastName,
+                user.Profile.SuffixName,
+                forcePasswordChange = user.Profile.ForcePasswordChange ? "Y" : "N",
+                timeLimitedAccount = user.Profile.TimeLimitedAccount ? "Y" : "N",
+                user.Profile.AccountStartDate,
+                user.Profile.AccountExpirationDate,
+                agencyId = user.Profile.Agency == null ? null : (int?)user.Profile.Agency.AgencyId,
+                contractorId = user.Profile.ContractorCompany == null ? null : (int?)user.Profile.ContractorCompany.ContractorId,
+                user.Profile.EmailAddress,
+                user.Profile.CrashReportAccess,
+                modifiedBy = "TBD",
+                modifiedDate = DateTime.Now,
+                appName = _applicationName,
+                user.UserName
+            });
 
-            // INSERT/UPDATE USER_CNTY
+            // MERGE INTO USER_CNTY
             foreach (var county in user.Profile.ViewableCounties)
             {
-                UpdateUserCounty(user.UserName, county);
+                MergeUserCounty(user.UserName, county);
             }
 
             // DELETE USER_CNTY
@@ -156,10 +235,10 @@ namespace S4Analytics.Models
                 countyCodes = user.Profile.ViewableCounties.Select(c => c.CountyCode)
             });
 
-            // INSERT/UPDATE USER_AGREEMENT
+            // MERGE INTO USER_AGREEMENT
             foreach (var agreement in user.Profile.Agreements)
             {
-                UpdateUserAgreement(user.UserName, agreement);
+                MergeUserAgreement(user.UserName, agreement);
             }
 
             return IdentityResult.Success;
@@ -184,85 +263,7 @@ namespace S4Analytics.Models
             return IdentityResult.Success;
         }
 
-        private Agency GetAgencyForUser(string userName)
-        {
-            var selectTxt = @"SELECT
-                ag.agncy_id AS AGENCYID,
-                ag.agncy_nm AS AGENCYNAME,
-                ag.agncy_type_cd AS AGENCYTYPECD,
-                ag.created_by AS CREATEDBY,
-                ag.created_dt AS CREATEDDT,
-                CASE WHEN ag.is_active = 'Y' THEN 1 ELSE 0 END AS ISACTIVE,
-                ag.parent_agncy_id AS PARENTAGENCYID,
-                ag.can_view AS CRASHREPORTACCESS,
-                ag.email_domain AS EMAILDOMAIN
-                FROM S4_AGNCY ag
-                INNER JOIN s4_user u
-                    ON u.agncy_id = ag.agncy_id
-                WHERE APPLICATION_NM = :appName
-                AND u.user_nm = :userName";
-
-            var agency = _conn.QueryFirstOrDefault<Agency>(selectTxt, new { appName = _applicationName, userName });
-            return agency;
-        }
-
-        private Contractor GetContractorForUser(string userName)
-        {
-            var selectTxt = @"SELECT
-                co.CONTRACTOR_ID as contractorId,
-                co.CONTRACTOR_NM as contractorName,
-                co.CREATED_BY as createdBy,
-                co.CREATED_DT as createdDate,
-                co.EMAIL_DOMAIN as emailDomain,
-                CASE WHEN co.IS_ACTIVE = 'Y' THEN 1 ELSE 0 END AS isActive
-                FROM CONTRACTOR co
-                INNER JOIN s4_user u
-                ON u.contractor_id = co.contractor_id
-                WHERE APPLICATION_NM = :appName
-                AND u.user_nm = :userName";
-
-            var contractor = _conn.QueryFirstOrDefault<Contractor>(selectTxt, new { appName = _applicationName, userName });
-            return contractor;
-        }
-
-        private List<UserCounty> GetCountiesForUser(string userName)
-        {
-            var selectTxt = @"SELECT
-                  uc.CNTY_CD AS CountyCode,
-                  s4_cnty.cnty_nm AS CountyName,
-                  uc.CAN_VIEW AS CrashReportAccess,
-                  CASE uc.CAN_EDIT WHEN 'Y' THEN 1 ELSE 0 END AS CanEdit,
-                  uc.CREATED_BY AS CreatedBy,
-                  uc.CREATED_DT AS CreatedDate,
-                  uc.MODIFIED_BY AS ModifiedBy,
-                  uc.MODIFIED_DT AS ModifiedDate
-                FROM
-                  USER_CNTY uc
-                INNER JOIN S4_CNTY
-                  ON S4_CNTY.CNTY_CD = uc.CNTY_CD
-                WHERE APPLICATION_NM = :appName
-                AND USER_NM = :userName";
-
-            var counties = _conn.Query<UserCounty>(selectTxt, new { appName = _applicationName, userName }).ToList();
-            return counties;
-        }
-
-        private List<UserAgreement> GetAgreementsForUser(string userName)
-        {
-            var selectText = @"SELECT
-                  AGREEMENT_NM AS AgreementName,
-                  AGREEMENT_SIGNED_DT AS AgreementSignedDate,
-                  AGREEMENT_EXPIRATION_DT AS AgreementExpirationDate
-                FROM
-                  USER_AGREEMENT
-                WHERE APPLICATION_NM = :appName
-                AND USER_NM = :userName";
-
-            var agreements = _conn.Query<UserAgreement>(selectText, new { appName = _applicationName, userName }).ToList();
-            return agreements;
-        }
-
-        private IdentityResult UpdateUserAgreement(string userName, UserAgreement agreement)
+        private IdentityResult MergeUserAgreement(string userName, UserAgreement agreement)
         {
             var cmdText = @"MERGE INTO user_agreement ua
                 USING (
@@ -293,7 +294,7 @@ namespace S4Analytics.Models
             return IdentityResult.Success;
         }
 
-        private IdentityResult UpdateUserCounty(string userName, UserCounty county)
+        private IdentityResult MergeUserCounty(string userName, UserCounty county)
         {
             var cmdText = @"MERGE INTO user_cnty uc
                 USING (
@@ -302,11 +303,7 @@ namespace S4Analytics.Models
                     :userName AS user_nm,
                     :countyCode AS cnty_cd,
                     :canView AS can_view,
-                    :canEdit AS can_edit,
-                    :createdBy AS created_by,
-                    :createdDate AS created_dt,
-                    :modifiedBy AS modified_by,
-                    :modifiedDate AS modified_dt
+                    :canEdit AS can_edit
                   FROM dual
                 ) x
                 ON (x.application_nm = uc.application_nm
@@ -315,13 +312,11 @@ namespace S4Analytics.Models
                 WHEN MATCHED THEN UPDATE SET
                   uc.can_view = x.can_view,
                   uc.can_edit = x.can_edit,
-                  uc.created_by = x.created_by,
-                  uc.created_dt = x.created_dt,
-                  uc.modified_by = x.modified_by,
-                  uc.modified_dt = x.modified_dt
+                  uc.modified_by = :currentUserName,
+                  uc.modified_dt = :currentTime
                 WHEN NOT MATCHED THEN INSERT
-                  (uc.application_nm, uc.user_nm, uc.cnty_cd, uc.can_view, uc.can_edit, uc.created_by, uc.created_dt, uc.modified_by, uc.modified_dt)
-                  VALUES (x.application_nm, x.user_nm, x.cnty_cd, x.can_view, x.can_edit, x.created_by, x.created_dt, x.modified_by, x.modified_dt)";
+                  (uc.application_nm, uc.user_nm, uc.cnty_cd, uc.can_view, uc.can_edit, uc.created_by, uc.created_dt)
+                  VALUES (x.application_nm, x.user_nm, x.cnty_cd, x.can_view, x.can_edit, :currentUserName, :currentTime)";
             _conn.Execute(cmdText, new
             {
                 appName = _applicationName,
@@ -329,10 +324,8 @@ namespace S4Analytics.Models
                 county.CountyCode,
                 canView = county.CrashReportAccess,
                 canEdit = county.CanEdit ? "Y" : "N",
-                county.CreatedBy,
-                county.CreatedDate,
-                county.ModifiedBy,
-                county.ModifiedDate
+                currentUserName = "TBD",
+                currentTime = DateTime.Now
             });
             return IdentityResult.Success;
         }

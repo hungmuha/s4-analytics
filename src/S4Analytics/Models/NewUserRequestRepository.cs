@@ -246,7 +246,6 @@ namespace S4Analytics.Models
             var user = await _userStore.FindByNameAsync(userName, token);
 
             user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
-            user.Profile.Active = true;
 
             var passwordText = GenerateRandomPassword(8, 0);
             var passwordHash = _passwordHasher.HashPassword(user, passwordText);
@@ -518,7 +517,6 @@ namespace S4Analytics.Models
 
             profile.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
             profile.CreatedDate = DateTime.Now;
-            profile.Active = true;
 
             return profile;
         }
@@ -582,7 +580,8 @@ namespace S4Analytics.Models
                 LastName = request.RequestorLastNm,
                 SuffixName = request.RequestorSuffixNm,
                 CrashReportAccess = (request.AccessBefore70Days)?CrashReportAccess.Within60Days:CrashReportAccess.After60Days,
-                Agency = GetAgency(request.AgncyId)
+                Agency = GetAgency(request.AgncyId),
+                ForcePasswordChange = true
             };
 
             profile.ViewableCounties = profile.Agency.DefaultViewableCounties;
@@ -602,7 +601,8 @@ namespace S4Analytics.Models
                 AccountExpirationDate = request.ContractEndDt,
                 CrashReportAccess = (request.AccessBefore70Days)?CrashReportAccess.Within60Days:CrashReportAccess.After60Days,
                 Agency = GetAgency(request.AgncyId),
-                ContractorCompany = GetContractor(request.ContractorId)
+                ContractorCompany = GetContractor(request.ContractorId),
+                ForcePasswordChange = true
             };
 
             profile.ViewableCounties = profile.Agency.DefaultViewableCounties;

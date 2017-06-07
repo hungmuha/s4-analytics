@@ -41,7 +41,6 @@ namespace S4Analytics.Models
     {
         public DateTime? AccountExpirationDate { get; set; }
         public DateTime? AccountStartDate { get; set; }
-        public bool Active { get; set; }
         public List<UserAgreement> Agreements { get; set; }
         public Agency Agency { get; set; }
         public Contractor ContractorCompany { get; set; }
@@ -54,7 +53,6 @@ namespace S4Analytics.Models
         public string LastName { get; set; }
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
-        public bool ReadOnly { get; set; }
         public bool TimeLimitedAccount { get; set; }
         public StickySettings StickySettings { get; set; }
         public CrashReportAccess CrashReportAccess { get; set; }
@@ -101,7 +99,6 @@ namespace S4Analytics.Models
         {
             AccountExpirationDate = null;
             AccountStartDate = null;
-            Active = true;
             Agreements = new List<UserAgreement>();
             Agency = null;
             ContractorCompany = null;
@@ -113,7 +110,6 @@ namespace S4Analytics.Models
             LastName = string.Empty;
             ModifiedBy = string.Empty;
             ModifiedDate = null;
-            ReadOnly = true;
             SuffixName = string.Empty;
             TimeLimitedAccount = false;
             ViewableCounties = new List<UserCounty>();
