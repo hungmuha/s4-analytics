@@ -10,17 +10,33 @@ using System.Threading.Tasks;
 
 namespace S4Analytics.Models
 {
-    public class S4UserProfileStore : IProfileStore<S4UserProfile>
+    public class S4UserProfileStore : IProfileStore<S4UserProfile>, IDisposable
     {
         // TODO: add persistence for sticky settings
 
-        private OracleConnection _conn;
+        private OracleConnection _connection;
         private string _applicationName;
+        private bool _connectionCreatedInternally;
 
-        public S4UserProfileStore(OracleConnection conn, string applicationName)
+        public S4UserProfileStore(string applicationName, string connectionString)
         {
-            _conn = conn;
             _applicationName = applicationName;
+            _connectionCreatedInternally = true;
+            _connection = new OracleConnection(connectionString);
+        }
+
+        public S4UserProfileStore(string applicationName, OracleConnection connection)
+        {
+            _applicationName = applicationName;
+            _connection = connection;
+        }
+
+        public void Dispose()
+        {
+            if (_connectionCreatedInternally)
+            {
+                _connection.Close();
+            }
         }
 
         public async Task<S4UserProfile> FindProfileForUserAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
@@ -104,7 +120,7 @@ namespace S4Analytics.Models
             var queryParams = new OracleDynamicParameters(new { appName = _applicationName, user.UserName }, refCursorNames);
 
             S4UserProfile profile;
-            using (var multi = await _conn.QueryMultipleAsync(selectText, queryParams))
+            using (var multi = await _connection.QueryMultipleAsync(selectText, queryParams))
             {
                 profile = multi.ReadFirstOrDefault<S4UserProfile>();
                 if (profile != null)
@@ -137,7 +153,7 @@ namespace S4Analytics.Models
                 :accountStartDate, :accountExpirationDate, :agencyId, :emailAddress,
                 :createdDate, :crashReportAccess, :contractorId)";
 
-            await _conn.ExecuteAsync(insertTxt,
+            await _connection.ExecuteAsync(insertTxt,
                 new
                 {
                     user.UserName,
@@ -197,7 +213,7 @@ namespace S4Analytics.Models
                 WHERE APPLICATION_NM = :appName
                 AND USER_NM = :userName";
 
-            await _conn.ExecuteAsync(updateTxt, new {
+            await _connection.ExecuteAsync(updateTxt, new {
                 user.Profile.FirstName,
                 user.Profile.LastName,
                 user.Profile.SuffixName,
@@ -229,7 +245,7 @@ namespace S4Analytics.Models
             {
                 deleteText += " AND cnty_cd NOT IN :countyCodes";
             }
-            _conn.Execute(deleteText, new {
+            _connection.Execute(deleteText, new {
                 appName = _applicationName,
                 user.UserName,
                 countyCodes = user.Profile.ViewableCounties.Select(c => c.CountyCode)
@@ -250,15 +266,15 @@ namespace S4Analytics.Models
 
             // DELETE FROM USER_CNTY
             var deleteTxt = @"DELETE FROM user_cnty WHERE application_nm = :appName AND user_nm = :userName";
-            await _conn.ExecuteAsync(deleteTxt, @params);
+            await _connection.ExecuteAsync(deleteTxt, @params);
 
             // DELETE FROM USER_AGREEMENT
             deleteTxt = @"DELETE FROM user_agreement WHERE application_nm = :appName AND user_nm = :userName";
-            await _conn.ExecuteAsync(deleteTxt, @params);
+            await _connection.ExecuteAsync(deleteTxt, @params);
 
             // DELETE FROM S4_USER
             deleteTxt = @"DELETE FROM s4_user WHERE application_nm = :appName AND user_nm = :userName";
-            await _conn.ExecuteAsync(deleteTxt, @params);
+            await _connection.ExecuteAsync(deleteTxt, @params);
 
             return IdentityResult.Success;
         }
@@ -284,7 +300,7 @@ namespace S4Analytics.Models
                 WHEN NOT MATCHED THEN INSERT
                   (ua.application_nm, ua.user_nm, ua.agreement_nm, ua.agreement_signed_dt, ua.agreement_expiration_dt)
                   VALUES (x.application_nm, x.user_nm, x.agreement_nm, x.agreement_signed_dt, x.agreement_expiration_dt)";
-            _conn.Execute(cmdText, new {
+            _connection.Execute(cmdText, new {
                 appName = _applicationName,
                 userName,
                 agreement.AgreementName,
@@ -317,7 +333,7 @@ namespace S4Analytics.Models
                 WHEN NOT MATCHED THEN INSERT
                   (uc.application_nm, uc.user_nm, uc.cnty_cd, uc.can_view, uc.can_edit, uc.created_by, uc.created_dt)
                   VALUES (x.application_nm, x.user_nm, x.cnty_cd, x.can_view, x.can_edit, :currentUserName, :currentTime)";
-            _conn.Execute(cmdText, new
+            _connection.Execute(cmdText, new
             {
                 appName = _applicationName,
                 userName,

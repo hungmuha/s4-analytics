@@ -14,8 +14,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using S4Analytics.Models;
 using System;
-using System.IO;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace S4Analytics
@@ -59,6 +59,11 @@ namespace S4Analytics
                 options.CookieHttpOnly = true;
             });
 
+            // Add options.
+            services.AddOptions();
+            services.Configure<ServerOptions>(Configuration.GetSection("App"));
+            services.Configure<ClientOptions>(Configuration.GetSection("App"));
+
             // Do not redirect to login for unauthorized API call; return Unauthorized status code instead.
             // http://stackoverflow.com/questions/34770886/mvc6-unauthorized-results-in-redirect-instead
             services.Configure<IdentityOptions>(identityOptions =>
@@ -83,15 +88,23 @@ namespace S4Analytics
                 };
             });
 
+            // Add and configure profile store
+            services.AddSingleton<IProfileStore<S4UserProfile>>(provider =>
+            {
+                var options = provider.GetService<IOptions<ServerOptions>>();
+                return new S4UserProfileStore(options.Value.MembershipApplicationName, options.Value.WarehouseConnStr);
+            });
+
             // Add and configure Oracle user store.
             services.AddSingleton<IUserStore<S4IdentityUser<S4UserProfile>>>(provider => {
                 var options = provider.GetService<IOptions<ServerOptions>>();
+                var profileStore = provider.GetService<IProfileStore<S4UserProfile>>();
                 return new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(
                     options.Value.MembershipApplicationName,
                     options.Value.WarehouseConnStr,
                     options.Value.MembershipConnStr,
-                    "",
-                    null);
+                    "TBD",
+                    profileStore);
             });
 
             services.AddSingleton(
@@ -120,21 +133,13 @@ namespace S4Analytics
             services.AddSingleton<IdentityMarkerService>();
             services.AddSingleton<IUserValidator<S4IdentityUser<S4UserProfile>>, UserValidator<S4IdentityUser<S4UserProfile>>>();
             services.AddSingleton<IPasswordValidator<S4IdentityUser<S4UserProfile>>, PasswordValidator<S4IdentityUser<S4UserProfile>>>();
-            services.AddSingleton<IPasswordHasher<S4BaseUser>, S4PasswordHasher<S4BaseUser>>();
+            services.AddSingleton<IPasswordHasher<S4IdentityUser<S4UserProfile>>, S4PasswordHasher<S4IdentityUser<S4UserProfile>>>();
             services.AddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
             services.AddSingleton<IdentityErrorDescriber>();
             services.AddSingleton<UserManager<S4IdentityUser<S4UserProfile>>>();
             services.AddSingleton<RoleManager<S4IdentityRole>>();
+            services.AddSingleton<IUserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>, UserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>>();
             services.AddScoped<SignInManager<S4IdentityUser<S4UserProfile>>>();
-
-            services.AddIdentity<S4IdentityUser<S4UserProfile>, S4IdentityRole>()
-                .AddUserStore<S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>>()
-                .AddDefaultTokenProviders();
-
-            // Add options.
-            services.AddOptions();
-            services.Configure<ServerOptions>(Configuration.GetSection("App"));
-            services.Configure<ClientOptions>(Configuration.GetSection("App"));
 
             // Add repositories.
             services.AddSingleton<INewUserRequestRepository, NewUserRequestRepository>();
@@ -227,6 +232,24 @@ namespace S4Analytics
                             ? GetSimpleSerializableException(ex.InnerException)
                             : null
                 };
+            }
+        }
+
+        /// <summary>
+        /// This class implements IUserClaimsPrincipalFactory in the
+        /// most minimal posible way. It only exists because SignInManager
+        /// throws an exception otherwise.
+        /// </summary>
+        /// <typeparam name="TUser"></typeparam>
+        public class UserClaimsPrincipalFactory<TUser> : IUserClaimsPrincipalFactory<TUser>
+            where TUser : class
+        {
+            public Task<ClaimsPrincipal> CreateAsync(TUser user)
+            {
+                // return an empty claims principal
+                var claimsIdentity = new ClaimsIdentity();
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                return Task.FromResult(claimsPrincipal);
             }
         }
     }

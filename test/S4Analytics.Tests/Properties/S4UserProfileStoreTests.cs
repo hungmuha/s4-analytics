@@ -24,7 +24,7 @@ namespace S4Analytics.Tests.Properties
         internal readonly S4UserProfileStore ProfileStore;
 
         public S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile> UserStore { get; set; }
-        public IPasswordHasher<S4BaseUser> PasswordHasher { get; set; }
+        public IPasswordHasher<S4IdentityUser<S4UserProfile>> PasswordHasher { get; set; }
 
         public S4UserProfileStoreFixture()
         {
@@ -36,7 +36,7 @@ namespace S4Analytics.Tests.Properties
 
             ProfileStore = new S4UserProfileStore(Connection, appName);
             UserStore = new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(appName, Connection, MembershipConnection, "", ProfileStore);
-            PasswordHasher = new S4PasswordHasher<S4BaseUser>();
+            PasswordHasher = new S4PasswordHasher<S4IdentityUser<S4UserProfile>>();
         }
 
         public void Dispose()
@@ -50,7 +50,7 @@ namespace S4Analytics.Tests.Properties
         private readonly OracleTransaction _trans;
         private readonly OracleTransaction _membershipTrans;
         private readonly S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile> _userStore;
-        private readonly IPasswordHasher<S4BaseUser> _passwordHasher;
+        private readonly IPasswordHasher<S4IdentityUser<S4UserProfile>> _passwordHasher;
         private readonly S4UserProfileStore _profileStore;
 
         public S4UserProfileStoreTests(S4UserProfileStoreFixture fixture)

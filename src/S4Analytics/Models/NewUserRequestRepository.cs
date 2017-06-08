@@ -24,7 +24,7 @@ namespace S4Analytics.Models
         private IUserEmailStore<S4IdentityUser<S4UserProfile>> _userEmailStore;
         private IUserPasswordStore<S4IdentityUser<S4UserProfile>> _userPasswordStore;
         private IUserRoleStore<S4IdentityUser<S4UserProfile>> _userRoleStore;
-        private IPasswordHasher<S4BaseUser> _passwordHasher;
+        private IPasswordHasher<S4IdentityUser<S4UserProfile>> _passwordHasher;
         private SmtpClient _smtp;
         private string _globalAdminEmail;
         private string _supportEmail;
@@ -35,7 +35,7 @@ namespace S4Analytics.Models
             IUserEmailStore<S4IdentityUser<S4UserProfile>> userEmailStore,
             IUserPasswordStore<S4IdentityUser<S4UserProfile>> userPasswordStore,
             IUserRoleStore<S4IdentityUser<S4UserProfile>> userRoleStore,
-            IPasswordHasher<S4BaseUser> passwordHasher)
+            IPasswordHasher<S4IdentityUser<S4UserProfile>> passwordHasher)
         {
             _applicationName = serverOptions.Value.MembershipApplicationName;
             _connStr = serverOptions.Value.WarehouseConnStr;
@@ -121,7 +121,7 @@ namespace S4Analytics.Models
             var passwordHash = _passwordHasher.HashPassword(user, passwordText);
             await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
 
-            await _userEmailStore.SetEmailAsync(user, request.RequestorEmail, token);
+            await _userEmailStore.SetEmailAsync(user, user.Profile.EmailAddress, token);
 
             // TODO: need to be more generic here -hard coded for testing
             // TODO: If user is for a New Agency, then also need to create an Agency Admin role
@@ -193,7 +193,7 @@ namespace S4Analytics.Models
             var passwordHash = _passwordHasher.HashPassword(user, passwordText);
             await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
 
-            await _userEmailStore.SetEmailAsync(user, request.ConsultantEmail, token);
+            await _userEmailStore.SetEmailAsync(user, user.Profile.EmailAddress, token);
 
             // TODO: need to be more generic here -hard coded for testing
             // TODO: If user is for a New Agency, then also need to create an Agency Admin role
@@ -245,13 +245,16 @@ namespace S4Analytics.Models
             var token = new CancellationToken();
             var user = await _userStore.FindByNameAsync(userName, token);
 
+            user.Profile.AccountStartDate = request.ContractStartDt;
+            user.Profile.AccountExpirationDate = request.ContractEndDt;
+            user.Profile.EmailAddress = request.ConsultantEmail;
             user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
             var passwordText = GenerateRandomPassword(8, 0);
             var passwordHash = _passwordHasher.HashPassword(user, passwordText);
             await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
 
-            await _userEmailStore.SetEmailAsync(user, request.ConsultantEmail, token);
+            await _userEmailStore.SetEmailAsync(user, user.Profile.EmailAddress, token);
 
             // TODO: need to be more generic here -hard coded for testing
             // TODO: If user is for a New Agency, then also need to create an Agency Admin role
@@ -489,8 +492,8 @@ namespace S4Analytics.Models
                             CASE WHEN u.contractor_id = 0 THEN u.new_contractor_nm ELSE c.contractor_nm END contractornm,
                             CASE WHEN u.contractor_id = 0 THEN u.new_contractor_email_domain_tx ELSE c.email_domain END ContractorEmailDomain,
                             u.access_reason_tx AS accessreasontx,
-                            u.contract_end_dt AS contractstartdt,
-                            u.contract_start_dt AS contractenddt,
+                            u.contract_start_dt AS contractstartdt,
+                            u.contract_end_dt AS contractenddt,
                             CASE WHEN u.warn_requestor_email_cd = 'Y' THEN 1 ELSE 0 END AS warnrequestoremailcd,
                             CASE WHEN u.warn_consultant_email_cd = 'Y' THEN 1 ELSE 0 END AS warnconsultantemailcd,
                             CASE WHEN u.warn_duplicate_email_cd = 'Y' THEN 1 ELSE 0 END as warnduplicateemailcd,
