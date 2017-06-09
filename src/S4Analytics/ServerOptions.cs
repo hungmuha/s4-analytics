@@ -10,12 +10,15 @@ namespace S4Analytics
 
     public class ServerOptions
     {
+        public string MembershipSchema { get; set; }
         public string WarehouseSchema { get; set; }
         public string SpatialSchema { get; set; }
         public Dictionary<string, string> ConnectionStrings { get; set; }
+        public string MembershipConnStr { get { return ConnectionStrings[MembershipSchema]; } }
         public string WarehouseConnStr { get { return ConnectionStrings[WarehouseSchema]; } }
         public Dictionary<string, CoordinateSystem_Server> CoordinateSystems { get; set; }
         public EmailOptions EmailOptions { get; set;}
+        public string MembershipApplicationName { get; set; }
     }
 
     public class EmailOptions

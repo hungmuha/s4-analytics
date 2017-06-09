@@ -1,7 +1,9 @@
 ﻿using Dapper;
+using Lib.Identity.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace S4Analytics.Models
 {
@@ -94,6 +96,33 @@ namespace S4Analytics.Models
             return value == null
                 ? default(T)
                 : JsonConvert.DeserializeObject<T>(value, serializerSettings);
+        }
+
+        // there is probably a better place for the methods below
+
+        public static bool IsAgencyAdmin(this S4IdentityUser<S4UserProfile> user)
+        {
+            return user.Roles.Any(role => role.RoleName == RoleNames.AgencyAdmin);
+        }
+
+        public static bool IsGlobalAdmin(this S4IdentityUser<S4UserProfile> user)
+        {
+            return user.Roles.Any(role => role.RoleName == RoleNames.GlobalAdmin);
+        }
+
+        public static bool IsEditor(this S4IdentityUser<S4UserProfile> user)
+        {
+            return user.Roles.Any(role => role.RoleName == RoleNames.Editor);
+        }
+
+        public static bool IsPbcatEditor(this S4IdentityUser<S4UserProfile> user)
+        {
+            return user.Roles.Any(role => role.RoleName == RoleNames.PbcatEditor);
+        }
+
+        public static bool IsGuest(this S4IdentityUser<S4UserProfile> user)
+        {
+            return user.Roles.Any(role => role.RoleName == RoleNames.Guest);
         }
     }
 }

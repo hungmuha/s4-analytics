@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using GeoJSON.Net.Feature;
-using GeoJSON.Net.Geometry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
@@ -13,7 +12,6 @@ namespace S4Analytics.Models
     public class CrashRepository : ICrashRepository
     {
         private readonly string _connStr;
-        private readonly int _esriSrid;
         private readonly string _warehouseSchema;
         private readonly string _spatialSchema;
         private readonly IHttpContextAccessor _httpContextAccessor;

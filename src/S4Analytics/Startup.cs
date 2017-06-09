@@ -1,3 +1,5 @@
+using Lib.Identity;
+using Lib.Identity.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,13 +12,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using S4Analytics.Models;
 using System;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Lib.Identity;
-using Lib.Identity.Models;
-using S4Analytics.Models;
 
 namespace S4Analytics
 {
@@ -59,6 +59,11 @@ namespace S4Analytics
                 options.CookieHttpOnly = true;
             });
 
+            // Add options.
+            services.AddOptions();
+            services.Configure<ServerOptions>(Configuration.GetSection("App"));
+            services.Configure<ClientOptions>(Configuration.GetSection("App"));
+
             // Do not redirect to login for unauthorized API call; return Unauthorized status code instead.
             // http://stackoverflow.com/questions/34770886/mvc6-unauthorized-results-in-redirect-instead
             services.Configure<IdentityOptions>(identityOptions =>
@@ -83,15 +88,39 @@ namespace S4Analytics
                 };
             });
 
-            // Add and configure Oracle user store.
-            services.AddSingleton<IUserStore<S4IdentityUser>>(provider => {
+            // Add and configure profile store
+            services.AddSingleton<IProfileStore<S4UserProfile>>(provider =>
+            {
                 var options = provider.GetService<IOptions<ServerOptions>>();
-                var connStr = options.Value.WarehouseConnStr;
-                return new S4UserStore<S4IdentityUser>("S4_Analytics", connStr, null);
+                return new S4UserProfileStore(options.Value.MembershipApplicationName, options.Value.WarehouseConnStr);
             });
 
+            // Add and configure Oracle user store.
+            services.AddSingleton<IUserStore<S4IdentityUser<S4UserProfile>>>(provider => {
+                var options = provider.GetService<IOptions<ServerOptions>>();
+                var profileStore = provider.GetService<IProfileStore<S4UserProfile>>();
+                return new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(
+                    options.Value.MembershipApplicationName,
+                    options.Value.WarehouseConnStr,
+                    options.Value.MembershipConnStr,
+                    "TBD",
+                    profileStore);
+            });
+
+            services.AddSingleton(
+                provider => (IUserEmailStore<S4IdentityUser<S4UserProfile>>)provider.GetService<IUserStore<S4IdentityUser<S4UserProfile>>>());
+            services.AddSingleton(
+                provider => (IUserPasswordStore<S4IdentityUser<S4UserProfile>>)provider.GetService<IUserStore<S4IdentityUser<S4UserProfile>>>());
+            services.AddSingleton(
+                provider => (IUserRoleStore<S4IdentityUser<S4UserProfile>>)provider.GetService<IUserStore<S4IdentityUser<S4UserProfile>>>());
+
             // Add and configure Oracle role store.
-            services.AddSingleton<IRoleStore<S4UserRole>, S4RoleStore<S4UserRole>>();
+            services.AddSingleton<IRoleStore<S4IdentityRole>>(provider => {
+                var options = provider.GetService<IOptions<ServerOptions>>();
+                return new S4RoleStore<S4IdentityRole>(
+                    options.Value.MembershipApplicationName,
+                    options.Value.WarehouseConnStr);
+            });
 
             // Configure sign-in scheme to use cookies.
             services.AddAuthentication(authOptions =>
@@ -102,21 +131,15 @@ namespace S4Analytics
             // Add identity services.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IdentityMarkerService>();
-            services.AddSingleton<IUserValidator<S4IdentityUser>, UserValidator<S4IdentityUser>>();
-            services.AddSingleton<IPasswordValidator<S4IdentityUser>, PasswordValidator<S4IdentityUser>>();
-            services.AddSingleton<IPasswordHasher<S4IdentityUser>, PasswordHasher<S4IdentityUser>>();
+            services.AddSingleton<IUserValidator<S4IdentityUser<S4UserProfile>>, UserValidator<S4IdentityUser<S4UserProfile>>>();
+            services.AddSingleton<IPasswordValidator<S4IdentityUser<S4UserProfile>>, PasswordValidator<S4IdentityUser<S4UserProfile>>>();
+            services.AddSingleton<IPasswordHasher<S4IdentityUser<S4UserProfile>>, S4PasswordHasher<S4IdentityUser<S4UserProfile>>>();
             services.AddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
             services.AddSingleton<IdentityErrorDescriber>();
-            services.AddSingleton<ISecurityStampValidator, SecurityStampValidator<S4IdentityUser>>();
-            services.AddSingleton<IUserClaimsPrincipalFactory<S4IdentityUser>, UserClaimsPrincipalFactory<S4IdentityUser>>();
-            services.AddSingleton<UserManager<S4IdentityUser>>();
-            services.AddSingleton<RoleManager<S4UserRole>>();
-            services.AddScoped<SignInManager<S4IdentityUser>>();
-
-            // Add options.
-            services.AddOptions();
-            services.Configure<ServerOptions>(Configuration.GetSection("App"));
-            services.Configure<ClientOptions>(Configuration.GetSection("App"));
+            services.AddSingleton<UserManager<S4IdentityUser<S4UserProfile>>>();
+            services.AddSingleton<RoleManager<S4IdentityRole>>();
+            services.AddSingleton<IUserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>, UserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>>();
+            services.AddScoped<SignInManager<S4IdentityUser<S4UserProfile>>>();
 
             // Add repositories.
             services.AddSingleton<INewUserRequestRepository, NewUserRequestRepository>();
@@ -158,66 +181,6 @@ namespace S4Analytics
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
-        }
-
-        private class UserClaimsPrincipalFactory<TUser> : IUserClaimsPrincipalFactory<TUser>
-            where TUser : class
-        {
-            public UserClaimsPrincipalFactory(
-                UserManager<TUser> userManager,
-                IOptions<IdentityOptions> optionsAccessor)
-            {
-                if (userManager == null)
-                {
-                    throw new ArgumentNullException(nameof(userManager));
-                }
-                if (optionsAccessor == null || optionsAccessor.Value == null)
-                {
-                    throw new ArgumentNullException(nameof(optionsAccessor));
-                }
-
-                UserManager = userManager;
-                Options = optionsAccessor.Value;
-            }
-
-            public UserManager<TUser> UserManager { get; private set; }
-
-            public IdentityOptions Options { get; private set; }
-
-            public virtual async Task<ClaimsPrincipal> CreateAsync(TUser user)
-            {
-                if (user == null)
-                {
-                    throw new ArgumentNullException(nameof(user));
-                }
-
-                var userId = await UserManager.GetUserIdAsync(user);
-                var userName = await UserManager.GetUserNameAsync(user);
-                var id = new ClaimsIdentity(Options.Cookies.ApplicationCookieAuthenticationScheme,
-                    Options.ClaimsIdentity.UserNameClaimType,
-                    Options.ClaimsIdentity.RoleClaimType);
-                id.AddClaim(new Claim(Options.ClaimsIdentity.UserIdClaimType, userId));
-                id.AddClaim(new Claim(Options.ClaimsIdentity.UserNameClaimType, userName));
-                if (UserManager.SupportsUserSecurityStamp)
-                {
-                    id.AddClaim(new Claim(Options.ClaimsIdentity.SecurityStampClaimType,
-                        await UserManager.GetSecurityStampAsync(user)));
-                }
-                if (UserManager.SupportsUserRole)
-                {
-                    var roles = await UserManager.GetRolesAsync(user);
-                    foreach (var roleName in roles)
-                    {
-                        id.AddClaim(new Claim(Options.ClaimsIdentity.RoleClaimType, roleName));
-                    }
-                }
-                if (UserManager.SupportsUserClaim)
-                {
-                    id.AddClaims(await UserManager.GetClaimsAsync(user));
-                }
-
-                return new ClaimsPrincipal(id);
-            }
         }
 
         private class CustomJsonExceptionFilter : ExceptionFilterAttribute
@@ -269,6 +232,24 @@ namespace S4Analytics
                             ? GetSimpleSerializableException(ex.InnerException)
                             : null
                 };
+            }
+        }
+
+        /// <summary>
+        /// This class implements IUserClaimsPrincipalFactory in the
+        /// most minimal posible way. It only exists because SignInManager
+        /// throws an exception otherwise.
+        /// </summary>
+        /// <typeparam name="TUser"></typeparam>
+        public class UserClaimsPrincipalFactory<TUser> : IUserClaimsPrincipalFactory<TUser>
+            where TUser : class
+        {
+            public Task<ClaimsPrincipal> CreateAsync(TUser user)
+            {
+                // return an empty claims principal
+                var claimsIdentity = new ClaimsIdentity();
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                return Task.FromResult(claimsPrincipal);
             }
         }
     }

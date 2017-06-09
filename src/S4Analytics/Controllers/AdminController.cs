@@ -2,6 +2,7 @@
 using S4Analytics.Models;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace S4Analytics.Controllers
 {
@@ -70,7 +71,7 @@ namespace S4Analytics.Controllers
         }
 
         [HttpPatch("new-user-request/{id}/approve")]
-        public IActionResult ApproveOther(int id, [FromBody]RequestApproval approval)
+        public async Task<IActionResult> ApproveOther(int id, [FromBody]RequestApproval approval)
         {
             var currentStatus = approval.CurrentStatus;
             var newStatus = approval.NewStatus;
@@ -79,20 +80,20 @@ namespace S4Analytics.Controllers
             switch(currentStatus)
             {
                 case NewUserRequestStatus.NewUser:
-                    return new ObjectResult(_newUserRequestRepo.ApproveNewUser(id, approval));
+                    return new ObjectResult(await _newUserRequestRepo.ApproveNewUser(id, approval));
                 case NewUserRequestStatus.NewContractor:
                     return new ObjectResult(_newUserRequestRepo.ApproveNewContractor(id, approval));
                 case NewUserRequestStatus.CreateAgency:
-                    return new ObjectResult(_newUserRequestRepo.ApproveCreatedNewAgency(id, approval));
+                    return new ObjectResult(await _newUserRequestRepo.ApproveCreatedNewAgency(id, approval));
             }
 
             return null;
         }
 
         [HttpPatch("new-user-request/{id}/approve/consultant")]
-        public IActionResult ApproveConsultant(int id, [FromBody]RequestApproval approval)
+        public async Task<IActionResult> ApproveConsultant(int id, [FromBody]RequestApproval approval)
         {
-            return new ObjectResult(_newUserRequestRepo.ApproveNewConsultant(id, approval));
+            return new ObjectResult(await _newUserRequestRepo.ApproveNewConsultant(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/approve/agency")]

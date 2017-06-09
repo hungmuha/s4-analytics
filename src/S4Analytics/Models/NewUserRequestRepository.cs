@@ -1,38 +1,51 @@
 ﻿using Dapper;
-using Lib.Identity;
+using Lib.Identity.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
+using S4Analytics.Controllers;
 using System;
 using System.Collections.Generic;
-using Lib.Identity.Models;
-using System.Threading;
 using System.Linq;
 using System.Net.Mail;
+using System.Security.Cryptography;
 using System.Text;
-using S4Analytics.Controllers;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace S4Analytics.Models
 {
     public class NewUserRequestRepository : INewUserRequestRepository
     {
-        private const string _applicationName = "S4_Analytics";
+        private string _applicationName;
         private string _connStr;
         private OracleConnection _conn;
-        private S4UserStore<S4IdentityUser> _userStore;
+        private IUserStore<S4IdentityUser<S4UserProfile>> _userStore;
+        private IUserEmailStore<S4IdentityUser<S4UserProfile>> _userEmailStore;
+        private IUserPasswordStore<S4IdentityUser<S4UserProfile>> _userPasswordStore;
+        private IUserRoleStore<S4IdentityUser<S4UserProfile>> _userRoleStore;
+        private IPasswordHasher<S4IdentityUser<S4UserProfile>> _passwordHasher;
         private SmtpClient _smtp;
         private string _globalAdminEmail;
         private string _supportEmail;
 
-        public NewUserRequestRepository(IOptions<ServerOptions> serverOptions)
+        public NewUserRequestRepository(
+            IOptions<ServerOptions> serverOptions,
+            IUserStore<S4IdentityUser<S4UserProfile>> userStore,
+            IUserEmailStore<S4IdentityUser<S4UserProfile>> userEmailStore,
+            IUserPasswordStore<S4IdentityUser<S4UserProfile>> userPasswordStore,
+            IUserRoleStore<S4IdentityUser<S4UserProfile>> userRoleStore,
+            IPasswordHasher<S4IdentityUser<S4UserProfile>> passwordHasher)
         {
+            _applicationName = serverOptions.Value.MembershipApplicationName;
             _connStr = serverOptions.Value.WarehouseConnStr;
             _conn = new OracleConnection(_connStr);
-            _userStore = new S4UserStore<S4IdentityUser>(
-                "S4_Analytics",
-                serverOptions.Value.WarehouseConnStr, null);
 
-            // TODO:  Temporary
-            _userStore.MembershipConnection = new OracleConnection("User Id=app_security_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));");
+            _userStore = userStore;
+            _userEmailStore = userEmailStore;
+            _userPasswordStore = userPasswordStore;
+            _userRoleStore = userRoleStore;
+            _passwordHasher = passwordHasher;
 
             _smtp = new SmtpClient
             {
@@ -72,15 +85,15 @@ namespace S4Analytics.Models
         {
             var selectTxt = GetRequestSelectQuery();
 
-            var cmdText = string.Format(@"{0}
+            var cmdTxt = $@"{selectTxt}
                             FROM new_user_req_new u
                             LEFT JOIN s4_agncy a
                             ON u.agncy_id = a.agncy_id
                             LEFT JOIN contractor c
                             ON c.contractor_id = u.contractor_id
-                            WHERE req_nbr = :reqnbr", selectTxt);
+                            WHERE req_nbr = :reqnbr";
 
-            var results = _conn.QueryFirstOrDefault<NewUserRequest>(cmdText, new { REQNBR = reqNbr });
+            var results = _conn.QueryFirstOrDefault<NewUserRequest>(cmdTxt, new { REQNBR = reqNbr });
             return results;
         }
 
@@ -90,25 +103,35 @@ namespace S4Analytics.Models
         /// <param name="id"></param>
         /// <param name="newStatus"></param>
         /// <returns></returns>
-        public NewUserRequest ApproveNewUser(int id, RequestApproval approval)
+        public async Task<NewUserRequest> ApproveNewUser(int id, RequestApproval approval)
         {
+            var token = new CancellationToken();
+
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
 
             var preferredUserName = (request.RequestorFirstNm[0] + request.RequestorLastNm).ToLower();
             var userName = GenerateUserName(preferredUserName);
-            var s4User = CreateS4User(request, userName);
 
-            StoreS4User(s4User);
-            StoreUserCounties(s4User);
+            var user = new S4IdentityUser<S4UserProfile>(userName);
 
-            var passwordText = _userStore.GenerateRandomPassword(8, 0);
-            var identityUser = CreateIdentityUser(request, userName, request.RequestorEmail, passwordText);
-            identityUser.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
-            identityUser.Active = true;
+            user.Profile = CreateS4UserProfile(request);
 
-            var token = new CancellationToken();
-            var result = _userStore.CreateAsync(identityUser, token);
+            var passwordText = GenerateRandomPassword(8, 0);
+            var passwordHash = _passwordHasher.HashPassword(user, passwordText);
+            await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
+
+            await _userEmailStore.SetEmailAsync(user, user.Profile.EmailAddress, token);
+
+            // TODO: need to be more generic here -hard coded for testing
+            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
+            await _userRoleStore.AddToRoleAsync(user, "User", token);
+            if (request.UserManagerCd)
+            {
+                await _userRoleStore.AddToRoleAsync(user, "Agency Admin", token);
+            }
+
+            var result = _userStore.CreateAsync(user, token);
 
             // Send password cred to new user.
             var subject = "Signal Four Analytics user account created";
@@ -126,7 +149,7 @@ namespace S4Analytics.Models
 
             var closing = GetEmailNotificationClosing();
 
-            SendEmail(s4User.EmailAddress, null, _supportEmail, subject, body, closing);
+            SendEmail(user.Profile.EmailAddress, null, _supportEmail, subject, body, closing);
 
             request.RequestStatus = newStatus;
             request.UserId = userName;
@@ -144,33 +167,43 @@ namespace S4Analytics.Models
         /// <param name="newStatus"></param>
         /// <param name="selectedRequest"></param>
         /// <returns></returns>
-        public NewUserRequest ApproveNewConsultant(int id, RequestApproval approval)
+        public async Task<NewUserRequest> ApproveNewConsultant(int id, RequestApproval approval)
         {
+            var token = new CancellationToken();
+
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
             var before70days = approval.Before70Days;
 
+            // TODO: rename this method (ApproveNewConsultant is misleading because it also handles this case)
             if (request.UserId != null)
             {
-                return ApproveExistingConsultant(id, approval);
+                return await ApproveExistingConsultant(id, approval);
             }
 
             var preferredUserName = (request.RequestorFirstNm[0] + request.RequestorLastNm).ToLower();
             var userName = GenerateUserName(preferredUserName);
-            var s4User = CreateS4User(request, userName);
-            s4User.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
-            StoreS4User(s4User);
-            StoreUserCounties(s4User);
+            var user = new S4IdentityUser<S4UserProfile>(userName);
 
-            var passwordText = _userStore.GenerateRandomPassword(8, 0);
-            var identityUser = CreateIdentityUser(request, userName, request.ConsultantEmail, passwordText);
+            user.Profile = CreateS4UserProfile(request);
+            user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
-            identityUser.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
-            identityUser.Active = true;
+            var passwordText = GenerateRandomPassword(8, 0);
+            var passwordHash = _passwordHasher.HashPassword(user, passwordText);
+            await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
 
-            var token = new CancellationToken();
-            var result = _userStore.CreateAsync(identityUser, token);
+            await _userEmailStore.SetEmailAsync(user, user.Profile.EmailAddress, token);
+
+            // TODO: need to be more generic here -hard coded for testing
+            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
+            await _userRoleStore.AddToRoleAsync(user, "User", token);
+            if (request.UserManagerCd)
+            {
+                await _userRoleStore.AddToRoleAsync(user, "Agency Admin", token);
+            }
+
+            var result = _userStore.CreateAsync(user, token);
 
             // Send the approval the emails here.  Send password cred to new user.
             var subject = string.Format("Your Signal Four Analytics individual account as employee of " +
@@ -191,7 +224,7 @@ namespace S4Analytics.Models
 
             var closing = GetEmailNotificationClosing();
 
-            SendEmail(s4User.EmailAddress, null, _supportEmail, subject, body.ToString(), closing);
+            SendEmail(user.Profile.EmailAddress, null, _supportEmail, subject, body.ToString(), closing);
 
             request.RequestStatus = newStatus;
             request.AccessBefore70Days = before70days;
@@ -202,24 +235,36 @@ namespace S4Analytics.Models
             return request;
         }
 
-        public NewUserRequest ApproveExistingConsultant(int id, RequestApproval approval)
+        public async Task<NewUserRequest> ApproveExistingConsultant(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
             var before70days = approval.Before70Days;
             var userName = request.UserId;
-            var s4User = CreateS4User(request, userName);
-            s4User.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
-            UpdateS4UserConsultant(s4User);
-
-            var passwordText = _userStore.GenerateRandomPassword(8, 0);
-            var identityUser = new S4IdentityUser(userName, request.ConsultantEmail, passwordText)
-            {
-                Active = true
-            };
             var token = new CancellationToken();
-            var result = _userStore.UpdateAsync(identityUser, token);
+            var user = await _userStore.FindByNameAsync(userName, token);
+
+            user.Profile.AccountStartDate = request.ContractStartDt;
+            user.Profile.AccountExpirationDate = request.ContractEndDt;
+            user.Profile.EmailAddress = request.ConsultantEmail;
+            user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
+
+            var passwordText = GenerateRandomPassword(8, 0);
+            var passwordHash = _passwordHasher.HashPassword(user, passwordText);
+            await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
+
+            await _userEmailStore.SetEmailAsync(user, user.Profile.EmailAddress, token);
+
+            // TODO: need to be more generic here -hard coded for testing
+            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
+            await _userRoleStore.AddToRoleAsync(user, "User", token);
+            if (request.UserManagerCd)
+            {
+                await _userRoleStore.AddToRoleAsync(user, "Agency Admin", token);
+            }
+
+            var result = await _userStore.UpdateAsync(user, token);
 
             // Send the approval the emails here.  Send password cred to new user.
             var subject = string.Format("Your Signal Four Analytics individual account as employee of " +
@@ -241,7 +286,7 @@ namespace S4Analytics.Models
 
             var closing = GetEmailNotificationClosing();
 
-            SendEmail(s4User.EmailAddress, null, _supportEmail, subject, body, closing);
+            SendEmail(user.Profile.EmailAddress, null, _supportEmail, subject, body, closing);
 
             request.RequestStatus = newStatus;
             request.AccessBefore70Days = before70days;
@@ -305,7 +350,7 @@ namespace S4Analytics.Models
             var result = StoreContractor(contractor);
 
             // Notify appropriate admin by email they need to approve user
-            var adminEmails = IsFDOTRequest(request) ? GetFDOTAdmin() : GetHSMVAdmin();
+            var adminEmails = IsFDOTRequest(request) ? GetFDOTAdminEmails() : GetHSMVAdminEmails();
 
             var subject = string.Format("New consultant working under {0} needs approval for Signal Four Account", request.AgncyNm);
             var body = string.Format(@"<div>There is a new request from {0} {1} from {2} for a contract with {3}.<br><br>
@@ -330,7 +375,7 @@ namespace S4Analytics.Models
         /// <param name="newStatus"></param>
         /// <param name="selectedRequest"></param>
         /// <returns></returns>
-        public NewUserRequest ApproveCreatedNewAgency(int id, RequestApproval approval)
+        public async Task<NewUserRequest> ApproveCreatedNewAgency(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
@@ -345,7 +390,7 @@ namespace S4Analytics.Models
 
             /// User will be created automatically after agency created because there is no one in
             /// the agency since its new. Therefore no one with an account in that agency to approve them
-            return ApproveNewUser(id, approval);
+            return await ApproveNewUser(id, approval);
         }
 
         public NewUserRequest Reject(int id, RequestRejection rejection)
@@ -381,8 +426,8 @@ namespace S4Analytics.Models
 
         private bool UpdateApprovedNewUserRequest(NewUserRequest request)
         {
-            var updateTxt = @"UPDATE NEW_USER_REQ_NEW 
-                            SET 
+            var updateTxt = @"UPDATE NEW_USER_REQ_NEW
+                            SET
                                 REQ_STATUS = :requestStatus,
                                 AGNCY_ID = :agncyId,
                                 CONTRACTOR_ID = :contractorId,
@@ -405,8 +450,8 @@ namespace S4Analytics.Models
 
         private bool UpdateRejectedNewUserRequest(NewUserRequest request)
         {
-            var updateTxt = @"UPDATE NEW_USER_REQ_NEW 
-                            SET 
+            var updateTxt = @"UPDATE NEW_USER_REQ_NEW
+                            SET
                                 REQ_STATUS = :requestStatus,
                                 ADMIN_COMMENT = :adminComment
                             WHERE REQ_NBR = :requestNbr";
@@ -447,8 +492,8 @@ namespace S4Analytics.Models
                             CASE WHEN u.contractor_id = 0 THEN u.new_contractor_nm ELSE c.contractor_nm END contractornm,
                             CASE WHEN u.contractor_id = 0 THEN u.new_contractor_email_domain_tx ELSE c.email_domain END ContractorEmailDomain,
                             u.access_reason_tx AS accessreasontx,
-                            u.contract_end_dt AS contractstartdt,
-                            u.contract_start_dt AS contractenddt,
+                            u.contract_start_dt AS contractstartdt,
+                            u.contract_end_dt AS contractenddt,
                             CASE WHEN u.warn_requestor_email_cd = 'Y' THEN 1 ELSE 0 END AS warnrequestoremailcd,
                             CASE WHEN u.warn_consultant_email_cd = 'Y' THEN 1 ELSE 0 END AS warnconsultantemailcd,
                             CASE WHEN u.warn_duplicate_email_cd = 'Y' THEN 1 ELSE 0 END as warnduplicateemailcd,
@@ -457,44 +502,34 @@ namespace S4Analytics.Models
                             u.contract_pdf_nm AS contractPdfNm";
         }
 
-        private S4IdentityUser CreateIdentityUser(NewUserRequest request, string userName, string email, string passwordText)
+        private S4UserProfile CreateS4UserProfile(NewUserRequest request)
         {
-            S4IdentityUser user;
-            user = new S4IdentityUser(userName, email, passwordText);
-            CreateRoles(request, user);
-
-            return user;
-        }
-
-        private S4User CreateS4User(NewUserRequest request, string userName)
-        {
-            S4User user;
+            S4UserProfile profile;
 
             switch (request.RequestType)
             {
                 case NewUserRequestType.FlPublicAgencyEmployee:
-                    user = CreateEmployee(request, userName);
+                    profile = CreateEmployeeProfile(request);
                     break;
                 case NewUserRequestType.FlPublicAgencyMgr:
-                    user = CreateConsultant(request, userName);
+                    profile = CreateConsultantProfile(request);
                     break;
                 default:
                     return null;
             }
 
-            user.CreatedBy = "tbd";
-            user.CreatedDate = DateTime.Now;
-            user.Active = true;
+            profile.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
+            profile.CreatedDate = DateTime.Now;
 
-            return user;
+            return profile;
         }
 
-    /// <summary>
-    /// Generate a unique user name
-    /// </summary>
-    /// <param name="userName"></param>
-    /// <returns></returns>
-    private string GenerateUserName(string userName)
+        /// <summary>
+        /// Generate a unique user name
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        private string GenerateUserName(string userName)
         {
             var done = false;
             var token = new CancellationToken();
@@ -514,105 +549,6 @@ namespace S4Analytics.Models
 
             return generatedUserName;
 
-        }
-
-        private bool UpdateS4UserConsultant(S4User user)
-        {
-            var updateTxt = @"UPDATE S4_USER
-                            SET 
-                                ACCOUNT_START_DT = :accountStartDate,
-                                ACCOUNT_EXPIRATION_DT = :accountExpirationDate,
-                                MODIFIED_BY = :modifiedBy,
-                                MODIFIED_DT = :modifiedDt,
-                                FORCE_PASSWORD_CHANGE = :pwdChange,
-                                CAN_VIEW = :reportAccess
-                            WHERE USER_NM = :userName";
-
-            var rowsUpdated = _conn.Execute(updateTxt,
-                new
-                {
-                    user.UserName,
-                    user.AccountStartDate,
-                    user.AccountExpirationDate,
-                    modifiedDt = DateTime.Now,
-                    modifiedBy = "tbd",
-                    pwdChange = "Y",
-                    reportAccess = user.CrashReportAccess
-                }
-             );
-
-            return rowsUpdated == 1;
-        }
-
-        /// <summary>
-        /// Insert new user or consultant in S4User
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        private bool StoreS4User(S4User user)
-        {
-            var insertTxt = @"INSERT INTO S4_USER
-                 (APPLICATION_NM, USER_NM, FIRST_NM, LAST_NM, NAME_SUFFIX,
-                 CREATED_BY, FORCE_PASSWORD_CHANGE,
-                 TIME_LIMITED_ACCOUNT_CD, ACCOUNT_START_DT, ACCOUNT_EXPIRATION_DT,
-                 AGNCY_ID, EMAIL, CREATED_DT, CAN_VIEW, CONTRACTOR_ID)
-                 VALUES (:appNm, :userName, :firstName, :lastName, :suffixName,
-                 :createdBy, :forcePasswordChange, :timeLimitedAccount,
-                 :accountStartDate, :accountExpirationDate, :agencyId, :emailAddress, :createdDate, :crashReportAccess, :contractorId )";
-
-            var rowsInserted = _conn.Execute(insertTxt,
-                new
-                {
-                    user.UserName,
-                    user.FirstName,
-                    user.LastName,
-                    user.SuffixName,
-                    user.CreatedBy,
-                    forcePasswordChange = user.ForcePasswordChange ? "Y" : "N",
-                    timeLimitedAccount = user.TimeLimitedAccount ? "Y" : "N",
-                    user.AccountStartDate,
-                    user.AccountExpirationDate,
-                    agencyId = user.Agency.AgencyId,
-                    contractorId = user.ContractorCompany == null ? null : (int?)user.ContractorCompany.ContractorId,
-                    emailAddress = user.EmailAddress,
-                    createdDate = user.CreatedDate,
-                    user.CrashReportAccess,
-                    appNm = _applicationName
-                });
-
-
-            return rowsInserted == 1;
-        }
-
-        private bool StoreUserCounties(S4User user)
-        {
-            int rowsInserted = 0;
-
-            var insertTxt = @"INSERT INTO USER_CNTY
-			(APPLICATION_NM, USER_NM, CNTY_CD, CAN_EDIT, CREATED_BY, CREATED_DT, MODIFIED_BY, MODIFIED_DT)
-			VALUES (:appNm, :userName, :cntyCd, :canEdit, :createdBy, :createdDate, :modifiedBy, :modifiedDate)";
-
-            List<UserCounty> allCounties;
-
-            allCounties = user.ViewableCounties ?? new List<UserCounty>();
-
-            allCounties.AddRange(user.GetEditableCounties().Where(p2 => user.ViewableCounties.All(p1 => p1.CntyCd != p2.CntyCd)));
-            foreach (UserCounty cnty in allCounties)
-            {
-                rowsInserted += _conn.Execute(insertTxt, new
-                {
-                    user.UserName,
-                    cnty.CntyCd,
-                    canEdit = cnty.CanEdit ? "Y" : "N",
-                    cnty.CreatedBy,
-                    cnty.CreatedDate,
-                    cnty.ModifiedBy,
-                    cnty.ModifiedDate,
-                    appNm = _applicationName
-                });
-            }
-
-            return rowsInserted == allCounties.Count();
         }
 
         private bool StoreContractor(Contractor contractor)
@@ -638,31 +574,29 @@ namespace S4Analytics.Models
             return rowsInserted == 1;
         }
 
-        private S4User CreateEmployee(NewUserRequest request, string userName)
+        private S4UserProfile CreateEmployeeProfile(NewUserRequest request)
         {
-            var user = new S4User()
+            var profile = new S4UserProfile()
             {
-                UserName = userName,
                 EmailAddress = request.RequestorEmail,
                 FirstName = request.RequestorFirstNm,
                 LastName = request.RequestorLastNm,
                 SuffixName = request.RequestorSuffixNm,
                 CrashReportAccess = (request.AccessBefore70Days)?CrashReportAccess.Within60Days:CrashReportAccess.After60Days,
-                Agency = GetAgency(request.AgncyId)
+                Agency = GetAgency(request.AgncyId),
+                ForcePasswordChange = true
             };
 
-            user.ViewableCounties = user.Agency.DefaultViewableCounties;
-            user.CrashReportAccess = user.Agency.CrashReportAccess;
-            return user;
+            profile.ViewableCounties = profile.Agency.DefaultViewableCounties;
+            profile.CrashReportAccess = profile.Agency.CrashReportAccess;
+            return profile;
         }
 
-        private S4User CreateConsultant(NewUserRequest request, string userName)
+        private S4UserProfile CreateConsultantProfile(NewUserRequest request)
         {
-            var user = new S4User()
+            var profile = new S4UserProfile()
             {
-                UserName = userName,
                 EmailAddress = request.ConsultantEmail,
-
                 FirstName = request.ConsultantFirstNm,
                 LastName = request.ConsultantLastNm,
                 SuffixName = request.ConsultantSuffixNm,
@@ -670,13 +604,14 @@ namespace S4Analytics.Models
                 AccountExpirationDate = request.ContractEndDt,
                 CrashReportAccess = (request.AccessBefore70Days)?CrashReportAccess.Within60Days:CrashReportAccess.After60Days,
                 Agency = GetAgency(request.AgncyId),
-                ContractorCompany = GetContractor(request.ContractorId)
+                ContractorCompany = GetContractor(request.ContractorId),
+                ForcePasswordChange = true
             };
 
-            user.ViewableCounties = user.Agency.DefaultViewableCounties;
-            user.TimeLimitedAccount = true;
+            profile.ViewableCounties = profile.Agency.DefaultViewableCounties;
+            profile.TimeLimitedAccount = true;
 
-            return user;
+            return profile;
         }
 
         private Contractor CreateNewContractor(NewUserRequest request)
@@ -690,30 +625,6 @@ namespace S4Analytics.Models
             };
 
             return contractor;
-        }
-
-        private void CreateRoles(NewUserRequest request, S4IdentityUser user)
-        {
-            // TODO: need to be more generic here -hard coded for testing
-            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
-            var role = new S4UserRole("User")
-            {
-                CreatedBy = "tbd", //TODO
-                CreatedDate = new Occurrence()
-            };
-
-            user.AddRole(role);
-
-            if (request.UserManagerCd)
-            {
-                role = new S4UserRole("Agency Admin")
-                {
-                    CreatedBy = "tbd", //TODO
-                    CreatedDate = new Occurrence()
-                };  //TODO: changing name to UserManager role
-
-                user.AddRole(role);
-            }
         }
 
         private Agency GetAgency(int agencyId)
@@ -730,7 +641,7 @@ namespace S4Analytics.Models
                                 email_domain AS EMAILDOMAIN
                                 FROM S4_AGNCY WHERE AGNCY_ID = :agencyid";
 
-            var agency = _conn.QueryFirstOrDefault<Agency>(selectTxt, new { AGENCYID = agencyId });
+            var agency = _conn.QueryFirstOrDefault<Agency>(selectTxt, new { agencyId });
             agency.DefaultViewableCounties = GetCountiesForAgency(agency.AgencyId);
             return agency;
         }
@@ -747,19 +658,19 @@ namespace S4Analytics.Models
                               FROM CONTRACTOR
                               WHERE CONTRACTOR_ID = :id";
 
-            var contractor = _conn.QueryFirstOrDefault<Contractor>(selectTxt, new { id = id });
+            var contractor = _conn.QueryFirstOrDefault<Contractor>(selectTxt, new { id });
             return contractor;
         }
 
         private List<UserCounty> GetCountiesForAgency(int agencyId)
         {
             var selectTxt = @"SELECT
-                        cnty_cd AS CNTYCD,
-                        CASE WHEN can_edit = 'Y' THEN 1 ELSE 0 END AS CANEDIT
+                        cnty_cd AS CountyCode,
+                        CASE WHEN can_edit = 'Y' THEN 1 ELSE 0 END AS CanEdit
                         FROM AGNCY_CNTY
                         WHERE AGNCY_ID = :agencyId";
 
-            var results = _conn.Query<UserCounty>(selectTxt, new { AGENCYID = agencyId });
+            var results = _conn.Query<UserCounty>(selectTxt, new { agencyId });
 
             return results.ToList();
         }
@@ -792,7 +703,7 @@ namespace S4Analytics.Models
                                 AND R.USER_NM = U.USER_NM
                                 WHERE U.AGNCY_ID = :agencyId";
 
-            var results = (_conn.Query<string>(selectTxt, new { AGENCYID = agencyId })).ToList(); ;
+            var results = (_conn.Query<string>(selectTxt, new { agencyId })).ToList(); ;
 
             // if no admin for agency, send notification to s4 global admin
             if (results.Count == 0)
@@ -803,10 +714,10 @@ namespace S4Analytics.Models
             return emails;
         }
 
-        private List<string> GetFDOTAdmin()
+        private List<string> GetFDOTAdminEmails()
         {
             var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
-                                JOIN USER_ROLE R ON R.ROLE_NM = 'FDOT Admin' 
+                                JOIN USER_ROLE R ON R.ROLE_NM = 'FDOT Admin'
                                 AND R.USER_NM = U.USER_NM";
 
             var emails = (_conn.Query<string>(selectTxt)).ToList();
@@ -820,10 +731,10 @@ namespace S4Analytics.Models
             return emails;
         }
 
-        private List<string> GetHSMVAdmin()
+        private List<string> GetHSMVAdminEmails()
         {
            var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
-                                JOIN USER_ROLE R ON R.ROLE_NM = 'HSMV Admin' 
+                                JOIN USER_ROLE R ON R.ROLE_NM = 'HSMV Admin'
                                 AND R.USER_NM = U.USER_NM";
 
             var emails = (_conn.Query<string>(selectTxt)).ToList();
@@ -846,7 +757,7 @@ namespace S4Analytics.Models
         {
             var selectTxt = @"SELECT AGNCY_ID FROM S4_AGNCY WHERE AGNCY_NM = :agencyNm";
 
-            var result = _conn.QueryFirstOrDefault<int>(selectTxt, new { AGENCYNM = agencyNm });
+            var result = _conn.QueryFirstOrDefault<int>(selectTxt, new { agencyNm });
             return result;
         }
 
@@ -884,6 +795,74 @@ namespace S4Analytics.Models
             msg.Body = completedText.ToString();
 
             _smtp.Send(msg);
+        }
+
+        /// <summary>
+        /// Utility function to generate a random password.
+        /// This function exists purely for convenience. It does not implement any interface method.
+        /// Modified and converted from Basic from http://www.4guysfromrolla.com/articles/101205-1.aspx
+        /// </summary>
+        /// <param name="length">Length of password to generate</param>
+        /// <param name="numberOfNonAlphanumericCharacters">Number of non-alphanumeric characters to include in password</param>
+        /// <returns>Generated password</returns>
+        private string GenerateRandomPassword(int length, int numberOfNonAlphanumericCharacters)
+        {
+            int nonANcount = 0;
+            byte[] buffer1 = new byte[length];
+
+            //chPassword contains the password's characters as it's built up
+            char[] chPassword = new char[length];
+
+            //chPunctionations contains the list of legal non-alphanumeric characters
+            char[] chPunctuations = "!@#$%^*()_-+=[{]};:<>|./?".ToCharArray();
+
+            //Get a cryptographically strong series of bytes
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(buffer1);
+
+            for (int i = 0; i < length; i++)
+            {
+                //Convert each byte into its representative character
+                int rndChr = buffer1[i] % 87;
+                if (rndChr < 10)
+                {
+                    chPassword[i] = Convert.ToChar(Convert.ToUInt16(48 + rndChr));
+                }
+                else
+                if (rndChr < 36)
+                {
+
+                    chPassword[i] = Convert.ToChar(Convert.ToUInt16((65 + rndChr) - 10));
+                }
+                else
+                if (rndChr < 62)
+                {
+
+                    chPassword[i] = Convert.ToChar(Convert.ToUInt16((97 + rndChr) - 36));
+                }
+                else
+                {
+                    chPassword[i] = chPunctuations[rndChr - 62];
+                    nonANcount += 1;
+                }
+            }
+
+            if (nonANcount < numberOfNonAlphanumericCharacters)
+            {
+                Random rndNumber = new Random();
+                for (int i = 0; i < (numberOfNonAlphanumericCharacters - nonANcount); i++)
+                {
+                    int passwordPos;
+                    do
+                    {
+                        passwordPos = rndNumber.Next(0, length);
+                    }
+                    while (!char.IsLetterOrDigit(chPassword[passwordPos]));
+                    chPassword[passwordPos] = chPunctuations[rndNumber.Next(0, chPunctuations.Length)];
+                }
+            }
+
+            return new String(chPassword);
         }
 
         #endregion
