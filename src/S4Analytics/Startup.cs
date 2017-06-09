@@ -64,10 +64,11 @@ namespace S4Analytics
             services.Configure<ServerOptions>(Configuration.GetSection("App"));
             services.Configure<ClientOptions>(Configuration.GetSection("App"));
 
-            // Do not redirect to login for unauthorized API call; return Unauthorized status code instead.
-            // http://stackoverflow.com/questions/34770886/mvc6-unauthorized-results-in-redirect-instead
+            // Configure identity.
             services.Configure<IdentityOptions>(identityOptions =>
             {
+                // Do not redirect to login for unauthorized API call; return Unauthorized status code instead.
+                // http://stackoverflow.com/questions/34770886/mvc6-unauthorized-results-in-redirect-instead
                 identityOptions.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
                 {
                     OnRedirectToLogin = ctx =>
@@ -88,7 +89,7 @@ namespace S4Analytics
                 };
             });
 
-            // Add and configure profile store
+            // Add and configure profile store.
             services.AddSingleton<IProfileStore<S4UserProfile>>(provider =>
             {
                 var options = provider.GetService<IOptions<ServerOptions>>();
@@ -130,15 +131,16 @@ namespace S4Analytics
 
             // Add identity services.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IdentityMarkerService>();
-            services.AddSingleton<IUserValidator<S4IdentityUser<S4UserProfile>>, UserValidator<S4IdentityUser<S4UserProfile>>>();
-            services.AddSingleton<IPasswordValidator<S4IdentityUser<S4UserProfile>>, PasswordValidator<S4IdentityUser<S4UserProfile>>>();
-            services.AddSingleton<IPasswordHasher<S4IdentityUser<S4UserProfile>>, S4PasswordHasher<S4IdentityUser<S4UserProfile>>>();
-            services.AddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
-            services.AddSingleton<IdentityErrorDescriber>();
-            services.AddSingleton<UserManager<S4IdentityUser<S4UserProfile>>>();
-            services.AddSingleton<RoleManager<S4IdentityRole>>();
-            services.AddSingleton<IUserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>, UserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>>();
+            services.AddScoped<IdentityMarkerService>();
+            services.AddScoped<IUserValidator<S4IdentityUser<S4UserProfile>>, UserValidator<S4IdentityUser<S4UserProfile>>>();
+            services.AddScoped<IPasswordValidator<S4IdentityUser<S4UserProfile>>, PasswordValidator<S4IdentityUser<S4UserProfile>>>();
+            services.AddScoped<IPasswordHasher<S4IdentityUser<S4UserProfile>>, S4PasswordHasher<S4IdentityUser<S4UserProfile>>>();
+            services.AddScoped<ILookupNormalizer, LowerLookupNormalizer>();
+            services.AddScoped<IRoleValidator<S4IdentityRole>, RoleValidator<S4IdentityRole>>();
+            services.AddScoped<IdentityErrorDescriber>();
+            services.AddScoped<IUserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>, UserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>>();
+            services.AddScoped<UserManager<S4IdentityUser<S4UserProfile>>>();
+            services.AddScoped<RoleManager<S4IdentityRole>>();
             services.AddScoped<SignInManager<S4IdentityUser<S4UserProfile>>>();
 
             // Add repositories.
@@ -250,6 +252,24 @@ namespace S4Analytics
                 var claimsIdentity = new ClaimsIdentity();
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 return Task.FromResult(claimsPrincipal);
+            }
+        }
+
+        public class LowerLookupNormalizer : ILookupNormalizer
+        {
+            /// <summary>
+            /// Returns a normalized representation of the specified <paramref name="key"/>
+            /// by converting keys to their lower cased representation.
+            /// </summary>
+            /// <param name="key">The key to normalize.</param>
+            /// <returns>A normalized representation of the specified <paramref name="key"/>.</returns>
+            public virtual string Normalize(string key)
+            {
+                if (key == null)
+                {
+                    return null;
+                }
+                return key.Normalize().ToLower();
             }
         }
     }
