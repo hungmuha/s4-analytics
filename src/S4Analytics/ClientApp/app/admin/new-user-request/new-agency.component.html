@@ -1,61 +1,66 @@
-﻿<form #subform="ngForm" name="subform">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-6">
-                <input type="radio" name="lea" [(ngModel)]="state.currentRequestActionResults.lea"
-                       [value]="false"
-                       required/>Non-Law Enforcement
-            </div>
-            <div class="col-md-6">
-                <input type="radio" name="lea" [(ngModel)]="state.currentRequestActionResults.lea"
-                       [value]="true"
-                       required />Law Enforcement
-            </div>
-        </div>
-        <div class="row">
-            <b>New Agency Name:</b>{{state.selectedRequest.agncyNm}}
-        </div>
-        <div class="row">
-            <b>Agency Email Domain:</b>
-            {{state.selectedRequest.agncyEmailDomain}}
-        </div>
-        <div class="row">
-            <!-- requestor info-->
-            <b>Requestor Name:</b>
-            {{state.selectedRequest.requestorFirstNm}}
-            {{state.selectedRequest.requestorLastNm}}
-        </div>
-        <div class="row">
-            <b>Email:</b>
-            {{state.selectedRequest.requestorEmail}}
-        </div>
-        <div class="row">
-            <label [hidden]="!state.selectedRequest.warnRequestorEmailCd" class="warning-message">Warning: Requestor's email domain does not match agency's email domain</label>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col-md-6"  >
-                <input type="radio"
-                       [(ngModel)]="state.currentRequestActionResults.approved"
-                        (change)="approved(true)"
-                       name="approved" [value]="true"
-                       />Approve Agency
-            </div>
-            <div class="col-md-6">
-                <input type="radio"
-                       [disabled]="disableRejectRb()"
-                       [(ngModel)]="state.currentRequestActionResults.approved"
-                        (change)="approved(false)"
-                       name="approved" [value]="false"
-                       />Reject Agency
-            </div>
-        </div>
-        <div>
-            <input type="checkbox" name="reportAccess"
-                   [disabled]="!state.currentRequestActionResults.approved"
-                   [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
-                   [readonly]="state.currentRequestActionResults.approved"
-                   [value]="true" /> Report Access Before 70 days
-        </div>
+﻿
+<!--<div class="row">
+    <div class="col-md-6">
+        <input type="radio" name="lea" [(ngModel)]="state.currentRequestActionResults.lea"
+                [value]="false"
+                required/>Non-Law Enforcement
     </div>
-</form>
+    <div class="col-md-6">
+        <input type="radio" name="lea" [(ngModel)]="state.currentRequestActionResults.lea"
+                [value]="true"
+                required />Law Enforcement
+    </div>
+</div>-->
+<div class="row">
+    <b>New Agency Name:</b>&nbsp;{{state.selectedRequest.agncyNm}}
+</div>
+<div class="row">
+    <b>Agency Email Domain:</b>&nbsp;
+    {{state.selectedRequest.agncyEmailDomain}}
+</div>
+<div class="row">
+    <!-- requestor info-->
+    <b>Requestor Name:</b>&nbsp;
+    {{state.selectedRequest.requestorFirstNm}}
+    {{state.selectedRequest.requestorLastNm}}
+</div>
+<div class="row">
+    <b>Email:</b>&nbsp;
+    {{state.selectedRequest.requestorEmail}}
+    <i [hidden]="!state.selectedRequest.warnRequestorEmailCd" data-toggle="tooltip" title="Warning messages here">
+        &nbsp;<i class="fa fa-exclamation-circle text-danger" data-toggle="tooltip" data-placement="top" title="Testing"></i>
+    </i>
+
+</div>
+<!--<div class="row">
+    <label [hidden]="!state.selectedRequest.warnRequestorEmailCd" class="warning-message">Warning: Requestor's email domain does not match agency's email domain</label>
+</div>-->
+
+<hr />
+
+<div class="row font-weight-bold justify-content-start">
+    <div class="col">
+        <input type="radio"
+               [(ngModel)]="state.currentRequestActionResults.approved"
+               name="approved"
+               (change)="approved(true)"
+               [value]="true" />&nbsp;Approve Agency
+    </div>
+    <div class="col">
+        <input type="radio"
+               [(ngModel)]="state.currentRequestActionResults.approved"
+               name="approved"
+               (change)="approved(false)"
+               [value]="false" />&nbsp;Reject Agency
+    </div>
+</div>
+<!--<div [hidden]=" !this.state.currentRequestActionResults.approved">
+    <input type="checkbox"
+           [disabled]="!state.currentRequestActionResults.approved"
+           [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
+           [value]="true" />&nbsp; Access Before 70 days
+</div>-->
+
+
+
+

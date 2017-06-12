@@ -20,8 +20,9 @@ body {
 .action-modal-header {
     margin: 0;
     height: 1rem;
-    background-color: lightgray;
+    background-color: whitesmoke;
     font-weight: bold;
+    font-size:larger;
 }
 
 .form-login {
@@ -64,3 +65,10 @@ body {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
+.queue-filter-btn {
+    background-color: gray;
+    color: lightgray;
+    border:1px solid black;
+}
+

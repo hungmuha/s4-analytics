@@ -8,7 +8,7 @@ export class RequestStatusPipe implements PipeTransform {
         switch (value) {
             case NewUserRequestStatus.NewUser: return 'Approve New User';
             case NewUserRequestStatus.NewConsultant: return 'Approve New Consultant';
-            case NewUserRequestStatus.NewContractor: return 'Approve New Contractor';
+            case NewUserRequestStatus.NewContractor: return 'Approve New Vendor';
             case NewUserRequestStatus.NewAgency: return 'Approve New Agency';
             case NewUserRequestStatus.CreateAgency: return 'Verify New Agency Created';
             case NewUserRequestStatus.Completed: return 'Completed';
@@ -24,8 +24,8 @@ export class RequestTypePipe implements PipeTransform {
 
     transform(value: number): string {
         switch (value) {
-            case NewUserRequestType.FlPublicAgencyEmployee: return 'Florida Public Agency Employee';
-            case NewUserRequestType.FlPublicAgencyMgr: return 'Florida Public Agency Manager';
+            case NewUserRequestType.FlPublicAgencyEmployee: return 'New Employee';
+            case NewUserRequestType.FlPublicAgencyMgr: return 'New Consultant';
             default: return 'Not implemented';
         }
 

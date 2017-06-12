@@ -1,25 +1,23 @@
 ﻿<form #actionForm="ngForm"  (ngSubmit)="submit()" #spy2>
-    <div>
-        <div class="justify-content-start font-weight-bold">Request Number: # {{state.selectedRequest.requestNbr}}</div>
-    </div>
+    <div class="font-weight-bold">Request Number: # {{state.selectedRequest.requestNbr}}</div>
     <div class="modal-body">
         <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)" #actionTypeRef></new-employee-component>
         <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)" #actionTypeRef></new-agency-component>
         <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgency)" #actionTypeRef></agency-create-component>
         <new-contractor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewContractor)" #actionTypeRef></new-contractor-component>
         <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)" #actionTypeRef></new-consultant-component>
+        <div class="row" [hidden]="hideReasonTextArea()">
+            <label class="font-weight-bold">Reason for rejection (to be sent to person making request):</label>
+            <textarea class="form-control" id="reason" rows="3" name="reason"
+                      [disabled]="disableTextArea()"
+                      [readonly]="state.currentRequestActionResults.approved"
+                      [required]="!state.currentRequestActionResults.approved"
+                      [(ngModel)]="state.currentRequestActionResults.rejectionReason"
+                      placeholder="Type reason for rejection here (REQUIRED)">
+            </textarea>
+        </div>
+    </div>
 
-    </div>
-    <div>
-        <label>Reason for rejection (to be sent to person making request):</label>
-        <textarea class="form-control" id="reason" rows="4" name="reason"
-                  [disabled]="disableTextArea()"
-                  [readonly]="state.currentRequestActionResults.approved"
-                  [required]="!state.currentRequestActionResults.approved"
-                  [(ngModel)]="state.currentRequestActionResults.rejectionReason"
-                  placeholder="Type reason for rejection here (REQUIRED)">
-        </textarea>
-    </div>
     <div class="modal-footer">
         <button type="submit" class="btn btn-secondary" [disabled]="!actionForm.valid">
             OK

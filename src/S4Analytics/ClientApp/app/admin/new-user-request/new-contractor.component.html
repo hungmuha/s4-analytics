@@ -1,54 +1,75 @@
-﻿<div class="container-fluid">
-    <div class="row">
-        <b>Contractor Name:</b>
-        {{state.selectedRequest.contractorNm}}
+﻿<div class="row">
+    <b>Contractor Name:</b>&nbsp;
+    {{state.selectedRequest.contractorNm}}
+</div>
+<div class="row">
+    <b>Contractor Email Domain:</b>&nbsp;
+    {{state.selectedRequest.contractorEmailDomain}}
+</div>
+<div class="row justify-content-between">
+    <div>
+        <b>Contract Start Date: </b>&nbsp;
+        {{state.selectedRequest.contractStartDt | date}}
     </div>
-    <div class="row">
-        <b>Contractor Email Domain:</b>
-        {{state.selectedRequest.contractorEmailDomain}}
+    <div>
+        <b>Contract End Date:</b>&nbsp;
+        {{state.selectedRequest.contractEndDt | date: shortdate}}
     </div>
-    <div class="row">
-        <b>Contract Start Date:</b>
-        {{state.selectedRequest.contractStartDt}}
+    <div>
+        <button type="button" class="btn btn-sm" (click)="openContractViewer()">View Contract</button>
     </div>
-    <div class="row">
-        <b>Contract End Date:</b>
-        {{state.selectedRequest.contractEndDt}}
-        <button type="button" class="pull-right" (click)="openContractViewer()">View Contract</button>
-    </div>
-     <div class="row">
-        <!-- requestor info-->
-        <b>Requestor Name:</b>
+</div>
+<div class="row font-italic">
+    <!-- requestor info-->
+    <b>Request made by:</b>
+</div>
+<div class="row font-italic">
+    <div class="col offset-2">
         {{state.selectedRequest.requestorFirstNm}}
         {{state.selectedRequest.requestorLastNm}}
     </div>
-    <div class="row">
-        <b>Email:</b>
+</div>
+<div class="row font-italic">
+    <div class="col offset-2">
         {{state.selectedRequest.requestorEmail}}
-    </div>
-    <div class="row">
-        <b>Agency:</b>
-        {{state.selectedRequest.agncyNm}}
-    </div>
-    <div class="row">
-        <label [hidden]="!state.selectedRequest.warnRequestorEmailCd" class="warning-message">Warning: Requestor's email domain does not match agency's email domain</label>
-    </div>
-    <hr/>
-
-    <div>
-        <div class="row">
-            <div class="col-md-6">
-                <input type="radio" class="form-check-input"
-                       [(ngModel)]="state.currentRequestActionResults.approved"
-                        (change)="approved(true)"
-                       name="approved" [value]="true" />Approve Contractor
-            </div>
-            <div class="col-md-6">
-                <input type="radio" class="form-check-input"
-                       [(ngModel)]="state.currentRequestActionResults.approved"
-                        (change)="approved(false)"
-                       name="approved" [value]="false" />Reject Contractor
-            </div>
-        </div>
+        <i [hidden]="!state.selectedRequest.warnRequestorEmailCd" data-toggle="tooltip" title="Warning messages here">
+            &nbsp;<i class="fa fa-exclamation-circle text-danger" data-toggle="tooltip" data-placement="top" title="Testing"></i>
+        </i>
     </div>
 </div>
+<div class="row font-italic">
+    <div class="col offset-2">
+        {{state.selectedRequest.agncyNm}}
+    </div>
+</div>
+
+<!--<div class="row">
+    <label [hidden]="!state.selectedRequest.warnRequestorEmailCd" class="warning-message">Warning: Requestor's email domain does not match agency's email domain</label>
+</div>-->
+<hr/>
+
+<div class="row font-weight-bold justify-content-start">
+    <div class="col">
+        <input type="radio"
+               [(ngModel)]="state.currentRequestActionResults.approved"
+               name="approved"
+               (change)="approved(true)"
+               [value]="true" />&nbsp;Approve Vendor
+    </div>
+    <div class="col">
+        <input type="radio"
+               [(ngModel)]="state.currentRequestActionResults.approved"
+               name="approved"
+               (change)="approved(false)"
+               [value]="false" />&nbsp;Reject Vendor
+    </div>
+</div>
+<div [hidden]=" !this.state.currentRequestActionResults.approved">
+    <input type="checkbox"
+           [disabled]="!state.currentRequestActionResults.approved"
+           [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
+           [value]="true" />&nbsp; Access Before 70 days
+</div>
+
+
+
