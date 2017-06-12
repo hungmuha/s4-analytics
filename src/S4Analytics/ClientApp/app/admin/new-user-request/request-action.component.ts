@@ -26,8 +26,14 @@ export class RequestActionComponent  {
         return this.state.selectedRequest.requestStatus === nur;
     }
 
+    // TODO:  don't need this because if hidden if Reject rb not checked
     disableTextArea() {
         return this.state.currentRequestActionResults.approved === undefined;
+    }
+
+    hideReasonTextArea()
+    {
+        return this.state.currentRequestActionResults.approved === undefined || this.state.currentRequestActionResults.approved;
     }
 
     submit() {

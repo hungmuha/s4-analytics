@@ -7,9 +7,9 @@
 <div class="row">
     <b>Email:</b>&nbsp;
     {{state.selectedRequest.requestorEmail}}
-    <div [hidden]="!state.selectedRequest.warnRequestorEmailCd && !state.selectedRequest.warnDuplicateEmailCd" data-toggle="tooltip" title="Warning messages here">
-        <img src="../../../../wwwroot/images/admin/bang.png" />
-    </div>
+    <i [hidden]="!state.selectedRequest.warnRequestorEmailCd && !state.selectedRequest.warnDuplicateEmailCd" >
+        &nbsp;<i class="fa fa-exclamation-circle text-danger" data-toggle="tooltip" data-placement="top" title="Testing"></i>
+    </i>
 </div>
 <div class="row">
     <b>Agency:</b>&nbsp;
@@ -17,30 +17,29 @@
 </div>
 
 
-<!--<div class="row">
+<!--<div>
     <label [hidden]="!state.selectedRequest.warnRequestorEmailCd" class="warning-message">Warning: Requestor's email domain does not match agency's email domain</label>
     <label [hidden]="!state.selectedRequest.warnDuplicateEmailCd" class="warning-message">Warning: An account with requestor's email already exists</label>
 </div>-->
 
-<hr />
-<div class="row no-gutters justify-content-between">
-    <div class="col">
-        <label>
-            <input type="radio"
-                    [(ngModel)]="state.currentRequestActionResults.approved"
-                    (change)="approved(true)"
-                    name="approved"
-                    [value]="true" />Approve Employee
-        </label>
+<hr/>
+
+<!-- TODO:  this is duplicated for the most past multiple places -->
+<div class="row font-weight-bold justify-content-between">
+    <div class="col-6">
+        <input type="radio"
+               [(ngModel)]="state.currentRequestActionResults.approved"
+               name="approved"
+               (change)="approved(true)"
+               [value]="true" />&nbsp;Approve Employee
     </div>
-    <div class="col">
-        <label>
-            <input type="radio"
-                    [(ngModel)]="state.currentRequestActionResults.approved"
-                    name="approved"
-                    (change)="approved(false)"
-                    [value]="false" />Reject Employee
-        </label>
+    <div class="col-6">
+        <input type="radio"
+               [(ngModel)]="state.currentRequestActionResults.approved"
+               name="approved"
+               (change)="approved(false)"
+               [value]="false" />&nbsp;Reject Employee
     </div>
 </div>
-<br />
+
+

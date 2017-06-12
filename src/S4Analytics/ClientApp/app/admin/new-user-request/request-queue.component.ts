@@ -75,7 +75,7 @@ export class RequestQueueComponent {
 
     openActionModal(content: any, request: NewUserRequest) {
         this.state.selectedRequest = request;
-        this.state.currentActionForm = this.modalService.open(content, { backdrop: 'static', keyboard: false });
+        this.state.currentActionForm = this.modalService.open(content, {backdrop: 'static', keyboard: false });
     }
 
     hideProcessRequestButton(request: NewUserRequest) {
