@@ -135,7 +135,7 @@ namespace S4Analytics
             services.AddScoped<IUserValidator<S4IdentityUser<S4UserProfile>>, UserValidator<S4IdentityUser<S4UserProfile>>>();
             services.AddScoped<IPasswordValidator<S4IdentityUser<S4UserProfile>>, PasswordValidator<S4IdentityUser<S4UserProfile>>>();
             services.AddScoped<IPasswordHasher<S4IdentityUser<S4UserProfile>>, S4PasswordHasher<S4IdentityUser<S4UserProfile>>>();
-            services.AddScoped<ILookupNormalizer, LowerLookupNormalizer>();
+            services.AddScoped<ILookupNormalizer, S4LookupNormalizer>();
             services.AddScoped<IRoleValidator<S4IdentityRole>, RoleValidator<S4IdentityRole>>();
             services.AddScoped<IdentityErrorDescriber>();
             services.AddScoped<IUserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>, UserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>>();
@@ -252,24 +252,6 @@ namespace S4Analytics
                 var claimsIdentity = new ClaimsIdentity();
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 return Task.FromResult(claimsPrincipal);
-            }
-        }
-
-        public class LowerLookupNormalizer : ILookupNormalizer
-        {
-            /// <summary>
-            /// Returns a normalized representation of the specified <paramref name="key"/>
-            /// by converting keys to their lower cased representation.
-            /// </summary>
-            /// <param name="key">The key to normalize.</param>
-            /// <returns>A normalized representation of the specified <paramref name="key"/>.</returns>
-            public virtual string Normalize(string key)
-            {
-                if (key == null)
-                {
-                    return null;
-                }
-                return key.Normalize().ToLower();
             }
         }
     }

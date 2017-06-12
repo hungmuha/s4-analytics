@@ -34,7 +34,7 @@ namespace S4Analytics.Tests.Properties
             MembershipConnection = new OracleConnection(membershipConnStr);
             MembershipConnection.Open();
 
-            ProfileStore = new S4UserProfileStore(Connection, appName);
+            ProfileStore = new S4UserProfileStore(appName, Connection);
             UserStore = new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(appName, Connection, MembershipConnection, "", ProfileStore);
             PasswordHasher = new S4PasswordHasher<S4IdentityUser<S4UserProfile>>();
         }
