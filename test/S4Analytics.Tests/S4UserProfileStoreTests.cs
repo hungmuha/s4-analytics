@@ -8,7 +8,6 @@ using S4Analytics.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -21,7 +20,6 @@ namespace S4Analytics.Tests.Properties
             "User Id=s4_warehouse_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));";
         const string membershipConnStr =
             "User Id=app_security_dev;Password=crash418b;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=lime.geoplan.ufl.edu)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SID=oracle11g)));";
-        const string adminUserName = "test";
 
         internal readonly OracleConnection Connection;
         internal readonly OracleConnection MembershipConnection;
@@ -38,7 +36,7 @@ namespace S4Analytics.Tests.Properties
             var profileStore = new S4UserProfileStore(appName, Connection);
             var passwordHasher = new S4PasswordHasher<S4IdentityUser<S4UserProfile>>();
             var userStore = new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(
-                appName, Connection, MembershipConnection, adminUserName, profileStore);
+                appName, Connection, MembershipConnection, profileStore);
             var identityOptions = Options.Create(new IdentityOptions()
             {
                 Password = new PasswordOptions()

@@ -104,16 +104,8 @@ namespace S4Analytics
                     options.Value.MembershipApplicationName,
                     options.Value.WarehouseConnStr,
                     options.Value.MembershipConnStr,
-                    "TBD",
                     profileStore);
             });
-
-            services.AddSingleton(
-                provider => (IUserEmailStore<S4IdentityUser<S4UserProfile>>)provider.GetService<IUserStore<S4IdentityUser<S4UserProfile>>>());
-            services.AddSingleton(
-                provider => (IUserPasswordStore<S4IdentityUser<S4UserProfile>>)provider.GetService<IUserStore<S4IdentityUser<S4UserProfile>>>());
-            services.AddSingleton(
-                provider => (IUserRoleStore<S4IdentityUser<S4UserProfile>>)provider.GetService<IUserStore<S4IdentityUser<S4UserProfile>>>());
 
             // Add and configure Oracle role store.
             services.AddSingleton<IRoleStore<S4IdentityRole>>(provider => {

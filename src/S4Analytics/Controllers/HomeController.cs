@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Lib.Identity.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace S4Analytics.Controllers
 {
@@ -24,17 +20,14 @@ namespace S4Analytics.Controllers
         private readonly IHostingEnvironment _env;
         SignInManager<S4IdentityUser<S4UserProfile>> _signInManager;
         UserManager<S4IdentityUser<S4UserProfile>> _userManager;
-        IUserStore<S4IdentityUser<S4UserProfile>> _userStore;
 
         public HomeController(
             SignInManager<S4IdentityUser<S4UserProfile>> signInManager,
             UserManager<S4IdentityUser<S4UserProfile>> userManager,
-            IUserStore<S4IdentityUser<S4UserProfile>> userStore,
             IHostingEnvironment env)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _userStore = userStore;
             _env = env;
         }
 

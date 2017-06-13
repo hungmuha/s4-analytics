@@ -41,6 +41,8 @@ namespace S4Analytics.Models
 
         public async Task<S4UserProfile> FindProfileForUserAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var selectText = @"BEGIN
               OPEN :q1 FOR
                 SELECT
@@ -137,6 +139,8 @@ namespace S4Analytics.Models
 
         public async Task<IdentityResult> CreateProfileAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             // INSERT INTO S4_USER
             var insertTxt = @"INSERT INTO S4_USER
                 (APPLICATION_NM, USER_NM, FIRST_NM, LAST_NM, NAME_SUFFIX,
@@ -185,6 +189,8 @@ namespace S4Analytics.Models
 
         public async Task<IdentityResult> UpdateProfileAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             // TODO: UPDATE S4_USER
             var updateTxt = @"UPDATE S4_USER
                 SET FIRST_NM = :firstName,
@@ -252,6 +258,8 @@ namespace S4Analytics.Models
 
         public async Task<IdentityResult> DeleteProfileAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var @params = new { appName = _applicationName, user.UserName };
 
             // DELETE FROM USER_CNTY
