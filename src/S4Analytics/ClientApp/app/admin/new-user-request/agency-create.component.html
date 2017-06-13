@@ -1,16 +1,19 @@
-﻿<div class="row">Agency Approved</div>
-<div class="row">
-    <b>Agency:</b>&nbsp;
-    {{state.selectedRequest.agncyNm}}
+﻿<div class="row">
+    <div class="col">
+        <b>Agency Name:</b>&nbsp;{{state.selectedRequest.agncyNm}}
+    </div>
 </div>
 <div class="row">
-    <b>Report Access Prior 70 Days: </b>&nbsp;
-    {{state.selectedRequest.accessBefore70Days}}
+    <div class="col">
+        <b>Email Domain</b>:&nbsp;{{state.selectedRequest.agncyEmailDomain}}
+    </div>
 </div>
-<div class="row">&nbsp;
-    <b>Acton to be taken:</b> Create agency in S4 Analytics User Manager
+<div class="row">
+    <div class="col">
+        <b>Report Access:</b>&nbsp;{{state.selectedRequest.accessBefore70Days | reportAccess}}
+    </div>
 </div>
-<hr />
+<hr/>
 <div class="row">
     <div class="col-md-6">
         <input type="radio" class="form-check-input"

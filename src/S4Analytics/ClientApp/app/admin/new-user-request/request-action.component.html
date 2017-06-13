@@ -6,6 +6,32 @@
         <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgency)" #actionTypeRef></agency-create-component>
         <new-contractor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewContractor)" #actionTypeRef></new-contractor-component>
         <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)" #actionTypeRef></new-consultant-component>
+        <div class="row font-weight-bold">
+            <div class="col-6">
+                <input type="radio" class="form-check-input"
+                       [(ngModel)]="state.currentRequestActionResults.approved"
+                       name="approved"
+                       (change)="approved(true)"
+                       required
+                       [value]="true" />&nbsp;Approve {{state.selectedRequest.requestStatus | approveRejectType}}
+            </div>
+            <div class="col-6">
+                <input type="radio"
+                       class="form-check-input"
+                       [(ngModel)]="state.currentRequestActionResults.approved"
+                       name="approved"
+                       (change)="approved(false)"
+                       required
+                       [value]="false" />&nbsp;Reject {{state.selectedRequest.requestStatus | approveRejectType}}
+            </div>
+        </div>
+        <div [hidden]="hideReportAccessCb()">
+            <input type="checkbox" name="reportAcessCb"
+                   [disabled]="!state.currentRequestActionResults.approved"
+                   [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
+                   [readonly]="state.currentRequestActionResults.approved"
+                   [value]="true" />&nbsp; Access Before 70 days
+        </div>
         <div class="row" [hidden]="hideReasonTextArea()">
             <label class="font-weight-bold">Reason for rejection (to be sent to person making request):</label>
             <textarea class="form-control" id="reason" rows="3" name="reason"
@@ -17,7 +43,6 @@
             </textarea>
         </div>
     </div>
-
     <div class="modal-footer">
         <button type="submit" class="btn btn-secondary" [disabled]="!actionForm.valid">
             OK
@@ -27,4 +52,3 @@
         </button>
     </div>
   </form>
-
