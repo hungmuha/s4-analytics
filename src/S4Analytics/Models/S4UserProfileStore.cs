@@ -12,8 +12,6 @@ namespace S4Analytics.Models
 {
     public class S4UserProfileStore : IProfileStore<S4UserProfile>, IDisposable
     {
-        // TODO: add persistence for sticky settings
-
         private OracleConnection _connection;
         private string _applicationName;
         private bool _connectionCreatedInternally;
@@ -141,6 +139,12 @@ namespace S4Analytics.Models
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            if (user.Profile == null)
+            {
+                // return IdentityResult.Failed(new IdentityError() { Description = "User profile cannot be null." });
+                throw new Exception("User profile cannot be null."); // temporary
+            }
+
             // INSERT INTO S4_USER
             var insertTxt = @"INSERT INTO S4_USER
                 (APPLICATION_NM, USER_NM, FIRST_NM, LAST_NM, NAME_SUFFIX,
@@ -191,7 +195,13 @@ namespace S4Analytics.Models
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // TODO: UPDATE S4_USER
+            if (user.Profile == null)
+            {
+                // return IdentityResult.Failed(new IdentityError() { Description = "User profile cannot be null." });
+                throw new Exception("User profile cannot be null."); // temporary
+            }
+
+            // UPDATE S4_USER
             var updateTxt = @"UPDATE S4_USER
                 SET FIRST_NM = :firstName,
                     LAST_NM = :lastName,

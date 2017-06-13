@@ -199,28 +199,6 @@ namespace S4Analytics.Tests.Properties
         }
 
         [Fact]
-        public async void DeleteBasicProfile()
-        {
-            var userName = GenerateRandomUserName();
-            var profile = new S4UserProfile()
-            {
-                FirstName = "Dilbert",
-                LastName = "Dewberry",
-                EmailAddress = $"{userName}@ufl.edu",
-                Agency = new Agency() { AgencyId = 1150200 }
-            };
-            await CreateBasicUser(userName, "secret", profile);
-
-            var user = await _userManager.FindByNameAsync(userName);
-            Assert.NotNull(user.Profile);
-
-            user.Profile = null;
-            await _userManager.UpdateAsync(user);
-            user = await _userManager.FindByNameAsync(userName);
-            Assert.Null(user.Profile);
-        }
-
-        [Fact]
         public async void SetContractorCompany()
         {
             var userName = GenerateRandomUserName();
