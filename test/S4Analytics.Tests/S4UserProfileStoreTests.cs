@@ -25,7 +25,6 @@ namespace S4Analytics.Tests.Properties
 
         internal readonly OracleConnection Connection;
         internal readonly OracleConnection MembershipConnection;
-        internal readonly S4UserProfileStore ProfileStore;
         internal readonly UserManager<S4IdentityUser<S4UserProfile>> UserManager;
 
         public S4UserProfileStoreFixture()
@@ -36,11 +35,10 @@ namespace S4Analytics.Tests.Properties
             MembershipConnection = new OracleConnection(membershipConnStr);
             MembershipConnection.Open();
 
-            ProfileStore = new S4UserProfileStore(appName, Connection);
-            var PasswordHasher = new S4PasswordHasher<S4IdentityUser<S4UserProfile>>();
-
+            var profileStore = new S4UserProfileStore(appName, Connection);
+            var passwordHasher = new S4PasswordHasher<S4IdentityUser<S4UserProfile>>();
             var userStore = new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(
-                appName, Connection, MembershipConnection, adminUserName, ProfileStore);
+                appName, Connection, MembershipConnection, adminUserName, profileStore);
             var identityOptions = Options.Create(new IdentityOptions()
             {
                 Password = new PasswordOptions()
@@ -61,7 +59,7 @@ namespace S4Analytics.Tests.Properties
             UserManager = new UserManager<S4IdentityUser<S4UserProfile>>(
                 userStore,
                 identityOptions,
-                PasswordHasher,
+                passwordHasher,
                 new List<IUserValidator<S4IdentityUser<S4UserProfile>>>() { userValidator },
                 new List<IPasswordValidator<S4IdentityUser<S4UserProfile>>>() { passwordValidator },
                 normalizer,
@@ -81,14 +79,12 @@ namespace S4Analytics.Tests.Properties
     {
         private readonly OracleTransaction _trans;
         private readonly OracleTransaction _membershipTrans;
-        private readonly S4UserProfileStore _profileStore;
         private readonly UserManager<S4IdentityUser<S4UserProfile>> _userManager;
 
         public S4UserProfileStoreTests(S4UserProfileStoreFixture fixture)
         {
             _trans = fixture.Connection.BeginTransaction();
             _membershipTrans = fixture.MembershipConnection.BeginTransaction();
-            _profileStore = fixture.ProfileStore;
             _userManager = fixture.UserManager;
         }
 
@@ -120,8 +116,8 @@ namespace S4Analytics.Tests.Properties
         {
             var user = new S4IdentityUser<S4UserProfile>(userName);
             user.Profile = profile;
-            await _userManager.SetEmailAsync(user, profile.EmailAddress);
             await _userManager.CreateAsync(user, password);
+            await _userManager.SetEmailAsync(user, profile.EmailAddress);
             return user;
         }
 
@@ -156,25 +152,6 @@ namespace S4Analytics.Tests.Properties
             Assert.True(user.Profile.ForcePasswordChange);
             Assert.True(user.Profile.TimeLimitedAccount);
             Assert.Equal(CrashReportAccess.After60Days, user.Profile.CrashReportAccess);
-        }
-
-        [Fact]
-        public async void CreateProfileWithEmailMismatch()
-        {
-            var userName = GenerateRandomUserName();
-            var profile = new S4UserProfile()
-            {
-                FirstName = "Dilbert",
-                LastName = "Dewberry",
-                EmailAddress = $"{userName}@ufl.edu",
-                Agency = new Agency() { AgencyId = 1150200 } // UF PD
-            };
-            var badEmail = "dilbert@dewberry.com";
-            var user = new S4IdentityUser<S4UserProfile>(userName);
-            user.Profile = profile;
-            await _userManager.SetEmailAsync(user, badEmail);
-            await Assert.ThrowsAsync<Exception>(
-                async () => await _userManager.CreateAsync(user, "secret"));
         }
 
         [Fact]
@@ -239,7 +216,8 @@ namespace S4Analytics.Tests.Properties
             var user = await _userManager.FindByNameAsync(userName);
             Assert.NotNull(user.Profile);
 
-            await _profileStore.DeleteProfileAsync(user, new CancellationToken());
+            user.Profile = null;
+            await _userManager.UpdateAsync(user);
             user = await _userManager.FindByNameAsync(userName);
             Assert.Null(user.Profile);
         }

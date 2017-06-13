@@ -137,11 +137,6 @@ namespace S4Analytics.Models
 
         public async Task<IdentityResult> CreateProfileAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
-            if (user.NormalizedEmail != user.Profile.EmailAddress.ToLower())
-            {
-                throw new Exception("User and profile email addresses are not in sync.");
-            }
-
             // INSERT INTO S4_USER
             var insertTxt = @"INSERT INTO S4_USER
                 (APPLICATION_NM, USER_NM, FIRST_NM, LAST_NM, NAME_SUFFIX,
@@ -190,11 +185,6 @@ namespace S4Analytics.Models
 
         public async Task<IdentityResult> UpdateProfileAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
-            if (user.NormalizedEmail != user.Profile.EmailAddress.ToLower())
-            {
-                throw new Exception("User and profile email addresses are not in sync.");
-            }
-
             // TODO: UPDATE S4_USER
             var updateTxt = @"UPDATE S4_USER
                 SET FIRST_NM = :firstName,
