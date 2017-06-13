@@ -36,6 +36,18 @@ export class RequestActionComponent  {
         return this.state.currentRequestActionResults.approved === undefined || this.state.currentRequestActionResults.approved;
     }
 
+    hideReportAccessCb()
+    {
+        return (!this.state.currentRequestActionResults.approved &&
+           ( (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewConsultant) ||
+            (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewContractor) ||
+                (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewAgency)))
+            ||
+            ((this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewConsultant) &&
+                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewContractor) &&
+                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewAgency));
+    }
+
     submit() {
         if (this.state.currentRequestActionResults.approved) {
             this.processOKResult();
@@ -50,6 +62,16 @@ export class RequestActionComponent  {
     cancel() {
         this.state.currentActionForm.close();
         this.closeContractViewer();
+    }
+
+    approved(approved: boolean) {
+
+        if (approved) {
+            this.state.currentRequestActionResults.rejectionReason = '';
+        }
+        else {
+            this.state.currentRequestActionResults.accessBefore70Days = false;
+        }
     }
 
     private closeContractViewer() {

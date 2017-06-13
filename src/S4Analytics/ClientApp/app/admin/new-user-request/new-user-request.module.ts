@@ -10,7 +10,7 @@ import { NewConsultantComponent } from './new-consultant.component';
 import { NewContractorComponent } from './new-contractor.component';
 import {
     NewUserRequestStateService, NewUserRequestService, RequestStatusPipe, RequestTypePipe,
-    OrderByPipe
+    OrderByPipe, ApproveRejectTypePipe, ReportAccessPipe
 } from './shared';
 
 @NgModule({
@@ -28,7 +28,9 @@ import {
         NewContractorComponent,
         RequestStatusPipe,
         RequestTypePipe,
-        OrderByPipe
+        OrderByPipe,
+        ApproveRejectTypePipe,
+        ReportAccessPipe
     ],
     providers: [
         NewUserRequestService,
