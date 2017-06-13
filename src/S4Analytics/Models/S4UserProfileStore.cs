@@ -12,8 +12,6 @@ namespace S4Analytics.Models
 {
     public class S4UserProfileStore : IProfileStore<S4UserProfile>, IDisposable
     {
-        // TODO: add persistence for sticky settings
-
         private OracleConnection _connection;
         private string _applicationName;
         private bool _connectionCreatedInternally;
@@ -41,6 +39,8 @@ namespace S4Analytics.Models
 
         public async Task<S4UserProfile> FindProfileForUserAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var selectText = @"BEGIN
               OPEN :q1 FOR
                 SELECT
@@ -137,9 +137,12 @@ namespace S4Analytics.Models
 
         public async Task<IdentityResult> CreateProfileAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
-            if (user.NormalizedEmail != user.Profile.EmailAddress.ToLower())
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user.Profile == null)
             {
-                throw new Exception("User and profile email addresses are not in sync.");
+                // return IdentityResult.Failed(new IdentityError() { Description = "User profile cannot be null." });
+                throw new Exception("User profile cannot be null."); // temporary
             }
 
             // INSERT INTO S4_USER
@@ -190,12 +193,15 @@ namespace S4Analytics.Models
 
         public async Task<IdentityResult> UpdateProfileAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
-            if (user.NormalizedEmail != user.Profile.EmailAddress.ToLower())
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user.Profile == null)
             {
-                throw new Exception("User and profile email addresses are not in sync.");
+                // return IdentityResult.Failed(new IdentityError() { Description = "User profile cannot be null." });
+                throw new Exception("User profile cannot be null."); // temporary
             }
 
-            // TODO: UPDATE S4_USER
+            // UPDATE S4_USER
             var updateTxt = @"UPDATE S4_USER
                 SET FIRST_NM = :firstName,
                     LAST_NM = :lastName,
@@ -262,6 +268,8 @@ namespace S4Analytics.Models
 
         public async Task<IdentityResult> DeleteProfileAsync(S4IdentityUser<S4UserProfile> user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var @params = new { appName = _applicationName, user.UserName };
 
             // DELETE FROM USER_CNTY

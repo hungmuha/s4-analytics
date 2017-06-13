@@ -1,26 +1,33 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Lib.Identity.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace S4Analytics.Controllers
 {
+    public class Credentials
+    {
+        public string UserName { get; set; }
+        public string Password { get; set; }
+    }
+
     public class HomeController : Controller
     {
         private readonly IHostingEnvironment _env;
         SignInManager<S4IdentityUser<S4UserProfile>> _signInManager;
+        UserManager<S4IdentityUser<S4UserProfile>> _userManager;
 
-        public HomeController(SignInManager<S4IdentityUser<S4UserProfile>> signInManager, IHostingEnvironment env)
+        public HomeController(
+            SignInManager<S4IdentityUser<S4UserProfile>> signInManager,
+            UserManager<S4IdentityUser<S4UserProfile>> userManager,
+            IHostingEnvironment env)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _env = env;
         }
 
@@ -39,14 +46,13 @@ namespace S4Analytics.Controllers
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        [HttpGet("api/login/{userName}")]
-        public async Task<IActionResult> LogIn(string userName)
+        [HttpPost("api/login")]
+        public async Task<IActionResult> LogIn([FromBody] Credentials credentials)
         {
-            if (_env.EnvironmentName == "Local")
-            {
-                await _signInManager.SignInAsync(new S4IdentityUser<S4UserProfile>(userName), isPersistent: false);
-            }
-            return new NoContentResult();
+            var user = await _userManager.FindByNameAsync(credentials.UserName);
+            var signInResult = await _signInManager.PasswordSignInAsync(user, credentials.Password, false, false);
+            var success = signInResult == Microsoft.AspNetCore.Identity.SignInResult.Success;
+            return new ObjectResult(new { success });
         }
 
         /// <summary>

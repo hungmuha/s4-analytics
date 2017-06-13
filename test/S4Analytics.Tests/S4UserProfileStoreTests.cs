@@ -1,11 +1,13 @@
 ﻿using Lib.Identity;
 using Lib.Identity.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
 using S4Analytics.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -21,10 +23,7 @@ namespace S4Analytics.Tests.Properties
 
         internal readonly OracleConnection Connection;
         internal readonly OracleConnection MembershipConnection;
-        internal readonly S4UserProfileStore ProfileStore;
-
-        public S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile> UserStore { get; set; }
-        public IPasswordHasher<S4IdentityUser<S4UserProfile>> PasswordHasher { get; set; }
+        internal readonly UserManager<S4IdentityUser<S4UserProfile>> UserManager;
 
         public S4UserProfileStoreFixture()
         {
@@ -34,9 +33,38 @@ namespace S4Analytics.Tests.Properties
             MembershipConnection = new OracleConnection(membershipConnStr);
             MembershipConnection.Open();
 
-            ProfileStore = new S4UserProfileStore(Connection, appName);
-            UserStore = new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(appName, Connection, MembershipConnection, "", ProfileStore);
-            PasswordHasher = new S4PasswordHasher<S4IdentityUser<S4UserProfile>>();
+            var profileStore = new S4UserProfileStore(appName, Connection);
+            var passwordHasher = new S4PasswordHasher<S4IdentityUser<S4UserProfile>>();
+            var userStore = new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(
+                appName, Connection, MembershipConnection, profileStore);
+            var identityOptions = Options.Create(new IdentityOptions()
+            {
+                Password = new PasswordOptions()
+                {
+                    RequireDigit = false,
+                    RequireLowercase = false,
+                    RequireNonAlphanumeric = false,
+                    RequireUppercase = false,
+                    RequiredLength = 1
+                }
+            });
+            var userValidator = new UserValidator<S4IdentityUser<S4UserProfile>>();
+            var passwordValidator = new PasswordValidator<S4IdentityUser<S4UserProfile>>();
+            var normalizer = new S4LookupNormalizer();
+            var identityErrorDescriber = new IdentityErrorDescriber();
+            var mockLogger = new MockLogger<UserManager<S4IdentityUser<S4UserProfile>>>();
+
+            UserManager = new UserManager<S4IdentityUser<S4UserProfile>>(
+                userStore,
+                identityOptions,
+                passwordHasher,
+                new List<IUserValidator<S4IdentityUser<S4UserProfile>>>() { userValidator },
+                new List<IPasswordValidator<S4IdentityUser<S4UserProfile>>>() { passwordValidator },
+                normalizer,
+                identityErrorDescriber,
+                null,
+                mockLogger
+            );
         }
 
         public void Dispose()
@@ -49,17 +77,13 @@ namespace S4Analytics.Tests.Properties
     {
         private readonly OracleTransaction _trans;
         private readonly OracleTransaction _membershipTrans;
-        private readonly S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile> _userStore;
-        private readonly IPasswordHasher<S4IdentityUser<S4UserProfile>> _passwordHasher;
-        private readonly S4UserProfileStore _profileStore;
+        private readonly UserManager<S4IdentityUser<S4UserProfile>> _userManager;
 
         public S4UserProfileStoreTests(S4UserProfileStoreFixture fixture)
         {
             _trans = fixture.Connection.BeginTransaction();
             _membershipTrans = fixture.MembershipConnection.BeginTransaction();
-            _userStore = fixture.UserStore;
-            _passwordHasher = fixture.PasswordHasher;
-            _profileStore = fixture.ProfileStore;
+            _userManager = fixture.UserManager;
         }
 
         public void Dispose()
@@ -85,29 +109,19 @@ namespace S4Analytics.Tests.Properties
 
         private async Task<S4IdentityUser<S4UserProfile>> CreateBasicUser(
             string userName,
-            string email,
             string password,
-            S4UserProfile profile,
-            CancellationToken token)
+            S4UserProfile profile)
         {
             var user = new S4IdentityUser<S4UserProfile>(userName);
-
-            await _userStore.SetEmailAsync(user, email, token);
-
-            var passwordHash = _passwordHasher.HashPassword(user, password);
-            await _userStore.SetPasswordHashAsync(user, passwordHash, token);
-
             user.Profile = profile;
-
-            await _userStore.CreateAsync(user, token);
-
+            await _userManager.CreateAsync(user, password);
+            await _userManager.SetEmailAsync(user, profile.EmailAddress);
             return user;
         }
 
         [Fact]
         public async void CreateBasicProfile()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var startDate = RemoveMilliseconds(DateTime.Now);
             var profile = new S4UserProfile()
@@ -123,9 +137,9 @@ namespace S4Analytics.Tests.Properties
                 CrashReportAccess = CrashReportAccess.After60Days,
                 Agency = new Agency() { AgencyId = 1150200 } // UF PD
             };
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             Assert.NotNull(user.Profile);
             Assert.Equal("Dilbert", user.Profile.FirstName);
             Assert.Equal("Dewberry", user.Profile.LastName);
@@ -139,26 +153,8 @@ namespace S4Analytics.Tests.Properties
         }
 
         [Fact]
-        public async void CreateProfileWithEmailMismatch()
-        {
-            var token = new CancellationToken();
-            var userName = GenerateRandomUserName();
-            var profile = new S4UserProfile()
-            {
-                FirstName = "Dilbert",
-                LastName = "Dewberry",
-                EmailAddress = $"{userName}@ufl.edu",
-                Agency = new Agency() { AgencyId = 1150200 } // UF PD
-            };
-            var badEmail = "dilbert@dewberry.com";
-            await Assert.ThrowsAsync<Exception>(
-                async () => await CreateBasicUser(userName, badEmail, "secret", profile, token));
-        }
-
-        [Fact]
         public async void UpdateBasicProfile()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var startDate = RemoveMilliseconds(DateTime.Now);
             var profile = new S4UserProfile()
@@ -174,9 +170,9 @@ namespace S4Analytics.Tests.Properties
                 CrashReportAccess = CrashReportAccess.After60Days,
                 Agency = new Agency() { AgencyId = 1150200 } // UF PD
             };
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             user.Profile.FirstName = "Dogbert";
             user.Profile.LastName = "Doolittle";
             var newStartDate = startDate.AddDays(5);
@@ -187,10 +183,9 @@ namespace S4Analytics.Tests.Properties
             user.Profile.ForcePasswordChange = false;
             user.Profile.TimeLimitedAccount = false;
             user.Profile.CrashReportAccess = CrashReportAccess.NoAccess;
-            await _userStore.SetEmailAsync(user, user.Profile.EmailAddress, token);
-            await _userStore.UpdateAsync(user, token);
+            await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
-            user = await _userStore.FindByNameAsync(userName, token);
+            user = await _userManager.FindByNameAsync(userName);
             Assert.NotNull(user.Profile);
             Assert.Equal("Dogbert", user.Profile.FirstName);
             Assert.Equal("Doolittle", user.Profile.LastName);
@@ -204,31 +199,8 @@ namespace S4Analytics.Tests.Properties
         }
 
         [Fact]
-        public async void DeleteBasicProfile()
-        {
-            var token = new CancellationToken();
-            var userName = GenerateRandomUserName();
-            var profile = new S4UserProfile()
-            {
-                FirstName = "Dilbert",
-                LastName = "Dewberry",
-                EmailAddress = $"{userName}@ufl.edu",
-                Agency = new Agency() { AgencyId = 1150200 }
-            };
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
-
-            var user = await _userStore.FindByNameAsync(userName, token);
-            Assert.NotNull(user.Profile);
-
-            await _profileStore.DeleteProfileAsync(user, token);
-            user = await _userStore.FindByNameAsync(userName, token);
-            Assert.Null(user.Profile);
-        }
-
-        [Fact]
         public async void SetContractorCompany()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
             {
@@ -238,9 +210,9 @@ namespace S4Analytics.Tests.Properties
                 Agency = new Agency() { AgencyId = 1150200 }, // UF PD
                 ContractorCompany = new Contractor { ContractorId = 69 } // UF
             };
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             Assert.NotNull(user.Profile.ContractorCompany);
             Assert.Equal("University of Florida", user.Profile.ContractorCompany.ContractorName);
         }
@@ -248,7 +220,6 @@ namespace S4Analytics.Tests.Properties
         [Fact]
         public async void UpdateContractorCompany()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
             {
@@ -258,20 +229,19 @@ namespace S4Analytics.Tests.Properties
                 Agency = new Agency() { AgencyId = 1150200 }, // UF PD
                 ContractorCompany = new Contractor { ContractorId = 69 } // UF
             };
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             user.Profile.ContractorCompany = new Contractor { ContractorId = 73 }; // USF
-            await _userStore.UpdateAsync(user, token);
+            await _userManager.UpdateAsync(user);
 
-            user = await _userStore.FindByNameAsync(userName, token);
+            user = await _userManager.FindByNameAsync(userName);
             Assert.Equal("University of South Florida", user.Profile.ContractorCompany.ContractorName);
         }
 
         [Fact]
         public async void UnsetContractorCompany()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
             {
@@ -281,20 +251,19 @@ namespace S4Analytics.Tests.Properties
                 Agency = new Agency() { AgencyId = 1150200 }, // UF PD
                 ContractorCompany = new Contractor { ContractorId = 69 } // UF
             };
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             user.Profile.ContractorCompany = null;
-            await _userStore.UpdateAsync(user, token);
+            await _userManager.UpdateAsync(user);
 
-            user = await _userStore.FindByNameAsync(userName, token);
+            user = await _userManager.FindByNameAsync(userName);
             Assert.Null(user.Profile.ContractorCompany);
         }
 
         [Fact]
         public async void SetAgency()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
             {
@@ -303,16 +272,15 @@ namespace S4Analytics.Tests.Properties
                 EmailAddress = $"{userName}@ufl.edu",
                 Agency = new Agency() { AgencyId = 1150200 } // UF PD
             };
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             Assert.Equal("University of Florida Police Department", user.Profile.Agency.AgencyName);
         }
 
         [Fact]
         public async void UpdateAgency()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
             {
@@ -321,20 +289,19 @@ namespace S4Analytics.Tests.Properties
                 EmailAddress = $"{userName}@ufl.edu",
                 Agency = new Agency() { AgencyId = 1150200 } // UF PD
             };
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             user.Profile.Agency = new Agency() { AgencyId = 1340200 }; // FSU PD
-            await _userStore.UpdateAsync(user, token);
+            await _userManager.UpdateAsync(user);
 
-            user = await _userStore.FindByNameAsync(userName, token);
+            user = await _userManager.FindByNameAsync(userName);
             Assert.Equal("Florida State University Police Department", user.Profile.Agency.AgencyName);
         }
 
         [Fact]
         public async void AddUserWithAgreement()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var signedDate = RemoveMilliseconds(DateTime.Now);
             var profile = new S4UserProfile()
@@ -351,9 +318,9 @@ namespace S4Analytics.Tests.Properties
                 ExpirationDate = signedDate.AddYears(1)
             };
             profile.Agreements.Add(userAgreement);
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             Assert.NotEmpty(user.Profile.Agreements);
             userAgreement = user.Profile.Agreements[0];
             Assert.Equal("User Agreement", userAgreement.AgreementName);
@@ -364,7 +331,6 @@ namespace S4Analytics.Tests.Properties
         [Fact]
         public async void AddAgreement()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var signedDate = RemoveMilliseconds(DateTime.Now);
             var profile = new S4UserProfile()
@@ -374,9 +340,9 @@ namespace S4Analytics.Tests.Properties
                 EmailAddress = $"{userName}@ufl.edu",
                 Agency = new Agency() { AgencyId = 1150200 } // UF PD
             };
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             var userAgreement = new UserAgreement()
             {
                 AgreementName = "User Agreement",
@@ -384,9 +350,9 @@ namespace S4Analytics.Tests.Properties
                 ExpirationDate = signedDate.AddYears(1)
             };
             user.Profile.Agreements.Add(userAgreement);
-            await _userStore.UpdateAsync(user, token);
+            await _userManager.UpdateAsync(user);
 
-            user = await _userStore.FindByNameAsync(userName, token);
+            user = await _userManager.FindByNameAsync(userName);
             Assert.NotEmpty(user.Profile.Agreements);
             userAgreement = user.Profile.Agreements[0];
             Assert.Equal("User Agreement", userAgreement.AgreementName);
@@ -397,7 +363,6 @@ namespace S4Analytics.Tests.Properties
         [Fact]
         public async void UpdateAgreement()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var signedDate = RemoveMilliseconds(DateTime.Now);
             var profile = new S4UserProfile()
@@ -414,16 +379,16 @@ namespace S4Analytics.Tests.Properties
                 ExpirationDate = signedDate.AddYears(1)
             };
             profile.Agreements.Add(userAgreement);
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             userAgreement = user.Profile.Agreements[0];
             var newSignedDate = signedDate.AddDays(5);
             userAgreement.SignedDate = newSignedDate;
             userAgreement.ExpirationDate = newSignedDate.AddYears(1);
-            await _userStore.UpdateAsync(user, token);
+            await _userManager.UpdateAsync(user);
 
-            user = await _userStore.FindByNameAsync(userName, token);
+            user = await _userManager.FindByNameAsync(userName);
             userAgreement = user.Profile.Agreements[0];
             Assert.NotEqual(signedDate, userAgreement.SignedDate);
             Assert.NotEqual(signedDate.AddYears(1), userAgreement.ExpirationDate);
@@ -434,7 +399,6 @@ namespace S4Analytics.Tests.Properties
         [Fact]
         public async void AddCounties()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
             {
@@ -455,9 +419,9 @@ namespace S4Analytics.Tests.Properties
                 CanEdit = false,
                 CrashReportAccess = CrashReportAccess.After60Days
             });
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             Assert.Equal(2, user.Profile.ViewableCounties.Count);
             Assert.Equal(1, user.Profile.EditableCounties.Count);
             var alachua = user.Profile.ViewableCounties.First(c => c.CountyName == "Alachua");
@@ -472,7 +436,6 @@ namespace S4Analytics.Tests.Properties
         [Fact]
         public async void UpdateCounties()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
             {
@@ -487,18 +450,18 @@ namespace S4Analytics.Tests.Properties
                 CanEdit = false,
                 CrashReportAccess = CrashReportAccess.After60Days
             });
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             user.Profile.ViewableCounties.Add(new UserCounty()
             {
                 CountyCode = 11, // Alachua
                 CanEdit = true,
                 CrashReportAccess = CrashReportAccess.Within60Days
             });
-            await _userStore.UpdateAsync(user, token);
+            await _userManager.UpdateAsync(user);
 
-            user = await _userStore.FindByNameAsync(userName, token);
+            user = await _userManager.FindByNameAsync(userName);
             Assert.Equal(2, user.Profile.ViewableCounties.Count);
             Assert.Equal(1, user.Profile.EditableCounties.Count);
             var alachua = user.Profile.ViewableCounties.First(c => c.CountyName == "Alachua");
@@ -513,7 +476,6 @@ namespace S4Analytics.Tests.Properties
         [Fact]
         public async void RemoveCounty()
         {
-            var token = new CancellationToken();
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
             {
@@ -534,13 +496,13 @@ namespace S4Analytics.Tests.Properties
                 CanEdit = false,
                 CrashReportAccess = CrashReportAccess.After60Days
             });
-            await CreateBasicUser(userName, profile.EmailAddress, "secret", profile, token);
+            await CreateBasicUser(userName, "secret", profile);
 
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
             user.Profile.ViewableCounties.Remove(user.Profile.ViewableCounties.Single(c => c.CountyName == "Alachua"));
-            await _userStore.UpdateAsync(user, token);
+            await _userManager.UpdateAsync(user);
 
-            user = await _userStore.FindByNameAsync(userName, token);
+            user = await _userManager.FindByNameAsync(userName);
             Assert.Equal(1, user.Profile.ViewableCounties.Count);
             Assert.Equal(0, user.Profile.EditableCounties.Count);
         }

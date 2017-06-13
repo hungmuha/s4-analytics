@@ -10,7 +10,6 @@ using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace S4Analytics.Models
@@ -20,32 +19,20 @@ namespace S4Analytics.Models
         private string _applicationName;
         private string _connStr;
         private OracleConnection _conn;
-        private IUserStore<S4IdentityUser<S4UserProfile>> _userStore;
-        private IUserEmailStore<S4IdentityUser<S4UserProfile>> _userEmailStore;
-        private IUserPasswordStore<S4IdentityUser<S4UserProfile>> _userPasswordStore;
-        private IUserRoleStore<S4IdentityUser<S4UserProfile>> _userRoleStore;
-        private IPasswordHasher<S4IdentityUser<S4UserProfile>> _passwordHasher;
         private SmtpClient _smtp;
         private string _globalAdminEmail;
         private string _supportEmail;
+        private UserManager<S4IdentityUser<S4UserProfile>> _userManager;
 
         public NewUserRequestRepository(
             IOptions<ServerOptions> serverOptions,
-            IUserStore<S4IdentityUser<S4UserProfile>> userStore,
-            IUserEmailStore<S4IdentityUser<S4UserProfile>> userEmailStore,
-            IUserPasswordStore<S4IdentityUser<S4UserProfile>> userPasswordStore,
-            IUserRoleStore<S4IdentityUser<S4UserProfile>> userRoleStore,
-            IPasswordHasher<S4IdentityUser<S4UserProfile>> passwordHasher)
+            UserManager<S4IdentityUser<S4UserProfile>> userManager)
         {
             _applicationName = serverOptions.Value.MembershipApplicationName;
             _connStr = serverOptions.Value.WarehouseConnStr;
             _conn = new OracleConnection(_connStr);
 
-            _userStore = userStore;
-            _userEmailStore = userEmailStore;
-            _userPasswordStore = userPasswordStore;
-            _userRoleStore = userRoleStore;
-            _passwordHasher = passwordHasher;
+            _userManager = userManager;
 
             _smtp = new SmtpClient
             {
@@ -105,45 +92,39 @@ namespace S4Analytics.Models
         /// <returns></returns>
         public async Task<NewUserRequest> ApproveNewUser(int id, RequestApproval approval)
         {
-            var token = new CancellationToken();
-
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
 
             var preferredUserName = (request.RequestorFirstNm[0] + request.RequestorLastNm).ToLower();
-            var userName = GenerateUserName(preferredUserName);
+            var userName = await GenerateUserName(preferredUserName);
 
             var user = new S4IdentityUser<S4UserProfile>(userName);
 
             user.Profile = CreateS4UserProfile(request);
 
             var passwordText = GenerateRandomPassword(8, 0);
-            var passwordHash = _passwordHasher.HashPassword(user, passwordText);
-            await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
+            await _userManager.CreateAsync(user, passwordText);
 
-            await _userEmailStore.SetEmailAsync(user, user.Profile.EmailAddress, token);
+            await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
             // TODO: need to be more generic here -hard coded for testing
             // TODO: If user is for a New Agency, then also need to create an Agency Admin role
-            await _userRoleStore.AddToRoleAsync(user, "User", token);
-            if (request.UserManagerCd)
-            {
-                await _userRoleStore.AddToRoleAsync(user, "Agency Admin", token);
-            }
-
-            var result = _userStore.CreateAsync(user, token);
+            var roles = request.UserManagerCd
+                ? new List<string> { "User", "Agency Admin" }
+                : new List<string> { "User" };
+            await _userManager.AddToRolesAsync(user, roles);
 
             // Send password cred to new user.
             var subject = "Signal Four Analytics user account created";
             var body = string.Format(@"<div>Dear {0}, <br><br>
-                        Your Signal Four Analytics individual account has been created. 
-                        You can access the system at http://s4.geoplan.ufl.edu/. 
-                        To login click on the Login link at the upper right of the screen 
+                        Your Signal Four Analytics individual account has been created.
+                        You can access the system at http://s4.geoplan.ufl.edu/.
+                        To login click on the Login link at the upper right of the screen
                         and enter the information below: <br>
                         username = {1} <br>
                         password = {2} <br><br>
-                        Upon login you will be prompted to change your password. You will also be 
-                        prompted to read and accept Signal Four Analytics user agreement before 
+                        Upon login you will be prompted to change your password. You will also be
+                        prompted to read and accept Signal Four Analytics user agreement before
                         using the system.<br><br>
                         Please let me know if you need further assistance.<br><br></div>", request.RequestorFirstNm, userName, passwordText);
 
@@ -169,8 +150,6 @@ namespace S4Analytics.Models
         /// <returns></returns>
         public async Task<NewUserRequest> ApproveNewConsultant(int id, RequestApproval approval)
         {
-            var token = new CancellationToken();
-
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
             var before70days = approval.Before70Days;
@@ -182,7 +161,7 @@ namespace S4Analytics.Models
             }
 
             var preferredUserName = (request.RequestorFirstNm[0] + request.RequestorLastNm).ToLower();
-            var userName = GenerateUserName(preferredUserName);
+            var userName = await GenerateUserName(preferredUserName);
 
             var user = new S4IdentityUser<S4UserProfile>(userName);
 
@@ -190,20 +169,16 @@ namespace S4Analytics.Models
             user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
             var passwordText = GenerateRandomPassword(8, 0);
-            var passwordHash = _passwordHasher.HashPassword(user, passwordText);
-            await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
+            await _userManager.CreateAsync(user, passwordText);
 
-            await _userEmailStore.SetEmailAsync(user, user.Profile.EmailAddress, token);
+            await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
             // TODO: need to be more generic here -hard coded for testing
             // TODO: If user is for a New Agency, then also need to create an Agency Admin role
-            await _userRoleStore.AddToRoleAsync(user, "User", token);
-            if (request.UserManagerCd)
-            {
-                await _userRoleStore.AddToRoleAsync(user, "Agency Admin", token);
-            }
-
-            var result = _userStore.CreateAsync(user, token);
+            var roles = request.UserManagerCd
+                ? new List<string> { "User", "Agency Admin" }
+                : new List<string> { "User" };
+            await _userManager.AddToRolesAsync(user, roles);
 
             // Send the approval the emails here.  Send password cred to new user.
             var subject = string.Format("Your Signal Four Analytics individual account as employee of " +
@@ -211,7 +186,7 @@ namespace S4Analytics.Models
 
             var body = string.Format(@"<div>
                 Dear {0} <br><br>
-                Your Signal Four Analytics individual account has been created. 
+                Your Signal Four Analytics individual account has been created.
                 You can access the system at http://s4.geoplan.ufl.edu/. <br><br>
                 To login click on the Login link at the upper right of the screen and enter the information below: <br><br>
                 username: {1} <br>
@@ -242,43 +217,40 @@ namespace S4Analytics.Models
             var before70days = approval.Before70Days;
             var userName = request.UserId;
 
-            var token = new CancellationToken();
-            var user = await _userStore.FindByNameAsync(userName, token);
+            var user = await _userManager.FindByNameAsync(userName);
 
             user.Profile.AccountStartDate = request.ContractStartDt;
             user.Profile.AccountExpirationDate = request.ContractEndDt;
             user.Profile.EmailAddress = request.ConsultantEmail;
             user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
+            await _userManager.UpdateAsync(user);
 
             var passwordText = GenerateRandomPassword(8, 0);
-            var passwordHash = _passwordHasher.HashPassword(user, passwordText);
-            await _userPasswordStore.SetPasswordHashAsync(user, passwordHash, token);
+            await _userManager.RemovePasswordAsync(user);
+            await _userManager.AddPasswordAsync(user, passwordText);
 
-            await _userEmailStore.SetEmailAsync(user, user.Profile.EmailAddress, token);
+            await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
             // TODO: need to be more generic here -hard coded for testing
             // TODO: If user is for a New Agency, then also need to create an Agency Admin role
-            await _userRoleStore.AddToRoleAsync(user, "User", token);
-            if (request.UserManagerCd)
-            {
-                await _userRoleStore.AddToRoleAsync(user, "Agency Admin", token);
-            }
-
-            var result = await _userStore.UpdateAsync(user, token);
+            var roles = request.UserManagerCd
+                ? new List<string> { "User", "Agency Admin" }
+                : new List<string> { "User" };
+            await _userManager.AddToRolesAsync(user, roles);
 
             // Send the approval the emails here.  Send password cred to new user.
             var subject = string.Format("Your Signal Four Analytics individual account as employee of " +
                 "{0} has been renewed", request.AgncyNm);
 
             var body = string.Format(@"<div>Dear {0}, <br><br>
-                        Your Signal Four Analytics individual account has been renewed. 
+                        Your Signal Four Analytics individual account has been renewed.
                         You can access the system at http://s4.geoplan.ufl.edu/. <br><br>
-                        To login click on the Login link at the upper right of the screen 
+                        To login click on the Login link at the upper right of the screen
                         and enter the information below: <br><br>
                         username = {1} <br>
                         password = {2} <br><br>
-                        Upon login you will be prompted to change your password. You will also be 
-                        prompted to read and accept Signal Four Analytics user agreement before 
+                        Upon login you will be prompted to change your password. You will also be
+                        prompted to read and accept Signal Four Analytics user agreement before
                         using the system.<br><br>
                         Note that this account will expire on {3}. <br><br>
                         Please let me know if you need further assistance.<br><br></div>", request.ConsultantFirstNm, userName, passwordText,
@@ -529,16 +501,15 @@ namespace S4Analytics.Models
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        private string GenerateUserName(string userName)
+        private async Task<string> GenerateUserName(string userName)
         {
             var done = false;
-            var token = new CancellationToken();
             var increment = 0;
             var generatedUserName = userName;
             do
             {
-                var result = _userStore.FindByNameAsync(generatedUserName, token);
-                if (result.Result != null)
+                var result = await _userManager.FindByNameAsync(generatedUserName);
+                if (result != null)
                 {
                     increment++;
                     generatedUserName = userName + increment;
@@ -548,7 +519,6 @@ namespace S4Analytics.Models
             while (!done);
 
             return generatedUserName;
-
         }
 
         private bool StoreContractor(Contractor contractor)
