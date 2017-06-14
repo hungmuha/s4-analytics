@@ -15,7 +15,6 @@ using Microsoft.Extensions.Options;
 using S4Analytics.Models;
 using System;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace S4Analytics
@@ -130,7 +129,8 @@ namespace S4Analytics
             services.AddScoped<ILookupNormalizer, S4LookupNormalizer>();
             services.AddScoped<IRoleValidator<S4IdentityRole>, RoleValidator<S4IdentityRole>>();
             services.AddScoped<IdentityErrorDescriber>();
-            services.AddScoped<IUserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>, UserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>>();
+            services.AddScoped<ISecurityStampValidator, SecurityStampValidator<S4IdentityUser<S4UserProfile>>>();
+            services.AddScoped<IUserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>, S4UserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>>();
             services.AddScoped<UserManager<S4IdentityUser<S4UserProfile>>>();
             services.AddScoped<RoleManager<S4IdentityRole>>();
             services.AddScoped<SignInManager<S4IdentityUser<S4UserProfile>>>();
@@ -226,24 +226,6 @@ namespace S4Analytics
                             ? GetSimpleSerializableException(ex.InnerException)
                             : null
                 };
-            }
-        }
-
-        /// <summary>
-        /// This class implements IUserClaimsPrincipalFactory in the
-        /// most minimal posible way. It only exists because SignInManager
-        /// throws an exception otherwise.
-        /// </summary>
-        /// <typeparam name="TUser"></typeparam>
-        public class UserClaimsPrincipalFactory<TUser> : IUserClaimsPrincipalFactory<TUser>
-            where TUser : class
-        {
-            public Task<ClaimsPrincipal> CreateAsync(TUser user)
-            {
-                // return an empty claims principal
-                var claimsIdentity = new ClaimsIdentity();
-                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                return Task.FromResult(claimsPrincipal);
             }
         }
     }
