@@ -18,7 +18,8 @@ export class RequestActionComponent  {
 
     constructor(public state: NewUserRequestStateService,
         private newUserRequestService: NewUserRequestService,
-        public modalService: NgbModal) {
+        public modalService: NgbModal
+        ) {
         this.state.currentRequestActionResults = new RequestActionResults(this.state.selectedRequest.requestNbr);
     }
 

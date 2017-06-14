@@ -1,4 +1,6 @@
-﻿<div class="row">
+﻿<ng-template #tipContent>Hello, <b>{{name}}</b>!</ng-template>
+
+<div class="row">
     <!-- requestor info-->
     <b>Requestor Name:</b>&nbsp;
     {{state.selectedRequest.requestorFirstNm}}
@@ -7,9 +9,12 @@
 <div class="row">
     <b>Email:</b>&nbsp;
     {{state.selectedRequest.requestorEmail}}
-    <i [hidden]="!state.selectedRequest.warnRequestorEmailCd && !state.selectedRequest.warnDuplicateEmailCd" >
-        &nbsp;<i class="fa fa-exclamation-circle text-danger" data-toggle="tooltip" data-placement="top" title="Testing"></i>
-    </i>
+    <!--<i [hidden]="!state.selectedRequest.warnRequestorEmailCd && !state.selectedRequest.warnDuplicateEmailCd" >
+        &nbsp;-->
+       <button  ngbTooltip="Tooltip on left" container="body" placement="left">Tooltip on left</button>
+       <button (click)="logIn()" ngbTooltip="Test" container="body" placement="right">Log in</button>
+
+    <!--</i>-->
 </div>
 <div class="row">
     <b>Agency:</b>&nbsp;

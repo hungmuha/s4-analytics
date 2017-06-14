@@ -116,17 +116,17 @@ namespace S4Analytics.Models
 
             // Send password cred to new user.
             var subject = "Signal Four Analytics user account created";
-            var body = string.Format(@"<div>Dear {0}, <br><br>
-                        Your Signal Four Analytics individual account has been created.
-                        You can access the system at http://s4.geoplan.ufl.edu/.
-                        To login click on the Login link at the upper right of the screen
+            var body = $@"<div>Dear {request.RequestorFirstNm}, <br><br>
+                        Your Signal Four Analytics individual account has been created. 
+                        You can access the system at http://s4.geoplan.ufl.edu/. 
+                        To login click on the Login link at the upper right of the screen 
                         and enter the information below: <br>
-                        username = {1} <br>
-                        password = {2} <br><br>
-                        Upon login you will be prompted to change your password. You will also be
-                        prompted to read and accept Signal Four Analytics user agreement before
+                        username = {userName} <br>
+                        password = {passwordText} <br><br>
+                        Upon login you will be prompted to change your password. You will also be 
+                        prompted to read and accept Signal Four Analytics user agreement before 
                         using the system.<br><br>
-                        Please let me know if you need further assistance.<br><br></div>", request.RequestorFirstNm, userName, passwordText);
+                        Please let me know if you need further assistance.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
@@ -181,21 +181,27 @@ namespace S4Analytics.Models
             await _userManager.AddToRolesAsync(user, roles);
 
             // Send the approval the emails here.  Send password cred to new user.
-            var subject = string.Format("Your Signal Four Analytics individual account as employee of " +
-                 " {0} has been created", request.AgncyNm);
+            var subject = $@"Your Signal Four Analytics individual account as employee of
+                  {request.AgncyNm} has been created";
 
+<<<<<<< HEAD
             var body = string.Format(@"<div>
                 Dear {0} <br><br>
                 Your Signal Four Analytics individual account has been created.
+=======
+            var body = $@"<div>
+                Dear {request.ConsultantFirstNm} <br><br>
+                Your Signal Four Analytics individual account has been created. 
+>>>>>>> wip: wroking on tooltips
                 You can access the system at http://s4.geoplan.ufl.edu/. <br><br>
                 To login click on the Login link at the upper right of the screen and enter the information below: <br><br>
-                username: {1} <br>
-                password: {2} <br><br>
+                username: {userName} <br>
+                password: {passwordText} <br><br>
                 Upon login you will be prompted to change your password. You will also be
                 prompted to read and accept Signal Four Analytics user agreement before
                 using the system.<br><br>
-                Note that this account will expire on {3}).
-                Please let me know if you need further assistance.<br><br></div> ", request.ConsultantFirstNm, userName, passwordText, request.ContractEndDt.ToString());
+                Note that this account will expire on {request.ContractEndDt.ToString()}).
+                Please let me know if you need further assistance.<br><br></div> ";
 
             var closing = GetEmailNotificationClosing();
 
@@ -239,22 +245,33 @@ namespace S4Analytics.Models
             await _userManager.AddToRolesAsync(user, roles);
 
             // Send the approval the emails here.  Send password cred to new user.
-            var subject = string.Format("Your Signal Four Analytics individual account as employee of " +
-                "{0} has been renewed", request.AgncyNm);
+            var subject = $@"Your Signal Four Analytics individual account as employee of 
+                {request.AgncyNm} has been renewed";
 
+<<<<<<< HEAD
             var body = string.Format(@"<div>Dear {0}, <br><br>
                         Your Signal Four Analytics individual account has been renewed.
+=======
+            var body = $@"<div>Dear {request.ConsultantFirstNm}, <br><br>
+                        Your Signal Four Analytics individual account has been renewed. 
+>>>>>>> wip: wroking on tooltips
                         You can access the system at http://s4.geoplan.ufl.edu/. <br><br>
                         To login click on the Login link at the upper right of the screen
                         and enter the information below: <br><br>
+<<<<<<< HEAD
                         username = {1} <br>
                         password = {2} <br><br>
                         Upon login you will be prompted to change your password. You will also be
                         prompted to read and accept Signal Four Analytics user agreement before
+=======
+                        username = {userName} <br>
+                        password = {passwordText} <br><br>
+                        Upon login you will be prompted to change your password. You will also be 
+                        prompted to read and accept Signal Four Analytics user agreement before 
+>>>>>>> wip: wroking on tooltips
                         using the system.<br><br>
                         Note that this account will expire on {3}. <br><br>
-                        Please let me know if you need further assistance.<br><br></div>", request.ConsultantFirstNm, userName, passwordText,
-                        request.ContractEndDt.ToString());
+                        Please let me know if you need further assistance.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
@@ -287,11 +304,12 @@ namespace S4Analytics.Models
 
             // Nothing to update in database. Send email to global admin to create agency
             var subject = "New agency needs to be created in Signal Four Analytics";
-            var body = string.Format(@"<div>{0} has been approved for creation. Please create new agency. Below are the specs: <br><br>
-                        Agency Name = {0} <br>
-                        Access Before 70 days = {1} <br>
-                        AgencyType = {2} <br>
-                        Email Domain = {3}.<br><br></div>", request.AgncyNm, before70days, agencyType, request.AgncyEmailDomain);
+            var body = $@"<div>{request.AgncyNm} has been approved for creation. Please create new agency.<br> 
+                        Below are the specs: <br><br>
+                        &nbsp;&nbsp;Agency Name = {request.AgncyNm} <br>
+                        &nbsp;&nbsp;Access Before 70 days = {before70days} <br>
+                        &nbsp;&nbsp;AgencyType = {agencyType} <br>
+                        &nbsp;&nbsp;Email Domain = {request.AgncyEmailDomain}<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
@@ -324,11 +342,10 @@ namespace S4Analytics.Models
             // Notify appropriate admin by email they need to approve user
             var adminEmails = IsFDOTRequest(request) ? GetFDOTAdminEmails() : GetHSMVAdminEmails();
 
-            var subject = string.Format("New consultant working under {0} needs approval for Signal Four Account", request.AgncyNm);
-            var body = string.Format(@"<div>There is a new request from {0} {1} from {2} for a contract with {3}.<br><br>
+            var subject = $"New consultant working under {request.AgncyNm} needs approval for Signal Four Account";
+            var body = $@"<div>There is a new request from {request.RequestorFirstNm} {request.RequestorLastNm} from {request.AgncyNm} for a contract with {request.ContractorNm}.<br><br>
                     Please go to the User Request Queue in Signal Four Analytics
-                    to review request and if ok, approve it.<br><br></div>", request.RequestorFirstNm, request.RequestorLastNm,
-                    request.AgncyNm, request.ContractorNm);
+                    to review request and if ok, approve it.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
@@ -372,17 +389,15 @@ namespace S4Analytics.Models
             var rejectionReason = rejection.RejectionReason;
 
             // Send the rejection the email here.
-            var subject = string.Format("Your request for a Signal Four Analytics individual account has been rejected", request.AgncyNm);
+            var subject = "Your request for a Signal Four Analytics individual account has been rejected";
 
-            var body = string.Format(@"<div>
-                Dear {0} <br><br>
-                Your request for a new Signal 4 individual account for {1} {2} has been rejected. <br><br>
+            var body = $@"<div>
+                Dear {request.RequestorFirstNm} <br><br>
+                Your request for a new Signal 4 individual account for {request.ConsultantFirstNm ?? request.RequestorFirstNm}
+                {request.ConsultantLastNm ?? request.RequestorLastNm} has been rejected. <br><br>
                 The reason given: <br>
-                {3} <br><br>
-                Please let me know if you need further assistance.<br><br></div>",
-                request.RequestorFirstNm, request.ConsultantFirstNm ?? request.RequestorFirstNm,
-                request.ConsultantLastNm ?? request.RequestorLastNm,
-                rejectionReason);
+                {rejectionReason} <br><br>
+                Please let me know if you need further assistance.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
@@ -655,10 +670,10 @@ namespace S4Analytics.Models
 
         private string GetEmailNotificationClosing()
         {
-            var closing = string.Format(@"<div>Best regards,<br><br>
+            var closing = $@"<div>Best regards,<br><br>
                             Signal Four Analytics<br>
                             University of Florida<br>
-                            Email: {0}", _supportEmail);
+                            Email: {_supportEmail}";
 
             return closing;
 
