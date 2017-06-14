@@ -7,7 +7,6 @@ import { NewUserRequestStateService } from './shared';
 })
 
 export class RequestWarningComponent {
-
     constructor(public state: NewUserRequestStateService) {
     }
 }

@@ -185,7 +185,6 @@ namespace S4Analytics.Models
             var subject = $@"Your Signal Four Analytics individual account as employee of
                   {request.AgncyNm} has been created";
 
-
             var body = $@"<div>
                 Dear {request.ConsultantFirstNm} <br><br>
                 Your Signal Four Analytics individual account has been created. 
@@ -244,16 +243,15 @@ namespace S4Analytics.Models
             var subject = $@"Your Signal Four Analytics individual account as employee of 
                 {request.AgncyNm} has been renewed";
 
-
             var body = $@"<div>Dear {request.ConsultantFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been renewed. 
                         You can access the system at http://s4.geoplan.ufl.edu/. <br><br>
                         To login click on the Login link at the upper right of the screen
                         and enter the information below: <br><br>
-                        username = {userName} <br>
-                        password = {passwordText} <br><br>
-                        Upon login you will be prompted to change your password. You will also be 
-                        prompted to read and accept Signal Four Analytics user agreement before 
+                        username = {1} <br>
+                        password = {2} <br><br>
+                        Upon login you will be prompted to change your password. You will also be
+                        prompted to read and accept Signal Four Analytics user agreement before
                         using the system.<br><br>
                         Note that this account will expire on {3}. <br><br>
                         Please let me know if you need further assistance.<br><br></div>";
