@@ -66,18 +66,32 @@ namespace S4Analytics
             // Configure identity.
             services.Configure<IdentityOptions>(identityOptions =>
             {
-                // Do not redirect to login for unauthorized API call; return Unauthorized status code instead.
-                // http://stackoverflow.com/questions/34770886/mvc6-unauthorized-results-in-redirect-instead
                 identityOptions.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
                 {
+                    // Do not redirect to /Login for unauthorized API call; return Unauthorized status code instead.
+                    // http://stackoverflow.com/questions/34770886/mvc6-unauthorized-results-in-redirect-instead
                     OnRedirectToLogin = ctx =>
                     {
                         var isApiCall = ctx.Request.Path.StartsWithSegments("/api");
                         var hasOkStatus = ctx.Response.StatusCode == (int)HttpStatusCode.OK;
                         if (isApiCall && hasOkStatus)
                         {
-                            // todo: return HttpStatusCode.Forbidden when appropriate
                             ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        }
+                        else
+                        {
+                            ctx.Response.Redirect(ctx.RedirectUri);
+                        }
+                        return Task.FromResult<object>(null);
+                    },
+                    // Do not redirect to /AccessDenied for forbidden API call; return Forbidden status code instead.
+                    OnRedirectToAccessDenied = ctx =>
+                    {
+                        var isApiCall = ctx.Request.Path.StartsWithSegments("/api");
+                        var hasOkStatus = ctx.Response.StatusCode == (int)HttpStatusCode.OK;
+                        if (isApiCall && hasOkStatus)
+                        {
+                            ctx.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                         }
                         else
                         {
