@@ -2,6 +2,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { routes } from './app.routing';
 import { AdminModule } from './admin';
@@ -21,6 +22,7 @@ import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
         RouterModule.forRoot(routes),
         HttpModule,
         BrowserModule,
+        FormsModule,
         NgbModule.forRoot(),
         AdminModule,
         EventAnalysisModule,

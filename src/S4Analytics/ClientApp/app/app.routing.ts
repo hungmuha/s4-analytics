@@ -17,7 +17,7 @@ export const routes: Routes = [
                 path: '',
                 component: AnalyticsComponent,
                 children: [
-                    { path: '', redirectTo: 'event', pathMatch: 'full' },
+                    // { path: '', redirectTo: 'event', pathMatch: 'full' },
                     { path: 'event', component: EventAnalysisComponent },
                     { path: 'network', component: NetworkAnalysisComponent },
                     { path: 'reporting', component: ReportingComponent },

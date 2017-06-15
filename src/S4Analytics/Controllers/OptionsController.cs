@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace S4Analytics.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class OptionsController : Controller
     {
         private IOptions<ClientOptions> _clientOptions;

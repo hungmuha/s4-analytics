@@ -49,6 +49,11 @@ namespace S4Analytics
                     new CustomJsonExceptionFilter(showExceptionDetail));
             });
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("any admin", policy => policy.RequireRole("global admin", "agency admin"));
+            });
+
             services.AddDistributedMemoryCache();
 
             services.AddSession(options =>

@@ -1,4 +1,5 @@
 using Lib.Identity.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ namespace S4Analytics.Controllers
         public string Password { get; set; }
     }
 
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IHostingEnvironment _env;
@@ -31,27 +33,38 @@ namespace S4Analytics.Controllers
             _env = env;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
         }
 
+        [AllowAnonymous]
         public IActionResult Error()
         {
             return View();
         }
 
         /// <summary>
-        /// Log in. Local environment only, as no password is required.
+        /// Log in.
         /// </summary>
-        /// <param name="userName"></param>
+        /// <param name="credentials">Username and password</param>
         /// <returns></returns>
         [HttpPost("api/login")]
+        [AllowAnonymous]
         public async Task<IActionResult> LogIn([FromBody] Credentials credentials)
         {
+            bool success = false;
             var user = await _userManager.FindByNameAsync(credentials.UserName);
-            var signInResult = await _signInManager.PasswordSignInAsync(user, credentials.Password, false, false);
-            var success = signInResult == Microsoft.AspNetCore.Identity.SignInResult.Success;
+            if (user != null)
+            {
+                var signInResult = await _signInManager.PasswordSignInAsync(user, credentials.Password, isPersistent: false, lockoutOnFailure: false);
+                success = signInResult == Microsoft.AspNetCore.Identity.SignInResult.Success;
+            }
+            if (!success)
+            {
+                await _signInManager.SignOutAsync();
+            }
             return new ObjectResult(new { success });
         }
 
@@ -64,6 +77,13 @@ namespace S4Analytics.Controllers
         {
             await _signInManager.SignOutAsync();
             return new NoContentResult();
+        }
+
+        [HttpGet("api/current-user")]
+        public IActionResult GetCurrentUser()
+        {
+            var userName = _userManager.GetUserName(User);
+            return new ObjectResult(new { userName });
         }
 
         /// <summary>

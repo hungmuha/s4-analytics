@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
 
 namespace S4Analytics.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class CrashController : Controller
     {
         private ICrashRepository _crashRepo;
