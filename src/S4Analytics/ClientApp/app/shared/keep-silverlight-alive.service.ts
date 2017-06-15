@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { OptionsService, Options } from './options.service';
-import './rxjs-operators';
+import '../rxjs-operators';
 import * as moment from 'moment';
 
 @Injectable()

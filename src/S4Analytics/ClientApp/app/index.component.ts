@@ -1,6 +1,6 @@
 ﻿import { Component } from '@angular/core';
-import { Http } from '@angular/http';
 import { Router } from '@angular/router';
+import { IdentityService } from './shared';
 
 @Component({
     selector: 'index',
@@ -9,14 +9,16 @@ import { Router } from '@angular/router';
 export class IndexComponent {
 
     constructor(
-        private http: Http,
-        private router: Router) { }
+        private router: Router,
+        private identity: IdentityService) { }
 
     logOut(): void {
-        this.http
-            .post('api/logout', {})
-            .subscribe(() => {
-                this.router.navigate(['', 'login']);
+        this.identity
+            .logOut()
+            .subscribe(status => {
+                if (status.success) {
+                    this.router.navigate(['', 'login']);
+                }
             });
     }
 }

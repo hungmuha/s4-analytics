@@ -1,6 +1,6 @@
 ﻿import { Component } from '@angular/core';
-import { Http } from '@angular/http';
 import { Router } from '@angular/router';
+import { IdentityService } from './shared';
 
 @Component({
     selector: 'login',
@@ -11,18 +11,17 @@ export class LoginComponent {
     password: string;
 
     constructor(
-        private http: Http,
-        private router: Router) {
+        private router: Router,
+        private identity: IdentityService) {
         this.userName = '';
         this.password = '';
     }
 
     logIn(): void {
-        this.http
-            .post('api/login', { userName: this.userName, password: this.password })
-            .map(response => response.json())
-            .subscribe((data: any) => {
-                if (data.success) {
+        this.identity
+            .logIn(this.userName, this.password)
+            .subscribe(status => {
+                if (status.success) {
                     this.router.navigate(['']);
                 }
             });
