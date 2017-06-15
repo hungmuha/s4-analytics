@@ -1,5 +1,6 @@
 ﻿import { Component } from '@angular/core';
 import { Http } from '@angular/http';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'login',
@@ -8,14 +9,12 @@ import { Http } from '@angular/http';
 export class LoginComponent {
     userName: string;
     password: string;
-    success: string;
-    currentUser: string;
 
-    constructor(private http: Http) {
-        this.userName = "";
-        this.password = "";
-        this.success = "";
-        this.currentUser = "";
+    constructor(
+        private http: Http,
+        private router: Router) {
+        this.userName = '';
+        this.password = '';
     }
 
     logIn(): void {
@@ -23,20 +22,9 @@ export class LoginComponent {
             .post('api/login', { userName: this.userName, password: this.password })
             .map(response => response.json())
             .subscribe((data: any) => {
-                this.success = data.success ? "success" : "failure";
-                this.currentUser = "";
-                if (this.success) {
-                    this.getCurrentUser();
+                if (data.success) {
+                    this.router.navigate(['']);
                 }
-            });
-    }
-
-    getCurrentUser(): void {
-        this.http
-            .get('api/current-user')
-            .map(response => response.json())
-            .subscribe((data: any) => {
-                this.currentUser = data.userName;
             });
     }
 }

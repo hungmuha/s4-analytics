@@ -72,7 +72,7 @@ namespace S4Analytics.Controllers
         /// Log out currently authenticated user.
         /// </summary>
         /// <returns></returns>
-        [HttpGet("api/logout")]
+        [HttpPost("api/logout")]
         public async Task<IActionResult> LogOut()
         {
             await _signInManager.SignOutAsync();

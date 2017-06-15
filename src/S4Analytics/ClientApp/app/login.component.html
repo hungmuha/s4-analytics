@@ -1,23 +1,28 @@
 ﻿<div class="container">
-    <div class="alert alert-danger">
-        Unauthorized. {{userName}}
-    </div>
-    <div class="row">
-        <div class="col-md-4 push-md-4">
-            Username: <input type="text" [(ngModel)]="userName" />
+    <form class="form-login" (ngSubmit)="logIn()">
+        <h2 class="form-login-heading">Please log in</h2>
+        <label for="userName" class="sr-only">Username</label>
+        <input type="text"
+               [(ngModel)]="userName"
+               id="userName"
+               name="userName"
+               class="form-control"
+               placeholder="Username"
+               required
+               autofocus />
+        <label for="password" class="sr-only">Password</label>
+        <input type="password"
+               [(ngModel)]="password"
+               id="password"
+               name="password"
+               class="form-control"
+               placeholder="Password"
+               required />
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" value="remember-me" /> Remember me
+            </label>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4 push-md-4">
-            Password: <input type="password" [(ngModel)]="password" />
-        </div>
-    </div>
-    <div class="row">
-        <button (click)="logIn()">Log in</button>
-    </div>
-    <div class="row">
-        <div class="col-md-4 push-md-4">
-            {{success}} | {{currentUser}}
-        </div>
-    </div>
+        <button class="btn btn-primary btn-block" type="submit">Log in</button>
+    </form>
 </div>
