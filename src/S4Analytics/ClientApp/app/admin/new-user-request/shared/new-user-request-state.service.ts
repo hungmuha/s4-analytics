@@ -16,4 +16,5 @@ export class NewUserRequestStateService {
     sortColumn: QueueColumn;
     queueFilter: QueueFilter = QueueFilter.Pending;
     currentActionForm: NgbModalRef;
+    warningMessages: string[];
 }

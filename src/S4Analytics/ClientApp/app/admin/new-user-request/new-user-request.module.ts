@@ -1,6 +1,7 @@
 ﻿import { NgModule  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RequestQueueComponent } from './request-queue.component';
 import { RequestActionComponent } from './request-action.component';
 import { NewEmployeeComponent } from './new-employee.component';
@@ -17,7 +18,8 @@ import {
 @NgModule({
     imports: [
         CommonModule,
-        FormsModule
+        FormsModule,
+        NgbModule
     ],
     declarations: [
         RequestQueueComponent,

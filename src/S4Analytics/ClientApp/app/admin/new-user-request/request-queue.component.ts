@@ -8,6 +8,7 @@ import {
 
 
 @Component({
+    selector: 'request-queue',
     templateUrl: './request-queue.component.html'
 })
 
