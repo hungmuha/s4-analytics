@@ -14,7 +14,14 @@ import { AppComponent } from './app.component';
 import { IndexComponent } from './index.component';
 import { AnalyticsComponent } from './analytics.component';
 import { LoginComponent } from './login.component';
-import { IdentityService, KeepSilverlightAliveService, OptionsService } from './shared';
+import {
+    IdentityService,
+    KeepSilverlightAliveService,
+    OptionsService,
+    AuthGuard,
+    AnyAdminGuard,
+    GlobalAdminGuard
+} from './shared';
 
 @NgModule({
     imports: [
@@ -38,6 +45,9 @@ import { IdentityService, KeepSilverlightAliveService, OptionsService } from './
     providers: [
         OptionsService,
         IdentityService,
+        AuthGuard,
+        AnyAdminGuard,
+        GlobalAdminGuard,
         KeepSilverlightAliveService
     ],
     bootstrap: [AppComponent]

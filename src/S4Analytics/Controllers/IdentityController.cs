@@ -3,7 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 
 namespace S4Analytics.Controllers
 {
@@ -19,13 +23,16 @@ namespace S4Analytics.Controllers
     {
         SignInManager<S4IdentityUser<S4UserProfile>> _signInManager;
         UserManager<S4IdentityUser<S4UserProfile>> _userManager;
+        IdentityOptions _identityOptions;
 
         public IdentityController(
             SignInManager<S4IdentityUser<S4UserProfile>> signInManager,
-            UserManager<S4IdentityUser<S4UserProfile>> userManager)
+            UserManager<S4IdentityUser<S4UserProfile>> userManager,
+            IOptions<IdentityOptions> identityOptions)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _identityOptions = identityOptions.Value;
         }
 
         /// <summary>
@@ -37,18 +44,23 @@ namespace S4Analytics.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LogIn([FromBody] Credentials credentials)
         {
-            bool success = false;
             var user = await _userManager.FindByNameAsync(credentials.UserName);
-            if (user != null)
+            if (user == null) { return Unauthorized(); }
+
+            var signInResult = await _signInManager.PasswordSignInAsync(
+                user, credentials.Password, isPersistent: false, lockoutOnFailure: false);
+            if (signInResult != Microsoft.AspNetCore.Identity.SignInResult.Success)
             {
-                var signInResult = await _signInManager.PasswordSignInAsync(user, credentials.Password, isPersistent: false, lockoutOnFailure: false);
-                success = signInResult == Microsoft.AspNetCore.Identity.SignInResult.Success;
-            }
-            if (!success)
-            {
+                // sign out in case they had logged in successfully prior to this failed attempt
                 await _signInManager.SignOutAsync();
+                return Unauthorized();
             }
-            return new ObjectResult(new { success });
+
+            // todo: return an S4IdentityUser
+            return new ObjectResult(new {
+                user.UserName,
+                roles = user.Roles.Select(role => role.RoleName)
+            });
         }
 
         /// <summary>
@@ -65,8 +77,20 @@ namespace S4Analytics.Controllers
         [HttpGet("current-user")]
         public IActionResult GetCurrentUser()
         {
-            var userName = _userManager.GetUserName(User);
-            return new ObjectResult(new { userName });
+            // todo: return an S4IdentityUser
+            return new ObjectResult(new {
+                userName = _userManager.GetUserName(User),
+                roles = GetCurrentUserRoles()
+            });
+        }
+
+        private IList<string> GetCurrentUserRoles()
+        {
+            var roles = User.Claims
+                .Where(claim => claim.Type == _identityOptions.ClaimsIdentity.RoleClaimType)
+                .Select(claim => claim.Value)
+                .ToList();
+            return roles;
         }
     }
 }

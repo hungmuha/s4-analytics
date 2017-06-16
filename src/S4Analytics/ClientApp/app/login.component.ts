@@ -1,5 +1,4 @@
 ﻿import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { IdentityService } from './shared';
 
 @Component({
@@ -7,23 +6,18 @@ import { IdentityService } from './shared';
     templateUrl: './login.component.html'
 })
 export class LoginComponent {
-    userName: string;
-    password: string;
+    userName = '';
+    password = '';
+    failedAttempt = false;
 
-    constructor(
-        private router: Router,
-        private identity: IdentityService) {
-        this.userName = '';
-        this.password = '';
-    }
+    constructor(private identity: IdentityService) { }
 
     logIn(): void {
         this.identity
             .logIn(this.userName, this.password)
-            .subscribe(status => {
-                if (status.success) {
-                    this.router.navigate(['']);
-                }
+            .subscribe(success => {
+                this.failedAttempt = !success;
+                setTimeout(() => this.failedAttempt = false, 3000);
             });
     }
 }
