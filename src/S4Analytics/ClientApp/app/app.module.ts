@@ -14,13 +14,15 @@ import { AppComponent } from './app.component';
 import { IndexComponent } from './index.component';
 import { AnalyticsComponent } from './analytics.component';
 import { LoginComponent } from './login.component';
+import { Html5ConduitComponent } from './html5-conduit.component';
 import {
     IdentityService,
     KeepSilverlightAliveService,
     OptionsService,
     AuthGuard,
     AnyAdminGuard,
-    GlobalAdminGuard
+    GlobalAdminGuard,
+    Html5ConduitResolve
 } from './shared';
 
 @NgModule({
@@ -40,7 +42,8 @@ import {
         AppComponent,
         IndexComponent,
         AnalyticsComponent,
-        LoginComponent
+        LoginComponent,
+        Html5ConduitComponent
     ],
     providers: [
         OptionsService,
@@ -48,7 +51,8 @@ import {
         AuthGuard,
         AnyAdminGuard,
         GlobalAdminGuard,
-        KeepSilverlightAliveService
+        KeepSilverlightAliveService,
+        Html5ConduitResolve
     ],
     bootstrap: [AppComponent]
 })

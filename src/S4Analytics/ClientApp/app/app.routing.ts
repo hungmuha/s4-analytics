@@ -7,7 +7,8 @@ import { NetworkAnalysisComponent } from './network-analysis';
 import { ReportingComponent } from './reporting';
 import { TrendAnalysisComponent } from './trend-analysis';
 import { AdminComponent, RequestQueueComponent } from './admin';
-import { AuthGuard, AnyAdminGuard } from './shared';
+import { AuthGuard, AnyAdminGuard, Html5ConduitResolve } from './shared';
+import { Html5ConduitComponent } from './html5-conduit.component';
 
 export const routes: Routes = [
     {
@@ -39,6 +40,7 @@ export const routes: Routes = [
             }
         ]
     },
+    { path: 'html5-conduit', resolve: { Html5ConduitResolve }, component: Html5ConduitComponent },
     { path: 'login', component: LoginComponent },
     { path: '**', redirectTo: '' }
 ];

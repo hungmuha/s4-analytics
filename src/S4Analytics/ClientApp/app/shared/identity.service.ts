@@ -37,6 +37,23 @@ export class IdentityService {
             });
     }
 
+    logInWithToken(token: string): Observable<boolean> {
+        let url = `api/identity/login/${token}`;
+        return this.http
+            .post(url, {})
+            .map(response => response.json() as S4IdentityUser)
+            .map(user => {
+                this._currentUser = user;
+                this.isAuthenticated = true;
+                return true;
+            })
+            .catch(() => { // in case of 401 Unauthorized
+                this._currentUser = undefined;
+                this.isAuthenticated = false;
+                return Observable.of(false);
+            });
+    }
+
     logOut(): Observable<any> {
         return this.http
             .post('api/identity/logout', {})
