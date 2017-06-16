@@ -2,6 +2,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { routes } from './app.routing';
 import { AdminModule } from './admin';
@@ -13,14 +14,21 @@ import { AppComponent } from './app.component';
 import { IndexComponent } from './index.component';
 import { AnalyticsComponent } from './analytics.component';
 import { LoginComponent } from './login.component';
-import { OptionsService } from './options.service';
-import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
+import {
+    IdentityService,
+    KeepSilverlightAliveService,
+    OptionsService,
+    AuthGuard,
+    AnyAdminGuard,
+    GlobalAdminGuard
+} from './shared';
 
 @NgModule({
     imports: [
         RouterModule.forRoot(routes),
         HttpModule,
         BrowserModule,
+        FormsModule,
         NgbModule.forRoot(),
         AdminModule,
         EventAnalysisModule,
@@ -36,6 +44,10 @@ import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
     ],
     providers: [
         OptionsService,
+        IdentityService,
+        AuthGuard,
+        AnyAdminGuard,
+        GlobalAdminGuard,
         KeepSilverlightAliveService
     ],
     bootstrap: [AppComponent]

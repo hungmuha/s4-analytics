@@ -1,7 +1,7 @@
 ﻿import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import * as ol from 'openlayers';
 import { CrashService, CrashQuery } from './shared';
-import { OptionsService } from '../options.service';
+import { OptionsService } from '../shared';
 
 @Component({
     selector: 'event-map',

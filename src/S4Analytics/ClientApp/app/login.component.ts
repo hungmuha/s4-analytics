@@ -1,17 +1,23 @@
 ﻿import { Component } from '@angular/core';
-import { Http } from '@angular/http';
+import { IdentityService } from './shared';
 
 @Component({
     selector: 'login',
     templateUrl: './login.component.html'
 })
 export class LoginComponent {
-    userName: string;
-    password: string;
+    userName = '';
+    password = '';
+    failedAttempt = false;
 
-    constructor(private http: Http) { }
+    constructor(private identity: IdentityService) { }
 
     logIn(): void {
-        this.http.get(`api/login/${this.userName}`).subscribe();
+        this.identity
+            .logIn(this.userName, this.password)
+            .subscribe(success => {
+                this.failedAttempt = !success;
+                setTimeout(() => this.failedAttempt = false, 3000);
+            });
     }
 }

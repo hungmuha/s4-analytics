@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace S4Analytics.Controllers
 {
-
     public enum QueueFilter
     {
         All,
@@ -34,6 +32,7 @@ namespace S4Analytics.Controllers
     }
 
     [Route("api/[controller]")]
+    [Authorize(Policy = "any admin")]
     public class AdminController : Controller
     {
         private INewUserRequestRepository _newUserRequestRepo;
@@ -108,5 +107,4 @@ namespace S4Analytics.Controllers
             return new ObjectResult(_newUserRequestRepo.Reject(id,  rejection));
         }
     }
-
 }

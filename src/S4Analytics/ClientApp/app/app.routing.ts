@@ -7,6 +7,7 @@ import { NetworkAnalysisComponent } from './network-analysis';
 import { ReportingComponent } from './reporting';
 import { TrendAnalysisComponent } from './trend-analysis';
 import { AdminComponent, RequestQueueComponent } from './admin';
+import { AuthGuard, AnyAdminGuard } from './shared';
 
 export const routes: Routes = [
     {
@@ -16,8 +17,9 @@ export const routes: Routes = [
             {
                 path: '',
                 component: AnalyticsComponent,
+                canActivate: [AuthGuard],
                 children: [
-                    { path: '', redirectTo: 'event', pathMatch: 'full' },
+                    // { path: '', redirectTo: 'event', pathMatch: 'full' },
                     { path: 'event', component: EventAnalysisComponent },
                     { path: 'network', component: NetworkAnalysisComponent },
                     { path: 'reporting', component: ReportingComponent },
@@ -27,8 +29,12 @@ export const routes: Routes = [
             {
                 path: 'admin',
                 component: AdminComponent,
+                canActivate: [AnyAdminGuard],
                 children: [
-                    { path: 'request-queue', component: RequestQueueComponent }
+                    {
+                        path: 'request-queue',
+                        component: RequestQueueComponent
+                    }
                 ]
             }
         ]
