@@ -16,6 +16,14 @@ export class NewAgencyComponent {
         return this.state.currentRequestActionResults.lea === undefined;
     }
 
+    ngOnInit() {
+        this.state.warningMessages = [];
+
+        if (this.state.selectedRequest.warnRequestorEmailCd) {
+            this.state.warningMessages.push('Requestor/Agency email domain mismatch');
+        }
+    }
+
     approved(approved: boolean) {
 
         if (approved) {

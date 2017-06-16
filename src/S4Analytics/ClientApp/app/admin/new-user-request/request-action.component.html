@@ -1,5 +1,19 @@
-﻿<form #actionForm="ngForm"  (ngSubmit)="submit()" #spy2>
-    <div class="font-weight-bold">Request Number: # {{state.selectedRequest.requestNbr}}</div>
+﻿<ng-template #tipContent>
+    <request-warning-component></request-warning-component>
+</ng-template>
+
+<form #actionForm="ngForm"  (ngSubmit)="submit()" #spy2>
+    <div class="font-weight-bold">Request #{{state.selectedRequest.requestNbr}} on {{state.selectedRequest.requestDt|date: 'M/d/yy'}}
+        <i [hidden]="!state.selectedRequest.warnRequestorEmailCd && !state.selectedRequest.warnDuplicateEmailCd">
+            &nbsp;
+            <i class="fa fa-exclamation-circle text-danger"
+               [ngbPopover]="tipContent"
+               popoverTitle="WARNING"
+               triggers="mouseenter:mouseleave"
+               container="body"
+               placement="right"></i>
+        </i>
+    </div>
     <div class="modal-body">
         <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)" #actionTypeRef></new-employee-component>
         <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)" #actionTypeRef></new-agency-component>
@@ -46,10 +60,10 @@
     </div>
 
     <div class="modal-footer">
-        <button type="submit" class="btn btn-secondary" [disabled]="!actionForm.valid">
+        <button type="submit" class="btn btn-primary" [disabled]="!actionForm.valid">
             OK
         </button>
-        <button type="button" class="btn btn-primary" (click)="cancel()">
+        <button type="button" class="btn btn-secondary" (click)="cancel()">
             Cancel
         </button>
     </div>

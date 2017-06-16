@@ -11,7 +11,7 @@ export class ApproveRejectTypePipe
             case NewUserRequestStatus.NewConsultant: return 'Consultant';
             case NewUserRequestStatus.NewContractor: return 'Vendor';
             case NewUserRequestStatus.NewAgency: return 'Agency';
-            case NewUserRequestStatus.CreateAgency: return '???'; //TO BE IMPLEMENTED
+            case NewUserRequestStatus.CreateAgency: return '???'; // TO BE IMPLEMENTED
             default: return 'Not implemented' + value;
         }
     }

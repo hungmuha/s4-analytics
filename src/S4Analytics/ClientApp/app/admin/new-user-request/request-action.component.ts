@@ -32,13 +32,11 @@ export class RequestActionComponent  {
         return this.state.currentRequestActionResults.approved === undefined;
     }
 
-    hideReasonTextArea()
-    {
+    hideReasonTextArea() {
         return this.state.currentRequestActionResults.approved === undefined || this.state.currentRequestActionResults.approved;
     }
 
-    hideReportAccessCb()
-    {
+    hideReportAccessCb() {
         return (!this.state.currentRequestActionResults.approved &&
            ( (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewConsultant) ||
             (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewContractor) ||

@@ -8,10 +8,26 @@ import { NewUserRequestStateService } from './shared';
 
 export class NewConsultantComponent  {
 
-    constructor(public state: NewUserRequestStateService
-) {
+    constructor(public state: NewUserRequestStateService) {
 
     }
+
+    ngOnInit() {
+        this.state.warningMessages = [];
+
+        if (this.state.selectedRequest.warnConsultantEmailCd) {
+            this.state.warningMessages.push('Consultant/Vendor email domain mismatch');
+        }
+
+        if (this.state.selectedRequest.warnDuplicateEmailCd) {
+            this.state.warningMessages.push('An account with email already exists');
+        }
+
+        if (this.state.selectedRequest.warnRequestorEmailCd) {
+            this.state.warningMessages.push('Requestor/Agency email domain mismatch');
+        }
+    }
+
 
     approved(approved: boolean) {
 
@@ -29,7 +45,7 @@ export class NewConsultantComponent  {
             '_blank', 'width=400,height=200');
     }
 
- 
+
 
 }
 

@@ -1,17 +1,4 @@
-﻿
-<!--<div class="row">
-    <div class="col-md-6">
-        <input type="radio" name="lea" [(ngModel)]="state.currentRequestActionResults.lea"
-                [value]="false"
-                required/>Non-Law Enforcement
-    </div>
-    <div class="col-md-6">
-        <input type="radio" name="lea" [(ngModel)]="state.currentRequestActionResults.lea"
-                [value]="true"
-                required />Law Enforcement
-    </div>
-</div>-->
-<div class="row">
+﻿<div class="row">
     <b>New Agency Name:</b>&nbsp;{{state.selectedRequest.agncyNm}}
 </div>
 <div class="row">
@@ -26,14 +13,6 @@
 </div>
 <div class="row">
     <b>Email:</b>&nbsp;
-    {{state.selectedRequest.requestorEmail}}
-    <i [hidden]="!state.selectedRequest.warnRequestorEmailCd" data-toggle="tooltip" title="Warning messages here">
-        &nbsp;<i class="fa fa-exclamation-circle text-danger" data-toggle="tooltip" data-placement="top" title="Testing"></i>
-    </i>
-
 </div>
-<!--<div class="row">
-    <label [hidden]="!state.selectedRequest.warnRequestorEmailCd" class="warning-message">Warning: Requestor's email domain does not match agency's email domain</label>
-</div>-->
 
 
