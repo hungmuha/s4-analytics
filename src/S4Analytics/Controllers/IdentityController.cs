@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System;
+using Microsoft.AspNetCore.Hosting;
 
 namespace S4Analytics.Controllers
 {
@@ -22,17 +23,20 @@ namespace S4Analytics.Controllers
     [Authorize]
     public class IdentityController : Controller
     {
+        IHostingEnvironment _env;
         SignInManager<S4IdentityUser<S4UserProfile>> _signInManager;
         UserManager<S4IdentityUser<S4UserProfile>> _userManager;
         IdentityOptions _identityOptions;
         Html5Conduit _html5Conduit;
 
         public IdentityController(
+            IHostingEnvironment env,
             SignInManager<S4IdentityUser<S4UserProfile>> signInManager,
             UserManager<S4IdentityUser<S4UserProfile>> userManager,
             IOptions<IdentityOptions> identityOptions,
             Html5Conduit html5Conduit)
         {
+            _env = env;
             _signInManager = signInManager;
             _userManager = userManager;
             _identityOptions = identityOptions.Value;
@@ -74,8 +78,10 @@ namespace S4Analytics.Controllers
             var user = await _userManager.FindByNameAsync(credentials.UserName);
             if (user == null) { return Unauthorized(); }
 
+            var persistCookieInBrowser = _env.EnvironmentName == "Local";
+
             var signInResult = await _signInManager.PasswordSignInAsync(
-                user, credentials.Password, isPersistent: false, lockoutOnFailure: false);
+                user, credentials.Password, persistCookieInBrowser, lockoutOnFailure: false);
             if (signInResult != Microsoft.AspNetCore.Identity.SignInResult.Success)
             {
                 // sign out in case they had logged in successfully prior to this failed attempt

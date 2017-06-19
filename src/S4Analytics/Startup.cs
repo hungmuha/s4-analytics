@@ -59,7 +59,9 @@ namespace S4Analytics
             services.AddSession(options =>
             {
                 options.CookieName = ".S4Analytics.Session";
-                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                options.IdleTimeout = _env.EnvironmentName == "Local"
+                    ? TimeSpan.FromDays(30)
+                    : TimeSpan.FromMinutes(20);
                 options.CookieHttpOnly = true;
             });
 
