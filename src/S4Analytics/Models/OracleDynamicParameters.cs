@@ -26,6 +26,27 @@ namespace S4Analytics.Models
             AddRefCursorParameters(refCursorNames);
         }
 
+        public void Add(string name, OracleDbType oracleDbType, ParameterDirection direction, object value = null, int? size = null)
+        {
+            OracleParameter oracleParameter;
+            if (size.HasValue)
+            {
+                oracleParameter = new OracleParameter(name, oracleDbType, size.Value, value, direction);
+            }
+            else
+            {
+                oracleParameter = new OracleParameter(name, oracleDbType, value, direction);
+            }
+
+            oracleParameters.Add(oracleParameter);
+        }
+
+        public void Add(string name, OracleDbType oracleDbType, ParameterDirection direction)
+        {
+            var oracleParameter = new OracleParameter(name, oracleDbType, direction);
+            oracleParameters.Add(oracleParameter);
+        }
+
         private void AddRefCursorParameters(params string[] refCursorNames)
         {
             foreach (string refCursorName in refCursorNames)

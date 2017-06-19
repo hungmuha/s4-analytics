@@ -3,3 +3,4 @@ export { OptionsService, Options } from './options.service';
 export { IdentityService } from './identity.service';
 export { AuthGuard, AnyAdminGuard, GlobalAdminGuard } from './auth-guard.service';
 export { S4IdentityUser } from './s4-identity-user';
+export { Html5ConduitResolve } from './html5-conduit-resolve.service';

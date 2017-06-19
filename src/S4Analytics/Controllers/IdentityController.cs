@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using System;
 
 namespace S4Analytics.Controllers
 {
@@ -24,15 +25,41 @@ namespace S4Analytics.Controllers
         SignInManager<S4IdentityUser<S4UserProfile>> _signInManager;
         UserManager<S4IdentityUser<S4UserProfile>> _userManager;
         IdentityOptions _identityOptions;
+        Html5Conduit _html5Conduit;
 
         public IdentityController(
             SignInManager<S4IdentityUser<S4UserProfile>> signInManager,
             UserManager<S4IdentityUser<S4UserProfile>> userManager,
-            IOptions<IdentityOptions> identityOptions)
+            IOptions<IdentityOptions> identityOptions,
+            Html5Conduit html5Conduit)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _identityOptions = identityOptions.Value;
+            _html5Conduit = html5Conduit;
+        }
+
+        [HttpPost("login/{token}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LogInWithToken(string token)
+        {
+            var tokenAsGuid = Guid.Parse(token);
+            var userName = _html5Conduit.GetUserNameFromToken(tokenAsGuid);
+            var user = await _userManager.FindByNameAsync(userName);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            // todo: return an S4IdentityUser
+            return new ObjectResult(new
+            {
+                user.UserName,
+                roles = user.Roles.Select(role => role.RoleName)
+            });
         }
 
         /// <summary>

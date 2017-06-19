@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         private router: Router) { }
 
     canActivate(_: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
-        if (this.identityService.checkedForServerSession) {
+        if (this.identityService.checkedForServerSession || this.identityService.isAuthenticated) {
             return this.checkUserAuth(state.url);
         }
         else {
