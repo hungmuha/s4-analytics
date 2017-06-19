@@ -47,6 +47,7 @@ namespace S4Analytics.Models
 
         /// <summary>
         /// Return all records from NEW_USER_REQ
+        /// TODO: limit only to those use is authorized to see
         /// </summary>
         /// <returns></returns>
         public IEnumerable<NewUserRequest> GetAll()
