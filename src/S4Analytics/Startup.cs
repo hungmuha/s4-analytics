@@ -110,8 +110,7 @@ namespace S4Analytics
             });
 
             // Add and configure profile store.
-            services.AddSingleton<IProfileStore<S4UserProfile>>(provider =>
-            {
+            services.AddSingleton<IProfileStore<S4UserProfile>>(provider => {
                 var options = provider.GetService<IOptions<ServerOptions>>();
                 return new S4UserProfileStore(options.Value.MembershipApplicationName, options.Value.WarehouseConnStr);
             });
@@ -150,7 +149,6 @@ namespace S4Analytics
             services.AddScoped<ILookupNormalizer, S4LookupNormalizer>();
             services.AddScoped<IRoleValidator<S4IdentityRole>, RoleValidator<S4IdentityRole>>();
             services.AddScoped<IdentityErrorDescriber>();
-            services.AddScoped<ISecurityStampValidator, SecurityStampValidator<S4IdentityUser<S4UserProfile>>>();
             services.AddScoped<IUserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>, S4UserClaimsPrincipalFactory<S4IdentityUser<S4UserProfile>>>();
             services.AddScoped<UserManager<S4IdentityUser<S4UserProfile>>>();
             services.AddScoped<RoleManager<S4IdentityRole>>();
