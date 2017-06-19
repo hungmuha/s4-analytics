@@ -11,18 +11,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.warning-message {
-    color: red;
-}
-
-.action-modal-header {
-    margin: 0;
-    height: 1rem;
-    background-color: whitesmoke;
-    font-weight: bold;
-    font-size: larger;
-}
-
 .queue-filter-btn {
     background-color: gray;
     color: lightgray;
