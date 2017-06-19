@@ -1,11 +1,9 @@
 ﻿<ng-template #content let-c="close" let-d="dismiss" >
-        <div class="modal-header justify-content-between action-modal-header">
-            <div>{{state.selectedRequest.requestStatus | requestStatus }}</div>
-            <div>
-                <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+        <div class="modal-header">
+            <h4 class="modal-title">{{state.selectedRequest.requestStatus | requestStatus }}</h4>
+            <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
     <div class="container">
         <request-action-component></request-action-component>
@@ -50,7 +48,7 @@
                 <td>{{newUserReq.agncyNm}}</td>
                 <td>{{newUserReq.requestStatus | requestStatus }}</td>
                 <td>{{newUserReq.userCreatedDt | date:"MM/dd/yy"}}</td>
-                <td>
+                <td class="align-middle">
                     <button class="btn btn-sm btn-primary" [hidden]="hideProcessRequestButton(newUserReq)" (click)="openActionModal(content, newUserReq)">Process Request</button>
                 </td>
                 <td>{{newUserReq.adminComment}}</td>
