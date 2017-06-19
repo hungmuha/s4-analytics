@@ -13,18 +13,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.warning-message {
-    color: red;
-}
-
-.action-modal-header {
-    margin: 0;
-    height: 1rem;
-    background-color: whitesmoke;
-    font-weight: bold;
-    font-size: larger;
-}
-
 .form-login {
     max-width: 330px;
     padding: 15px;
@@ -65,10 +53,3 @@ body {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
-
-.queue-filter-btn {
-    background-color: gray;
-    color: lightgray;
-    border:1px solid black;
-}
-
