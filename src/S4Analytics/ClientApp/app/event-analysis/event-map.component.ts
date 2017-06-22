@@ -22,7 +22,7 @@ export class EventMapComponent implements OnInit {
     ngOnInit() {
 
         let query: CrashQuery = {
-            dateRange: { startDate: new Date('2017-04-01'), endDate: new Date('2017-04-07') }
+            dateRange: { startDate: new Date('2017-06-15'), endDate: new Date('2017-06-18') }
         };
 
         this.optionService

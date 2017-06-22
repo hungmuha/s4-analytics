@@ -29,7 +29,7 @@ namespace S4Analytics.Models
             UserManager<S4IdentityUser<S4UserProfile>> userManager)
         {
             _applicationName = serverOptions.Value.MembershipApplicationName;
-            _connStr = serverOptions.Value.WarehouseConnStr;
+            _connStr = serverOptions.Value.IdentityConnStr;
             _conn = new OracleConnection(_connStr);
 
             _userManager = userManager;

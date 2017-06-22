@@ -112,7 +112,7 @@ namespace S4Analytics
             // Add and configure profile store.
             services.AddSingleton<IProfileStore<S4UserProfile>>(provider => {
                 var options = provider.GetService<IOptions<ServerOptions>>();
-                return new S4UserProfileStore(options.Value.MembershipApplicationName, options.Value.WarehouseConnStr);
+                return new S4UserProfileStore(options.Value.MembershipApplicationName, options.Value.IdentityConnStr);
             });
 
             // Add and configure Oracle user store.
@@ -121,7 +121,7 @@ namespace S4Analytics
                 var profileStore = provider.GetService<IProfileStore<S4UserProfile>>();
                 return new S4UserStore<S4IdentityUser<S4UserProfile>, S4UserProfile>(
                     options.Value.MembershipApplicationName,
-                    options.Value.WarehouseConnStr,
+                    options.Value.IdentityConnStr,
                     options.Value.MembershipConnStr,
                     profileStore);
             });
@@ -131,7 +131,7 @@ namespace S4Analytics
                 var options = provider.GetService<IOptions<ServerOptions>>();
                 return new S4RoleStore<S4IdentityRole>(
                     options.Value.MembershipApplicationName,
-                    options.Value.WarehouseConnStr);
+                    options.Value.IdentityConnStr);
             });
 
             // Configure sign-in scheme to use cookies.
