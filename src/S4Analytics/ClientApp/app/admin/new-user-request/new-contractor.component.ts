@@ -32,4 +32,6 @@ export class NewContractorComponent {
         this.state.contractViewerWindow = window.open(`admin/new-user-request/contract-pdf/${contractPdfFileNm}`,
             '_blank', 'width=400,height=200');
     }
+
+
 }

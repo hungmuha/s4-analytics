@@ -184,6 +184,10 @@ namespace S4Analytics.Models
             // Send the approval the emails here.  Send password cred to new user.
             var subject = $@"Your Signal Four Analytics individual account as employee of
                   {request.AgncyNm} has been created";
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6224a26e72db3091259cc054402d9e006681476f
 
             var body = $@"<div>
                 Dear {request.ConsultantFirstNm} <br><br>
@@ -242,6 +246,10 @@ namespace S4Analytics.Models
             // Send the approval the emails here.  Send password cred to new user.
             var subject = $@"Your Signal Four Analytics individual account as employee of 
                 {request.AgncyNm} has been renewed";
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6224a26e72db3091259cc054402d9e006681476f
 
             var body = $@"<div>Dear {request.ConsultantFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been renewed. 
