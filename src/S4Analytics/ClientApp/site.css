@@ -3,12 +3,10 @@
 }
 
 body {
-    padding-top: 40px;
-    padding-bottom: 40px;
-    background-color: #eee;
+    background-color: var(--mainColor);
 }
 
-.container {
+.container-fluid {
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
