@@ -13,17 +13,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.warning-message {
-    color: red;
-}
-
-.action-modal-header {
-    margin: 0;
-    height: 1rem;
-    background-color: lightgray;
-    font-weight: bold;
-}
-
 .form-login {
     max-width: 330px;
     padding: 15px;

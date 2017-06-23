@@ -1,68 +1,51 @@
-﻿
-    <div class="row">
-        <b>Consultant Name:</b>
-        {{state.selectedRequest.consultantFirstNm}}
-        {{state.selectedRequest.consultantLastNm}}
-    </div>
-    <div class="row">
-        <b>Email: </b>
-        {{state.selectedRequest.consultantEmail}}
-    </div>
-    <div class="row">
-        <b>Contractor:</b>
-        {{state.selectedRequest.contractorNm}}
-    </div>
-    <div class="row">
-        <label [hidden]="!state.selectedRequest.warnConsultantEmailCd" class="warning-message">Warning: Consultant's email domain does not match vendor's email domain</label>
-        <label [hidden]="!state.selectedRequest.warnDuplicateEmailCd" class="warning-message">Warning: An account with consultants's email already exists</label>
-    </div>
-    <div class="row">
-        <b>Contract Start Date: </b>
-        {{state.selectedRequest.contractStartDt}}
-    </div>
-    <div class="row">
-            <b>Contract End Date:</b>
-            {{state.selectedRequest.contractEndDt}}
-            <button type="button" class="pull-right" (click)="openContractViewer()">View Contract</button>
+﻿<div class="row">
+    <b>Consultant Name:</b>&nbsp;
+    {{state.selectedRequest.consultantFirstNm}}
+    {{state.selectedRequest.consultantLastNm}}
+</div>
+<div class="row">
+    <b>Email: </b>&nbsp;
+    {{state.selectedRequest.consultantEmail}}
+</div>
+<div class="row">
+    <b>Contractor:</b>&nbsp;
+    {{state.selectedRequest.contractorNm}}
+</div>
+<div class="row justify-content-between">
+    <div>
+        <b>Contract Start Date: </b>&nbsp;
+        {{state.selectedRequest.contractStartDt | date}}
     </div>
     <div>
-        <label>Reason for Access:</label>
-        <textarea class="form-control" id="reason" rows="4" readonly>{{state.selectedRequest.accessReasonTx}}</textarea>
+        <b>Contract End Date:</b>&nbsp;
+        {{state.selectedRequest.contractEndDt | date: shortdate}}
     </div>
-    <div class="row">
-        <!-- requestor info-->
-        <b>Requestor Name:</b>
+</div>
+<div class="row">
+    <button type="button" class="btn btn-sm" (click)="openContractViewer()">View Contract</button>
+</div>
+<div class="row">
+    <label><b>Reason for Access:&nbsp;</b></label>
+    <div>{{state.selectedRequest.accessReasonTx}}</div>
+</div>
+<div class="row font-italic">
+    <!-- requestor info-->
+    <b>Request made by:</b>
+</div>
+<div class="row font-italic">
+    <div class="col offset-2">
         {{state.selectedRequest.requestorFirstNm}}
         {{state.selectedRequest.requestorLastNm}}
     </div>
-    <div class="row">
-        <b>Email:</b>
+</div>
+<div class="row font-italic">
+    <div class="col offset-2">
         {{state.selectedRequest.requestorEmail}}
     </div>
-    <div class="row">
-        <b>Agency:</b>
+</div>
+<div class="row font-italic">
+    <div class="col offset-2">
         {{state.selectedRequest.agncyNm}}
     </div>
-    <div class="row">
-        <label [hidden]="!state.selectedRequest.warnRequestorEmailCd" class="warning-message">Warning: Requestor's email domain does not match agency's email domain</label>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-md-6">
-            <input type="radio" class="form-check-input"
-                    [(ngModel)]="state.currentRequestActionResults.approved"
-                    (change)="approved(true)"
-                    name="approved" [value]="true" />Approve Consultant
-        </div>
-        <div class="col-md-6">
-            <input type="radio" class="form-check-input"
-                    [(ngModel)]="state.currentRequestActionResults.approved"
-                    (change)="approved(false)"
-                    name="approved" [value]="false" />Reject Consultant
-        </div>
-    </div>
-    <div>
-        <input type="checkbox" [disabled]="!state.currentRequestActionResults.approved"
-                [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
-                [value]="true" /> Report Access Before 70 days
-    </div>
+</div>
+

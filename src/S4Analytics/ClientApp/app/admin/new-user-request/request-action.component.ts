@@ -18,7 +18,8 @@ export class RequestActionComponent  {
 
     constructor(public state: NewUserRequestStateService,
         private newUserRequestService: NewUserRequestService,
-        public modalService: NgbModal) {
+        public modalService: NgbModal
+        ) {
         this.state.currentRequestActionResults = new RequestActionResults(this.state.selectedRequest.requestNbr);
     }
 
@@ -26,8 +27,24 @@ export class RequestActionComponent  {
         return this.state.selectedRequest.requestStatus === nur;
     }
 
+    // TODO:  don't need this because if hidden if Reject rb not checked
     disableTextArea() {
         return this.state.currentRequestActionResults.approved === undefined;
+    }
+
+    hideReasonTextArea() {
+        return this.state.currentRequestActionResults.approved === undefined || this.state.currentRequestActionResults.approved;
+    }
+
+    hideReportAccessCb() {
+        return (!this.state.currentRequestActionResults.approved &&
+           ( (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewConsultant) ||
+            (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewContractor) ||
+                (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewAgency)))
+            ||
+            ((this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewConsultant) &&
+                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewContractor) &&
+                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewAgency));
     }
 
     submit() {
@@ -44,6 +61,16 @@ export class RequestActionComponent  {
     cancel() {
         this.state.currentActionForm.close();
         this.closeContractViewer();
+    }
+
+    approved(approved: boolean) {
+
+        if (approved) {
+            this.state.currentRequestActionResults.rejectionReason = '';
+        }
+        else {
+            this.state.currentRequestActionResults.accessBefore70Days = false;
+        }
     }
 
     private closeContractViewer() {
