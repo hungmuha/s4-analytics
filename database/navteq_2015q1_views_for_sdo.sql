@@ -1,24 +1,6 @@
 CREATE OR REPLACE VIEW v_geocode_result_for_sdo
 AS SELECT
-  objectid,
   hsmv_rpt_nbr,
-  score_nbr,
-  location_type_cd,
-  match_status_cd,
-  match_result_cd,
-  std_addr_tx,
-  match_addr_tx,
-  addr_used_cd,
-  city_used_cd,
-  bypass_used_cd,
-  custom_geocoder_used_cd,
-  unmatched_desc_cd,
-  map_point_x,
-  map_point_y,
-  map_point_srid,
-  center_line_x,
-  center_line_y,
-  center_line_srid,
   crash_seg_id,
   nearest_intrsect_id,
   nearest_intrsect_offset_ft,
@@ -27,30 +9,13 @@ AS SELECT
   ref_intrsect_offset_ft,
   ref_intrsect_offset_dir,
   updt_dir_travel,
-  last_updt_user_id,
-  last_updt_dt,
-  sym_angle,
-  source_format_cd,
-  geocode_engine_cd,
-  method_used_cd,
   on_network,
   dot_on_sys,
   key_geography,
   city_cd,
   cnty_cd,
   mapped,
-  batch_nbr,
-  CASE WHEN shape IS NULL THEN NULL ELSE sdo_geometry(sde.st_astext(shape), 3087) END AS shape,
-  author,
-  st_nm,
-  intrsect_st_nm,
-  st_nbr,
-  fail_match_rsn_cd,
-  re_geolocated_from_ver,
-  am_intrsect_id,
-  am_intrsect_offset_ft,
-  am_intrsect_offset_dir,
-  rel_to_network
+  CASE WHEN shape IS NULL THEN NULL ELSE sdo_geometry(sde.st_astext(shape), 3087) END AS shape
 FROM geocode_result;
 
 CREATE OR REPLACE VIEW v_st_citation_for_sdo
@@ -60,3 +25,49 @@ AS SELECT
   CASE WHEN shape IS NULL THEN NULL ELSE sdo_geometry(sde.st_astext(shape), 3087) END AS shape,
   mpo_bnd_id
 FROM st_citation;
+
+CREATE OR REPLACE VIEW v_st_for_sdo
+AS SELECT
+  LINK_ID,
+  ST_NAME,
+  ST_NM_PREF,
+  ST_TYP_BEF,
+  ST_NM_BASE,
+  ST_NM_SUFF,
+  ST_TYP_AFT,
+  ST_TYP_ATT,
+  REF_IN_ID,
+  NREF_IN_ID,
+  DIRONSIGN,
+  CITY_CD,
+  CNTY_CD,
+  CASE WHEN shape IS NULL THEN NULL ELSE sdo_geometry(sde.st_astext(shape), 3087) END AS shape
+FROM st;
+
+CREATE OR REPLACE VIEW v_st_ext_for_sdo
+AS SELECT
+  link_id,
+  roadway,
+  dot_funclass,
+  dot_on_sys,
+  fhp_bnd_id,
+  dot_bnd_id,
+  mpo_bnd_id,
+  cnty_bnd_id,
+  city_bnd_id,
+  CASE
+    WHEN centroid_x IS NULL OR centroid_y IS NULL THEN NULL
+    ELSE sdo_geometry(2001, 3087, mdsys.sdo_point_type(centroid_x, centroid_y, NULL), NULL, NULL)
+  END AS centroid,
+  rd_sys_id,
+  rd_sys_interstate,
+  rd_sys_us,
+  rd_sys_state,
+  rd_sys_county,
+  rd_sys_local,
+  rd_sys_toll,
+  rd_sys_forest,
+  rd_sys_private,
+  rd_sys_pk_lot,
+  rd_sys_other
+FROM st_ext;
