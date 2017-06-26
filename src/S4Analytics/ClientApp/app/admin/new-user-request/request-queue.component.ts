@@ -2,7 +2,7 @@
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as _ from 'lodash';
 import {
-    NewUserRequestStateService, NewUserRequestService, QueueColumn, QueueFilter, NewUserRequest, NewUserRequestStatus
+   NewUserRequestStateService, NewUserRequestService, QueueColumn, QueueFilter, NewUserRequest, NewUserRequestStatus
 } from './shared';
 
 
@@ -46,28 +46,9 @@ export class RequestQueueComponent {
         this.newUserRequestService.getNewUserRequests().subscribe(result => this.state.newUserRequests = result);
     }
 
-    sortColumn(columnNum: QueueColumn): void {
-
-        if (columnNum === this.state.sortColumn) {
-            this.state.sortAsc = !this.state.sortAsc;
-        }
-        else {
-            this.state.sortColumn = columnNum;
-        }
-
-        let sortOrder = this.state.sortAsc ? '' : '!';
-
-        switch (columnNum) {
-            case QueueColumn.ReqNbr: this.state.sortField = [sortOrder + 'requestNbr']; break;
-            case QueueColumn.ReqDt: this.state.sortField = [sortOrder + 'requestDt']; break;
-            case QueueColumn.ReqType: this.state.sortField = [sortOrder + 'requestType']; break;
-            case QueueColumn.Requestor: this.state.sortField = [sortOrder + 'requestorLastNm']; break;
-            case QueueColumn.ReqAgncy: this.state.sortField = [sortOrder + 'agncyNm']; break;
-            case QueueColumn.ReqStatus: this.state.sortField = [sortOrder + 'requestStatus']; break;
-            case QueueColumn.AcctCreated: this.state.sortField = [sortOrder + 'userCreatedDt']; break;
-            case QueueColumn.Comment: this.state.sortField = [sortOrder + 'adminComment']; break;
-            default: this.state.sortField = [sortOrder + 'requestNbr']; break;
-        }
+    sortColumn(columnName: string): void {
+        this.state.sortAsc = !this.state.sortAsc;
+        this.state.sortColumnName = columnName;
     }
 
     filterQueueBy(filter: QueueFilter) {
