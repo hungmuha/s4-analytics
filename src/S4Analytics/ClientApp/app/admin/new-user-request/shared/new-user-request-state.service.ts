@@ -2,7 +2,7 @@
 import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NewUserRequest } from './new-user-request';
 import { RequestActionResults } from './request-action-results';
-import { QueueColumn, QueueFilter } from './new-user-request-enum';
+import { QueueFilter } from './new-user-request-enum';
 
 
 @Injectable()
@@ -12,7 +12,6 @@ export class NewUserRequestStateService {
     currentRequestActionResults: RequestActionResults;
     contractViewerWindow: Window;
     sortAsc: boolean = true;
-    sortColumn: QueueColumn = QueueColumn.ReqDt;
     sortColumnName: string = 'requestNbr';
     queueFilter: QueueFilter = QueueFilter.Pending;
     currentActionForm: NgbModalRef;
