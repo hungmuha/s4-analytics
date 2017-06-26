@@ -22,9 +22,6 @@ export class OrderByPipe implements PipeTransform {
             let reverse = args[1];
             let byVal = 1;
 
-            console.log(orderByValue);
-            console.log(reverse);
-
             // check if exclamation point
             if (reverse) {
                 // reverse the array
