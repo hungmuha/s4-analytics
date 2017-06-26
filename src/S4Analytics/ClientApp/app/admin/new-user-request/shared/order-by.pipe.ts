@@ -11,17 +11,22 @@ import { Pipe, PipeTransform } from '@angular/core';
     name: 'orderby'
 })
 // Code from https://github.com/nicolas2bert/angular2-orderby-pipe/blob/master/app/orderby.ts used under the ISC license
+// Modified to pass in whether the list is to be reversed - mf
 export class OrderByPipe implements PipeTransform {
-    transform (array: Array<any>, args: any) {
+    transform (array: Array<any>, args: any[]) {
 
-        // Check if array exists, in this case array contains articles and args is an array that has 1 element : !id
+        // Check if array exists
         if (array) {
             // get the first element
             let orderByValue = args[0];
+            let reverse = args[1];
             let byVal = 1;
 
+            console.log(orderByValue);
+            console.log(reverse);
+
             // check if exclamation point
-            if (orderByValue.charAt(0) === '!') {
+            if (reverse) {
                 // reverse the array
                 byVal = -1;
                 orderByValue = orderByValue.substring(1);

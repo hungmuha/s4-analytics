@@ -11,7 +11,7 @@
     <b>Contractor:</b>&nbsp;
     {{state.selectedRequest.contractorNm}}
 </div>
-<div class="row justify-content-between">
+<div class="row">
     <div>
         <b>Contract Start Date: </b>&nbsp;
         {{state.selectedRequest.contractStartDt | date}}
@@ -22,7 +22,8 @@
     </div>
 </div>
 <div class="row">
-    <button type="button" class="btn btn-sm" (click)="openContractViewer()">View Contract</button>
+    <b>Contract:</b>
+    <button type="button" class="btn btn-sm btn-link" (click)="openContractViewer()">View Contract</button>
 </div>
 <div class="row">
     <label><b>Reason for Access:&nbsp;</b></label>

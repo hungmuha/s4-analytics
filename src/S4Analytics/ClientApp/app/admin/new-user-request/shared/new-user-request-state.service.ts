@@ -11,9 +11,9 @@ export class NewUserRequestStateService {
     selectedRequest: NewUserRequest;
     currentRequestActionResults: RequestActionResults;
     contractViewerWindow: Window;
-    sortField: string[] = ['requestDt'];
     sortAsc: boolean = true;
-    sortColumn: QueueColumn;
+    sortColumn: QueueColumn = QueueColumn.ReqDt;
+    sortColumnName: string = 'requestNbr';
     queueFilter: QueueFilter = QueueFilter.Pending;
     currentActionForm: NgbModalRef;
     warningMessages: string[];

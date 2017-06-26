@@ -17,30 +17,86 @@
 <div class="row">
     <!-- filter button toolbar-->
     <div class="btn-group" role="group">
-        <button class="btn btn-sm" type="button" (click)="filterQueueBy(queueFilter.All)">All</button>
-        <button class="btn btn-sm" type="button" (click)="filterQueueBy(queueFilter.Pending)">Pending</button>
-        <button class="btn btn-sm" type="button" (click)="filterQueueBy(queueFilter.Completed)">Completed</button>
-        <button class="btn btn-sm" type="button" (click)="filterQueueBy(queueFilter.Rejected)">Rejected</button>
+        <button class="btn btn-sm btn-secondary"
+                [class.active]="state.queueFilter === queueFilter.All"
+                (click)="filterQueueBy(queueFilter.All)">All</button>
+        <button class="btn btn-sm btn-secondary"
+                [class.active]="state.queueFilter === queueFilter.Pending"
+                (click)="filterQueueBy(queueFilter.Pending)">Pending</button>
+        <button class="btn btn-sm btn-secondary"
+                [class.active]="state.queueFilter === queueFilter.Completed"
+                (click)="filterQueueBy(queueFilter.Completed)">Completed</button>
+        <button class="btn btn-sm btn-secondary"
+                [class.active]="state.queueFilter === queueFilter.Rejected"
+                (click)="filterQueueBy(queueFilter.Rejected)">Rejected</button>
     </div>
 </div>
 <div class="row">
     <!-- queue -->
-    <table class="table table-striped table-bordered table-sm">
+    <table class="table table-striped table-bordered table-sm table">
         <thead class="thead-inverse">
             <tr>
-                <th class="text-center align-middle" name="reqNbr" (click)="sortColumn(queueColumn.ReqNbr)">Request #</th>
-                <th class="text-center align-middle" (click)="sortColumn(queueColumn.ReqDt)">Request Date</th>
-                <th class="text-center align-middle" (click)="sortColumn(queueColumn.ReqType)">Request Type</th>
-                <th class="text-center align-middle" (click)="sortColumn(queueColumn.Requestor)">Requestor</th>
-                <th class="text-center align-middle" (click)="sortColumn(queueColumn.ReqAgncy)">Requestor Agency</th>
-                <th class="text-center align-middle" (click)="sortColumn(queueColumn.ReqStatus)">Request Status</th>
-                <th class="text-center align-middle" (click)="sortColumn(queueColumn.AcctCreated)">Account Created</th>
+                <th class="text-center align-middle" name="reqNbr" >
+                    <a class="text-white"  href="javascript:void(0)" (click)="sortColumn('requestNbr')">
+                        Request #
+                        <span [hidden]="!(state.sortColumnName === 'requestNbr' && !state.sortAsc)" class="fa fa-caret-down"></span>
+                        <span [hidden]="!(state.sortColumnName === 'requestNbr' && state.sortAsc)" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
+                <th class="text-center align-middle" >
+                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('requestDt')">
+                        Request Date
+                        <span [hidden]="!(state.sortColumnName === 'requestDt' && !state.sortAsc)" class="fa fa-caret-down"></span>
+                        <span [hidden]="!(state.sortColumnName === 'requestDt' && state.sortAsc)" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
+                <th class="text-center align-middle" >
+                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('requestType')">
+                        Request Type
+                        <span [hidden]="!(state.sortColumnName === 'requestType' && !state.sortAsc)" class="fa fa-caret-down"></span>
+                        <span [hidden]="!(state.sortColumnName === 'requestType' && state.sortAsc)" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
+                <th class="text-center align-middle" >
+                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('requestorLastNm')">
+                        Requestor
+                        <span [hidden]="!(state.sortColumnName === 'requestorLastNm' && !state.sortAsc)" class="fa fa-caret-down"></span>
+                        <span [hidden]="!(state.sortColumnName === 'requestorLastNm' && state.sortAsc)" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
+                <th class="text-center align-middle">
+                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('agncyNm')">
+                        Requestor Agency
+                        <span [hidden]="!(state.sortColumnName === 'agncyNm' && !state.sortAsc)" class="fa fa-caret-down"></span>
+                        <span [hidden]="!(state.sortColumnName === 'agncyNm' && state.sortAsc)" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
+                <th class="text-center align-middle">
+                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('requestStatus')">
+                        Request Status
+                        <span [hidden]="!(state.sortColumnName === 'requestStatus' && !state.sortAsc)" class="fa fa-caret-down"></span>
+                        <span [hidden]="!(state.sortColumnName === 'requestStatus' && state.sortAsc)" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
+                <th class="text-center align-middle" >
+                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('userCreatedDt')">
+                        Account Created
+                        <span [hidden]="!(state.sortColumnName === 'userCreatedDt' && !state.sortAsc)" class="fa fa-caret-down"></span>
+                        <span [hidden]="!(state.sortColumnName === 'userCreatedDt' && state.sortAsc)" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
                 <th class="text-center align-middle">Action</th>
-                <th class="text-center align-middle" (click)="sortColumn(queueColumn.Comment)">Comment</th>
+                <th class="text-center align-middle" >
+                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('adminComment')">
+                        Comment
+                        <span [hidden]="!(state.sortColumnName === 'adminComment' && !state.sortAsc)" class="fa fa-caret-down"></span>
+                        <span [hidden]="!(state.sortColumnName === 'adminComment' && state.sortAsc)" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let newUserReq of (filteredRequests | orderby:state.sortField)">
+            <tr *ngFor="let newUserReq of (filteredRequests | orderby:[state.sortColumnName, state.sortAsc])">
                 <td>{{newUserReq.requestNbr}}</td>
                 <td>{{newUserReq.requestDt | date:"MM/dd/yy"}}</td>
                 <td>{{newUserReq.requestType | requestType }}</td>

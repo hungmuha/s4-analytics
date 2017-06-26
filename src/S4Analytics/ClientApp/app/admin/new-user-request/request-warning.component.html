@@ -1,5 +1,5 @@
-﻿<ul class="row">
-    <li style="color:red" *ngFor="let msg of state.warningMessages">
-        {{ msg }}
-    </li>
-</ul>
+﻿
+    <div class="row warning-message no-gutters" *ngFor="let msg of state.warningMessages">
+        <b>-{{ msg }}</b>
+    </div>
+
