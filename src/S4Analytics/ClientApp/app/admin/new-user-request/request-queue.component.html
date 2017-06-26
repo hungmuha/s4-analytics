@@ -36,58 +36,58 @@
     <table class="table table-striped table-bordered table-sm table">
         <thead class="thead-inverse">
             <tr>
-                <th class="text-center align-middle" name="reqNbr" >
-                    <a class="text-white"  href="javascript:void(0)" (click)="sortColumn('requestNbr')">
+                <th name="reqNbr">
+                    <a href="javascript:void(0)" (click)="sortColumn('requestNbr')">
                         Request #
                         <span [hidden]="!(state.sortColumnName === 'requestNbr' && !state.sortAsc)" class="fa fa-caret-down"></span>
                         <span [hidden]="!(state.sortColumnName === 'requestNbr' && state.sortAsc)" class="fa fa-caret-up"></span>
                     </a>
                 </th>
-                <th class="text-center align-middle" >
-                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('requestDt')">
+                <th>
+                    <a href="javascript:void(0)" (click)="sortColumn('requestDt')">
                         Request Date
                         <span [hidden]="!(state.sortColumnName === 'requestDt' && !state.sortAsc)" class="fa fa-caret-down"></span>
                         <span [hidden]="!(state.sortColumnName === 'requestDt' && state.sortAsc)" class="fa fa-caret-up"></span>
                     </a>
                 </th>
-                <th class="text-center align-middle" >
-                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('requestType')">
+                <th>
+                    <a href="javascript:void(0)" (click)="sortColumn('requestType')">
                         Request Type
                         <span [hidden]="!(state.sortColumnName === 'requestType' && !state.sortAsc)" class="fa fa-caret-down"></span>
                         <span [hidden]="!(state.sortColumnName === 'requestType' && state.sortAsc)" class="fa fa-caret-up"></span>
                     </a>
                 </th>
-                <th class="text-center align-middle" >
-                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('requestorLastNm')">
+                <th class="align-middle" >
+                    <a href="javascript:void(0)" (click)="sortColumn('requestorLastNm')">
                         Requestor
                         <span [hidden]="!(state.sortColumnName === 'requestorLastNm' && !state.sortAsc)" class="fa fa-caret-down"></span>
                         <span [hidden]="!(state.sortColumnName === 'requestorLastNm' && state.sortAsc)" class="fa fa-caret-up"></span>
                     </a>
                 </th>
-                <th class="text-center align-middle">
-                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('agncyNm')">
+                <th>
+                    <a href="javascript:void(0)" (click)="sortColumn('agncyNm')">
                         Requestor Agency
                         <span [hidden]="!(state.sortColumnName === 'agncyNm' && !state.sortAsc)" class="fa fa-caret-down"></span>
                         <span [hidden]="!(state.sortColumnName === 'agncyNm' && state.sortAsc)" class="fa fa-caret-up"></span>
                     </a>
                 </th>
-                <th class="text-center align-middle">
-                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('requestStatus')">
+                <th>
+                    <a href="javascript:void(0)" (click)="sortColumn('requestStatus')">
                         Request Status
                         <span [hidden]="!(state.sortColumnName === 'requestStatus' && !state.sortAsc)" class="fa fa-caret-down"></span>
                         <span [hidden]="!(state.sortColumnName === 'requestStatus' && state.sortAsc)" class="fa fa-caret-up"></span>
                     </a>
                 </th>
-                <th class="text-center align-middle" >
-                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('userCreatedDt')">
+                <th>
+                    <a href="javascript:void(0)" (click)="sortColumn('userCreatedDt')">
                         Account Created
                         <span [hidden]="!(state.sortColumnName === 'userCreatedDt' && !state.sortAsc)" class="fa fa-caret-down"></span>
                         <span [hidden]="!(state.sortColumnName === 'userCreatedDt' && state.sortAsc)" class="fa fa-caret-up"></span>
                     </a>
                 </th>
-                <th class="text-center align-middle">Action</th>
-                <th class="text-center align-middle" >
-                    <a class="text-white" href="javascript:void(0)" (click)="sortColumn('adminComment')">
+                <th>Action</th>
+                <th>
+                    <a href="javascript:void(0)" (click)="sortColumn('adminComment')">
                         Comment
                         <span [hidden]="!(state.sortColumnName === 'adminComment' && !state.sortAsc)" class="fa fa-caret-down"></span>
                         <span [hidden]="!(state.sortColumnName === 'adminComment' && state.sortAsc)" class="fa fa-caret-up"></span>
