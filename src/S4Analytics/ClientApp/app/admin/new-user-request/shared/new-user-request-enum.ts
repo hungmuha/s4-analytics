@@ -37,7 +37,7 @@ export enum NewUserRequestStatus {
     NewUser = 1,
     NewAgency = 2,
     NewConsultant = 3,
-    NewContractor = 4,
+    NewVendor = 4,
     CreateAgency = 5,
     Completed = 10,
     Rejected = 11

@@ -1,10 +1,16 @@
-﻿<div class="row">
-    <b>Contractor Name:</b>&nbsp;
-    {{state.selectedRequest.contractorNm}}
+﻿ <ng-template #requestorWarningContent>
+    <div class="row warning-message no-gutters" *ngFor="let msg of state.requestorWarningMessages">
+        <b>-{{ msg }}</b>
+    </div>
+</ng-template>
+
+<div class="row">
+    <b>Vendor Name:</b>&nbsp;
+    {{state.selectedRequest.vendorName}}
 </div>
 <div class="row">
-    <b>Contractor Email Domain:</b>&nbsp;
-    {{state.selectedRequest.contractorEmailDomain}}
+    <b>Vendor Email Domain:</b>&nbsp;
+    {{state.selectedRequest.vendorEmailDomain}}
 </div>
 <div class="row justify-content-between">
     <div>
@@ -33,6 +39,14 @@
 <div class="row font-italic">
     <div class="col offset-2">
         {{state.selectedRequest.requestorEmail}}
+        <i [hidden]=hideRequestorWarning()>
+            &nbsp;
+            <i class="fa fa-exclamation-circle text-danger"
+               [ngbPopover]="requestorWarningContent"
+               triggers="mouseenter:mouseleave"
+               container="body"
+               placement="right"></i>
+        </i>
     </div>
 </div>
 <div class="row font-italic">

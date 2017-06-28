@@ -1,6 +1,14 @@
 ﻿<div class="row">
     <div class="col">
         <b>Agency Name:</b>&nbsp;{{state.selectedRequest.agncyNm}}
+        <!--<i class="fa fa-question-circle text-info"
+            (click)="checkAgencyExists()" >
+        </i>-->
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="warning-message font-weight-bold" [hidden]="agencyExists">***Agency has not been created***</div>
     </div>
 </div>
 <div class="row">

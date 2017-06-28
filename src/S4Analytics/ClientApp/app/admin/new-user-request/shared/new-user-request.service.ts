@@ -78,10 +78,10 @@ export class NewUserRequestService {
         let reqWrapper: RequestApproval;
 
         switch (currentStatus) {
-            case NewUserRequestStatus.NewContractor:
+            case NewUserRequestStatus.NewVendor:
                 reqWrapper = new RequestApproval(requestActionResults.requestNumber,
                     selectedRequest,
-                    NewUserRequestStatus.NewContractor,
+                    NewUserRequestStatus.NewVendor,
                     NewUserRequestStatus.NewConsultant);
                 break;
             case NewUserRequestStatus.NewAgency:
@@ -147,6 +147,15 @@ export class NewUserRequestService {
             .patch(url, reqWrapper)
             .map(res => res.json())
             .catch(this.handleError);
+    }
+
+    verifyAgency(agencyNm: string) {
+
+        let encodedAgencyNm = encodeURI(agencyNm);
+        let url = `api/admin/new-user-request/${encodedAgencyNm}/verify-agency`;
+        return this.http
+            .get(url)
+            .map((r: Response) => r.json() as number);
     }
 
     private handleError(error: any) {

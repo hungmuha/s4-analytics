@@ -12,15 +12,24 @@ export class NewEmployeeComponent {
     }
 
     ngOnInit() {
-        this.state.warningMessages = [];
+
+       this.state.requestorWarningMessages = [];
 
         if (this.state.selectedRequest.warnRequestorEmailCd) {
-            this.state.warningMessages.push('Requestor/Agency email domain mismatch');
+            this.state.requestorWarningMessages.push('Requestor/Agency email domain mismatch');
         }
 
         if (this.state.selectedRequest.warnDuplicateEmailCd) {
-            this.state.warningMessages.push('An account with email already exists');
+            this.state.requestorWarningMessages.push('An account with email already exists');
         }
+    }
+
+    hideRequestorWarning(): boolean {
+        if (!this.state.selectedRequest.warnRequestorEmailCd && !this.state.selectedRequest.warnDuplicateEmailCd) {
+            return true;
+        }
+
+        return false;
     }
 
     approved(approved: boolean) {

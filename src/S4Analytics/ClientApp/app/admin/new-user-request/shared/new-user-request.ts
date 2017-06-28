@@ -12,7 +12,7 @@ export class NewUserRequest {
     requestorLastNm:  string;
     requestorSuffixNm: string;
     requestorEmail: string;
-    contractorNm: string;
+    vendorName: string;
     consultantFirstNm: string;
     consultantLastNm:  string;
     consultantSuffixNm: string;

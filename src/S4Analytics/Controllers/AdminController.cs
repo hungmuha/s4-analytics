@@ -69,6 +69,12 @@ namespace S4Analytics.Controllers
             return new ObjectResult(info);
         }
 
+        [HttpGet("new-user-request/{agencyNm}/verify-agency")]
+        public IActionResult  VerifyAgencyExists(string agencyNm)
+        {
+            return new ObjectResult(_newUserRequestRepo.VerifyAgencyCreated(agencyNm));
+        }
+
         [HttpPatch("new-user-request/{id}/approve")]
         public async Task<IActionResult> ApproveOther(int id, [FromBody]RequestApproval approval)
         {
@@ -80,8 +86,8 @@ namespace S4Analytics.Controllers
             {
                 case NewUserRequestStatus.NewUser:
                     return new ObjectResult(await _newUserRequestRepo.ApproveNewUser(id, approval));
-                case NewUserRequestStatus.NewContractor:
-                    return new ObjectResult(_newUserRequestRepo.ApproveNewContractor(id, approval));
+                case NewUserRequestStatus.NewVendor:
+                    return new ObjectResult(_newUserRequestRepo.ApproveNewVendor(id, approval));
                 case NewUserRequestStatus.CreateAgency:
                     return new ObjectResult(await _newUserRequestRepo.ApproveCreatedNewAgency(id, approval));
             }

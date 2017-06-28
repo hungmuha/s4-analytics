@@ -13,21 +13,38 @@ export class NewConsultantComponent  {
     }
 
     ngOnInit() {
-        this.state.warningMessages = [];
+        this.state.requestorWarningMessages = [];
+        this.state.consultantWarningMessages = [];
 
         if (this.state.selectedRequest.warnConsultantEmailCd) {
-            this.state.warningMessages.push('Consultant/Vendor email domain mismatch');
+            this.state.consultantWarningMessages.push('Consultant/Vendor email domain mismatch');
         }
 
         if (this.state.selectedRequest.warnDuplicateEmailCd) {
-            this.state.warningMessages.push('An account with email already exists');
+            this.state.consultantWarningMessages.push('An account with email already exists');
         }
 
         if (this.state.selectedRequest.warnRequestorEmailCd) {
-            this.state.warningMessages.push('Requestor/Agency email domain mismatch');
+            this.state.requestorWarningMessages.push('Requestor/Agency email domain mismatch');
         }
     }
 
+    hideRequestorWarning(): boolean {
+        if (!this.state.selectedRequest.warnRequestorEmailCd) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    hideConsultantWarning(): boolean {
+        if (!this.state.selectedRequest.warnConsultantEmailCd && !this.state.selectedRequest.warnDuplicateEmailCd) {
+            return true;
+        }
+
+        return false;
+    }
 
     approved(approved: boolean) {
 

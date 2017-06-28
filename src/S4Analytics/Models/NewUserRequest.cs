@@ -28,7 +28,7 @@ namespace S4Analytics.Models
         NewUser = 1,
         NewAgency = 2,
         NewConsultant = 3,
-        NewContractor = 4,
+        NewVendor = 4,
         CreateAgency = 5,
         Completed = 10,
         Rejected = 11
@@ -50,9 +50,9 @@ namespace S4Analytics.Models
         public string RequestorLastNm { get; set; }
         public string RequestorSuffixNm { get; set; }
         public string RequestorEmail { get; set; }
-        public int ContractorId { get; set; }
-        public string ContractorNm { get; set; }
-        public string ContractorEmailDomain { get; set; }
+        public int VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorEmailDomain { get; set; }
         public string ConsultantFirstNm { get; set; }
         public string ConsultantLastNm { get; set; }
         public string ConsultantSuffixNm { get; set; }

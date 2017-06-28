@@ -1,23 +1,12 @@
-﻿<ng-template #tipContent>
-    <request-warning-component></request-warning-component>
-</ng-template>
-
+﻿
 <form #actionForm="ngForm"  (ngSubmit)="submit()" #spy2>
     <div class="font-weight-bold">Request #{{state.selectedRequest.requestNbr}} on {{state.selectedRequest.requestDt|date: 'M/d/yy'}}
-        <i [hidden]="!state.selectedRequest.warnRequestorEmailCd && !state.selectedRequest.warnDuplicateEmailCd">
-            &nbsp;
-            <i class="fa fa-exclamation-circle text-danger"
-               [ngbPopover]="tipContent"
-               triggers="mouseenter:mouseleave"
-               container="body"
-               placement="right"></i>
-        </i>
     </div>
     <div class="modal-body">
         <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)" #actionTypeRef></new-employee-component>
         <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)" #actionTypeRef></new-agency-component>
         <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgency)" #actionTypeRef></agency-create-component>
-        <new-contractor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewContractor)" #actionTypeRef></new-contractor-component>
+        <new-vendor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewVendor)" #actionTypeRef></new-vendor-component>
         <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)" #actionTypeRef></new-consultant-component>
         <hr />
         <div class="row font-weight-bold justify-content-center">

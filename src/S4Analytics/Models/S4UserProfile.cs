@@ -43,7 +43,7 @@ namespace S4Analytics.Models
         public DateTime? AccountStartDate { get; set; }
         public List<UserAgreement> Agreements { get; set; }
         public Agency Agency { get; set; }
-        public Contractor ContractorCompany { get; set; }
+        public Vendor VendorCompany { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string EmailAddress { get; set; }
@@ -101,7 +101,7 @@ namespace S4Analytics.Models
             AccountStartDate = null;
             Agreements = new List<UserAgreement>();
             Agency = null;
-            ContractorCompany = null;
+            VendorCompany = null;
             CreatedBy = string.Empty;
             CreatedDate = null;
             EmailAddress = string.Empty;
