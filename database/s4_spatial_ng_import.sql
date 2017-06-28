@@ -186,4 +186,7 @@ SELECT
   rd_sys_other
 FROM v_st_ext_for_sdo@lime_navteq_2015q1;
 
+UPDATE st_ext
+SET shape_merc = sdo_cs.transform(shape, 3857);
+
 COMMIT;

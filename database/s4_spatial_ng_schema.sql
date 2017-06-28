@@ -90,6 +90,17 @@ CREATE TABLE "GEOCODE_RESULT"
 CONSTRAINT "GEOCODE_RESULT_PK" PRIMARY KEY ("HSMV_RPT_NBR")
 	);
 
+CREATE OR REPLACE TRIGGER geocode_result_merc
+BEFORE INSERT OR UPDATE OF shape ON geocode_result
+FOR EACH ROW
+BEGIN
+  IF NVL(sdo_geom.relate(:NEW.shape, 'EQUAL', :OLD.shape, 0.005), 'FALSE') = 'FALSE' THEN
+    :NEW.shape_merc := sdo_cs.transform(:NEW.shape, 8307);
+  END IF;
+END;
+/
+ALTER TRIGGER geocode_result_merc ENABLE;
+
 CALL s4_register_sdo_geom('geocode_result', 'shape', 3087);
 CALL s4_register_sdo_geom('geocode_result', 'shape_merc', 3857);
 
@@ -157,6 +168,17 @@ CREATE TABLE "ST"
 CONSTRAINT st_pk PRIMARY KEY ("LINK_ID")
 	);
 
+CREATE OR REPLACE TRIGGER st_merc
+BEFORE INSERT OR UPDATE OF shape ON st
+FOR EACH ROW
+BEGIN
+  IF NVL(sdo_geom.relate(:NEW.shape, 'EQUAL', :OLD.shape, 0.005), 'FALSE') = 'FALSE' THEN
+    :NEW.shape_merc := sdo_cs.transform(:NEW.shape, 8307);
+  END IF;
+END;
+/
+ALTER TRIGGER st_merc ENABLE;
+
 CALL s4_register_sdo_geom('st', 'shape', 3087);
 CALL s4_register_sdo_geom('st', 'shape_merc', 3857);
 
@@ -200,6 +222,17 @@ CREATE TABLE "ST_EXT"
 CONSTRAINT st_ext_pk PRIMARY KEY ("LINK_ID")
 	);
 
+CREATE OR REPLACE TRIGGER st_ext_merc
+BEFORE INSERT OR UPDATE OF centroid ON st_ext
+FOR EACH ROW
+BEGIN
+  IF NVL(sdo_geom.relate(:NEW.centroid, 'EQUAL', :OLD.centroid, 0.005), 'FALSE') = 'FALSE' THEN
+    :NEW.centroid_merc := sdo_cs.transform(:NEW.centroid, 8307);
+  END IF;
+END;
+/
+ALTER TRIGGER st_ext_merc ENABLE;
+
 CALL s4_register_sdo_geom('st_ext', 'centroid', 3087);
 CALL s4_register_sdo_geom('st_ext', 'centroid_merc', 3857);
 
@@ -216,6 +249,17 @@ CREATE TABLE "S_CITATION"
 "SHAPE_MERC" SDO_GEOMETRY,
 CONSTRAINT citation_pk PRIMARY KEY ("CITATION_NBR")
 	);
+
+CREATE OR REPLACE TRIGGER s_citation_merc
+BEFORE INSERT OR UPDATE OF shape ON s_citation
+FOR EACH ROW
+BEGIN
+  IF NVL(sdo_geom.relate(:NEW.shape, 'EQUAL', :OLD.shape, 0.005), 'FALSE') = 'FALSE' THEN
+    :NEW.shape_merc := sdo_cs.transform(:NEW.shape, 8307);
+  END IF;
+END;
+/
+ALTER TRIGGER s_citation_merc ENABLE;
 
 CALL s4_register_sdo_geom('s_citation', 'shape', 3087);
 CALL s4_register_sdo_geom('s_citation', 'shape_merc', 3857);
