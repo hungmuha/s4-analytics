@@ -85,7 +85,7 @@ export class RequestActionComponent  {
         this.newUserRequestService.approve(this.state.selectedRequest, this.state.currentRequestActionResults)
             .subscribe(
             result => {
-                if (result != null) {
+                if (result !== undefined) {
                     this.state.selectedRequest = result;
                     let index = this.state.newUserRequests.findIndex(newUserReq => newUserReq.requestNbr === this.state.selectedRequest.requestNbr);
 

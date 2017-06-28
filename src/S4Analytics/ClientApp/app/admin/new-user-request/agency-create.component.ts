@@ -17,7 +17,6 @@ export class AgencyCreateComponent {
 
     ngOnInit() {
         this.doesAgencyExist();
-        
     }
 
     approved(approved: boolean) {
@@ -30,11 +29,11 @@ export class AgencyCreateComponent {
     doesAgencyExist(): void {
         this.newUserRequestService.verifyAgency(this.state.selectedRequest.agncyNm)
             .subscribe(
-            result => { this.agencyExists = result != 0; }
+            result => { this.agencyExists = result !== 0; }
         );
     }
 
-    //checkAgencyExists() {
+    // checkAgencyExists() {
     //    this.newUserRequestService.verifyAgency(this.state.selectedRequest.agncyNm)
     //        .subscribe(
     //       result => {
@@ -47,6 +46,6 @@ export class AgencyCreateComponent {
     //               alert("Found");
     //           }
     //        });
-    //}
+    // }
 
 }

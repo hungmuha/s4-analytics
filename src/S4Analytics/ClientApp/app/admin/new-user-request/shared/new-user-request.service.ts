@@ -128,7 +128,8 @@ export class NewUserRequestService {
 
         return this.http
             .patch(url, reqWrapper)
-            .map(res => res.json())
+            .map(res => { res.json(); }
+            )
             .catch(this.handleError);
     }
 
