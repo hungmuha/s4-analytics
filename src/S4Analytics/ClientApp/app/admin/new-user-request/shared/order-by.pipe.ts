@@ -22,11 +22,10 @@ export class OrderByPipe implements PipeTransform {
             let reverse = args[1];
             let byVal = 1;
 
-            // check if exclamation point
+            // check if reversing the sort order
             if (reverse) {
                 // reverse the array
                 byVal = -1;
-                orderByValue = orderByValue.substring(1);
             }
 
             array.sort((a: any, b: any) => {

@@ -72,4 +72,11 @@ export class RequestQueueComponent {
         return (this.filteredRequests === undefined) ?  0 : this.filteredRequests.length;
     }
 
+    hideCaretDown(columnName: string) {
+        return !(this.state.sortColumnName === columnName && !this.state.sortAsc);
+    }
+
+    hideCaretUp(columnName: string) {
+        return !(this.state.sortColumnName === columnName && this.state.sortAsc);
+    }
 }
