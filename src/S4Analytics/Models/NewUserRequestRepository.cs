@@ -119,9 +119,9 @@ namespace S4Analytics.Models
             var subject = "Signal Four Analytics user account created";
             var body = $@"<div>Dear {request.RequestorFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been created. 
-                        You can access the system at http://s4.geoplan.ufl.edu/. 
+                        You can access the system at http://s4.geoplan.ufl.edu/. <br><br>
                         To login click on the Login link at the upper right of the screen 
-                        and enter the information below: <br>
+                        and enter the information below: <br><br>
                         username = {userName} <br>
                         password = {passwordText} <br><br>
                         Upon login you will be prompted to change your password. You will also be 
@@ -182,8 +182,7 @@ namespace S4Analytics.Models
             await _userManager.AddToRolesAsync(user, roles);
 
             // Send the approval the emails here.  Send password cred to new user.
-            var subject = $@"Your Signal Four Analytics individual account as employee of
-                  {request.AgncyNm} has been created";
+            var subject = $@"Your Signal Four Analytics individual account as employee of {request.AgncyNm} has been created";
 
             var body = $@"<div>
                 Dear {request.ConsultantFirstNm} <br><br>
@@ -240,8 +239,7 @@ namespace S4Analytics.Models
             await _userManager.AddToRolesAsync(user, roles);
 
             // Send the approval the emails here.  Send password cred to new user.
-            var subject = $@"Your Signal Four Analytics individual account as employee of 
-                {request.AgncyNm} has been renewed";
+            var subject = $@"Your Signal Four Analytics individual account as employee of {request.AgncyNm} has been renewed";
 
             var body = $@"<div>Dear {request.ConsultantFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been renewed. 
@@ -353,11 +351,11 @@ namespace S4Analytics.Models
             var request = approval.SelectedRequest;
 
             // Verify that new agency has been created.
-            var newAgencyId = VerifyAgencyCreated(request.AgncyNm);
+            var newAgencyId = FindAgencyIdByName(request.AgncyNm);
             if (newAgencyId == 0)
             {
                 // Agency has not been created (could not find an agency with matching name)
-                return null;
+                return request;
             }
 
             /// User will be created automatically after agency created because there is no one in
@@ -392,7 +390,7 @@ namespace S4Analytics.Models
             return request;
         }
 
-        public int VerifyAgencyCreated(string agencyNm)
+        public int FindAgencyIdByName(string agencyNm)
         {
             var selectTxt = @"SELECT AGNCY_ID FROM S4_AGNCY WHERE AGNCY_NM = :agencyNm";
 
@@ -544,11 +542,12 @@ namespace S4Analytics.Models
                     vendor.VendorName,
                     vendor.CreatedBy,
                     vendor.CreatedDate,
-                    vendor = vendor.IsActive ? "Y" : "N",
+                    isActive = vendor.IsActive ? "Y" : "N",
                     vendor.EmailDomain
                 });
 
             return rowsInserted == 1;
+
         }
 
         private S4UserProfile CreateEmployeeProfile(NewUserRequest request)

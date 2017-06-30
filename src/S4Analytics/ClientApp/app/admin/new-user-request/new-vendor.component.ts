@@ -21,11 +21,7 @@ export class NewVendorComponent {
     }
 
     hideRequestorWarning(): boolean {
-        if (!this.state.selectedRequest.warnRequestorEmailCd) {
-            return true;
-        }
-
-        return false;
+        return !this.state.selectedRequest.warnRequestorEmailCd;
     }
 
     approved(approved: boolean) {

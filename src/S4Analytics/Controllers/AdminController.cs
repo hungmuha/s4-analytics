@@ -70,9 +70,11 @@ namespace S4Analytics.Controllers
         }
 
         [HttpGet("new-user-request/{agencyNm}/verify-agency")]
-        public IActionResult  VerifyAgencyExists(string agencyNm)
+        public IActionResult  DoesAgencyExists(string agencyNm)
         {
-            return new ObjectResult(_newUserRequestRepo.VerifyAgencyCreated(agencyNm));
+            var agencyId = _newUserRequestRepo.FindAgencyIdByName(agencyNm);
+
+            return new ObjectResult(agencyId != 0);
         }
 
         [HttpPatch("new-user-request/{id}/approve")]

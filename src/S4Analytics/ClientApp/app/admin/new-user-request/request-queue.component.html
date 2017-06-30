@@ -39,58 +39,50 @@
                 <th name="reqNbr">
                     <a href="javascript:void(0)" (click)="sortColumn('requestNbr')">
                         Request #
-                        <span [hidden]="hideCaretDown('requestNbr')" class="fa fa-caret-down"></span>
-                        <span [hidden]="hideCaretUp('requestNbr')" class="fa fa-caret-up"></span>
+                        <span [ngClass]="caretClass('requestNbr')"></span>
                     </a>
                 </th>
                 <th>
                     <a href="javascript:void(0)" (click)="sortColumn('requestDt')">
                         Request Date
-                        <span [hidden]="hideCaretDown('requestDt')" class="fa fa-caret-down"></span>
-                        <span [hidden]="hideCaretUp('requestDt')" class="fa fa-caret-up"></span>
+                        <span [ngClass]="caretClass('requestDt')"></span>
                     </a>
                 </th>
                 <th>
                     <a href="javascript:void(0)" (click)="sortColumn('requestType')">
                         Request Type
-                        <span [hidden]="hideCaretDown('requestType')" class="fa fa-caret-down"></span>
-                        <span [hidden]="hideCaretUp('requestType')" class="fa fa-caret-up"></span>
+                        <span [ngClass]="caretClass('requestType')"></span>
                     </a>
                 </th>
                 <th class="align-middle" >
                     <a href="javascript:void(0)" (click)="sortColumn('requestorLastNm')">
                         Requestor
-                        <span [hidden]="hideCaretDown('requestorLastNm')" class="fa fa-caret-down"></span>
-                        <span [hidden]="hideCaretUp('requestorLastNm')" class="fa fa-caret-up"></span>
+                        <span [ngClass]="caretClass('requestorLastNm')"></span>
                     </a>
                 </th>
                 <th>
                     <a href="javascript:void(0)" (click)="sortColumn('agncyNm')">
                         Requestor Agency
-                        <span [hidden]="hideCaretDown('agncyNm')" class="fa fa-caret-down"></span>
-                        <span [hidden]="hideCaretUp('agncyNm')" class="fa fa-caret-up"></span>
+                        <span [ngClass]="caretClass('agncyNm')"></span>
                     </a>
                 </th>
                 <th>
                     <a href="javascript:void(0)" (click)="sortColumn('requestStatus')">
                         Request Status
-                        <span [hidden]="hideCaretDown('requestStatus')" class="fa fa-caret-down"></span>
-                        <span [hidden]="hideCaretUp('requestStatus')" class="fa fa-caret-up"></span>
+                        <span [ngClass]="caretClass('requestStatus')"></span>
                     </a>
                 </th>
                 <th>
                     <a href="javascript:void(0)" (click)="sortColumn('userCreatedDt')">
                         Account Created
-                        <span [hidden]="hideCaretDown('userCreatedDt')" class="fa fa-caret-down"></span>
-                        <span [hidden]="hideCaretUp('userCreatedDt')" class="fa fa-caret-up"></span>
+                        <span [ngClass]="caretClass('userCreatedDt')"></span>
                     </a>
                 </th>
                 <th>Action</th>
                 <th>
                     <a href="javascript:void(0)" (click)="sortColumn('adminComment')">
                         Comment
-                        <span [hidden]="hideCaretDown('adminComment')" class="fa fa-caret-down"></span>
-                        <span [hidden]="hideCaretUp('adminComment')" class="fa fa-caret-up"></span>
+                        <span [ngClass]="caretClass('adminComment')"></span>
                     </a>
                 </th>
             </tr>

@@ -15,6 +15,6 @@ namespace S4Analytics.Models
         NewUserRequest ApproveNewVendor(int id, RequestApproval approval);
         Task<NewUserRequest> ApproveCreatedNewAgency(int id, RequestApproval approval);
         NewUserRequest Reject(int id, RequestRejection approval);
-        int VerifyAgencyCreated(string agencyNm);
+        int FindAgencyIdByName(string agencyNm);
     }
 }

@@ -30,20 +30,12 @@ export class NewConsultantComponent  {
     }
 
     hideRequestorWarning(): boolean {
-        if (!this.state.selectedRequest.warnRequestorEmailCd) {
-            return true;
-        }
-
-        return false;
+        return !this.state.selectedRequest.warnRequestorEmailCd;
     }
 
 
     hideConsultantWarning(): boolean {
-        if (!this.state.selectedRequest.warnConsultantEmailCd && !this.state.selectedRequest.warnDuplicateEmailCd) {
-            return true;
-        }
-
-        return false;
+        return !this.state.selectedRequest.warnConsultantEmailCd && !this.state.selectedRequest.warnDuplicateEmailCd;
     }
 
     approved(approved: boolean) {
