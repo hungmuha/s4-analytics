@@ -9,9 +9,9 @@ export class ApproveRejectTypePipe
         switch (value) {
             case NewUserRequestStatus.NewUser: return 'Employee';
             case NewUserRequestStatus.NewConsultant: return 'Consultant';
-            case NewUserRequestStatus.NewContractor: return 'Vendor';
+            case NewUserRequestStatus.NewVendor: return 'Vendor';
             case NewUserRequestStatus.NewAgency: return 'Agency';
-            case NewUserRequestStatus.CreateAgency: return '???'; // TO BE IMPLEMENTED
+            case NewUserRequestStatus.CreateAgency: return 'Agency Created'; // TO BE IMPLEMENTED
             default: return 'Not implemented' + value;
         }
     }

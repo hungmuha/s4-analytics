@@ -2,22 +2,26 @@
 import { NewUserRequestStateService } from './shared';
 
 @Component({
-    selector: 'new-contractor-component',
-    templateUrl: './new-contractor.component.html'
+    selector: 'new-vendor-component',
+    templateUrl: './new-vendor.component.html'
 })
 
-export class NewContractorComponent {
+export class NewVendorComponent {
 
     constructor(public state: NewUserRequestStateService) {
 
     }
 
     ngOnInit() {
-        this.state.warningMessages = [];
+        this.state.requestorWarningMessages = [];
 
         if (this.state.selectedRequest.warnRequestorEmailCd) {
-            this.state.warningMessages.push('Requestor/Agency email domain mismatch');
+            this.state.requestorWarningMessages.push('Requestor/Agency email domain mismatch');
         }
+    }
+
+    hideRequestorWarning(): boolean {
+        return !this.state.selectedRequest.warnRequestorEmailCd;
     }
 
     approved(approved: boolean) {

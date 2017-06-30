@@ -119,9 +119,9 @@ namespace S4Analytics.Models
             var subject = "Signal Four Analytics user account created";
             var body = $@"<div>Dear {request.RequestorFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been created. 
-                        You can access the system at http://s4.geoplan.ufl.edu/. 
+                        You can access the system at http://s4.geoplan.ufl.edu/. <br><br>
                         To login click on the Login link at the upper right of the screen 
-                        and enter the information below: <br>
+                        and enter the information below: <br><br>
                         username = {userName} <br>
                         password = {passwordText} <br><br>
                         Upon login you will be prompted to change your password. You will also be 
@@ -182,8 +182,7 @@ namespace S4Analytics.Models
             await _userManager.AddToRolesAsync(user, roles);
 
             // Send the approval the emails here.  Send password cred to new user.
-            var subject = $@"Your Signal Four Analytics individual account as employee of
-                  {request.AgncyNm} has been created";
+            var subject = $@"Your Signal Four Analytics individual account as employee of {request.AgncyNm} has been created";
 
             var body = $@"<div>
                 Dear {request.ConsultantFirstNm} <br><br>
@@ -240,8 +239,7 @@ namespace S4Analytics.Models
             await _userManager.AddToRolesAsync(user, roles);
 
             // Send the approval the emails here.  Send password cred to new user.
-            var subject = $@"Your Signal Four Analytics individual account as employee of 
-                {request.AgncyNm} has been renewed";
+            var subject = $@"Your Signal Four Analytics individual account as employee of {request.AgncyNm} has been renewed";
 
             var body = $@"<div>Dear {request.ConsultantFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been renewed. 
@@ -306,27 +304,27 @@ namespace S4Analytics.Models
         }
 
         /// <summary>
-        /// Create new contractor in CONTRACTOR
+        /// Create new vendor in CONTRACTOR
         /// </summary>
         /// <param name="id"></param>
         /// <param name="newStatus"></param>
         /// <param name="selectedRequest"></param>
         /// <returns></returns>
-        public NewUserRequest ApproveNewContractor(int id, RequestApproval approval)
+        public NewUserRequest ApproveNewVendor(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
 
-            //Create new Contractor in CONTRACTOR
-            var contractor = CreateNewContractor(request);
+            //Create new Vendor in CONTRACTOR
+            var vendor = CreateNewVendor(request);
 
-            var result = StoreContractor(contractor);
+            var result = StoreVendor(vendor);
 
             // Notify appropriate admin by email they need to approve user
             var adminEmails = IsFDOTRequest(request) ? GetFDOTAdminEmails() : GetHSMVAdminEmails();
 
             var subject = $"New consultant working under {request.AgncyNm} needs approval for Signal Four Account";
-            var body = $@"<div>There is a new request from {request.RequestorFirstNm} {request.RequestorLastNm} from {request.AgncyNm} for a contract with {request.ContractorNm}.<br><br>
+            var body = $@"<div>There is a new request from {request.RequestorFirstNm} {request.RequestorLastNm} from {request.AgncyNm} for a contract with {request.VendorName}.<br><br>
                     Please go to the User Request Queue in Signal Four Analytics
                     to review request and if ok, approve it.<br><br></div>";
 
@@ -335,7 +333,7 @@ namespace S4Analytics.Models
             SendEmail(adminEmails[0], adminEmails.GetRange(1, adminEmails.Count - 1), _supportEmail, subject, body, closing);
 
             request.RequestStatus = newStatus;
-            request.ContractorId = contractor.ContractorId;
+            request.VendorId = vendor.VendorId;
             UpdateApprovedNewUserRequest(request);
             return request;
         }
@@ -353,11 +351,11 @@ namespace S4Analytics.Models
             var request = approval.SelectedRequest;
 
             // Verify that new agency has been created.
-            var newAgencyId = VerifyAgencyCreated(request.AgncyNm);
+            var newAgencyId = FindAgencyIdByName(request.AgncyNm);
             if (newAgencyId == 0)
             {
                 // Agency has not been created (could not find an agency with matching name)
-                return null;
+                return request;
             }
 
             /// User will be created automatically after agency created because there is no one in
@@ -392,6 +390,15 @@ namespace S4Analytics.Models
             return request;
         }
 
+        public int FindAgencyIdByName(string agencyNm)
+        {
+            var selectTxt = @"SELECT AGNCY_ID FROM S4_AGNCY WHERE AGNCY_NM = :agencyNm";
+
+            var result = _conn.QueryFirstOrDefault<int>(selectTxt, new { agencyNm });
+            return result;
+        }
+
+
         #region private methods
 
         private bool UpdateApprovedNewUserRequest(NewUserRequest request)
@@ -400,7 +407,7 @@ namespace S4Analytics.Models
                             SET
                                 REQ_STATUS = :requestStatus,
                                 AGNCY_ID = :agncyId,
-                                CONTRACTOR_ID = :contractorId,
+                                CONTRACTOR_ID = :vendorId,
                                 USER_CREATED_DT = :userCreatedDt,
                                 USER_ID = :userId
                             WHERE REQ_NBR = :requestNbr";
@@ -409,7 +416,7 @@ namespace S4Analytics.Models
             {
                 request.RequestStatus,
                 request.AgncyId,
-                request.ContractorId,
+                request.VendorId,
                 request.UserCreatedDt,
                 request.UserId,
                 request.RequestNbr
@@ -458,9 +465,9 @@ namespace S4Analytics.Models
                             u.consultant_last_nm AS consultantlastnm,
                             u.consultant_suffix AS consultantsuffixnm,
                             u.consultant_email_addr_tx AS consultantemail,
-                            u.contractor_id AS contractorid,
-                            CASE WHEN u.contractor_id = 0 THEN u.new_contractor_nm ELSE c.contractor_nm END contractornm,
-                            CASE WHEN u.contractor_id = 0 THEN u.new_contractor_email_domain_tx ELSE c.email_domain END ContractorEmailDomain,
+                            u.contractor_id AS vendorid,
+                            CASE WHEN u.contractor_id is NULL OR u.contractor_id = 0 THEN u.new_contractor_nm ELSE c.contractor_nm END vendorname,
+                            CASE WHEN u.contractor_id is NULL OR u.contractor_id = 0 THEN u.new_contractor_email_domain_tx ELSE c.email_domain END vendoremaildomain,
                             u.access_reason_tx AS accessreasontx,
                             u.contract_start_dt AS contractstartdt,
                             u.contract_end_dt AS contractenddt,
@@ -519,27 +526,28 @@ namespace S4Analytics.Models
             return generatedUserName;
         }
 
-        private bool StoreContractor(Contractor contractor)
+        private bool StoreVendor(Vendor vendor)
         {
             int rowsInserted = 0;
 
             var insertText = @"INSERT INTO CONTRACTOR
                             (CONTRACTOR_ID, CONTRACTOR_NM, CREATED_BY, CREATED_DT, IS_ACTIVE, EMAIL_DOMAIN)
                             VALUES
-                            (:contractorId, :contractorName, :createdBy, :createdDate, :isActive, :emailDomain)";
+                            (:vendorId, :vendorName, :createdBy, :createdDate, :isActive, :emailDomain)";
 
             rowsInserted += _conn.Execute(insertText,
                 new
                 {
-                    contractor.ContractorId,
-                    contractor.ContractorName,
-                    contractor.CreatedBy,
-                    contractor.CreatedDate,
-                    isActive = contractor.IsActive ? "Y" : "N",
-                    contractor.EmailDomain
+                    vendor.VendorId,
+                    vendor.VendorName,
+                    vendor.CreatedBy,
+                    vendor.CreatedDate,
+                    isActive = vendor.IsActive ? "Y" : "N",
+                    vendor.EmailDomain
                 });
 
             return rowsInserted == 1;
+
         }
 
         private S4UserProfile CreateEmployeeProfile(NewUserRequest request)
@@ -572,7 +580,7 @@ namespace S4Analytics.Models
                 AccountExpirationDate = request.ContractEndDt,
                 CrashReportAccess = (request.AccessBefore70Days)?CrashReportAccess.Within60Days:CrashReportAccess.After60Days,
                 Agency = GetAgency(request.AgncyId),
-                ContractorCompany = GetContractor(request.ContractorId),
+                VendorCompany = GetVendor(request.VendorId),
                 ForcePasswordChange = true
             };
 
@@ -582,17 +590,17 @@ namespace S4Analytics.Models
             return profile;
         }
 
-        private Contractor CreateNewContractor(NewUserRequest request)
+        private Vendor CreateNewVendor(NewUserRequest request)
         {
-            var contractor = new Contractor(request.ContractorNm, GetNextContractorId())
+            var vendor = new Vendor(request.VendorName, GetNextVendorId())
             {
                 CreatedBy = "tbd", //TODO
                 CreatedDate = DateTime.Now,
-                EmailDomain = request.ContractorEmailDomain,
+                EmailDomain = request.VendorEmailDomain,
                 IsActive = true
             };
 
-            return contractor;
+            return vendor;
         }
 
         private Agency GetAgency(int agencyId)
@@ -614,11 +622,11 @@ namespace S4Analytics.Models
             return agency;
         }
 
-        private Contractor GetContractor(int id)
+        private Vendor GetVendor(int id)
         {
             var selectTxt = @"SELECT
-                                CONTRACTOR_ID as contractorId,
-                                CONTRACTOR_NM as contractorName,
+                                CONTRACTOR_ID as vendorId,
+                                CONTRACTOR_NM as vendorName,
                                 CREATED_BY as createdBy,
                                 CREATED_DT as createdDate,
                                 EMAIL_DOMAIN as emailDomain,
@@ -626,8 +634,8 @@ namespace S4Analytics.Models
                               FROM CONTRACTOR
                               WHERE CONTRACTOR_ID = :id";
 
-            var contractor = _conn.QueryFirstOrDefault<Contractor>(selectTxt, new { id });
-            return contractor;
+            var vendor = _conn.QueryFirstOrDefault<Vendor>(selectTxt, new { id });
+            return vendor;
         }
 
         private List<UserCounty> GetCountiesForAgency(int agencyId)
@@ -643,7 +651,7 @@ namespace S4Analytics.Models
             return results.ToList();
         }
 
-        private int GetNextContractorId()
+        private int GetNextVendorId()
         {
             var selectTxt = @"SELECT SEQ_CONTRACTOR_ID.NEXTVAL FROM DUAL";
 
@@ -719,14 +727,6 @@ namespace S4Analytics.Models
         private bool IsFDOTRequest(NewUserRequest request)
         {
             return (request.AgncyNm.ToUpper()).Contains("FDOT");
-        }
-
-        private int VerifyAgencyCreated(string agencyNm)
-        {
-            var selectTxt = @"SELECT AGNCY_ID FROM S4_AGNCY WHERE AGNCY_NM = :agencyNm";
-
-            var result = _conn.QueryFirstOrDefault<int>(selectTxt, new { agencyNm });
-            return result;
         }
 
         private void SendEmail(string to, List<string> cc, string from, string subject, string body, string closing)

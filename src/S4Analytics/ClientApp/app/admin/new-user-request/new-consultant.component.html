@@ -1,4 +1,17 @@
-﻿<div class="row">
+﻿<ng-template #requestorWarningContent>
+    <div class="row warning-message no-gutters" *ngFor="let msg of state.requestorWarningMessages">
+        <b>-{{ msg }}</b>
+    </div>
+</ng-template>
+
+<ng-template #consultantWarningContent>
+    <div class="row warning-message no-gutters" *ngFor="let msg of state.consultantWarningMessages">
+        <b>-{{ msg }}</b>
+    </div>
+</ng-template>
+
+
+<div class="row">
     <b>Consultant Name:</b>&nbsp;
     {{state.selectedRequest.consultantFirstNm}}
     {{state.selectedRequest.consultantLastNm}}
@@ -6,10 +19,18 @@
 <div class="row">
     <b>Email: </b>&nbsp;
     {{state.selectedRequest.consultantEmail}}
+    <i [hidden]=hideConsultantWarning()>
+        &nbsp;
+        <i class="fa fa-exclamation-circle text-danger"
+           [ngbPopover]="consultantWarningContent"
+           triggers="mouseenter:mouseleave"
+           container="body"
+           placement="right"></i>
+    </i>
 </div>
 <div class="row">
-    <b>Contractor:</b>&nbsp;
-    {{state.selectedRequest.contractorNm}}
+    <b>Vendor:</b>&nbsp;
+    {{state.selectedRequest.vendorName}}
 </div>
 <div class="row">
     <div>
@@ -42,6 +63,14 @@
 <div class="row font-italic">
     <div class="col offset-2">
         {{state.selectedRequest.requestorEmail}}
+        <i [hidden]=hideRequestorWarning()>
+            &nbsp;
+            <i class="fa fa-exclamation-circle text-danger"
+               [ngbPopover]="requestorWarningContent"
+               triggers="mouseenter:mouseleave"
+               container="body"
+               placement="right"></i>
+        </i>
     </div>
 </div>
 <div class="row font-italic">

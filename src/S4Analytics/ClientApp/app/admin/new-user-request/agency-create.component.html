@@ -1,16 +1,25 @@
-﻿<div class="row">
-    <div class="col">
-        <b>Agency Name:</b>&nbsp;{{state.selectedRequest.agncyNm}}
+﻿﻿<form #subform="ngForm" name="subform">
+    <div class="row">
+        <div class="col">
+            <b>Agency Name:</b>&nbsp;{{state.selectedRequest.agncyNm}}
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col">
-        <b>Email Domain</b>:&nbsp;{{state.selectedRequest.agncyEmailDomain}}
+    <div class="row">
+        <div class="col">
+            <div class="warning-message font-weight-bold"
+                 [hidden]="state.currentRequestActionResults.agencyCreated">
+                ***Agency has not been created***
+            </div>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col">
-        <b>Report Access:</b>&nbsp;{{state.selectedRequest.accessBefore70Days | reportAccess}}
+    <div class="row">
+        <div class="col">
+            <b>Email Domain</b>:&nbsp;{{state.selectedRequest.agncyEmailDomain}}
+        </div>
     </div>
-</div>
-
+    <div class="row">
+        <div class="col">
+            <b>Report Access:</b>&nbsp;{{state.selectedRequest.accessBefore70Days | reportAccess}}
+        </div>
+    </div>
+</form>

@@ -8,7 +8,7 @@ import { NewEmployeeComponent } from './new-employee.component';
 import { NewAgencyComponent } from './new-agency.component';
 import { AgencyCreateComponent } from './agency-create.component';
 import { NewConsultantComponent } from './new-consultant.component';
-import { NewContractorComponent } from './new-contractor.component';
+import { NewVendorComponent } from './new-vendor.component';
 import { RequestWarningComponent } from './request-warning.component';
 import {
     NewUserRequestStateService, NewUserRequestService, RequestStatusPipe, RequestTypePipe,
@@ -28,7 +28,7 @@ import {
         NewAgencyComponent,
         AgencyCreateComponent,
         NewConsultantComponent,
-        NewContractorComponent,
+        NewVendorComponent,
         RequestWarningComponent,
         RequestStatusPipe,
         RequestTypePipe,

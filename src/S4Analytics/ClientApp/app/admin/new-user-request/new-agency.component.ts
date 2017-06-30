@@ -8,7 +8,6 @@ import { NewUserRequestStateService } from './shared';
 
 export class NewAgencyComponent {
 
-
     constructor(public state: NewUserRequestStateService) {
     }
 
@@ -17,11 +16,15 @@ export class NewAgencyComponent {
     }
 
     ngOnInit() {
-        this.state.warningMessages = [];
+        this.state.requestorWarningMessages = [];
 
         if (this.state.selectedRequest.warnRequestorEmailCd) {
-            this.state.warningMessages.push('Requestor/Agency email domain mismatch');
+            this.state.requestorWarningMessages.push('Requestor/Agency email domain mismatch');
         }
+    }
+
+    hideRequestorWarning(): boolean {
+        return !this.state.selectedRequest.warnRequestorEmailCd;
     }
 
     approved(approved: boolean) {

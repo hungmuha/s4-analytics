@@ -1,5 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { NewUserRequestStateService, RequestActionResults } from './shared';
+import { NewUserRequestStateService, NewUserRequestService, RequestActionResults } from './shared';
 
 @Component({
     selector: 'agency-create-component',
@@ -8,8 +8,18 @@ import { NewUserRequestStateService, RequestActionResults } from './shared';
 
 export class AgencyCreateComponent {
 
-    constructor(private state: NewUserRequestStateService) {
+    constructor(private state: NewUserRequestStateService,
+        private newUserRequestService: NewUserRequestService) {
         this.state.currentRequestActionResults = new RequestActionResults(this.state.selectedRequest.requestNbr);
+    }
+
+    ngOnInit() {
+        this.newUserRequestService.doesAgencyExist(this.state.selectedRequest.agncyNm)
+            .subscribe(
+            result => {
+                this.state.currentRequestActionResults.agencyCreated = result;
+            }
+            );
     }
 
     approved(approved: boolean) {
@@ -18,5 +28,6 @@ export class AgencyCreateComponent {
             this.state.currentRequestActionResults.rejectionReason = '';
         }
     }
+
 
 }

@@ -2,26 +2,26 @@
 
 namespace S4Analytics.Models
 {
-    public class Contractor
+    public class Vendor
     {
         #region Public Properties
 
-        public string ContractorName { get; set; }
-        public int ContractorId { get; set; }
+        public string VendorName { get; set; }
+        public int VendorId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }
         public bool IsActive { get; set; }
         public string EmailDomain { get; set; }
 
         #endregion
-        public Contractor()
+        public Vendor()
         {
         }
 
-        public Contractor(string contractorNm, int contractorId)
+        public Vendor(string vendorName, int vendorId)
         {
-            ContractorName = contractorNm;
-            ContractorId = contractorId;
+            VendorName = vendorName;
+            VendorId = vendorId;
         }
     }
 }

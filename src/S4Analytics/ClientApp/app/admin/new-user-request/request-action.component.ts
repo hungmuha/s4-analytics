@@ -15,6 +15,8 @@ import {
 export class RequestActionComponent  {
 
     newUserRequestStatus = NewUserRequestStatus;
+    closeDialog = true;
+    agencyExists: boolean = false;
 
     constructor(public state: NewUserRequestStateService,
         private newUserRequestService: NewUserRequestService,
@@ -27,11 +29,6 @@ export class RequestActionComponent  {
         return this.state.selectedRequest.requestStatus === nur;
     }
 
-    // TODO:  don't need this because if hidden if Reject rb not checked
-    disableTextArea() {
-        return this.state.currentRequestActionResults.approved === undefined;
-    }
-
     hideReasonTextArea() {
         return this.state.currentRequestActionResults.approved === undefined || this.state.currentRequestActionResults.approved;
     }
@@ -39,12 +36,17 @@ export class RequestActionComponent  {
     hideReportAccessCb() {
         return (!this.state.currentRequestActionResults.approved &&
            ( (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewConsultant) ||
-            (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewContractor) ||
+            (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewVendor) ||
                 (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewAgency)))
             ||
             ((this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewConsultant) &&
-                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewContractor) &&
+                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewVendor) &&
                 (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewAgency));
+    }
+
+    disableOKButton() {
+        // disable if trying to approve the creation of an agency that has not been created, even if rest of form is valid
+        return (this.state.currentRequestActionResults.approved && !this.state.currentRequestActionResults.agencyCreated);
     }
 
     submit() {
@@ -54,7 +56,7 @@ export class RequestActionComponent  {
         else {
             this.processRejectedResult();
         }
-        this.state.currentActionForm.close();
+
         this.closeContractViewer();
     }
 
@@ -85,9 +87,12 @@ export class RequestActionComponent  {
             .subscribe(
             result => {
                 this.state.selectedRequest = result;
-                let index = this.state.newUserRequests.findIndex(newUserReq => newUserReq.requestNbr === this.state.selectedRequest.requestNbr);
+                let index = this.state.newUserRequests.findIndex(newUserReq =>
+                    newUserReq.requestNbr === this.state.selectedRequest.requestNbr);
+
                 this.state.newUserRequests[index] = this.state.selectedRequest;
                 this.state.queueFilter = QueueFilter.Pending;
+                this.state.currentActionForm.close();
             });
     }
 
@@ -99,6 +104,7 @@ export class RequestActionComponent  {
                 let index = this.state.newUserRequests.findIndex(newUserReq => newUserReq.requestNbr === this.state.selectedRequest.requestNbr);
                 this.state.newUserRequests[index] = this.state.selectedRequest;
                 this.state.queueFilter = QueueFilter.Pending;
+                this.state.currentActionForm.close();
             });
     }
 

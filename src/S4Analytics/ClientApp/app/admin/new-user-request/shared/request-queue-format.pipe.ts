@@ -8,7 +8,7 @@ export class RequestStatusPipe implements PipeTransform {
         switch (value) {
             case NewUserRequestStatus.NewUser: return 'Approve New User';
             case NewUserRequestStatus.NewConsultant: return 'Approve New Consultant';
-            case NewUserRequestStatus.NewContractor: return 'Approve New Vendor';
+            case NewUserRequestStatus.NewVendor: return 'Approve New Vendor';
             case NewUserRequestStatus.NewAgency: return 'Approve New Agency';
             case NewUserRequestStatus.CreateAgency: return 'Verify New Agency Created';
             case NewUserRequestStatus.Completed: return 'Completed';

@@ -1,4 +1,11 @@
-﻿<div class="row">
+﻿<ng-template #requestorWarningContent>
+    <div class="row warning-message no-gutters" *ngFor="let msg of state.requestorWarningMessages">
+        <b>-{{ msg }}</b>
+    </div>
+</ng-template>
+
+
+<div class="row">
     <!-- requestor info-->
     <b>Requestor Name:</b>&nbsp;
     {{state.selectedRequest.requestorFirstNm}}
@@ -7,6 +14,14 @@
 <div class="row">
     <b>Email:</b>&nbsp;
     {{state.selectedRequest.requestorEmail}}
+    <i [hidden]=hideRequestorWarning()>
+        &nbsp;
+        <i class="fa fa-exclamation-circle text-danger"
+           [ngbPopover]="requestorWarningContent"
+           triggers="mouseenter:mouseleave"
+           container="body"
+           placement="right"></i>
+    </i>
 </div>
 <div class="row">
     <b>Agency:</b>&nbsp;

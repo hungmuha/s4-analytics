@@ -94,8 +94,8 @@ namespace S4Analytics.Models
                 AND u.user_nm = :userName;
               OPEN :q4 FOR
                 SELECT
-                co.CONTRACTOR_ID as contractorId,
-                co.CONTRACTOR_NM as contractorName,
+                co.CONTRACTOR_ID as vendorId,
+                co.CONTRACTOR_NM as vendorName,
                 co.CREATED_BY as createdBy,
                 co.CREATED_DT as createdDate,
                 co.EMAIL_DOMAIN as emailDomain,
@@ -127,7 +127,7 @@ namespace S4Analytics.Models
                 {
                     profile.ViewableCounties = multi.Read<UserCounty>().ToList();
                     profile.Agency = multi.ReadFirstOrDefault<Agency>();
-                    profile.ContractorCompany = multi.ReadFirstOrDefault<Contractor>();
+                    profile.VendorCompany = multi.ReadFirstOrDefault<Vendor>();
                     profile.Agreements = multi.Read<UserAgreement>().ToList();
                 }
             }
@@ -154,7 +154,7 @@ namespace S4Analytics.Models
                 VALUES (:appNm, :userName, :firstName, :lastName, :suffixName,
                 :createdBy, :forcePasswordChange, :timeLimitedAccount,
                 :accountStartDate, :accountExpirationDate, :agencyId, :emailAddress,
-                :createdDate, :crashReportAccess, :contractorId)";
+                :createdDate, :crashReportAccess, :vendorId)";
 
             await _connection.ExecuteAsync(insertTxt,
                 new
@@ -170,7 +170,7 @@ namespace S4Analytics.Models
                     user.Profile.AccountStartDate,
                     user.Profile.AccountExpirationDate,
                     agencyId = user.Profile.Agency == null ? null : (int?)user.Profile.Agency.AgencyId,
-                    contractorId = user.Profile.ContractorCompany == null ? null : (int?)user.Profile.ContractorCompany.ContractorId,
+                    vendorId = user.Profile.VendorCompany == null ? null : (int?)user.Profile.VendorCompany.VendorId,
                     emailAddress = user.Profile.EmailAddress,
                     user.Profile.CrashReportAccess,
                     appNm = _applicationName
@@ -211,7 +211,7 @@ namespace S4Analytics.Models
                     ACCOUNT_START_DT = :accountStartDate,
                     ACCOUNT_EXPIRATION_DT = :accountExpirationDate,
                     AGNCY_ID = :agencyId,
-                    CONTRACTOR_ID = :contractorId,
+                    CONTRACTOR_ID = :vendorId,
                     EMAIL = :emailAddress,
                     CAN_VIEW = :crashReportAccess,
                     MODIFIED_BY = :modifiedBy,
@@ -228,7 +228,7 @@ namespace S4Analytics.Models
                 user.Profile.AccountStartDate,
                 user.Profile.AccountExpirationDate,
                 agencyId = user.Profile.Agency == null ? null : (int?)user.Profile.Agency.AgencyId,
-                contractorId = user.Profile.ContractorCompany == null ? null : (int?)user.Profile.ContractorCompany.ContractorId,
+                vendorId = user.Profile.VendorCompany == null ? null : (int?)user.Profile.VendorCompany.VendorId,
                 user.Profile.EmailAddress,
                 user.Profile.CrashReportAccess,
                 modifiedBy = "TBD",

@@ -199,7 +199,7 @@ namespace S4Analytics.Tests.Properties
         }
 
         [Fact]
-        public async void SetContractorCompany()
+        public async void SetVendorCompany()
         {
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
@@ -208,17 +208,17 @@ namespace S4Analytics.Tests.Properties
                 LastName = "Dewberry",
                 EmailAddress = $"{userName}@ufl.edu",
                 Agency = new Agency() { AgencyId = 1150200 }, // UF PD
-                ContractorCompany = new Contractor { ContractorId = 69 } // UF
+                VendorCompany = new Vendor { VendorId = 69 } // UF
             };
             await CreateBasicUser(userName, "secret", profile);
 
             var user = await _userManager.FindByNameAsync(userName);
-            Assert.NotNull(user.Profile.ContractorCompany);
-            Assert.Equal("University of Florida", user.Profile.ContractorCompany.ContractorName);
+            Assert.NotNull(user.Profile.VendorCompany);
+            Assert.Equal("University of Florida", user.Profile.VendorCompany.VendorName);
         }
 
         [Fact]
-        public async void UpdateContractorCompany()
+        public async void UpdateVendorCompany()
         {
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
@@ -227,20 +227,20 @@ namespace S4Analytics.Tests.Properties
                 LastName = "Dewberry",
                 EmailAddress = $"{userName}@ufl.edu",
                 Agency = new Agency() { AgencyId = 1150200 }, // UF PD
-                ContractorCompany = new Contractor { ContractorId = 69 } // UF
+                VendorCompany = new Vendor { VendorId = 69 } // UF
             };
             await CreateBasicUser(userName, "secret", profile);
 
             var user = await _userManager.FindByNameAsync(userName);
-            user.Profile.ContractorCompany = new Contractor { ContractorId = 73 }; // USF
+            user.Profile.VendorCompany = new Vendor { VendorId = 73 }; // USF
             await _userManager.UpdateAsync(user);
 
             user = await _userManager.FindByNameAsync(userName);
-            Assert.Equal("University of South Florida", user.Profile.ContractorCompany.ContractorName);
+            Assert.Equal("University of South Florida", user.Profile.VendorCompany.VendorName);
         }
 
         [Fact]
-        public async void UnsetContractorCompany()
+        public async void UnsetVendorCompany()
         {
             var userName = GenerateRandomUserName();
             var profile = new S4UserProfile()
@@ -249,16 +249,16 @@ namespace S4Analytics.Tests.Properties
                 LastName = "Dewberry",
                 EmailAddress = $"{userName}@ufl.edu",
                 Agency = new Agency() { AgencyId = 1150200 }, // UF PD
-                ContractorCompany = new Contractor { ContractorId = 69 } // UF
+                VendorCompany = new Vendor { VendorId = 69 } // UF
             };
             await CreateBasicUser(userName, "secret", profile);
 
             var user = await _userManager.FindByNameAsync(userName);
-            user.Profile.ContractorCompany = null;
+            user.Profile.VendorCompany = null;
             await _userManager.UpdateAsync(user);
 
             user = await _userManager.FindByNameAsync(userName);
-            Assert.Null(user.Profile.ContractorCompany);
+            Assert.Null(user.Profile.VendorCompany);
         }
 
         [Fact]

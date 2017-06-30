@@ -72,4 +72,23 @@ export class RequestQueueComponent {
         return (this.filteredRequests === undefined) ?  0 : this.filteredRequests.length;
     }
 
+    caretClass(columnName: string): string {
+        if (this.state.sortColumnName === columnName && this.state.sortAsc) {
+            return 'fa fa-caret-up';
+        }
+        else if ((this.state.sortColumnName === columnName && !this.state.sortAsc)) {
+            return 'fa fa-caret-down';
+        }
+
+        return '';
+     }
+
+
+    hideCaretDown(columnName: string) {
+        return !(this.state.sortColumnName === columnName && !this.state.sortAsc);
+    }
+
+    hideCaretUp(columnName: string) {
+        return !(this.state.sortColumnName === columnName && this.state.sortAsc);
+    }
 }
