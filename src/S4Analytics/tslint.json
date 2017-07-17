@@ -41,7 +41,7 @@ For a complete list of rules, visit
     "no-typeof-undefined": true,
     "no-unnecessary-bind": true,
     "no-unused-expression": true,
-    "no-unused-new":  true,
+    "no-unused-variable": true,
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "no-var-self": true,

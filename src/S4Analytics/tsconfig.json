@@ -11,8 +11,8 @@ http://www.typescriptlang.org/docs/handbook/tsconfig-json.html.
     "target": "es5",
     "sourceMap": true,
     "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false, /* rely on tslint instead */
+    "noUnusedParameters": false, /* rely on tslint instead */
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipDefaultLibCheck": true,
