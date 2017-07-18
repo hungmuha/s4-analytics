@@ -36,7 +36,7 @@ build:dev:
   before_script:
   - cd src\S4Analytics
   - call stylelint "ClientApp/**/*.css"
-  - call tslint -c tslint.ci.json "ClientApp/**/*.ts"
+  - call tslint --project tsconfig.json -c tslint.ci.json "ClientApp/**/*.ts"
   - cd ..\..
   <<: *build_script
 
