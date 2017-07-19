@@ -4,14 +4,15 @@ import { Observable } from 'rxjs/Observable';
 import { NewUserRequest } from './new-user-request';
 import { NewUserRequestStatus } from './new-user-request-enum';
 import { RequestActionResults } from './request-action-results';
-import { OptionsService, Options } from './.././../../shared';
+import { OptionsService, Options, IdentityService } from './.././../../shared';
 
 class RequestApproval {
     constructor(
         public requestNumber: number,
         public selectedRequest: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
-        public newStatus: NewUserRequestStatus) { }
+        public newStatus: NewUserRequestStatus,
+        public adminUserName: string) { }
 }
 
 class NewAgencyRequestApproval extends RequestApproval {
@@ -21,8 +22,9 @@ class NewAgencyRequestApproval extends RequestApproval {
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
         public before70Days: boolean,
-        public lea: boolean) {
-        super(requestNumber, selectedRequest, currentStatus, newStatus);
+        public lea: boolean,
+        public adminUserName: string) {
+        super(requestNumber, selectedRequest, currentStatus, newStatus, adminUserName);
         }
 }
 
@@ -32,8 +34,9 @@ class NewConsultantRequestApproval extends RequestApproval {
         public selectedRequest: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
-        public before70Days: boolean) {
-        super(requestNumber, selectedRequest, currentStatus, newStatus);
+        public before70Days: boolean,
+        public adminUserName: string) {
+        super(requestNumber, selectedRequest, currentStatus, newStatus, adminUserName);
         }
 }
 
@@ -42,14 +45,15 @@ class RequestRejection {
         public requestNumber: number,
         public selectedRequest: NewUserRequest,
         public rejectionReason: string,
-        public newStatus: NewUserRequestStatus) { }
+        public newStatus: NewUserRequestStatus,
+        public adminUserName: string) { }
 }
 
 @Injectable()
 export class NewUserRequestService {
     private options: Options;
     constructor(private http: Http,
-        private optionsService: OptionsService) {
+        private optionsService: OptionsService, private identityService: IdentityService) {
 
         this.optionsService.getOptions()
             .first()
@@ -74,6 +78,8 @@ export class NewUserRequestService {
     approve(selectedRequest: NewUserRequest,
         requestActionResults: RequestActionResults): Observable<NewUserRequest> {
 
+        let adminUserName = this.identityService.currentUser.userName;
+
         let currentStatus = selectedRequest.requestStatus;
         let reqWrapper: RequestApproval;
 
@@ -82,7 +88,8 @@ export class NewUserRequestService {
                 reqWrapper = new RequestApproval(requestActionResults.requestNumber,
                     selectedRequest,
                     NewUserRequestStatus.NewVendor,
-                    NewUserRequestStatus.NewConsultant);
+                    NewUserRequestStatus.NewConsultant,
+                    adminUserName);
                 break;
             case NewUserRequestStatus.NewAgency:
 
@@ -92,7 +99,8 @@ export class NewUserRequestService {
                     NewUserRequestStatus.NewAgency,
                     NewUserRequestStatus.CreateAgency,
                     requestActionResults.accessBefore70Days,
-                    requestActionResults.lea
+                    requestActionResults.lea,
+                    adminUserName
                 );
 
                 break;
@@ -101,7 +109,8 @@ export class NewUserRequestService {
                     requestActionResults.requestNumber,
                     selectedRequest,
                     NewUserRequestStatus.CreateAgency,
-                    NewUserRequestStatus.NewUser);
+                    NewUserRequestStatus.NewUser,
+                    adminUserName);
                 break;
             case NewUserRequestStatus.NewConsultant:
 
@@ -110,7 +119,8 @@ export class NewUserRequestService {
                     selectedRequest,
                     NewUserRequestStatus.NewConsultant,
                     NewUserRequestStatus.Completed,
-                    requestActionResults.accessBefore70Days
+                    requestActionResults.accessBefore70Days,
+                    adminUserName
                 );
 
                 break;
@@ -119,7 +129,8 @@ export class NewUserRequestService {
                     requestActionResults.requestNumber,
                     selectedRequest,
                     currentStatus.valueOf(),
-                    NewUserRequestStatus.Completed);
+                    NewUserRequestStatus.Completed,
+                    adminUserName);
                 break;
         }
 
@@ -135,11 +146,14 @@ export class NewUserRequestService {
     reject(requestActionResults: RequestActionResults, selectedRequest: NewUserRequest): Observable<NewUserRequest> {
         let reqWrapper: RequestRejection;
 
+        let adminUserName = this.identityService.currentUser.userName;
+
         reqWrapper = new RequestRejection(
             requestActionResults.requestNumber,
             selectedRequest,
             requestActionResults.rejectionReason,
-            NewUserRequestStatus.Rejected);
+            NewUserRequestStatus.Rejected,
+            adminUserName);
 
         let url = `api/admin/new-user-request/${requestActionResults.requestNumber}/reject`;
 
