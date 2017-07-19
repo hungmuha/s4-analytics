@@ -101,6 +101,7 @@ namespace S4Analytics.Models
 
             var user = new S4IdentityUser<S4UserProfile>(userName);
 
+            request.CreatedBy = approval.AdminUserName;
             user.Profile = CreateS4UserProfile(request);
 
             var passwordText = GenerateRandomPassword(8, 0);
@@ -136,7 +137,7 @@ namespace S4Analytics.Models
             request.RequestStatus = newStatus;
             request.UserId = userName;
             request.UserCreatedDt = DateTime.Now;
-            request.CreatedBy = "tbd"; //TODO
+
             UpdateApprovedNewUserRequest(request);
             return request;
         }
@@ -166,6 +167,7 @@ namespace S4Analytics.Models
 
             var user = new S4IdentityUser<S4UserProfile>(userName);
 
+            request.CreatedBy = approval.AdminUserName;
             user.Profile = CreateS4UserProfile(request);
             user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
@@ -205,7 +207,6 @@ namespace S4Analytics.Models
             request.AccessBefore70Days = before70days;
             request.UserId = userName;
             request.UserCreatedDt = DateTime.Now;
-            request.CreatedBy = "tbd"; //TODO
             UpdateApprovedNewUserRequest(request);
             return request;
         }
@@ -261,7 +262,7 @@ namespace S4Analytics.Models
             request.RequestStatus = newStatus;
             request.AccessBefore70Days = before70days;
             request.UserCreatedDt = DateTime.Now;
-            request.CreatedBy = "tbd"; //TODO
+            request.CreatedBy = approval.AdminUserName;
             UpdateApprovedNewUserRequest(request);
             return request;
         }
@@ -314,6 +315,7 @@ namespace S4Analytics.Models
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
+            request.CreatedBy = approval.AdminUserName;
 
             //Create new Vendor in CONTRACTOR
             var vendor = CreateNewVendor(request);
@@ -495,7 +497,7 @@ namespace S4Analytics.Models
                     return null;
             }
 
-            profile.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
+            profile.CreatedBy = request.CreatedBy;
             profile.CreatedDate = DateTime.Now;
 
             return profile;
@@ -594,7 +596,7 @@ namespace S4Analytics.Models
         {
             var vendor = new Vendor(request.VendorName, GetNextVendorId())
             {
-                CreatedBy = "tbd", //TODO
+                CreatedBy = request.CreatedBy,
                 CreatedDate = DateTime.Now,
                 EmailDomain = request.VendorEmailDomain,
                 IsActive = true

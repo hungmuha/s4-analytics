@@ -14,8 +14,12 @@ export class IdentityService {
 
     constructor(private http: Http, private router: Router) { }
 
-    get currentUser(): S4IdentityUser | undefined {
-        return this._currentUser;
+    get currentUser(): S4IdentityUser  {
+        if (this._currentUser) { return this._currentUser; }
+
+        // throw error if _currentUser is undefined
+        let error = new Error('S4IdentityUser.CurrentUser is undefined');
+        throw (error);
     }
 
     logIn(userName: string, password: string): Observable<boolean> {
