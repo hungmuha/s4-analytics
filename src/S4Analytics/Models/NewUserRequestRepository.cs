@@ -162,7 +162,7 @@ namespace S4Analytics.Models
                 return await ApproveExistingConsultant(id, approval);
             }
 
-            var preferredUserName = (request.RequestorFirstNm[0] + request.RequestorLastNm).ToLower();
+            var preferredUserName = (request.ConsultantFirstNm[0] + request.ConsultantLastNm).ToLower();
             var userName = await GenerateUserName(preferredUserName);
 
             var user = new S4IdentityUser<S4UserProfile>(userName);
