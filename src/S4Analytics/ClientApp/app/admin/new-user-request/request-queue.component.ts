@@ -6,6 +6,7 @@ import {
 } from './shared';
 import { IdentityService } from '././../../shared';
 
+
 @Component({
     selector: 'request-queue',
     templateUrl: './request-queue.component.html'
