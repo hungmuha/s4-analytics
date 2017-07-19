@@ -21,6 +21,7 @@ namespace S4Analytics.Controllers
         public NewUserRequestStatus CurrentStatus { get; set; }
         public bool Before70Days { get; set; }
         public bool Lea { get; set; }
+        public string AdminUserName { get; set; }
     }
 
     public class RequestRejection
@@ -29,6 +30,7 @@ namespace S4Analytics.Controllers
         public NewUserRequest SelectedRequest{ get; set;}
         public string RejectionReason { get; set; }
         public NewUserRequestStatus NewStatus { get; set; }
+        public string AdminUserName { get; set; }
     }
 
     [Route("api/[controller]")]
@@ -81,8 +83,6 @@ namespace S4Analytics.Controllers
         public async Task<IActionResult> ApproveOther(int id, [FromBody]RequestApproval approval)
         {
             var currentStatus = approval.CurrentStatus;
-            var newStatus = approval.NewStatus;
-            var selectedRequest = approval.SelectedRequest;
 
             switch(currentStatus)
             {
