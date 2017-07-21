@@ -11,31 +11,39 @@
         <hr />
         <div class="row font-weight-bold justify-content-center">
             <div class="col-6">
-                <input type="radio" class="form-check-input"
-                       id="approve"
-                       [(ngModel)]="state.currentRequestActionResults.approved"
-                       name="approved"
-                       (change)="approved(true)"
-                       required
-                       [value]="true" />
-                <label for="approve">&nbsp;Approve {{state.selectedRequest.requestStatus | approveRejectType}}</label>
+                <label for="approve">
+                    <input type="radio" class="form-check-input"
+                           id="approve"
+                           [(ngModel)]="state.currentRequestActionResults.approved"
+                           name="approved"
+                           (change)="approved(true)"
+                           required
+                           [value]="true" />
+                    &nbsp;Approve {{state.selectedRequest.requestStatus | approveRejectType}}
+                </label>
             </div>
             <div class="col-5">
-                <input type="radio" class="form-check-input"
-                       id="reject"
-                       [(ngModel)]="state.currentRequestActionResults.approved"
-                       name="approved"
-                       (change)="approved(false)"
-                       required
-                       [value]="false" />
-                <label for="reject">&nbsp;Reject {{state.selectedRequest.requestStatus | approveRejectType}}</label>
+                <label for="reject">
+                    <input type="radio" class="form-check-input"
+                           id="reject"
+                           [(ngModel)]="state.currentRequestActionResults.approved"
+                           name="approved"
+                           (change)="approved(false)"
+                           required
+                           [value]="false" />
+                    &nbsp;Reject {{state.selectedRequest.requestStatus | approveRejectType}}
+                </label>
             </div>
         </div>
         <div [hidden]="hideReportAccessCb()">
-            <input type="checkbox" name="reportAcessCb"
-                   [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
-                   [readonly]="state.currentRequestActionResults.approved"
-                   [value]="true" />&nbsp; Access Before 70 days
+            <label for="rptAccess">
+                <input type="checkbox" name="reportAcessCb"
+                       id="rptAccess"
+                       [(ngModel)]="state.currentRequestActionResults.accessBefore70Days"
+                       [readonly]="state.currentRequestActionResults.approved"
+                       [value]="true" />
+                &nbsp; Access Before 70 days
+            </label>
         </div>
         <div class="row" [hidden]="hideReasonTextArea()">
             <label class="font-weight-bold">Reason for rejection (to be sent to person making request):</label>
