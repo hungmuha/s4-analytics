@@ -102,7 +102,7 @@ namespace S4Analytics.Models
 
         public static bool IsUserManager(this S4IdentityUser<S4UserProfile> user)
         {
-            return user.Roles.Any(role => role.RoleName == RoleNames.UserManager.ToLowerInvariant());
+            return user.Roles.Any(role => role.RoleName == RoleNames.AgencyAdmin.ToLowerInvariant());
         }
 
         public static bool IsGlobalAdmin(this S4IdentityUser<S4UserProfile> user)
