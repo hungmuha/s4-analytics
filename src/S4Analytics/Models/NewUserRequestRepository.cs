@@ -50,19 +50,34 @@ namespace S4Analytics.Models
         /// TODO: limit only to those use is authorized to see
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<NewUserRequest> GetAll()
+        public async Task<IEnumerable<NewUserRequest>> GetAll(string adminUserName)
         {
+            var adminUser = await _userManager.FindByNameAsync(adminUserName);
+            var adminAgency = adminUser.Profile.Agency;
+
+            // Check against agency id
+            var adminUserAgencyIdClause = string.Format($"u.agncy_id = {adminAgency.AgencyId.ToString()}");
+
+            // Check against parent agency id if present
+            var parentAgencyIdClause = adminAgency.ParentAgencyId != 0 ? string.Format($" OR u.agncy_id = {adminAgency.ParentAgencyId}") : "";
+
+            // Create where clause if user is not an global admin
+            var whereClause = adminUser.IsGlobalAdmin() ? ""
+                : string.Format($" WHERE {adminUserAgencyIdClause} {parentAgencyIdClause}");
+
             var selectTxt = GetRequestSelectQuery();
             var cmdTxt = $@"{selectTxt}
                             FROM new_user_req_new u
                             LEFT JOIN s4_agncy a
                             ON u.agncy_id = a.agncy_id
                             LEFT JOIN contractor c
-                            ON c.contractor_id = u.contractor_id";
+                            ON c.contractor_id = u.contractor_id
+                            {whereClause}";
 
             var results = _conn.Query<NewUserRequest>(cmdTxt);
             return results;
         }
+
 
         /// <summary>
         /// Return record from NEW_USER_REQ where REQ_NBR = reqNbr

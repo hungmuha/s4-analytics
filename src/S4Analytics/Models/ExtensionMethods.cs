@@ -102,27 +102,27 @@ namespace S4Analytics.Models
 
         public static bool IsAgencyAdmin(this S4IdentityUser<S4UserProfile> user)
         {
-            return user.Roles.Any(role => role.RoleName == RoleNames.AgencyAdmin);
+            return user.Roles.Any(role => role.RoleName == RoleNames.AgencyAdmin.ToLowerInvariant());
         }
 
         public static bool IsGlobalAdmin(this S4IdentityUser<S4UserProfile> user)
         {
-            return user.Roles.Any(role => role.RoleName == RoleNames.GlobalAdmin);
+            return user.Roles.Any(role => role.RoleName == RoleNames.GlobalAdmin.ToLowerInvariant());
         }
 
         public static bool IsEditor(this S4IdentityUser<S4UserProfile> user)
         {
-            return user.Roles.Any(role => role.RoleName == RoleNames.Editor);
+            return user.Roles.Any(role => role.RoleName == RoleNames.Editor.ToLowerInvariant());
         }
 
         public static bool IsPbcatEditor(this S4IdentityUser<S4UserProfile> user)
         {
-            return user.Roles.Any(role => role.RoleName == RoleNames.PbcatEditor);
+            return user.Roles.Any(role => role.RoleName == RoleNames.PbcatEditor.ToLowerInvariant());
         }
 
         public static bool IsGuest(this S4IdentityUser<S4UserProfile> user)
         {
-            return user.Roles.Any(role => role.RoleName == RoleNames.Guest);
+            return user.Roles.Any(role => role.RoleName == RoleNames.Guest.ToLowerInvariant());
         }
     }
 }
