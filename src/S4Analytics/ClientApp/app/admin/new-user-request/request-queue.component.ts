@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import {
    NewUserRequestStateService, NewUserRequestService, QueueColumn, QueueFilter, NewUserRequest, NewUserRequestStatus
 } from './shared';
+import { IdentityService } from '././../../shared';
 
 @Component({
     selector: 'request-queue',
@@ -36,12 +37,13 @@ export class RequestQueueComponent {
     constructor(
         private state: NewUserRequestStateService,
         private newUserRequestService: NewUserRequestService,
-        private modalService: NgbModal
+        private modalService: NgbModal,
+        private identityService: IdentityService
        ) {
     }
 
     ngOnInit() {
-        this.newUserRequestService.getNewUserRequests().subscribe(result => this.state.newUserRequests = result);
+        this.newUserRequestService.getNewUserRequests(this.identityService.currentUser.userName).subscribe(result => this.state.newUserRequests = result);
     }
 
     sortColumn(columnName: string): void {

@@ -7,7 +7,7 @@ namespace S4Analytics.Models
 
     public interface INewUserRequestRepository
     {
-        IEnumerable<NewUserRequest> GetAll();
+        Task<IEnumerable<NewUserRequest>> GetAll(string adminUserName);
         NewUserRequest Find(int reqNbr);
         Task<NewUserRequest> ApproveNewUser(int id, RequestApproval approval);
         Task<NewUserRequest> ApproveNewConsultant(int id, RequestApproval approval);

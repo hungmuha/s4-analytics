@@ -48,10 +48,10 @@ namespace S4Analytics.Controllers
         /// Return all records from NEW_USER_REQ
         /// </summary>
         /// <returns></returns>
-        [HttpGet("new-user-request")]
-        public IActionResult GetAllNewUserRequests()
+        [HttpGet("new-user-request/{adminUserName}")]
+        public async Task<IActionResult> GetAllNewUserRequests(string adminUserName)
         {
-            var info = _newUserRequestRepo.GetAll();
+            var info = await _newUserRequestRepo.GetAll(adminUserName);
             return new ObjectResult(info);
         }
 

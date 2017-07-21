@@ -60,8 +60,8 @@ export class NewUserRequestService {
             .subscribe(options => this.options = options);
     }
 
-    getNewUserRequests(): Observable<NewUserRequest[]> {
-        let url = 'api/admin/new-user-request';
+    getNewUserRequests(adminUserName: string): Observable<NewUserRequest[]> {
+        let url = `api/admin/new-user-request/${adminUserName}`;
         return this.http
             .get(url)
             .map((r: Response) => r.json() as NewUserRequest[]);
