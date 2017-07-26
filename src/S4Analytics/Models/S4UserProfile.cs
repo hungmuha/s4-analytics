@@ -15,7 +15,7 @@ namespace S4Analytics.Models
     public class RoleNames
     {
         public const string GlobalAdmin = "Global Admin";
-        public const string AgencyAdmin = "Agency Admin";
+        public const string UserManager = "User Manager";
         public const string HSMVAdmin = "HSMV Admin";
         public const string FDOTAdmin = "FDOT Admin";
         public const string Editor = "Editor";
