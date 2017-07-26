@@ -2,13 +2,71 @@
     --mainColor: white;
 }
 
+@custom-media --xs (width < 576px);
+@custom-media --sm (width >= 576px);
+@custom-media --md (width >= 768px);
+@custom-media --lg (width >= 992px);
+@custom-media --xl (width >= 1200px);
+
 body {
     background-color: var(--mainColor);
 }
 
 .container-fluid {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0;
+}
+
+/* see https://stackoverflow.com/questions/29660034/nesting-a-container-class-inside-a-container-fluid-class-in-bootstrap-3 */
+.container-fluid .container {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.border {
+    border: solid 1px red;
+}
+
+@media (--xs) {
+    #eventMap {
+        height: 200px;
+        width: 200px;
+    }
+}
+
+@media (--sm) {
+    #eventMap {
+        height: 200px;
+        width: 200px;
+    }
+}
+
+@media (--md) {
+    #eventMap {
+        height: 300px;
+        width: 300px;
+    }
+}
+
+@media (--lg) {
+    #eventMap {
+        height: 500px;
+        width: 500px;
+    }
+}
+
+@media (--xl) {
+    #eventMap {
+        height: 500px;
+        width: 800px;
+    }
+}
+
+.container-fluid {
     margin-top: 1rem;
     margin-bottom: 1rem;
+    bottom: 0;
 }
 
 .form-login {

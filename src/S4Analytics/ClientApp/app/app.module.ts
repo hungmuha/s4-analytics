@@ -15,6 +15,7 @@ import { IndexComponent } from './index.component';
 import { AnalyticsComponent } from './analytics.component';
 import { LoginComponent } from './login.component';
 import { Html5ConduitComponent } from './html5-conduit.component';
+import { AppStateService } from './app-state.service';
 import {
     IdentityService,
     KeepSilverlightAliveService,
@@ -52,7 +53,8 @@ import {
         AnyAdminGuard,
         GlobalAdminGuard,
         KeepSilverlightAliveService,
-        Html5ConduitResolve
+        Html5ConduitResolve,
+        AppStateService
     ],
     bootstrap: [AppComponent]
 })

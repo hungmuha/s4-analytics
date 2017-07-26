@@ -20,10 +20,10 @@ export const routes: Routes = [
                 component: AnalyticsComponent,
                 canActivate: [AuthGuard],
                 children: [
-                    // { path: '', redirectTo: 'event', pathMatch: 'full' },
+                    { path: '', redirectTo: 'event', pathMatch: 'full' },
                     { path: 'event', component: EventAnalysisComponent },
                     { path: 'network', component: NetworkAnalysisComponent },
-                    { path: 'reporting', component: ReportingComponent },
+                    { path: 'report', component: ReportingComponent },
                     { path: 'trend', component: TrendAnalysisComponent }
                 ]
             },

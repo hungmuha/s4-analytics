@@ -5,7 +5,7 @@ import { OptionsService } from '../shared';
 
 @Component({
     selector: 'event-map',
-    template: `<div id={{mapId}}></div>`
+    template: `<div id="{{mapId}}"></div>`
 })
 export class EventMapComponent implements OnInit {
     @Input() mapId: string;
@@ -18,6 +18,10 @@ export class EventMapComponent implements OnInit {
         private element: ElementRef,
         private crashService: CrashService,
         private optionService: OptionsService) { }
+
+    updateSize() {
+        this.olMap.updateSize();
+    }
 
     ngOnInit() {
 
