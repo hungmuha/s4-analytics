@@ -10,7 +10,7 @@ namespace S4Analytics.Models
         Task<IEnumerable<NewUserRequest>> GetAll(string adminUserName);
         NewUserRequest Find(int reqNbr);
         Task<NewUserRequest> ApproveNewUser(int id, RequestApproval approval);
-        Task<NewUserRequest> ApproveNewConsultant(int id, RequestApproval approval);
+        Task<NewUserRequest> ApproveConsultant(int id, RequestApproval approval);
         NewUserRequest ApproveAgency(int id, RequestApproval approval);
         NewUserRequest ApproveNewVendor(int id, RequestApproval approval);
         Task<NewUserRequest> ApproveCreatedNewAgency(int id, RequestApproval approval);

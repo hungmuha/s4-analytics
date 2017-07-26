@@ -100,7 +100,7 @@ namespace S4Analytics.Controllers
         [HttpPatch("new-user-request/{id}/approve/consultant")]
         public async Task<IActionResult> ApproveConsultant(int id, [FromBody]RequestApproval approval)
         {
-            return new ObjectResult(await _newUserRequestRepo.ApproveNewConsultant(id, approval));
+            return new ObjectResult(await _newUserRequestRepo.ApproveConsultant(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/approve/agency")]
