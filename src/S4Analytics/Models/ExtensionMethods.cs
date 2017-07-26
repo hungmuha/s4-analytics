@@ -100,9 +100,9 @@ namespace S4Analytics.Models
 
         // there is probably a better place for the methods below
 
-        public static bool IsAgencyAdmin(this S4IdentityUser<S4UserProfile> user)
+        public static bool IsUserManager(this S4IdentityUser<S4UserProfile> user)
         {
-            return user.Roles.Any(role => role.RoleName == RoleNames.AgencyAdmin.ToLowerInvariant());
+            return user.Roles.Any(role => role.RoleName == RoleNames.UserManager.ToLowerInvariant());
         }
 
         public static bool IsGlobalAdmin(this S4IdentityUser<S4UserProfile> user)

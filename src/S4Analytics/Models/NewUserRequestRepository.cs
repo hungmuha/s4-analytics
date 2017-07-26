@@ -47,7 +47,6 @@ namespace S4Analytics.Models
 
         /// <summary>
         /// Return all records from NEW_USER_REQ
-        /// TODO: limit only to those use is authorized to see
         /// </summary>
         /// <returns></returns>
         public async Task<IEnumerable<NewUserRequest>> GetAll(string adminUserName)
@@ -125,9 +124,8 @@ namespace S4Analytics.Models
             await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
             // TODO: need to be more generic here -hard coded for testing
-            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
             var roles = request.UserManagerCd
-                ? new List<string> { "User", "Agency Admin" }
+                ? new List<string> { "User", "User Manager" }
                 : new List<string> { "User" };
             await _userManager.AddToRolesAsync(user, roles);
 
@@ -165,13 +163,12 @@ namespace S4Analytics.Models
         /// <param name="newStatus"></param>
         /// <param name="selectedRequest"></param>
         /// <returns></returns>
-        public async Task<NewUserRequest> ApproveNewConsultant(int id, RequestApproval approval)
+        public async Task<NewUserRequest> ApproveConsultant(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
             var before70days = approval.Before70Days;
 
-            // TODO: rename this method (ApproveNewConsultant is misleading because it also handles this case)
             if (request.UserId != null)
             {
                 return await ApproveExistingConsultant(id, approval);
@@ -192,9 +189,8 @@ namespace S4Analytics.Models
             await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
             // TODO: need to be more generic here -hard coded for testing
-            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
             var roles = request.UserManagerCd
-                ? new List<string> { "User", "Agency Admin" }
+                ? new List<string> { "User", "User Manager" }
                 : new List<string> { "User" };
             await _userManager.AddToRolesAsync(user, roles);
 
@@ -247,10 +243,8 @@ namespace S4Analytics.Models
 
             await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
-            // TODO: need to be more generic here -hard coded for testing
-            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
             var roles = request.UserManagerCd
-                ? new List<string> { "User", "Agency Admin" }
+                ? new List<string> { "User", "User Manager" }
                 : new List<string> { "User" };
             await _userManager.AddToRolesAsync(user, roles);
 
@@ -687,12 +681,12 @@ namespace S4Analytics.Models
 
         }
 
-        private List<string> GetAgencyAdminEmails(int agencyId)
+        private List<string> GetUserManagerEmails(int agencyId)
         {
             var emails = new List<string>();
 
             var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
-                                JOIN USER_ROLE R ON R.ROLE_NM = 'Agency Admin'
+                                JOIN USER_ROLE R ON R.ROLE_NM = 'User Manager'
                                 AND R.USER_NM = U.USER_NM
                                 WHERE U.AGNCY_ID = :agencyId";
 
@@ -766,7 +760,9 @@ namespace S4Analytics.Models
                 //}
             }
 
+#if DEBUG
             msg.To.Add(new MailAddress("mfowler@ufl.edu"));
+#endif
 
             msg.Subject = subject;
             msg.IsBodyHtml = true;
