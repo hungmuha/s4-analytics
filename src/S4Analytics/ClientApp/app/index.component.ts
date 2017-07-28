@@ -7,7 +7,13 @@ import { IdentityService } from './shared';
 })
 export class IndexComponent {
 
+    isCollapsed: boolean = true;
+
     constructor(private identity: IdentityService) { }
+
+    toggleCollapsed(): void {
+        this.isCollapsed = !this.isCollapsed;
+    }
 
     logOut(): void {
         this.identity.logOut().subscribe();
