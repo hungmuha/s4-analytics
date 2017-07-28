@@ -1,45 +1,42 @@
-﻿<div class="container-fluid">
-    <!-- S4 HEADER -->
-    <div class="row">
-        <div class="col-12">
-            <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-                <div class="text-nowrap">
-                    <a class="fa fa-bars navbar-brand" href="javascript:void(0)" (click)="toggleMenu()"></a>
-                    <a class="navbar-brand" href="javascript:void(0)">Signal Four Analytics</a>
-                </div>
-                <div ngbDropdown class="dropdown mx-auto">
-                    <button class="btn btn-secondary dropdown-toggle" id="modeDropdownMenu" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
-                        Event Analysis
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </div>
-                <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="javascript:void(0)">Log in</a>
-                        </li>
-                        <li ngbDropdown class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="navbarDropdownMenuLink" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
-                                username
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="javascript:void(0)">Change password</a>
-                                <a class="dropdown-item" (click)="logOut()" href="javascript:void(0)">Log out</a>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+﻿<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <a class="navbar-brand" href="javascript:void(0)">Signal Four Analytics</a>
+
+    <div ngbDropdown class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" id="modeDropdownMenu" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
+            Event Analysis
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
         </div>
     </div>
-    <!-- S4 BODY -->
-    <div class="row">
-        <div class="col-12">
-            <router-outlet></router-outlet>
-        </div>
+
+    <div class="text-nowrap">
+        <!-- temporary responsive cues -->
+        <h2 class="hidden-lg-down">xl <span class="fa fa-rocket"></span></h2>
+        <h2 class="hidden-md-down hidden-xl-up">lg <span class="fa fa-plane"></span></h2>
+        <h2 class="hidden-sm-down hidden-lg-up">md <span class="fa fa-train"></span></h2>
+        <h2 class="hidden-xs-down hidden-md-up">sm <span class="fa fa-bus"></span></h2>
+        <h2 class="hidden-sm-up">xs <span class="fa fa-taxi"></span></h2>
     </div>
-</div>
+
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0)">Log in</a>
+            </li>
+            <li ngbDropdown class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="navbarDropdownMenuLink" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
+                    username
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="javascript:void(0)">Change password</a>
+                    <a class="dropdown-item" (click)="logOut()" href="javascript:void(0)">Log out</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<router-outlet></router-outlet>

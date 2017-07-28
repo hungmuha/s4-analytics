@@ -1,6 +1,5 @@
 ﻿import { Component } from '@angular/core';
 import { IdentityService } from './shared';
-import { AppStateService } from './app-state.service';
 
 @Component({
     selector: 'index',
@@ -8,15 +7,9 @@ import { AppStateService } from './app-state.service';
 })
 export class IndexComponent {
 
-    constructor(
-        private identity: IdentityService,
-        private state: AppStateService) { }
+    constructor(private identity: IdentityService) { }
 
     logOut(): void {
         this.identity.logOut().subscribe();
-    }
-
-    toggleMenu(): void {
-        this.state.isMenuVisible = !this.state.isMenuVisible;
     }
 }
