@@ -11,18 +11,11 @@ import { NetworkAnalysisModule } from './network-analysis';
 import { ReportingModule } from './reporting';
 import { TrendAnalysisModule } from './trend-analysis';
 import { AppComponent } from './app.component';
-import { IndexComponent } from './index.component';
-import { AnalyticsComponent } from './analytics.component';
 import { LoginComponent } from './login.component';
 import { Html5ConduitComponent } from './html5-conduit.component';
 import {
-    IdentityService,
-    KeepSilverlightAliveService,
-    OptionsService,
-    AuthGuard,
-    AnyAdminGuard,
-    GlobalAdminGuard,
-    Html5ConduitResolve
+    IdentityService, KeepSilverlightAliveService, OptionsService,
+    AuthGuard, AnyAdminGuard, GlobalAdminGuard, Html5ConduitResolve
 } from './shared';
 
 @NgModule({
@@ -40,8 +33,6 @@ import {
     ],
     declarations: [
         AppComponent,
-        IndexComponent,
-        AnalyticsComponent,
         LoginComponent,
         Html5ConduitComponent
     ],

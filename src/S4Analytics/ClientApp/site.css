@@ -33,12 +33,6 @@ body {
     margin-bottom: 1rem;
 }
 
-/* see https://stackoverflow.com/questions/29660034/nesting-a-container-class-inside-a-container-fluid-class-in-bootstrap-3 */
-.container-fluid > .container {
-    padding-left: 0;
-    padding-right: 0;
-}
-
 .analytics-filters {
     display: none;
     position: absolute;
