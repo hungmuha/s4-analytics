@@ -1,11 +1,157 @@
 ﻿<div class="container-fluid">
     <div class="row">
-        <div class="analytics-filters">filters</div>
+        <div class="analytics-filters">
+            <ngb-tabset>
+                <ngb-tab title="Crash">
+                    <ng-template ngbTabContent>
+                        Crash filters
+                    </ng-template>
+                </ngb-tab>
+                <ngb-tab title="Violation">
+                    <ng-template ngbTabContent>
+                        Violation filters
+                    </ng-template>
+                </ngb-tab>
+            </ngb-tabset>
+        </div>
         <div class="col-12 analytics-main">
             <div class="row">
-                <div class="col-12">Event Analysis</div>
                 <div class="col-12">
-                    <event-map mapId="eventMap"></event-map>
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <button type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong>Heads up!</strong> This alert needs your attention, but it's not super important.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12 col-lg-5 col-xl-6 mb-3">
+                            <div class="input-group mr-lg-3 search-saved-query">
+                                <span class="input-group-addon fa fa-search" id="search-addon"></span>
+                                <input type="text" class="form-control" placeholder="Search saved queries" aria-describedby="search-addon" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-7 col-xl-6 text-right text-nowrap mb-3">
+                            <button type="button" class="btn btn-secondary">
+                                <span class="fa fa-bookmark"></span>&nbsp;Save Query
+                            </button>
+                            <button type="button" class="btn btn-secondary">
+                                <span class="fa fa-gear"></span>&nbsp;Manage Queries
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="row card-block">
+                            <div class="col-12 col-sm-10 mb-3 mb-sm-0">
+                                <span class="text-nowrap">
+                                    Date/Time
+                                    <span class="badge badge-default mr-3 px-2">
+                                        <a href="#">July 4-10, 2017; Mon-Fri</a>
+                                    </span>
+                                </span>
+                                <span class="text-nowrap">
+                                    Place
+                                    <span class="badge badge-default px-2">
+                                        <a href="#">County: Alachua, Bradford, Clay, Putnam</a>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-12 col-sm-2 text-sm-right">
+                                <button type="button" class="btn btn-sm btn-primary">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-3 card-map" [class.card-collapsed]="hideMap">
+                        <div class="card-header d-flex justify-content-between">
+                            <div>Map</div>
+                            <div ngbDropdown class="dropdown hidden-lg-up">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" id="baseMapMenuButton" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
+                                    Cartographic
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="baseMapMenuButton">
+                                    <a class="dropdown-item" href="#">Cartographic</a>
+                                    <a class="dropdown-item" href="#">Minimal</a>
+                                    <a class="dropdown-item" href="#">Hybrid</a>
+                                    <a class="dropdown-item" href="#">Aerial</a>
+                                </div>
+                            </div>
+                            <div class="btn-group hidden-md-down">
+                                <button type="button" class="btn btn-sm btn-secondary active">Cartographic</button>
+                                <button type="button" class="btn btn-sm btn-secondary">Minimal</button>
+                                <button type="button" class="btn btn-sm btn-secondary">Hybrid</button>
+                                <button type="button" class="btn btn-sm btn-secondary">Aerial</button>
+                            </div>
+                            <button type="button"
+                                    class="btn btn-sm btn-secondary fa"
+                                    [class.fa-angle-down]="hideMap"
+                                    [class.fa-angle-up]="!hideMap"
+                                    (click)="toggleMap()"></button>
+                        </div>
+                        <div class="card-block" [hidden]="hideMap">
+                            <event-map mapId="eventMap"></event-map>
+                        </div>
+                    </div>
+                    <div class="card mb-3" [class.card-collapsed]="hideGrid">
+                        <div class="card-header d-flex justify-content-between">
+                            <div>Grid</div>
+                            <div ngbDropdown class="dropdown hidden-lg-up">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" id="gridMenuButton" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
+                                    Crash
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="gridMenuButton">
+                                    <a class="dropdown-item" href="#">Crash</a>
+                                    <a class="dropdown-item" href="#">Vehicle</a>
+                                    <a class="dropdown-item" href="#">Driver</a>
+                                    <a class="dropdown-item" href="#">Non-Motorist</a>
+                                    <a class="dropdown-item disabled" href="#">Violation</a>
+                                </div>
+                            </div>
+                            <div class="btn-group hidden-md-down">
+                                <button type="button" class="btn btn-sm btn-secondary active">Crash</button>
+                                <button type="button" class="btn btn-sm btn-secondary">Vehicle</button>
+                                <button type="button" class="btn btn-sm btn-secondary">Driver</button>
+                                <button type="button" class="btn btn-sm btn-secondary">Non-Motorist</button>
+                                <button type="button" class="btn btn-sm btn-secondary disabled">Violation</button>
+                            </div>
+                            <button type="button"
+                                    class="btn btn-sm btn-secondary fa"
+                                    [class.fa-angle-down]="hideGrid"
+                                    [class.fa-angle-up]="!hideGrid"
+                                    (click)="toggleGrid()"></button>
+                        </div>
+                        <div class="card-block" [hidden]="hideGrid">
+                            Grid here
+                        </div>
+                    </div>
+                    <div class="card" [class.card-collapsed]="hideCharts">
+                        <div class="card-header d-flex justify-content-between">
+                            <div>Charts</div>
+                            <div ngbDropdown class="dropdown hidden-sm-up">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" id="gridMenuButton" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
+                                    <span class="fa fa-bar-chart"></span>&nbsp;Bar
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="gridMenuButton">
+                                    <a class="dropdown-item" href="#"><span class="fa fa-bar-chart"></span>&nbsp;Bar</a>
+                                    <a class="dropdown-item" href="#"><span class="fa fa-pie-chart"></span>&nbsp;Pie</a>
+                                    <a class="dropdown-item" href="#"><span class="fa fa-circle-o"></span>&nbsp;Bubble</a>
+                                </div>
+                            </div>
+                            <div class="btn-group hidden-xs-down">
+                                <button type="button" class="btn btn-sm btn-secondary active"><span class="fa fa-bar-chart"></span>&nbsp;Bar</button>
+                                <button type="button" class="btn btn-sm btn-secondary"><span class="fa fa-pie-chart"></span>&nbsp;Pie</button>
+                                <button type="button" class="btn btn-sm btn-secondary"><span class="fa fa-circle-o"></span>&nbsp;Bubble</button>
+                            </div>
+                            <button type="button"
+                                    class="btn btn-sm btn-secondary fa"
+                                    [class.fa-angle-down]="hideCharts"
+                                    [class.fa-angle-up]="!hideCharts"
+                                    (click)="toggleCharts()"></button>
+                        </div>
+                        <div class="card-block" [hidden]="hideCharts">
+                            Chart here
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

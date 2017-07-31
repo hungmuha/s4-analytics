@@ -49,6 +49,7 @@ body {
     overflow-y: auto;
     background-color: #f5f5f5;
     border-right: 1px solid #eee;
+    z-index: 9999;
 }
 
 @media (--md) {
@@ -80,6 +81,18 @@ body {
     .ol-viewport > canvas {
         height: 500px !important;
     }
+}
+
+.badge > a {
+    color: inherit;
+}
+
+.card-map > .card-block {
+    padding: 0 !important;
+}
+
+.card-collapsed > .card-header {
+    border-bottom: 0 !important;
 }
 
 .form-login {
