@@ -1,4 +1,4 @@
-﻿<nav class="navbar navbar-toggleable-sm navbar-inverse bg-inverse justify-content-between">
+﻿<nav class="navbar navbar-s4 navbar-toggleable-sm navbar-inverse bg-inverse justify-content-between sticky-top">
 
     <button class="navbar-toggler navbar-toggler-right" type="button" (click)="toggleCollapsed()">
         <span class="fa fa-bars"></span>
@@ -46,8 +46,13 @@
                 <a class="nav-link" href="javascript:void(0)">Reports</a>
             </li>
             <li class="dropdown-divider hidden-md-up"></li>
-            <li class="nav-item">
+            <!--<li class="nav-item">
                 <a class="nav-link" href="javascript:void(0)">Log in</a>
+            </li>-->
+            <li class="nav-item hidden-sm-down">
+                <a class="nav-link" href="javascript:void(0)">
+                    <span class="badge badge-pill badge-danger">2</span>
+                </a>
             </li>
             <li ngbDropdown class="nav-item dropdown hidden-sm-down">
                 <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="navbarDropdownMenuLink" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
@@ -57,6 +62,12 @@
                     <a class="dropdown-item" href="javascript:void(0)">Change password</a>
                     <a class="dropdown-item" (click)="logOut()" href="javascript:void(0)">Log out</a>
                 </div>
+            </li>
+            <li class="nav-item hidden-md-up">
+                <a class="nav-link" href="javascript:void(0)">
+                    Notifications
+                    <span class="badge badge-pill badge-danger">2</span>
+                </a>
             </li>
             <li class="nav-item hidden-md-up">
                 <a class="nav-link" href="javascript:void(0)">Change password</a>
@@ -69,8 +80,3 @@
 </nav>
 
 <router-outlet></router-outlet>
-
-<div class="footer">
-    Signal Four Analytics is brought to you by: <br />
-    The GeoPlan Center &minus; Department of Urban & Regional Planning &minus; University of Florida
-</div>

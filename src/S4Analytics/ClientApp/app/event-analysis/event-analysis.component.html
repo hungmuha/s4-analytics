@@ -1,18 +1,21 @@
 ﻿<div class="container-fluid">
     <div class="row">
         <div class="analytics-filters">
-            <ngb-tabset>
-                <ngb-tab title="Crash">
-                    <ng-template ngbTabContent>
-                        Crash filters
-                    </ng-template>
-                </ngb-tab>
-                <ngb-tab title="Violation">
-                    <ng-template ngbTabContent>
-                        Violation filters
-                    </ng-template>
-                </ngb-tab>
-            </ngb-tabset>
+            <div class="card card-inverse bg-inverse">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Crash</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Violation</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-block">
+                    Crash filters
+                </div>
+            </div>
         </div>
         <div class="col-12 analytics-main">
             <div class="row">
@@ -153,6 +156,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="footer">
+                Signal Four Analytics is brought to you by: <br />
+                The GeoPlan Center &minus; Department of Urban & Regional Planning &minus; University of Florida
             </div>
         </div>
     </div>
