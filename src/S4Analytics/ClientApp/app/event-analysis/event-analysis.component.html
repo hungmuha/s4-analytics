@@ -76,7 +76,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card mb-3 card-map" [class.card-collapsed]="hideMap">
+                    <div class="card mb-3 card-map" [class.card-collapsed]="collapseMap">
                         <div class="card-header d-flex justify-content-between">
                             <div><span class="fa fa-map-o"></span> Map</div>
                             <div ngbDropdown class="dropdown hidden-lg-up">
@@ -98,11 +98,11 @@
                             </div>
                             <button type="button"
                                     class="btn btn-sm btn-secondary fa"
-                                    [class.fa-angle-down]="hideMap"
-                                    [class.fa-angle-up]="!hideMap"
+                                    [class.fa-angle-left]="collapseMap"
+                                    [class.fa-angle-down]="!collapseMap"
                                     (click)="toggleMap()"></button>
                         </div>
-                        <div class="card-block" [hidden]="hideMap">
+                        <div class="card-block">
                             <event-map mapId="eventMap"></event-map>
                         </div>
                         <div class="card-footer text-muted d-flex justify-content-between hidden-xs-down">
@@ -113,7 +113,7 @@
                             <button type="button" class="btn btn-sm btn-secondary"><span class="fa fa-save"></span> Export</button>
                         </div>
                     </div>
-                    <div class="card mb-3" [class.card-collapsed]="hideGrid">
+                    <div class="card mb-3" [class.card-collapsed]="collapseGrid">
                         <div class="card-header d-flex justify-content-between">
                             <div><span class="fa fa-table"></span> Grid</div>
                             <div ngbDropdown class="dropdown hidden-lg-up">
@@ -137,36 +137,51 @@
                             </div>
                             <button type="button"
                                     class="btn btn-sm btn-secondary fa"
-                                    [class.fa-angle-down]="hideGrid"
-                                    [class.fa-angle-up]="!hideGrid"
+                                    [class.fa-angle-left]="collapseGrid"
+                                    [class.fa-angle-down]="!collapseGrid"
                                     (click)="toggleGrid()"></button>
                         </div>
-                        <div class="card-block" [hidden]="hideGrid">
+                        <div class="card-block">
                             Grid here
                         </div>
                         <div class="card-footer text-muted d-flex justify-content-between">
-                            <div class="btn-group btn-group-sm">
+                            <div ngbDropdown class="dropdown hidden-sm-up">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" id="gridMenuButton2" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
+                                    All <span class="badge badge-pill badge-default">4559</span>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="gridMenuButton2">
+                                    <a class="dropdown-item" href="#">
+                                        All <span class="badge badge-pill badge-default">4559</span>
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                        Mapped <span class="badge badge-pill badge-default">3914</span>
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                        Unmapped <span class="badge badge-pill badge-default">645</span>
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                        Selected <span class="badge badge-pill badge-default">1</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="btn-group btn-group-sm hidden-xs-down">
                                 <button type="button" class="btn btn-secondary active">
-                                    All
-                                    <span class="badge badge-pill badge-default">4559</span>
+                                    All <span class="badge badge-pill badge-default">4559</span>
                                 </button>
                                 <button type="button" class="btn btn-secondary">
-                                    Mapped
-                                    <span class="badge badge-pill badge-default">3914</span>
+                                    Mapped <span class="badge badge-pill badge-default">3914</span>
                                 </button>
                                 <button type="button" class="btn btn-secondary">
-                                    Unmapped
-                                    <span class="badge badge-pill badge-default">645</span>
+                                    Unmapped <span class="badge badge-pill badge-default">645</span>
                                 </button>
                                 <button type="button" class="btn btn-secondary">
-                                    Selected
-                                    <span class="badge badge-pill badge-default">1</span>
+                                    Selected <span class="badge badge-pill badge-default">1</span>
                                 </button>
                             </div>
                             <button type="button" class="btn btn-sm btn-secondary hidden-xs-down"><span class="fa fa-save"></span> Export</button>
                         </div>
                     </div>
-                    <div class="card" [class.card-collapsed]="hideCharts">
+                    <div class="card" [class.card-collapsed]="collapseCharts">
                         <div class="card-header d-flex justify-content-between">
                             <div><span class="fa fa-bar-chart"></span> Charts</div>
                             <div ngbDropdown class="dropdown hidden-sm-up">
@@ -186,11 +201,11 @@
                             </div>
                             <button type="button"
                                     class="btn btn-sm btn-secondary fa"
-                                    [class.fa-angle-down]="hideCharts"
-                                    [class.fa-angle-up]="!hideCharts"
+                                    [class.fa-angle-left]="collapseCharts"
+                                    [class.fa-angle-down]="!collapseCharts"
                                     (click)="toggleCharts()"></button>
                         </div>
-                        <div class="card-block" [hidden]="hideCharts">
+                        <div class="card-block">
                             Chart here
                         </div>
                         <div class="card-footer text-muted">

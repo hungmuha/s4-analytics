@@ -92,6 +92,7 @@ a.nav-link {
     padding-top: 0.4em !important;
 }
 
+.dropdown-toggle > .badge,
 .btn.active > .badge {
     background-color: #0275d8;
 }
@@ -102,6 +103,13 @@ a.nav-link {
 
 .card-collapsed > .card-header {
     border-bottom: 0 !important;
+}
+
+.card-collapsed > .card-block,
+.card-collapsed > .card-block *,
+.card-collapsed > .card-footer,
+.card-collapsed > .card-footer * {
+    display: none !important;
 }
 
 .form-login {

@@ -4,19 +4,19 @@
     templateUrl: './event-analysis.component.html'
 })
 export class EventAnalysisComponent {
-    hideMap: boolean = false;
-    hideGrid: boolean = false;
-    hideCharts: boolean = false;
+    collapseMap: boolean = false;
+    collapseGrid: boolean = false;
+    collapseCharts: boolean = false;
 
     toggleMap(): void {
-        this.hideMap = !this.hideMap;
+        this.collapseMap = !this.collapseMap;
     }
 
     toggleGrid(): void {
-        this.hideGrid = !this.hideGrid;
+        this.collapseGrid = !this.collapseGrid;
     }
 
     toggleCharts(): void {
-        this.hideCharts = !this.hideCharts;
+        this.collapseCharts = !this.collapseCharts;
     }
 }
