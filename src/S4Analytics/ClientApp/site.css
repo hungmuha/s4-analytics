@@ -50,7 +50,7 @@ body {
     z-index: 9998;
 }
 
-@media (--md) {
+@media (--lg) {
     .analytics-main {
         padding-left: 415px;  /* 400 + 15 */
     }

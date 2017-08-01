@@ -1,6 +1,9 @@
 ﻿<nav class="navbar navbar-s4 navbar-toggleable-sm navbar-inverse bg-inverse justify-content-between sticky-top">
 
     <button class="navbar-toggler navbar-toggler-right" type="button" (click)="toggleCollapsed()">
+        <a href="javascript:void(0)">
+            <span class="badge badge-pill badge-danger">2</span>
+        </a>
         <span class="fa fa-bars"></span>
     </button>
 
@@ -59,6 +62,7 @@
                     username
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="javascript:void(0)">Notifications <span class="badge badge-pill badge-danger">2</span></a>
                     <a class="dropdown-item" href="javascript:void(0)">Change password</a>
                     <a class="dropdown-item" (click)="logOut()" href="javascript:void(0)">Log out</a>
                 </div>
