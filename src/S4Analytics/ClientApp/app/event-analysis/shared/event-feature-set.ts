@@ -1,4 +1,5 @@
-﻿import { Point, FeatureCollection } from 'geojson';
+﻿// tslint:disable-next-line
+import { Point, FeatureCollection } from 'geojson';
 
 export class EventFeatureSet {
     eventType: string; // crash or violation
