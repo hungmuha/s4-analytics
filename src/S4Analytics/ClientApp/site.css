@@ -2,15 +2,96 @@
     --mainColor: white;
 }
 
+@custom-media --sm (width >= 576px);
+@custom-media --md (width >= 768px);
+@custom-media --lg (width >= 992px);
+@custom-media --xl (width >= 1200px);
+
+@custom-media --xs-only (width < 576px);
+@custom-media --sm-down (width < 768px);
+@custom-media --md-down (width < 992px);
+@custom-media --lg-down (width < 1200px);
+
 body {
-    padding-top: 40px;
-    padding-bottom: 40px;
-    background-color: #eee;
+    background-color: var(--mainColor);
 }
 
-.container {
+.footer {
+    text-align: center;
+    font-size: 0.8rem;
+    padding: 16px;
+    padding: 1rem;
+}
+
+.navbar-collapse {
+    width: auto !important;
+}
+
+.container-fluid {
     margin-top: 1rem;
     margin-bottom: 1rem;
+}
+
+.navbar-s4 {
+    z-index: 9999;
+}
+
+.analytics-filters {
+    display: none;
+    position: absolute;
+    width: 400px;
+    margin-top: -16px;
+    margin-top: -1rem;
+    margin-bottom: -16px;
+    margin-bottom: -1rem;
+    padding: 1rem 0 1rem 1rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 9998;
+}
+
+@media (--lg) {
+    .analytics-main {
+        padding-left: 415px;  /* 400 + 15 */
+    }
+    .analytics-filters {
+        display: block;
+    }
+}
+
+.ol-viewport > canvas {
+    height: 250px !important;
+}
+
+@media (--sm) {
+    .ol-viewport > canvas {
+        height: 300px !important;
+    }
+}
+
+@media (--md) {
+    .ol-viewport > canvas {
+        height: 400px !important;
+    }
+}
+
+@media (--lg) {
+    .ol-viewport > canvas {
+        height: 500px !important;
+    }
+}
+
+a.nav-link,
+.badge > a {
+    color: inherit;
+}
+
+.card-map > .card-block {
+    padding: 0 !important;
+}
+
+.card-collapsed > .card-header {
+    border-bottom: 0 !important;
 }
 
 .form-login {

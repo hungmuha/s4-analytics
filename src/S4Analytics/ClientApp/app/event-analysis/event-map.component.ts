@@ -5,7 +5,7 @@ import { OptionsService } from '../shared';
 
 @Component({
     selector: 'event-map',
-    template: `<div id={{mapId}}></div>`
+    template: `<div id="{{mapId}}"></div>`
 })
 export class EventMapComponent implements OnInit {
     @Input() mapId: string;
@@ -82,6 +82,7 @@ export class EventMapComponent implements OnInit {
                     });
 
                     this.olMap = new ol.Map({
+                        interactions: ol.interaction.defaults({ mouseWheelZoom: false }),
                         layers: [raster, clusters],
                         target: this.element.nativeElement.firstElementChild,
                         view: this.olView
