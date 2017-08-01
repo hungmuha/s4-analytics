@@ -19,10 +19,6 @@ export class EventMapComponent implements OnInit {
         private crashService: CrashService,
         private optionService: OptionsService) { }
 
-    updateSize() {
-        this.olMap.updateSize();
-    }
-
     ngOnInit() {
 
         let query: CrashQuery = {
