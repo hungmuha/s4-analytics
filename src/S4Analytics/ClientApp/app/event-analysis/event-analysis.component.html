@@ -45,29 +45,40 @@
                         </div>
                     </div>
                     <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between">
+                            <div>Query Scope</div>
+                        </div>
                         <div class="row card-block">
-                            <div class="col-12 col-sm-10 mb-3 mb-sm-0">
-                                <span class="text-nowrap">
-                                    Date/Time
-                                    <span class="badge badge-default mr-3 px-2">
+                            <div class="col-12 col-sm-9 mb-3 mb-sm-0 d-flex flex-wrap">
+                                <span class="mr-4">
+                                    <ng-template #dateTimePopover>Date/Time filters here</ng-template>
+                                    <a href="javascript:void(0)" [ngbPopover]="dateTimePopover" popoverTitle="Date/Time" placement="bottom">
+                                        Date/Time&nbsp;<span class="fa fa-caret-down"></span></a>
+                                    <br />
+                                    <span class="badge badge-default px-2">
                                         <a href="#">July 4-10, 2017; Mon-Fri</a>
                                     </span>
                                 </span>
-                                <span class="text-nowrap">
-                                    Place
+                                <span class="mr-4">
+                                    <ng-template #placePopover>Place filters here</ng-template>
+                                    <a href="javascript:void(0)" [ngbPopover]="placePopover" popoverTitle="Place" placement="bottom">
+                                        Place&nbsp;<span class="fa fa-caret-down"></span>
+                                    </a>
+                                    <br />
                                     <span class="badge badge-default px-2">
                                         <a href="#">County: Alachua, Bradford, Clay, Putnam</a>
                                     </span>
                                 </span>
                             </div>
-                            <div class="col-12 col-sm-2 text-sm-right">
+                            <div class="col-12 col-sm-3 text-sm-right text-nowrap">
                                 <button type="button" class="btn btn-sm btn-primary">Apply</button>
+                                <button type="button" class="btn btn-sm btn-secondary">Reset</button>
                             </div>
                         </div>
                     </div>
                     <div class="card mb-3 card-map" [class.card-collapsed]="hideMap">
                         <div class="card-header d-flex justify-content-between">
-                            <div>Map</div>
+                            <div><span class="fa fa-map-o"></span> Map</div>
                             <div ngbDropdown class="dropdown hidden-lg-up">
                                 <button class="btn btn-sm btn-secondary dropdown-toggle" id="baseMapMenuButton" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
                                     Cartographic
@@ -79,11 +90,11 @@
                                     <a class="dropdown-item" href="#">Aerial</a>
                                 </div>
                             </div>
-                            <div class="btn-group hidden-md-down">
-                                <button type="button" class="btn btn-sm btn-secondary active">Cartographic</button>
-                                <button type="button" class="btn btn-sm btn-secondary">Minimal</button>
-                                <button type="button" class="btn btn-sm btn-secondary">Hybrid</button>
-                                <button type="button" class="btn btn-sm btn-secondary">Aerial</button>
+                            <div class="btn-group btn-group-sm hidden-md-down">
+                                <button type="button" class="btn btn-secondary active">Cartographic</button>
+                                <button type="button" class="btn btn-secondary">Minimal</button>
+                                <button type="button" class="btn btn-secondary">Hybrid</button>
+                                <button type="button" class="btn btn-secondary">Aerial</button>
                             </div>
                             <button type="button"
                                     class="btn btn-sm btn-secondary fa"
@@ -94,10 +105,17 @@
                         <div class="card-block" [hidden]="hideMap">
                             <event-map mapId="eventMap"></event-map>
                         </div>
+                        <div class="card-footer text-muted d-flex justify-content-between hidden-xs-down">
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-secondary"><span class="fa fa-search-plus"></span> Zoom</button>
+                                <button type="button" class="btn btn-secondary"><span class="fa fa-hand-pointer-o"></span> Pan</button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-secondary"><span class="fa fa-save"></span> Export</button>
+                        </div>
                     </div>
                     <div class="card mb-3" [class.card-collapsed]="hideGrid">
                         <div class="card-header d-flex justify-content-between">
-                            <div>Grid</div>
+                            <div><span class="fa fa-table"></span> Grid</div>
                             <div ngbDropdown class="dropdown hidden-lg-up">
                                 <button class="btn btn-sm btn-secondary dropdown-toggle" id="gridMenuButton" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
                                     Crash
@@ -110,12 +128,12 @@
                                     <a class="dropdown-item disabled" href="#">Violation</a>
                                 </div>
                             </div>
-                            <div class="btn-group hidden-md-down">
-                                <button type="button" class="btn btn-sm btn-secondary active">Crash</button>
-                                <button type="button" class="btn btn-sm btn-secondary">Vehicle</button>
-                                <button type="button" class="btn btn-sm btn-secondary">Driver</button>
-                                <button type="button" class="btn btn-sm btn-secondary">Non-Motorist</button>
-                                <button type="button" class="btn btn-sm btn-secondary disabled">Violation</button>
+                            <div class="btn-group btn-group-sm hidden-md-down">
+                                <button type="button" class="btn btn-secondary active">Crash</button>
+                                <button type="button" class="btn btn-secondary">Vehicle</button>
+                                <button type="button" class="btn btn-secondary">Driver</button>
+                                <button type="button" class="btn btn-secondary">Non-Motorist</button>
+                                <button type="button" class="btn btn-secondary disabled">Violation</button>
                             </div>
                             <button type="button"
                                     class="btn btn-sm btn-secondary fa"
@@ -126,10 +144,31 @@
                         <div class="card-block" [hidden]="hideGrid">
                             Grid here
                         </div>
+                        <div class="card-footer text-muted d-flex justify-content-between">
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-secondary active">
+                                    All
+                                    <span class="badge badge-pill badge-default">4559</span>
+                                </button>
+                                <button type="button" class="btn btn-secondary">
+                                    Mapped
+                                    <span class="badge badge-pill badge-default">3914</span>
+                                </button>
+                                <button type="button" class="btn btn-secondary">
+                                    Unmapped
+                                    <span class="badge badge-pill badge-default">645</span>
+                                </button>
+                                <button type="button" class="btn btn-secondary">
+                                    Selected
+                                    <span class="badge badge-pill badge-default">1</span>
+                                </button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-secondary hidden-xs-down"><span class="fa fa-save"></span> Export</button>
+                        </div>
                     </div>
                     <div class="card" [class.card-collapsed]="hideCharts">
                         <div class="card-header d-flex justify-content-between">
-                            <div>Charts</div>
+                            <div><span class="fa fa-bar-chart"></span> Charts</div>
                             <div ngbDropdown class="dropdown hidden-sm-up">
                                 <button class="btn btn-sm btn-secondary dropdown-toggle" id="gridMenuButton" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
                                     <span class="fa fa-bar-chart"></span>&nbsp;Bar
@@ -140,10 +179,10 @@
                                     <a class="dropdown-item" href="#"><span class="fa fa-circle-o"></span>&nbsp;Bubble</a>
                                 </div>
                             </div>
-                            <div class="btn-group hidden-xs-down">
-                                <button type="button" class="btn btn-sm btn-secondary active"><span class="fa fa-bar-chart"></span>&nbsp;Bar</button>
-                                <button type="button" class="btn btn-sm btn-secondary"><span class="fa fa-pie-chart"></span>&nbsp;Pie</button>
-                                <button type="button" class="btn btn-sm btn-secondary"><span class="fa fa-circle-o"></span>&nbsp;Bubble</button>
+                            <div class="btn-group btn-group-sm hidden-xs-down">
+                                <button type="button" class="btn btn-secondary active"><span class="fa fa-bar-chart"></span>&nbsp;Bar</button>
+                                <button type="button" class="btn btn-secondary"><span class="fa fa-pie-chart"></span>&nbsp;Pie</button>
+                                <button type="button" class="btn btn-secondary"><span class="fa fa-circle-o"></span>&nbsp;Bubble</button>
                             </div>
                             <button type="button"
                                     class="btn btn-sm btn-secondary fa"
@@ -153,6 +192,35 @@
                         </div>
                         <div class="card-block" [hidden]="hideCharts">
                             Chart here
+                        </div>
+                        <div class="card-footer text-muted">
+                            <div class="row">
+                                <div class="col-12 col-sm-10 d-flex flex-wrap">
+                                    <div ngbDropdown class="dropdown mr-3 text-nowrap">
+                                        Event type
+                                        <button class="btn btn-sm btn-secondary dropdown-toggle ml-2" id="chartEventMenuButton" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
+                                            Crash
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="chartEventMenuButton">
+                                            <a class="dropdown-item" href="#">Crash</a>
+                                            <a class="dropdown-item" href="#">Violation</a>
+                                        </div>
+                                    </div>
+                                    <div ngbDropdown class="dropdown mr-3 text-nowrap">
+                                        Attribute
+                                        <button class="btn btn-sm btn-secondary dropdown-toggle ml-2" id="chartAttr1MenuButton" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
+                                            Weather
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="chartAttr1MenuButton">
+                                            <a class="dropdown-item" href="#">Weather</a>
+                                            <a class="dropdown-item" href="#">Time of Day</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hidden-xs-down col-2 text-right">
+                                    <button type="button" class="btn btn-sm btn-secondary"><span class="fa fa-save"></span> Export</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

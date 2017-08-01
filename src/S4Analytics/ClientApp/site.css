@@ -40,9 +40,7 @@ body {
     display: none;
     position: absolute;
     width: 400px;
-    margin-top: -16px;
     margin-top: -1rem;
-    margin-bottom: -16px;
     margin-bottom: -1rem;
     padding: 1rem 0 1rem 1rem;
     overflow-x: hidden;
@@ -81,9 +79,21 @@ body {
     }
 }
 
-a.nav-link,
-.badge > a {
+a.nav-link {
     color: inherit;
+}
+
+.badge > a {
+    line-height: 1.5;
+    color: inherit;
+}
+
+.btn > .badge {
+    padding-top: 0.4em !important;
+}
+
+.btn.active > .badge {
+    background-color: #0275d8;
 }
 
 .card-map > .card-block {
