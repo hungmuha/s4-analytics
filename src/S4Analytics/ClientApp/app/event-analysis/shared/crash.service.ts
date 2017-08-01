@@ -1,6 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import * as _ from 'lodash';
 import * as ol from 'openlayers';
 import { EventFeatureSet } from './event-feature-set';
 import { CrashQuery } from './crash-query';
@@ -20,7 +21,10 @@ export class CrashService {
         return this.http
             .post('api/crash/query', query)
             .map(response => response.headers.get('Location'))
-            .switchMap(url => this.http.get(`${url}/feature?minX=${minX}&minY=${minY}&maxX=${maxX}&maxY=${maxY}`))
+            .switchMap(url => {
+                url = _.replace(url, /^.*api\//, 'api/'); // convert to relative url
+                return this.http.get(`${url}/feature?minX=${minX}&minY=${minY}&maxX=${maxX}&maxY=${maxY}`);
+            })
             .map(response => response.json() as EventFeatureSet);
     }
 
@@ -29,7 +33,10 @@ export class CrashService {
         return this.http
             .post('api/crash/query', query)
             .map(response => response.headers.get('Location'))
-            .switchMap(url => this.http.get(`${url}?fromIndex=${fromIndex}&toIndex=${toIndex}`))
+            .switchMap(url => {
+                url = _.replace(url, /^.*api\//, 'api/'); // convert to relative url
+                return this.http.get(`${url}?fromIndex=${fromIndex}&toIndex=${toIndex}`);
+            })
             .map(response => response.json());
     }
 }
