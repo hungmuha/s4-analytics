@@ -19,3 +19,8 @@ Before contributing any code, consult the following:
 - staging branch: build and deploy to [staging environment](https://s4.geoplan.ufl.edu/analytics-html5-staging/)
 - demo branch: build and deploy to [demo environment](https://s4.geoplan.ufl.edu/analytics-html5-demo/)
 - release branch: build and deploy to [release environment](https://s4.geoplan.ufl.edu/analytics-html5/)
+
+## Related repositories
+
+- [Lib.Identity](https://geodevops.geoplan.ufl.edu/signal-four-gen2/Lib.Identity)
+- [S4-PBCAT](https://geodevops.geoplan.ufl.edu/signal-four-gen2/S4-PBCAT)
