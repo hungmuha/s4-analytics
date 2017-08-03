@@ -8,7 +8,7 @@ import { NewUserRequestStateService, NewUserRequestService, RequestActionResults
 
 export class AgencyCreateComponent {
 
-    constructor(private state: NewUserRequestStateService,
+    constructor(public state: NewUserRequestStateService,
         private newUserRequestService: NewUserRequestService) {
         this.state.currentRequestActionResults = new RequestActionResults(this.state.selectedRequest.requestNbr);
     }

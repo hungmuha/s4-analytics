@@ -71,8 +71,8 @@ export class IdentityService {
         // AuthGuardService calls this method just once.
         return this.http
             .get('api/identity/current-user')
-            .map(response => response.json() as S4IdentityUser)
-            .do(user => {
+            .map(response => {
+                let user = response.json() as S4IdentityUser;
                 this.checkedForServerSession = true;
                 this._currentUser = user;
                 this.isAuthenticated = true;
