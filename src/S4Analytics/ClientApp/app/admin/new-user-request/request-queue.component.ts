@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 import {
    NewUserRequestStateService, NewUserRequestService, QueueColumn, QueueFilter, NewUserRequest, NewUserRequestStatus
 } from './shared';
-import { IdentityService } from '././../../shared';
 
 @Component({
     selector: 'request-queue',
