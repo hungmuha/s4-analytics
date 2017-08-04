@@ -31,7 +31,6 @@ namespace S4Analytics.Models
             _applicationName = serverOptions.Value.MembershipApplicationName;
             _connStr = serverOptions.Value.IdentityConnStr;
             _conn = new OracleConnection(_connStr);
-
             _userManager = userManager;
 
             _smtp = new SmtpClient
@@ -51,6 +50,7 @@ namespace S4Analytics.Models
         /// <returns></returns>
         public async Task<IEnumerable<NewUserRequest>> GetAll(string adminUserName)
         {
+            //TODO:  Need to further restrict based on user role and type of request
             var adminUser = await _userManager.FindByNameAsync(adminUserName);
             var adminAgency = adminUser.Profile.Agency;
 

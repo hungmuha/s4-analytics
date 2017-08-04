@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Internal.Http;
 using S4Analytics.Models;
 using System.Threading.Tasks;
 
@@ -48,10 +49,10 @@ namespace S4Analytics.Controllers
         /// Return all records from NEW_USER_REQ
         /// </summary>
         /// <returns></returns>
-        [HttpGet("new-user-request/{adminUserName}")]
-        public async Task<IActionResult> GetAllNewUserRequests(string adminUserName)
+        [HttpGet("new-user-request")]
+        public async Task<IActionResult> GetAllNewUserRequests()
         {
-            var info = await _newUserRequestRepo.GetAll(adminUserName);
+            var info = await _newUserRequestRepo.GetAll(User.Identity.Name);
             return new ObjectResult(info);
         }
 

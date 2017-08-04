@@ -8,11 +8,13 @@ export class NewUserRequest {
     requestStatus: NewUserRequestStatus;
     userCreatedDt: Date;
     agncyNm: string;
+    agncyEmailDomain: string;
     requestorFirstNm: string;
     requestorLastNm:  string;
     requestorSuffixNm: string;
     requestorEmail: string;
     vendorName: string;
+    vendorEmailDomain: string;
     consultantFirstNm: string;
     consultantLastNm:  string;
     consultantSuffixNm: string;
