@@ -36,8 +36,7 @@ export class RequestQueueComponent {
     constructor(
         public state: NewUserRequestStateService,
         private newUserRequestService: NewUserRequestService,
-        private modalService: NgbModal,
-        private identityService: IdentityService
+        private modalService: NgbModal
        ) {
     }
 
