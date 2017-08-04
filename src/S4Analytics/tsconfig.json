@@ -10,9 +10,7 @@ http://www.typescriptlang.org/docs/handbook/tsconfig-json.html.
     "moduleResolution": "node",
     "target": "es5",
     "sourceMap": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": false, /* rely on tslint instead */
-    "noUnusedParameters": false, /* rely on tslint instead */
+    "strict": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipDefaultLibCheck": true,

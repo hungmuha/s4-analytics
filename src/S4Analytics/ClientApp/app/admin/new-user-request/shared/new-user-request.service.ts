@@ -21,7 +21,7 @@ class NewAgencyRequestApproval extends RequestApproval {
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
         public before70Days: boolean,
-        public lea: boolean) {
+        public lea?: boolean) {
         super(requestNumber, selectedRequest, currentStatus, newStatus);
         }
 }

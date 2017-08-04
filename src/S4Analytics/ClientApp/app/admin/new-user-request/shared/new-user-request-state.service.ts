@@ -10,7 +10,7 @@ export class NewUserRequestStateService {
     newUserRequests: NewUserRequest[];
     selectedRequest: NewUserRequest;
     currentRequestActionResults: RequestActionResults;
-    contractViewerWindow: Window;
+    contractViewerWindow?: Window;
     sortAsc: boolean = true;
     sortColumnName: string = 'requestNbr';
     queueFilter: QueueFilter = QueueFilter.Pending;

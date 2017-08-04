@@ -40,7 +40,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         // authorization (role) check
         let roleMatch =
             this.roles === undefined ||
-            _.intersection(this.roles, this.identityService.currentUser.roles).length > 0;
+            this.identityService.currentUser && _.intersection(this.roles, this.identityService.currentUser.roles).length > 0;
         if (!roleMatch) {
             // go to index
             this.router.navigate(['']);
