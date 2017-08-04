@@ -20,8 +20,9 @@ export class CrashService {
 
         return this.http
             .post('api/crash/query', query)
-            .map(response => response.headers.get('Location'))
+            .map(response => response.headers && response.headers.get('Location'))
             .switchMap(url => {
+                if (!url) { return Observable.throw('Query URL missing'); }
                 url = _.replace(url, /^.*api\//, 'api/'); // convert to relative url
                 return this.http.get(`${url}/feature?minX=${minX}&minY=${minY}&maxX=${maxX}&maxY=${maxY}`);
             })
@@ -32,8 +33,9 @@ export class CrashService {
         // todo: implement CrashResult type
         return this.http
             .post('api/crash/query', query)
-            .map(response => response.headers.get('Location'))
+            .map(response => response.headers && response.headers.get('Location'))
             .switchMap(url => {
+                if (!url) { return Observable.throw('Query URL missing'); }
                 url = _.replace(url, /^.*api\//, 'api/'); // convert to relative url
                 return this.http.get(`${url}?fromIndex=${fromIndex}&toIndex=${toIndex}`);
             })

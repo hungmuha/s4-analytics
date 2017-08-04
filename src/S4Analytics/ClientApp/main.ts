@@ -33,8 +33,10 @@ if (module['hot']) {
         // Before restarting the app, we create a new root element and dispose the old one
         const oldRootElem = document.querySelector(rootElemTagName);
         const newRootElem = document.createElement(rootElemTagName);
-        oldRootElem.parentNode.insertBefore(newRootElem, oldRootElem);
-        modulePromise.then(appModule => appModule.destroy());
+        if (oldRootElem && oldRootElem.parentNode) {
+            oldRootElem.parentNode.insertBefore(newRootElem, oldRootElem);
+            modulePromise.then(appModule => appModule.destroy());
+        }
     });
 } else {
     enableProdMode();

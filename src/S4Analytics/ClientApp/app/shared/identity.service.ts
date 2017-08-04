@@ -8,13 +8,13 @@ import { S4IdentityUser } from './s4-identity-user';
 export class IdentityService {
     checkedForServerSession = false;
     isAuthenticated?: boolean;
-    redirectUrl: string; // set by AuthGuardService before navigating to login
+    redirectUrl?: string; // set by AuthGuardService before navigating to login
 
-    private _currentUser: S4IdentityUser;
+    private _currentUser?: S4IdentityUser;
 
     constructor(private http: Http, private router: Router) { }
 
-    get currentUser(): S4IdentityUser {
+    get currentUser(): S4IdentityUser | undefined {
         return this._currentUser;
     }
 

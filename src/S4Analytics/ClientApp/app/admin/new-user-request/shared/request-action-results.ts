@@ -2,7 +2,7 @@
     public requestNumber: number;
     public approved: boolean;
     public rejectionReason: string;
-    public lea: boolean;
+    public lea?: boolean;
     public accessBefore70Days: boolean;
     public agencyCreated: boolean = true;
 
