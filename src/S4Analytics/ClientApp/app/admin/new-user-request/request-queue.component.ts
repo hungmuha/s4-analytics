@@ -43,7 +43,7 @@ export class RequestQueueComponent {
     }
 
     ngOnInit() {
-        this.newUserRequestService.getNewUserRequests().subscribe(result => this.state.newUserRequests = result);
+        this.newUserRequestService.getNewUserRequests(this.identityService.currentUser.userName).subscribe(result => this.state.newUserRequests = result);
     }
 
     sortColumn(columnName: string): void {
