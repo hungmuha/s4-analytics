@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Internal.Http;
 using S4Analytics.Models;
 using System.Threading.Tasks;
 
@@ -84,8 +83,9 @@ namespace S4Analytics.Controllers
         public async Task<IActionResult> ApproveOther(int id, [FromBody]RequestApproval approval)
         {
             var currentStatus = approval.CurrentStatus;
+            approval.AdminUserName = User.Identity.Name;
 
-            switch(currentStatus)
+            switch (currentStatus)
             {
                 case NewUserRequestStatus.NewUser:
                     return new ObjectResult(await _newUserRequestRepo.ApproveNewUser(id, approval));
@@ -101,18 +101,21 @@ namespace S4Analytics.Controllers
         [HttpPatch("new-user-request/{id}/approve/consultant")]
         public async Task<IActionResult> ApproveConsultant(int id, [FromBody]RequestApproval approval)
         {
+            approval.AdminUserName = User.Identity.Name;
             return new ObjectResult(await _newUserRequestRepo.ApproveConsultant(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/approve/agency")]
         public IActionResult ApproveAgency(int id, [FromBody]RequestApproval approval)
         {
+            approval.AdminUserName = User.Identity.Name;
             return new ObjectResult(_newUserRequestRepo.ApproveAgency(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/reject")]
         public IActionResult Reject(int id, [FromBody]RequestRejection rejection)
         {
+            rejection.AdminUserName = User.Identity.Name;
             return new ObjectResult(_newUserRequestRepo.Reject(id,  rejection));
         }
     }

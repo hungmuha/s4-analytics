@@ -18,7 +18,7 @@ export class IdentityService {
         if (this._currentUser) { return this._currentUser; }
 
         // throw error if _currentUser is undefined
-        let error = new Error('S4IdentityUser.CurrentUser is undefined');
+        let error = new Error('S4IdentityUser._currentUser is undefined');
         throw (error);
     }
 
