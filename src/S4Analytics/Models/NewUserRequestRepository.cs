@@ -31,7 +31,6 @@ namespace S4Analytics.Models
             _applicationName = serverOptions.Value.MembershipApplicationName;
             _connStr = serverOptions.Value.IdentityConnStr;
             _conn = new OracleConnection(_connStr);
-
             _userManager = userManager;
 
             _smtp = new SmtpClient
@@ -47,22 +46,37 @@ namespace S4Analytics.Models
 
         /// <summary>
         /// Return all records from NEW_USER_REQ
-        /// TODO: limit only to those use is authorized to see
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<NewUserRequest> GetAll()
+        public async Task<IEnumerable<NewUserRequest>> GetAll(string adminUserName)
         {
+            //TODO:  Need to further restrict based on user role and type of request
+            var adminUser = await _userManager.FindByNameAsync(adminUserName);
+            var adminAgency = adminUser.Profile.Agency;
+
+            // Check against agency id
+            var adminUserAgencyIdClause = string.Format($"u.agncy_id = {adminAgency.AgencyId.ToString()}");
+
+            // Check against parent agency id if present
+            var parentAgencyIdClause = adminAgency.ParentAgencyId != 0 ? string.Format($" OR u.agncy_id = {adminAgency.ParentAgencyId}") : "";
+
+            // Create where clause if user is not an global admin
+            var whereClause = adminUser.IsGlobalAdmin() ? ""
+                : string.Format($" WHERE {adminUserAgencyIdClause} {parentAgencyIdClause}");
+
             var selectTxt = GetRequestSelectQuery();
             var cmdTxt = $@"{selectTxt}
                             FROM new_user_req_new u
                             LEFT JOIN s4_agncy a
                             ON u.agncy_id = a.agncy_id
                             LEFT JOIN contractor c
-                            ON c.contractor_id = u.contractor_id";
+                            ON c.contractor_id = u.contractor_id
+                            {whereClause}";
 
             var results = _conn.Query<NewUserRequest>(cmdTxt);
             return results;
         }
+
 
         /// <summary>
         /// Return record from NEW_USER_REQ where REQ_NBR = reqNbr
@@ -101,6 +115,7 @@ namespace S4Analytics.Models
 
             var user = new S4IdentityUser<S4UserProfile>(userName);
 
+            request.CreatedBy = approval.AdminUserName;
             user.Profile = CreateS4UserProfile(request);
 
             var passwordText = GenerateRandomPassword(8, 0);
@@ -109,9 +124,8 @@ namespace S4Analytics.Models
             await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
             // TODO: need to be more generic here -hard coded for testing
-            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
             var roles = request.UserManagerCd
-                ? new List<string> { "User", "Agency Admin" }
+                ? new List<string> { "User", "User Manager" }
                 : new List<string> { "User" };
             await _userManager.AddToRolesAsync(user, roles);
 
@@ -136,7 +150,7 @@ namespace S4Analytics.Models
             request.RequestStatus = newStatus;
             request.UserId = userName;
             request.UserCreatedDt = DateTime.Now;
-            request.CreatedBy = "tbd"; //TODO
+
             UpdateApprovedNewUserRequest(request);
             return request;
         }
@@ -149,23 +163,23 @@ namespace S4Analytics.Models
         /// <param name="newStatus"></param>
         /// <param name="selectedRequest"></param>
         /// <returns></returns>
-        public async Task<NewUserRequest> ApproveNewConsultant(int id, RequestApproval approval)
+        public async Task<NewUserRequest> ApproveConsultant(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
             var before70days = approval.Before70Days;
 
-            // TODO: rename this method (ApproveNewConsultant is misleading because it also handles this case)
             if (request.UserId != null)
             {
                 return await ApproveExistingConsultant(id, approval);
             }
 
-            var preferredUserName = (request.RequestorFirstNm[0] + request.RequestorLastNm).ToLower();
+            var preferredUserName = (request.ConsultantFirstNm[0] + request.ConsultantLastNm).ToLower();
             var userName = await GenerateUserName(preferredUserName);
 
             var user = new S4IdentityUser<S4UserProfile>(userName);
 
+            request.CreatedBy = approval.AdminUserName;
             user.Profile = CreateS4UserProfile(request);
             user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
@@ -175,9 +189,8 @@ namespace S4Analytics.Models
             await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
             // TODO: need to be more generic here -hard coded for testing
-            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
             var roles = request.UserManagerCd
-                ? new List<string> { "User", "Agency Admin" }
+                ? new List<string> { "User", "User Manager" }
                 : new List<string> { "User" };
             await _userManager.AddToRolesAsync(user, roles);
 
@@ -205,7 +218,6 @@ namespace S4Analytics.Models
             request.AccessBefore70Days = before70days;
             request.UserId = userName;
             request.UserCreatedDt = DateTime.Now;
-            request.CreatedBy = "tbd"; //TODO
             UpdateApprovedNewUserRequest(request);
             return request;
         }
@@ -231,10 +243,8 @@ namespace S4Analytics.Models
 
             await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
-            // TODO: need to be more generic here -hard coded for testing
-            // TODO: If user is for a New Agency, then also need to create an Agency Admin role
             var roles = request.UserManagerCd
-                ? new List<string> { "User", "Agency Admin" }
+                ? new List<string> { "User", "User Manager" }
                 : new List<string> { "User" };
             await _userManager.AddToRolesAsync(user, roles);
 
@@ -261,7 +271,7 @@ namespace S4Analytics.Models
             request.RequestStatus = newStatus;
             request.AccessBefore70Days = before70days;
             request.UserCreatedDt = DateTime.Now;
-            request.CreatedBy = "tbd"; //TODO
+            request.CreatedBy = approval.AdminUserName;
             UpdateApprovedNewUserRequest(request);
             return request;
         }
@@ -314,6 +324,7 @@ namespace S4Analytics.Models
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
+            request.CreatedBy = approval.AdminUserName;
 
             //Create new Vendor in CONTRACTOR
             var vendor = CreateNewVendor(request);
@@ -495,7 +506,7 @@ namespace S4Analytics.Models
                     return null;
             }
 
-            profile.CreatedBy = "tbd"; // TODO: need to get currently logged in user name
+            profile.CreatedBy = request.CreatedBy;
             profile.CreatedDate = DateTime.Now;
 
             return profile;
@@ -594,7 +605,7 @@ namespace S4Analytics.Models
         {
             var vendor = new Vendor(request.VendorName, GetNextVendorId())
             {
-                CreatedBy = "tbd", //TODO
+                CreatedBy = request.CreatedBy,
                 CreatedDate = DateTime.Now,
                 EmailDomain = request.VendorEmailDomain,
                 IsActive = true
@@ -670,12 +681,12 @@ namespace S4Analytics.Models
 
         }
 
-        private List<string> GetAgencyAdminEmails(int agencyId)
+        private List<string> GetUserManagerEmails(int agencyId)
         {
             var emails = new List<string>();
 
             var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
-                                JOIN USER_ROLE R ON R.ROLE_NM = 'Agency Admin'
+                                JOIN USER_ROLE R ON R.ROLE_NM = 'User Manager'
                                 AND R.USER_NM = U.USER_NM
                                 WHERE U.AGNCY_ID = :agencyId";
 
@@ -749,7 +760,9 @@ namespace S4Analytics.Models
                 //}
             }
 
+#if DEBUG
             msg.To.Add(new MailAddress("mfowler@ufl.edu"));
+#endif
 
             msg.Subject = subject;
             msg.IsBodyHtml = true;

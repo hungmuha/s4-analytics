@@ -5,13 +5,10 @@ import {
    NewUserRequestStateService, NewUserRequestService, QueueColumn, QueueFilter, NewUserRequest, NewUserRequestStatus
 } from './shared';
 
-
-
 @Component({
     selector: 'request-queue',
     templateUrl: './request-queue.component.html'
 })
-
 
 export class RequestQueueComponent {
 
@@ -39,7 +36,8 @@ export class RequestQueueComponent {
     constructor(
         public state: NewUserRequestStateService,
         private newUserRequestService: NewUserRequestService,
-        private modalService: NgbModal) {
+        private modalService: NgbModal
+       ) {
     }
 
     ngOnInit() {

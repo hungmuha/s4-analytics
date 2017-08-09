@@ -26,6 +26,9 @@ namespace S4Analytics
         public string Version { get; set; }
         public string BaseUrl { get; set; }
         public string SilverlightBaseUrl { get; set; }
+        public string ContractShareUrl { get; set; }
+        public string ContractShareUserName { get; set; }
+        public string ContractSharePassword { get; set; }
         public Dictionary<string, CoordinateSystem_Client> CoordinateSystems { get; set; }
     }
 }

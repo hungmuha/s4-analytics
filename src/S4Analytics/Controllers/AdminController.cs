@@ -21,6 +21,7 @@ namespace S4Analytics.Controllers
         public NewUserRequestStatus CurrentStatus { get; set; }
         public bool Before70Days { get; set; }
         public bool Lea { get; set; }
+        public string AdminUserName { get; set; }
     }
 
     public class RequestRejection
@@ -29,6 +30,7 @@ namespace S4Analytics.Controllers
         public NewUserRequest SelectedRequest{ get; set;}
         public string RejectionReason { get; set; }
         public NewUserRequestStatus NewStatus { get; set; }
+        public string AdminUserName { get; set; }
     }
 
     [Route("api/[controller]")]
@@ -47,9 +49,9 @@ namespace S4Analytics.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("new-user-request")]
-        public IActionResult GetAllNewUserRequests()
+        public async Task<IActionResult> GetAllNewUserRequests()
         {
-            var info = _newUserRequestRepo.GetAll();
+            var info = await _newUserRequestRepo.GetAll(User.Identity.Name);
             return new ObjectResult(info);
         }
 
@@ -81,10 +83,9 @@ namespace S4Analytics.Controllers
         public async Task<IActionResult> ApproveOther(int id, [FromBody]RequestApproval approval)
         {
             var currentStatus = approval.CurrentStatus;
-            var newStatus = approval.NewStatus;
-            var selectedRequest = approval.SelectedRequest;
+            approval.AdminUserName = User.Identity.Name;
 
-            switch(currentStatus)
+            switch (currentStatus)
             {
                 case NewUserRequestStatus.NewUser:
                     return new ObjectResult(await _newUserRequestRepo.ApproveNewUser(id, approval));
@@ -100,18 +101,21 @@ namespace S4Analytics.Controllers
         [HttpPatch("new-user-request/{id}/approve/consultant")]
         public async Task<IActionResult> ApproveConsultant(int id, [FromBody]RequestApproval approval)
         {
-            return new ObjectResult(await _newUserRequestRepo.ApproveNewConsultant(id, approval));
+            approval.AdminUserName = User.Identity.Name;
+            return new ObjectResult(await _newUserRequestRepo.ApproveConsultant(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/approve/agency")]
         public IActionResult ApproveAgency(int id, [FromBody]RequestApproval approval)
         {
+            approval.AdminUserName = User.Identity.Name;
             return new ObjectResult(_newUserRequestRepo.ApproveAgency(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/reject")]
         public IActionResult Reject(int id, [FromBody]RequestRejection rejection)
         {
+            rejection.AdminUserName = User.Identity.Name;
             return new ObjectResult(_newUserRequestRepo.Reject(id,  rejection));
         }
     }

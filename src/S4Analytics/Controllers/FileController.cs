@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using S4Analytics.Models;
+using System;
 using System.IO;
+using System.Net;
 using System.Text;
 
 namespace S4Analytics.Controllers
@@ -8,6 +12,13 @@ namespace S4Analytics.Controllers
     [Authorize]
     public class FileController : Controller
     {
+        ClientOptions _clientOptions;
+
+        public FileController(IOptions<ClientOptions> clientOptions)
+        {
+            _clientOptions = clientOptions.Value;
+        }
+
         /// <summary>
         /// Return file stream for the requested contract
         /// </summary>
@@ -17,18 +28,31 @@ namespace S4Analytics.Controllers
         [Authorize(Policy = "any admin")]
         public IActionResult GetContractPdf(string fileName)
         {
-            // TODO: get correct path here
-            var path = $@"D:\Git\S4-Analytics\S4.Analytics.Web\Uploads\{fileName}";
+            var contractShareUrl = _clientOptions.ContractShareUrl;
+            var username = _clientOptions.ContractShareUserName;
+            var password = _clientOptions.ContractSharePassword;
 
-            if (!System.IO.File.Exists(path))
+            var url = contractShareUrl + fileName;
+
+            try
             {
-                return new ObjectResult(new MemoryStream(Encoding.UTF8.GetBytes($@"<div>{fileName} not found</div>")));
+                using (var client = new WebClient())
+                {
+                    client.Credentials = new NetworkCredential(username, password);
+
+                    var data = client.DownloadData(url);
+                    Stream stream = new MemoryStream(data);
+
+                    var file = File(stream, "application/pdf");
+                    return new ObjectResult(file.FileStream);
+                }
+
+            }
+            catch(Exception ex)
+            {
+               return new ObjectResult(new MemoryStream(Encoding.UTF8.GetBytes($@"<div>Contract '{fileName}' not found</div>")));
             }
 
-            var stream = System.IO.File.Open(path, FileMode.Open);
-
-            var file = File(stream, "application/pdf");
-            return new ObjectResult(file.FileStream);
         }
     }
 }

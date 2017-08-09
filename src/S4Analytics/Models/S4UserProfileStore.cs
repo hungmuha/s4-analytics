@@ -163,7 +163,7 @@ namespace S4Analytics.Models
                     user.Profile.FirstName,
                     user.Profile.LastName,
                     user.Profile.SuffixName,
-                    createdBy = "TBD",
+                    createdBy = user.Profile.CreatedBy,
                     createdDate = DateTime.Now,
                     forcePasswordChange = user.Profile.ForcePasswordChange ? "Y" : "N",
                     timeLimitedAccount = user.Profile.TimeLimitedAccount ? "Y" : "N",
@@ -179,7 +179,7 @@ namespace S4Analytics.Models
             // MERGE INTO USER_CNTY
             foreach (var county in user.Profile.ViewableCounties)
             {
-                MergeUserCounty(user.UserName, county);
+                MergeUserCounty(user.UserName, county, user.Profile.CreatedBy);
             }
 
             // MERGE INTO USER_AGREEMENT
@@ -231,7 +231,7 @@ namespace S4Analytics.Models
                 vendorId = user.Profile.VendorCompany == null ? null : (int?)user.Profile.VendorCompany.VendorId,
                 user.Profile.EmailAddress,
                 user.Profile.CrashReportAccess,
-                modifiedBy = "TBD",
+                modifiedBy = user.Profile.ModifiedBy,
                 modifiedDate = DateTime.Now,
                 appName = _applicationName,
                 user.UserName
@@ -240,7 +240,7 @@ namespace S4Analytics.Models
             // MERGE INTO USER_CNTY
             foreach (var county in user.Profile.ViewableCounties)
             {
-                MergeUserCounty(user.UserName, county);
+                MergeUserCounty(user.UserName, county, user.Profile.ModifiedBy);
             }
 
             // DELETE USER_CNTY
@@ -318,7 +318,7 @@ namespace S4Analytics.Models
             return IdentityResult.Success;
         }
 
-        private IdentityResult MergeUserCounty(string userName, UserCounty county)
+        private IdentityResult MergeUserCounty(string userName, UserCounty county, string currentUserName)
         {
             var cmdText = @"MERGE INTO user_cnty uc
                 USING (
@@ -348,7 +348,7 @@ namespace S4Analytics.Models
                 county.CountyCode,
                 canView = county.CrashReportAccess,
                 canEdit = county.CanEdit ? "Y" : "N",
-                currentUserName = "TBD",
+                currentUserName = currentUserName,
                 currentTime = DateTime.Now
             });
             return IdentityResult.Success;

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { NewUserRequest } from './new-user-request';
 import { NewUserRequestStatus } from './new-user-request-enum';
 import { RequestActionResults } from './request-action-results';
-import { OptionsService, Options } from './.././../../shared';
+import { OptionsService, Options} from './.././../../shared';
 
 class RequestApproval {
     constructor(
@@ -21,7 +21,8 @@ class NewAgencyRequestApproval extends RequestApproval {
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
         public before70Days: boolean,
-        public lea?: boolean) {
+        public lea?: boolean
+        ) {
         super(requestNumber, selectedRequest, currentStatus, newStatus);
         }
 }
@@ -42,7 +43,8 @@ class RequestRejection {
         public requestNumber: number,
         public selectedRequest: NewUserRequest,
         public rejectionReason: string,
-        public newStatus: NewUserRequestStatus) { }
+        public newStatus: NewUserRequestStatus
+       ) { }
 }
 
 @Injectable()
