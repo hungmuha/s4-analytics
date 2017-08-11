@@ -123,7 +123,7 @@ export class NewUserRequestService {
         return this.http
             .patch(url, reqWrapper)
             .map(res =>  res.json() )
-            .catch(this.handleError);
+            .catch((error:any)=> this.handleError(error));
     }
 
     reject(requestActionResults: RequestActionResults, selectedRequest: NewUserRequest): Observable<NewUserRequest> {
@@ -155,7 +155,7 @@ export class NewUserRequestService {
     private handleError(error: any) {
         let errMsg = (error.message) ? error.message :
             error.status ? `${error.status} - ${error.statusText}` : 'Server error';
-
+        console.log(error.status);
         return Observable.throw(errMsg);
     }
 

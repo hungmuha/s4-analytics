@@ -119,7 +119,13 @@ namespace S4Analytics.Models
             user.Profile = CreateS4UserProfile(request);
 
             var passwordText = GenerateRandomPassword(8, 0);
-            await _userManager.CreateAsync(user, passwordText);
+            var result = await _userManager.CreateAsync(user, passwordText);
+
+
+            if (!result.Succeeded)
+            {
+                Console.WriteLine(result.ToPrettyJson());
+            }
 
             await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
@@ -185,7 +191,6 @@ namespace S4Analytics.Models
 
             var passwordText = GenerateRandomPassword(8, 0);
             await _userManager.CreateAsync(user, passwordText);
-
             await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
             // TODO: need to be more generic here -hard coded for testing
@@ -795,7 +800,7 @@ namespace S4Analytics.Models
             char[] chPassword = new char[length];
 
             //chPunctionations contains the list of legal non-alphanumeric characters
-            char[] chPunctuations = "!@#$%^*()_-+=[{]};:<>|./?".ToCharArray();
+            char[] chPunctuations = "!@$%^*()_-+=[{]};:>|./?#<".ToCharArray();
 
             //Get a cryptographically strong series of bytes
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
