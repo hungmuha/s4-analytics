@@ -185,7 +185,6 @@ namespace S4Analytics.Models
 
             var passwordText = GenerateRandomPassword(8, 0);
             await _userManager.CreateAsync(user, passwordText);
-
             await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
 
             // TODO: need to be more generic here -hard coded for testing

@@ -73,6 +73,12 @@ namespace S4Analytics
             // Configure identity.
             services.Configure<IdentityOptions>(identityOptions =>
             {
+                identityOptions.Password.RequireDigit = false;
+                identityOptions.Password.RequiredLength = 1;
+                identityOptions.Password.RequireNonAlphanumeric = false;
+                identityOptions.Password.RequireUppercase = false;
+                identityOptions.Password.RequireLowercase = false;
+
                 identityOptions.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
                 {
                     // Do not redirect to /Login for unauthorized API call; return Unauthorized status code instead.
