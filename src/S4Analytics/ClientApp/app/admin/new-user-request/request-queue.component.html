@@ -8,16 +8,16 @@
     <div class="col-12">
         <!-- filter button toolbar-->
         <div class="btn-group mt-3" role="group">
-            <button class="btn btn-sm btn-secondary"
+            <button class="btn btn-sm btn-light"
                     [class.active]="state.queueFilter === queueFilter.All"
                     (click)="filterQueueBy(queueFilter.All)">All</button>
-            <button class="btn btn-sm btn-secondary"
+            <button class="btn btn-sm btn-light"
                     [class.active]="state.queueFilter === queueFilter.Pending"
                     (click)="filterQueueBy(queueFilter.Pending)">Pending</button>
-            <button class="btn btn-sm btn-secondary"
+            <button class="btn btn-sm btn-light"
                     [class.active]="state.queueFilter === queueFilter.Completed"
                     (click)="filterQueueBy(queueFilter.Completed)">Completed</button>
-            <button class="btn btn-sm btn-secondary"
+            <button class="btn btn-sm btn-light"
                     [class.active]="state.queueFilter === queueFilter.Rejected"
                     (click)="filterQueueBy(queueFilter.Rejected)">Rejected</button>
         </div>
