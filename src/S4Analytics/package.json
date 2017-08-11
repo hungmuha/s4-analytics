@@ -24,7 +24,7 @@
     "@angular/platform-browser-dynamic": "^4.1.0",
     "@angular/router": "^4.1.0",
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.15 || ^1.0.0",
-    "bootstrap": "^4.0.0-alpha.6 || ^4.0.0",
+    "bootstrap": "4.0.0-alpha.6",
     "core-js": "^2.4.1",
     "event-source-polyfill": "^0.0.9",
     "font-awesome": "^4.7.0",
