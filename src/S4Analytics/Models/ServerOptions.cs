@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace S4Analytics
+namespace S4Analytics.Models
 {
     public class CoordinateSystem_Server
     {

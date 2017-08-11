@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-import { OptionsService, Options } from './options.service';
+import { AppStateService } from './app-state.service';
 import '../rxjs-operators';
 import * as moment from 'moment';
 
@@ -8,16 +8,12 @@ import * as moment from 'moment';
 export class KeepSilverlightAliveService {
     private nextCallTime: moment.Moment;
     private keepAliveInterval = 10; // in minutes
-    private options: Options;
 
     constructor(
         private http: Http,
-        private optionsService: OptionsService) {
+        private state: AppStateService) {
         // schedule the initial keep alive call
         this.nextCallTime = moment().add(this.keepAliveInterval, 'minutes');
-        this.optionsService.getOptions()
-            .first()
-            .subscribe(options => this.options = options);
     }
 
     keepAlive() {
@@ -26,13 +22,11 @@ export class KeepSilverlightAliveService {
             (opener as any).keepSilverlightAlive();
         }
         // keep the silverlight app server alive
-        if (this.options) {
-            let now = moment();
-            if (now.isAfter(this.nextCallTime)) {
-                let url = `${this.options.silverlightBaseUrl}KeepAlive.aspx`;
-                this.http.get(url).first().subscribe();
-                this.nextCallTime = now.add(this.keepAliveInterval, 'minutes');
-            }
+        let now = moment();
+        if (now.isAfter(this.nextCallTime)) {
+            let url = `${this.state.options.silverlightBaseUrl}KeepAlive.aspx`;
+            this.http.get(url).first().subscribe();
+            this.nextCallTime = now.add(this.keepAliveInterval, 'minutes');
         }
     }
 }

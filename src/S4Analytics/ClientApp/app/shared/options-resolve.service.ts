@@ -1,4 +1,7 @@
-﻿import { Injectable } from '@angular/core';
+﻿// Service to retrieve client configuration options from the API
+
+import { Injectable } from '@angular/core';
+import { Resolve } from '@angular/router';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import '../rxjs-operators';
@@ -7,6 +10,7 @@ export interface Options {
     version: string;
     baseUrl: string;
     silverlightBaseUrl: string;
+    isDevelopment: boolean;
     contractShareUrl: string;
     contactShareUserName: string;
     contractSharePassword: string;
@@ -21,20 +25,12 @@ export interface Options {
 }
 
 @Injectable()
-export class OptionsService {
-    private cachedOptions: Options;
-
+export class OptionsResolveService implements Resolve<Options> {
     constructor(private http: Http) { }
 
-    public getOptions(): Observable<Options> {
-        if (this.cachedOptions === undefined) {
-            let url = 'api/options';
-            return this.http.get(url)
-                .map(response => response.json() as Options)
-                .do(options => this.cachedOptions = options);
-        }
-        else {
-            return Observable.of(this.cachedOptions);
-        }
+    resolve(): Observable<Options> {
+        let url = 'api/options';
+        return this.http.get(url)
+            .map(response => response.json() as Options);
     }
 }

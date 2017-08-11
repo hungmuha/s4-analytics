@@ -28,14 +28,9 @@ body {
     width: auto !important;
 }
 
-.container-fluid {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-}
-
 /* ensure that the top menu doesn't get covered by anything else */
 .navbar-s4 {
-    z-index: 9999;
+    z-index: 1030;
 }
 
 .analytics-filters {
@@ -47,7 +42,7 @@ body {
     padding: 1rem 0 1rem 1rem;
     overflow-x: hidden;
     overflow-y: auto;
-    z-index: 9998; /* ensure that filter panel doesn't hide dropdown menus */
+    z-index: 1020; /* ensure that filter panel doesn't hide dropdown menus */
 }
 
 /* give filter cards a prominent border */

@@ -12,10 +12,12 @@ import { ReportingModule } from './reporting';
 import { TrendAnalysisModule } from './trend-analysis';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login.component';
+import { IndexComponent } from './index.component';
 import { Html5ConduitComponent } from './html5-conduit.component';
 import {
-    IdentityService, KeepSilverlightAliveService, OptionsService,
-    AuthGuard, AnyAdminGuard, GlobalAdminGuard, Html5ConduitResolve
+    IdentityService, KeepSilverlightAliveService, OptionsResolveService,
+    AuthGuard, AnyAdminGuard, GlobalAdminGuard, Html5ConduitResolve,
+    AppStateService
 } from './shared';
 
 @NgModule({
@@ -33,17 +35,19 @@ import {
     ],
     declarations: [
         AppComponent,
+        IndexComponent,
         LoginComponent,
         Html5ConduitComponent
     ],
     providers: [
-        OptionsService,
+        OptionsResolveService,
         IdentityService,
         AuthGuard,
         AnyAdminGuard,
         GlobalAdminGuard,
         KeepSilverlightAliveService,
-        Html5ConduitResolve
+        Html5ConduitResolve,
+        AppStateService
     ],
     bootstrap: [AppComponent]
 })

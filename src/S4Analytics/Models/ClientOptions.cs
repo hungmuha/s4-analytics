@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace S4Analytics
+namespace S4Analytics.Models
 {
     // Members of the ClientOptions class are exposed via REST API to the Angular app.
     // Don't include anything sensitive here, especially passwords.
@@ -26,6 +26,7 @@ namespace S4Analytics
         public string Version { get; set; }
         public string BaseUrl { get; set; }
         public string SilverlightBaseUrl { get; set; }
+        public bool IsDevelopment { get; set; }
         public string ContractShareUrl { get; set; }
         public string ContractShareUserName { get; set; }
         public string ContractSharePassword { get; set; }
