@@ -1,20 +1,7 @@
-import { Component } from '@angular/core';
-import { IdentityService } from './shared';
+﻿import { Component } from '@angular/core';
 
 @Component({
     selector: 'app',
-    templateUrl: './app.component.html'
+    template: `<router-outlet></router-outlet>`
 })
-export class AppComponent {
-    isCollapsed: boolean = true;
-
-    constructor(private identity: IdentityService) { }
-
-    toggleCollapsed(): void {
-        this.isCollapsed = !this.isCollapsed;
-    }
-
-    logOut(): void {
-        this.identity.logOut().subscribe();
-    }
-}
+export class AppComponent { }
