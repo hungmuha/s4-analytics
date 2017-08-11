@@ -14,7 +14,7 @@
 <div class="row">
     <b>Email:</b>&nbsp;
     {{state.selectedRequest.requestorEmail}}
-    <i [hidden]=hideRequestorWarning()>
+    <i [hidden]="hideRequestorWarning()">
         &nbsp;
         <i class="fa fa-exclamation-circle text-danger"
            [ngbPopover]="requestorWarningContent"
