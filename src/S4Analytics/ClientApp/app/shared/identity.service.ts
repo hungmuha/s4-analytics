@@ -7,36 +7,28 @@ import { S4IdentityUser } from './s4-identity-user';
 @Injectable()
 export class IdentityService {
     checkedForServerSession = false;
-    isAuthenticated?: boolean;
     redirectUrl?: string; // set by AuthGuardService before navigating to login
+    currentUser?: S4IdentityUser;
 
-    private _currentUser?: S4IdentityUser;
+    get isAuthenticated(): boolean {
+        return this.currentUser !== undefined;
+    }
 
     constructor(private http: Http, private router: Router) { }
-
-    get currentUser(): S4IdentityUser  {
-        if (this._currentUser) { return this._currentUser; }
-
-        // throw error if _currentUser is undefined
-        let error = new Error('S4IdentityUser._currentUser is undefined');
-        throw (error);
-    }
 
     logIn(userName: string, password: string): Observable<boolean> {
         return this.http
             .post('api/identity/login', { userName: userName, password: password })
             .map(response => response.json() as S4IdentityUser)
             .map(user => {
-                this._currentUser = user;
-                this.isAuthenticated = true;
+                this.currentUser = user;
                 let url = this.redirectUrl || '/';
                 this.redirectUrl = undefined;
                 this.router.navigateByUrl(url);
                 return true;
             })
             .catch(() => { // in case of 401 Unauthorized
-                this._currentUser = undefined;
-                this.isAuthenticated = false;
+                this.currentUser = undefined;
                 return Observable.of(false);
             });
     }
@@ -47,13 +39,11 @@ export class IdentityService {
             .post(url, {})
             .map(response => response.json() as S4IdentityUser)
             .map(user => {
-                this._currentUser = user;
-                this.isAuthenticated = true;
+                this.currentUser = user;
                 return true;
             })
             .catch(() => { // in case of 401 Unauthorized
-                this._currentUser = undefined;
-                this.isAuthenticated = false;
+                this.currentUser = undefined;
                 return Observable.of(false);
             });
     }
@@ -62,8 +52,7 @@ export class IdentityService {
         return this.http
             .post('api/identity/logout', {})
             .do(() => {
-                this._currentUser = undefined;
-                this.isAuthenticated = false;
+                this.currentUser = undefined;
                 this.router.navigate(['login']);
             });
     }
@@ -78,14 +67,12 @@ export class IdentityService {
             .map(response => {
                 let user = response.json() as S4IdentityUser;
                 this.checkedForServerSession = true;
-                this._currentUser = user;
-                this.isAuthenticated = true;
+                this.currentUser = user;
                 return true;
             })
             .catch(() => { // in case of 401 Unauthorized
                 this.checkedForServerSession = true;
-                this._currentUser = undefined;
-                this.isAuthenticated = false;
+                this.currentUser = undefined;
                 return Observable.of(false);
             });
     }

@@ -19,7 +19,7 @@
 <div class="row">
     <b>Email: </b>&nbsp;
     {{state.selectedRequest.consultantEmail}}
-    <i [hidden]=hideConsultantWarning()>
+    <i [hidden]="hideConsultantWarning()">
         &nbsp;
         <i class="fa fa-exclamation-circle text-danger"
            [ngbPopover]="consultantWarningContent"
@@ -63,7 +63,7 @@
 <div class="row font-italic">
     <div class="col offset-2">
         {{state.selectedRequest.requestorEmail}}
-        <i [hidden]=hideRequestorWarning()>
+        <i [hidden]="hideRequestorWarning()">
             &nbsp;
             <i class="fa fa-exclamation-circle text-danger"
                [ngbPopover]="requestorWarningContent"

@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using S4Analytics.Models;
 
 namespace S4Analytics.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    [AllowAnonymous]
     public class OptionsController : Controller
     {
         private IOptions<ClientOptions> _clientOptions;
