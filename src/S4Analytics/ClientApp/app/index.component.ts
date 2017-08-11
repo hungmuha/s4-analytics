@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { IdentityService, AppStateService, Options } from './shared';
 
@@ -14,6 +14,7 @@ export class IndexComponent implements OnInit, OnDestroy {
     constructor(
         private state: AppStateService,
         private route: ActivatedRoute,
+        private router: Router,
         private identity: IdentityService) { }
 
     ngOnInit() {
@@ -33,6 +34,10 @@ export class IndexComponent implements OnInit, OnDestroy {
 
     toggleCollapsed(): void {
         this.isCollapsed = !this.isCollapsed;
+    }
+
+    logIn(): void {
+        this.router.navigate(['login']);
     }
 
     logOut(): void {

@@ -12,7 +12,7 @@
             Signal Four Analytics
         </a>
 
-        <div class="navbar-text text-nowrap" [hidden]="!showResponsiveCues">
+        <div class="navbar-text text-nowrap" *ngIf="showResponsiveCues">
             <!-- responsive cues -->
             <div class="hidden-lg-down">xl <span class="fa fa-rocket"></span></div>
             <div class="hidden-md-down hidden-xl-up">lg <span class="fa fa-plane"></span></div>
@@ -48,18 +48,18 @@
             <li class="nav-item hidden-md-up">
                 <a class="nav-link" href="javascript:void(0)">Reports</a>
             </li>
-            <li class="dropdown-divider hidden-md-up"></li>
-            <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0)">Log in</a>
+            <li class="dropdown-divider hidden-md-up"></li> -->
+            <li class="nav-item" [hidden]="identity.isAuthenticated">
+                <a class="nav-link" (click)="logIn()" href="javascript:void(0)">Log in</a>
             </li>
-            <li class="nav-item hidden-sm-down">
+            <!--<li class="nav-item hidden-sm-down">
                 <a class="nav-link" href="javascript:void(0)">
                     <span class="badge badge-pill badge-danger">2</span>
                 </a>
             </li>-->
-            <li ngbDropdown class="nav-item dropdown hidden-sm-down">
+            <li ngbDropdown class="nav-item dropdown hidden-sm-down" *ngIf="identity.isAuthenticated">
                 <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="navbarDropdownMenuLink" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
-                    username
+                    {{identity.currentUser.userName}}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                     <!--<a class="dropdown-item" href="javascript:void(0)">Notifications <span class="badge badge-pill badge-danger">2</span></a>
@@ -76,8 +76,8 @@
             <li class="nav-item hidden-md-up">
                 <a class="nav-link" href="javascript:void(0)">Change password</a>
             </li>-->
-            <li class="nav-item hidden-md-up">
-                <a class="nav-link" href="javascript:void(0)">Log out</a>
+            <li class="nav-item hidden-md-up" [hidden]="!identity.isAuthenticated">
+                <a class="nav-link" (click)="logOut()" href="javascript:void(0)">Log out</a>
             </li>
         </ul>
     </div>
