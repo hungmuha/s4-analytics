@@ -88,7 +88,8 @@ namespace S4Analytics.Controllers
             switch (currentStatus)
             {
                 case NewUserRequestStatus.NewUser:
-                    return new ObjectResult(await _newUserRequestRepo.ApproveNewUser(id, approval));
+                    var result = await _newUserRequestRepo.ApproveNewUser(id, approval);
+                    return new ObjectResult(result);
                 case NewUserRequestStatus.NewVendor:
                     return new ObjectResult(_newUserRequestRepo.ApproveNewVendor(id, approval));
                 case NewUserRequestStatus.CreateAgency:
@@ -102,7 +103,8 @@ namespace S4Analytics.Controllers
         public async Task<IActionResult> ApproveConsultant(int id, [FromBody]RequestApproval approval)
         {
             approval.AdminUserName = User.Identity.Name;
-            return new ObjectResult(await _newUserRequestRepo.ApproveConsultant(id, approval));
+            var result = await _newUserRequestRepo.ApproveConsultant(id, approval);
+            return new ObjectResult(result);
         }
 
         [HttpPatch("new-user-request/{id}/approve/agency")]
