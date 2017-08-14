@@ -23,8 +23,8 @@ namespace S4Analytics.Models
             IHttpContextAccessor httpContextAccessor)
         {
             _connStr = serverOptions.Value.WarehouseConnStr;
-            _warehouseSchema = serverOptions.Value.WarehouseSchema;
-            _spatialSchema = serverOptions.Value.SpatialSchema;
+            _warehouseSchema = serverOptions.Value.OracleSchemas.Warehouse;
+            _spatialSchema = serverOptions.Value.OracleSchemas.Spatial;
             _httpContextAccessor = httpContextAccessor;
         }
 

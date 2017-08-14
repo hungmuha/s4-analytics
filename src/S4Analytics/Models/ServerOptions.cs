@@ -4,18 +4,23 @@ namespace S4Analytics.Models
 {
     public class ServerOptions
     {
-        public string MembershipSchema { get; set; }
-        public string WarehouseSchema { get; set; }
-        public string IdentitySchema { get; set; }
-        public string SpatialSchema { get; set; }
+        public OracleSchemaNames OracleSchemas { get; set; }
         public Dictionary<string, string> ConnectionStrings { get; set; }
-        public string MembershipConnStr { get { return ConnectionStrings[MembershipSchema]; } }
-        public string WarehouseConnStr { get { return ConnectionStrings[WarehouseSchema]; } }
-        public string IdentityConnStr { get { return ConnectionStrings[IdentitySchema]; } }
+        public string MembershipConnStr { get { return ConnectionStrings[OracleSchemas.Membership]; } }
+        public string WarehouseConnStr { get { return ConnectionStrings[OracleSchemas.Warehouse]; } }
+        public string IdentityConnStr { get { return ConnectionStrings[OracleSchemas.Identity]; } }
         public Dictionary<string, CoordinateSystem_Server> CoordinateSystems { get; set; }
         public EmailOptions EmailOptions { get; set;}
         public ContractShareOptions ContractShare { get; set; }
         public string MembershipApplicationName { get; set; }
+    }
+
+    public class OracleSchemaNames
+    {
+        public string Membership { get; set; }
+        public string Warehouse { get; set; }
+        public string Identity { get; set; }
+        public string Spatial { get; set; }
     }
 
     public class ContractShareOptions
