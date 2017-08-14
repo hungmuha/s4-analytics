@@ -53,22 +53,45 @@ namespace S4Analytics.Models
             var adminUser = await _userManager.FindByNameAsync(adminUserName);
             var adminAgency = adminUser.Profile.Agency;
 
-            // Restrict queue based on user's role
-            var whereClause = GetWhereClause(adminUser);
-
             var selectTxt = GetRequestSelectQuery();
             var cmdTxt = $@"{selectTxt}
                             FROM new_user_req_new u
                             LEFT JOIN s4_agncy a
                             ON u.agncy_id = a.agncy_id
                             LEFT JOIN contractor c
-                            ON c.contractor_id = u.contractor_id
-                            {whereClause}";
+                            ON c.contractor_id = u.contractor_id";
+
+            if (adminUser.IsHSMVAdmin())
+            {
+                // HSMV Admins can view all New Agency requests, and all New Vendor and New Consultant
+                // requests if the requesting agency is not an FDOT agency
+                cmdTxt += $@" WHERE u.req_status = {(int)NewUserRequestStatus.NewAgency}
+                    OR (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})
+                    AND a.agncy_nm NOT LIKE '%FDOT%')";
+            }
+            else if (adminUser.IsFDOTAdmin())
+            {
+                // FDOT Admins can view all New Vendor and New Consultant
+                // requests if the requesting agency is an FDOT agency
+                cmdTxt += $@" WHERE (u.req_status IN (
+                    {(int)NewUserRequestStatus.NewVendor},
+                    {(int)NewUserRequestStatus.NewConsultant}
+                ) AND a.agncy_nm LIKE '%FDOT%'";
+            }
+            else if (adminUser.IsUserManager())
+            {
+                // Agency User Managers can view New User requests from their agency, or
+                // if a parent agency, requests from its child agencies
+                cmdTxt += $@" WHERE u.req_status = {(int)NewUserRequestStatus.NewUser}
+                    AND u.agncy_id IN (
+                        {adminAgency.AgencyId},
+                        {adminAgency.ParentAgencyId} -- if 0, no problem
+                    ) ";
+            }
 
             var results = _conn.Query<NewUserRequest>(cmdTxt);
             return results;
         }
-
 
         /// <summary>
         /// Return record from NEW_USER_REQ where REQ_NBR = reqNbr
@@ -402,90 +425,6 @@ namespace S4Analytics.Models
 
 
         #region private methods
-
-        private string GetWhereClause(S4IdentityUser<S4UserProfile> user)
-        {
-            if (user.IsGlobalAdmin())
-            {
-                return GetGlobalAdminWhereClause();
-            }
-
-            if (user.IsHSMVAdmin())
-            {
-                return GetHSMVAdminWhereClause();
-            }
-
-            if (user.IsFDOTAdmin())
-            {
-                return GetFDOTAdminWhereClause();
-            }
-
-            return GetAgencyUserManagerWhereClause(user.Profile.Agency);
-
-        }
-
-        /// <summary>
-        /// Global admins have no restrictions. They can view ALL records
-        /// </summary>
-        /// <returns></returns>
-        private string GetGlobalAdminWhereClause()
-        {
-           return string.Empty;
-        }
-
-        /// <summary>
-        /// HSMV Admins can view all New Agency requests, and all New Vendor and New Consultant
-        /// requests if the requesting agency is not an FDOT agency
-        /// </summary>
-        /// <returns></returns>
-        private string GetHSMVAdminWhereClause()
-        {
-            return $" WHERE u.req_status = {(int)NewUserRequestStatus.NewAgency}" +
-                $" OR (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})" +
-                $" AND a.agncy_nm NOT LIKE '%FDOT%')";
-        }
-
-        /// <summary>
-        /// FDOT Admins can view all New Vendor and New Consultant
-        /// requests if the requesting agency is an FDOT agency
-        /// </summary>
-        /// <returns></returns>
-        private string GetFDOTAdminWhereClause()
-        {
-            return $" WHERE (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})" +
-                $" AND a.agncy_nm LIKE '%FDOT%'";
-        }
-
-        /// <summary>
-        /// Agency User Managers can view New User requests from their agency, or
-        /// if a parent agency, requests from its child agencies
-        /// </summary>
-        /// <param name="adminAgency">adminAgency's agency</param>
-        /// <returns></returns>
-        private string GetAgencyUserManagerWhereClause(Agency adminAgency)
-        {
-            var agencyClause = string.Empty;
-
-            // Check against agency id
-            var adminUserAgencyIdClause = $"u.agncy_id = {adminAgency.AgencyId}";
-
-            if (adminAgency.ParentAgencyId != 0)
-            {
-                // This is a child agency; can only see requests in its own agency, not its parent
-                agencyClause = adminUserAgencyIdClause;
-            }
-            else
-            {
-                // Get all records that match the admin's agency
-                // or whose parent agency id (if present) matches admin's agency
-                agencyClause = $" ( {adminUserAgencyIdClause} OR u.agncy_id = {adminAgency.ParentAgencyId} )" ;
-            }
-
-            var requestTypesClause = $" u.req_status = {(int)NewUserRequestStatus.NewUser} ";
-            var userManagerClause = $" WHERE {requestTypesClause} AND {agencyClause} ";
-
-            return userManagerClause;
-        }
 
         private bool UpdateApprovedNewUserRequest(NewUserRequest request)
         {
