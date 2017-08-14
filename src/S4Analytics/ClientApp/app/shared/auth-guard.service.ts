@@ -55,7 +55,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 export class AnyAdminGuard extends AuthGuard {
     constructor(identityService: IdentityService, router: Router) {
         super(identityService, router);
-        this.roles = ['global admin', 'user_manager'];
+        this.roles = ['global admin', 'user manager', 'hsmv admin', 'fdot admin'];
     }
 }
 

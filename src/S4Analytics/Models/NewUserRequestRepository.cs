@@ -54,15 +54,7 @@ namespace S4Analytics.Models
             var adminUser = await _userManager.FindByNameAsync(adminUserName);
             var adminAgency = adminUser.Profile.Agency;
 
-            // Check against agency id
-            var adminUserAgencyIdClause = string.Format($"u.agncy_id = {adminAgency.AgencyId.ToString()}");
-
-            // Check against parent agency id if present
-            var parentAgencyIdClause = adminAgency.ParentAgencyId != 0 ? string.Format($" OR u.agncy_id = {adminAgency.ParentAgencyId}") : "";
-
-            // Create where clause if user is not an global admin
-            var whereClause = adminUser.IsGlobalAdmin() ? ""
-                : string.Format($" WHERE {adminUserAgencyIdClause} {parentAgencyIdClause}");
+            var whereClause = GetUserManagerClause(adminUser);
 
             var selectTxt = GetRequestSelectQuery();
             var cmdTxt = $@"{selectTxt}
@@ -410,6 +402,49 @@ namespace S4Analytics.Models
 
 
         #region private methods
+
+        private string GetUserManagerClause(S4IdentityUser<S4UserProfile> user)
+        {
+            if (user.IsGlobalAdmin())
+            {
+                return string.Empty;
+            }
+
+            if (user.IsHSMVAdmin())
+            {
+                return string.Format($" WHERE u.req_status = {(int)NewUserRequestStatus.NewAgency}" +
+                    $" OR (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})" +
+                    $" AND a.agncy_nm NOT LIKE '%FDOT%')");
+            }
+
+            if (user.IsFDOTAdmin())
+            {
+                return string.Format($" WHERE (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})" +
+                  $" AND a.agncy_nm LIKE '%FDOT%'");
+            }
+
+            // Users is an Agency User Manager
+            var adminAgency = user.Profile.Agency;
+            var agencyClause = string.Empty;
+
+            // Check against agency id
+            var adminUserAgencyIdClause = string.Format($"u.agncy_id = {adminAgency.AgencyId}");
+
+            if (adminAgency.ParentAgencyId != 0)
+            {
+                agencyClause = adminUserAgencyIdClause;
+            }
+            else
+            {
+                // Check against parent agency id if present
+                agencyClause = string.Format($" ( {adminUserAgencyIdClause} OR u.agncy_id = {adminAgency.ParentAgencyId} )") ;
+            }
+
+            var requestTypesClause = string.Format($" u.req_type = {(int)NewUserRequestStatus.NewUser} ");
+            var userManagerClause = string.Format($" WHERE {requestTypesClause} AND {agencyClause}");
+
+            return userManagerClause;
+        }
 
         private bool UpdateApprovedNewUserRequest(NewUserRequest request)
         {

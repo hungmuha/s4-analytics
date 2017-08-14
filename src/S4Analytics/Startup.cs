@@ -51,7 +51,7 @@ namespace S4Analytics
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("any admin", policy => policy.RequireRole("global admin", "user manager"));
+                options.AddPolicy("any admin", policy => policy.RequireRole("global admin", "user manager", "hsmv admin", "fdot admin"));
             });
 
             services.AddDistributedMemoryCache();
