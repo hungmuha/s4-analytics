@@ -124,5 +124,17 @@ namespace S4Analytics.Models
         {
             return user.Roles.Any(role => role.RoleName == RoleNames.Guest.ToLowerInvariant());
         }
+
+        public static bool IsHSMVAdmin(this S4IdentityUser<S4UserProfile> user)
+        {
+            return user.Roles.Any(role => role.RoleName == RoleNames.HSMVAdmin.ToLowerInvariant());
+        }
+
+        public static bool IsFDOTAdmin(this S4IdentityUser<S4UserProfile> user)
+        {
+            return user.Roles.Any(role => role.RoleName == RoleNames.FDOTAdmin.ToLowerInvariant());
+        }
+
+
     }
 }
