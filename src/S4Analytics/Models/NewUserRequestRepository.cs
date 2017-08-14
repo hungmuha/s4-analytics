@@ -50,11 +50,11 @@ namespace S4Analytics.Models
         /// <returns></returns>
         public async Task<IEnumerable<NewUserRequest>> GetAll(string adminUserName)
         {
-            //TODO:  Need to further restrict based on user role and type of request
             var adminUser = await _userManager.FindByNameAsync(adminUserName);
             var adminAgency = adminUser.Profile.Agency;
 
-            var whereClause = GetUserManagerClause(adminUser);
+            // Restrict queue based on user's role
+            var whereClause = GetWhereClause(adminUser);
 
             var selectTxt = GetRequestSelectQuery();
             var cmdTxt = $@"{selectTxt}
@@ -403,45 +403,86 @@ namespace S4Analytics.Models
 
         #region private methods
 
-        private string GetUserManagerClause(S4IdentityUser<S4UserProfile> user)
+        private string GetWhereClause(S4IdentityUser<S4UserProfile> user)
         {
             if (user.IsGlobalAdmin())
             {
-                return string.Empty;
+                return GetGlobalAdminWhereClause();
             }
 
             if (user.IsHSMVAdmin())
             {
-                return string.Format($" WHERE u.req_status = {(int)NewUserRequestStatus.NewAgency}" +
-                    $" OR (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})" +
-                    $" AND a.agncy_nm NOT LIKE '%FDOT%')");
+                return GetHSMVAdminWhereClause();
             }
 
             if (user.IsFDOTAdmin())
             {
-                return string.Format($" WHERE (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})" +
-                  $" AND a.agncy_nm LIKE '%FDOT%'");
+                return GetFDOTAdminWhereClause();
             }
 
-            // Users is an Agency User Manager
-            var adminAgency = user.Profile.Agency;
+            return GetAgencyUserManagerWhereClause(user.Profile.Agency);
+
+        }
+
+        /// <summary>
+        /// Global admins have no restrictions. They can view ALL records
+        /// </summary>
+        /// <returns></returns>
+        private string GetGlobalAdminWhereClause()
+        {
+           return string.Empty;
+        }
+
+        /// <summary>
+        /// HSMV Admins can view all New Agency requests, and all New Vendor and New Consultant
+        /// requests if the requesting agency is not an FDOT agency
+        /// </summary>
+        /// <returns></returns>
+        private string GetHSMVAdminWhereClause()
+        {
+            return $" WHERE u.req_status = {(int)NewUserRequestStatus.NewAgency}" +
+                $" OR (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})" +
+                $" AND a.agncy_nm NOT LIKE '%FDOT%')";
+        }
+
+        /// <summary>
+        /// FDOT Admins can view all New Vendor and New Consultant
+        /// requests if the requesting agency is an FDOT agency
+        /// </summary>
+        /// <returns></returns>
+        private string GetFDOTAdminWhereClause()
+        {
+            return $" WHERE (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})" +
+                $" AND a.agncy_nm LIKE '%FDOT%'";
+        }
+
+        /// <summary>
+        /// Agency User Managers can view New User requests from their agency, or
+        /// if a parent agency, requests from its child agencies
+        /// </summary>
+        /// <param name="adminAgency">adminAgency's agency</param>
+        /// <returns></returns>
+        private string GetAgencyUserManagerWhereClause(Agency adminAgency)
+        {
             var agencyClause = string.Empty;
 
             // Check against agency id
-            var adminUserAgencyIdClause = string.Format($"u.agncy_id = {adminAgency.AgencyId}");
+            var adminUserAgencyIdClause = $"u.agncy_id = {adminAgency.AgencyId}";
 
             if (adminAgency.ParentAgencyId != 0)
             {
+                // This is a child agency; can only see requests in its own agency, not its parent
                 agencyClause = adminUserAgencyIdClause;
             }
             else
             {
-                // Check against parent agency id if present
-                agencyClause = string.Format($" ( {adminUserAgencyIdClause} OR u.agncy_id = {adminAgency.ParentAgencyId} )") ;
+                // Get all records that match the admin's agency
+                // or whose parent agency id (if present) matches admin's agency
+                agencyClause = $" ( {adminUserAgencyIdClause} OR u.agncy_id = {adminAgency.ParentAgencyId} )" ;
             }
 
-            var requestTypesClause = string.Format($" u.req_type = {(int)NewUserRequestStatus.NewUser} ");
-            var userManagerClause = string.Format($" WHERE {requestTypesClause} AND {agencyClause}");
+            var requestTypesClause = $" u.req_status = {(int)NewUserRequestStatus.NewUser} ";
+            var userManagerClause = $" WHERE {requestTypesClause} AND {agencyClause} ";
 
             return userManagerClause;
         }
