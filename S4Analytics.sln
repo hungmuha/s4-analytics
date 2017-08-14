@@ -1,14 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6099BB46-A624-48D5-A4B0-C00FDF67E3DF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{6099BB46-A624-48D5-A4B0-C00FDF67E3DF}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		.gitlab-ci.yml = .gitlab-ci.yml
 		app_offline.htm = app_offline.htm
-		global.json = global.json
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -16,9 +15,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{94A8EB04-E93
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8A8D5760-D4B2-4FCE-B505-571C76B08E99}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "S4Analytics", "src\S4Analytics\S4Analytics.xproj", "{26401250-A2C7-42F3-AFA0-F36213D83119}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S4Analytics", "src\S4Analytics\S4Analytics.csproj", "{26401250-A2C7-42F3-AFA0-F36213D83119}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "S4Analytics.Tests", "test\S4Analytics.Tests\S4Analytics.Tests.xproj", "{758BCD05-ADC2-4D0B-96B7-E70A9F3AED61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S4Analytics.Tests", "test\S4Analytics.Tests\S4Analytics.Tests.csproj", "{758BCD05-ADC2-4D0B-96B7-E70A9F3AED61}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{184FFC54-5BCD-4B8A-ABFF-E9711EF1A366}"
+	ProjectSection(SolutionItems) = preProject
+		database\navteq_2015q1_views_for_sdo.sql = database\navteq_2015q1_views_for_sdo.sql
+		database\s4_spatial_ng_import.sql = database\s4_spatial_ng_import.sql
+		database\s4_spatial_ng_schema.sql = database\s4_spatial_ng_schema.sql
+		database\s4_warehouse_ng.sql = database\s4_warehouse_ng.sql
+		database\s4_warehouse_ng_import.sql = database\s4_warehouse_ng_import.sql
+		database\s4_warehouse_ng_schema.sql = database\s4_warehouse_ng_schema.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

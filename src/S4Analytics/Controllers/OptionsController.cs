@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using S4Analytics.Models;
 
 namespace S4Analytics.Controllers
 {
     [Route("api/[controller]")]
-    public class OptionsController : S4Controller
+    [AllowAnonymous]
+    public class OptionsController : Controller
     {
         private IOptions<ClientOptions> _clientOptions;
 
@@ -21,8 +19,7 @@ namespace S4Analytics.Controllers
         [HttpGet]
         public IActionResult GetOptions()
         {
-            var data = AjaxSafeData(_clientOptions.Value);
-            return new ObjectResult(data);
+            return new ObjectResult(_clientOptions.Value);
         }
     }
 }

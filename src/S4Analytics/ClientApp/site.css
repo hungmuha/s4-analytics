@@ -1,107 +1,196 @@
 :root {
     --mainColor: white;
+    --buttonDefaultColor: #0275d8;
 }
+
+@custom-media --sm (width >= 576px);
+@custom-media --md (width >= 768px);
+@custom-media --lg (width >= 992px);
+@custom-media --xl (width >= 1200px);
+
+@custom-media --xs-only (width < 576px);
+@custom-media --sm-down (width < 768px);
+@custom-media --md-down (width < 992px);
+@custom-media --lg-down (width < 1200px);
 
 body {
     background-color: var(--mainColor);
 }
 
-.inactive-button {
-    color: gray;
+.footer {
+    text-align: center;
+    font-size: 0.8rem;
+    padding: 1rem;
 }
 
-.hidden {
-    display: none;
+/* prevent user menu from taking up all the space in the top menu */
+.navbar-collapse {
+    width: auto !important;
+    flex-basis: unset !important;
 }
 
-.container {
-    margin-top: 20px;
-    margin-bottom: 20px;
+/* ensure that the top menu doesn't get covered by anything else */
+.navbar-s4 {
+    z-index: 1030;
 }
 
-.pbcat-alert {
-    margin-top: 20px;
-    margin-bottom: 0 !important;
-}
-
-.pbcat-nav-row {
-    margin-top: 15px;
-}
-
-.pbcat-nav-icon {
-    font-size: 30px;
-    vertical-align: middle;
-}
-
-.pbcat-nav-link {
-    vertical-align: middle;
-}
-
-.pbcat-image-checked {
+.analytics-filters {
+    display: none; /* don't show at smaller breakpoints */
     position: absolute;
-    background-color: white;
-    color: green;
-    font-size: 30px;
-    top: -10px;
-    right: 0;
+    width: 400px; /* use fixed width because responsive width is poor ux */
+    margin-top: -1rem;
+    margin-bottom: -1rem;
+    padding: 1rem 0 1rem 1rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 1020; /* ensure that filter panel doesn't hide dropdown menus */
 }
 
-.pbcat-list-check {
-    font-size: 30px;
-    color: lightgray;
-    margin: 0;
-    float: left;
+/* give filter cards a prominent border */
+.analytics-filters > .card .card {
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.pbcat-list-check.checked {
-    color: green;
+/* space out the filter cards from each other */
+.analytics-filters > .card .card:not(:last-of-type) {
+    margin-bottom: 1rem;
 }
 
-.pbcat-summary-check {
-    font-size: 80px;
-    color: lightgray;
-    margin: 0;
-    float: left;
-    margin-top: 20px;
+/* at large breakpoint and above, display filter panel and move main panel over */
+@media (--lg) {
+    .analytics-main {
+        padding-left: 415px;  /* 400 + 15 */
+    }
+    .analytics-filters {
+        display: block;
+    }
 }
 
-.pbcat-summary-check.checked {
-    color: green;
+/* set openlayers map height at various breakpoints */
+.ol-viewport > canvas {
+    height: 250px !important;
+}
+@media (--sm) {
+    .ol-viewport > canvas {
+        height: 300px !important;
+    }
+}
+@media (--md) {
+    .ol-viewport > canvas {
+        height: 400px !important;
+    }
+}
+@media (--lg) {
+    .ol-viewport > canvas {
+        height: 500px !important;
+    }
 }
 
-.pbcat-list-text {
-    vertical-align: middle;
-    margin-left: 40px;
+/* override default link color (usually blue) for nav links */
+a.nav-link {
+    color: inherit;
 }
 
-.thumbnail:hover {
-    background-color: #efefef !important;
+/* make badges inside links look better */
+.badge > a {
+    line-height: 1.5;
+    color: inherit;
+}
+
+/* make badges inside buttons look better */
+.btn > .badge {
+    padding-top: 0.4em !important;
+}
+
+/* give badge the "default" background color when shown in dropdown toggler button */
+.dropdown-toggle > .badge,
+.btn.active > .badge {
+    background-color: var(--buttonDefaultColor);
+}
+
+/* don't pad openlayers map within card */
+.card-map > .card-block {
+    padding: 0 !important;
+}
+
+/* show "hand" cursor on collapsible card header so user realizes it can be clicked */
+.card.collapsible > .card-header {
     cursor: pointer;
 }
 
-.thumbnail {
-    padding: 10px 10px 4px !important;
+/* better position angle icons in collapsible card headers */
+.card.collapsible > .card-header > .fa-angle-down,
+.card.collapsible > .card-header > .fa-angle-left {
+    line-height: 1.5;
 }
 
-.thumbnail img:not(:first-child) {
-    padding-top: 10px;
+/* hide extra border when card is collapsed */
+.card.collapsed > .card-header {
+    border-bottom: 0 !important;
 }
 
-.report-viewer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    z-index: 999999;
+/* hide card block and footer when card is collapsed */
+.card.collapsed > .card-block,
+.card.collapsed > .card-block *,
+.card.collapsed > .card-footer,
+.card.collapsed > .card-footer * {
+    display: none !important;
 }
 
-.pbcat-summary-notes textarea {
-    min-width: 100%;
+.form-login {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-login .form-login-heading,
+.form-login .checkbox {
+    margin-bottom: 10px;
+}
+
+.form-login .checkbox {
+    font-weight: normal;
+}
+
+.form-login .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-login .form-control:focus {
+    z-index: 2;
+}
+
+.form-login input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-login input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.btn-secondary:focus {
+    background-color: darkgray;
+}
+
+.warning-message {
+    color: red;
+}
+
+.thead-inverse a {
+    color: white;
+}
+
+.thead-inverse th {
+    text-align: center;
+    vertical-align: middle !important;
 }

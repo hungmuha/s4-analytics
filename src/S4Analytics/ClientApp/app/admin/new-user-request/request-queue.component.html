@@ -1,0 +1,113 @@
+﻿<div class="row">
+    <div class="col-12">
+        <h5>New User Request Queue</h5>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <!-- filter button toolbar-->
+        <div class="btn-group mt-3" role="group">
+            <button class="btn btn-sm btn-light"
+                    [class.active]="state.queueFilter === queueFilter.All"
+                    (click)="filterQueueBy(queueFilter.All)">All</button>
+            <button class="btn btn-sm btn-light"
+                    [class.active]="state.queueFilter === queueFilter.Pending"
+                    (click)="filterQueueBy(queueFilter.Pending)">Pending</button>
+            <button class="btn btn-sm btn-light"
+                    [class.active]="state.queueFilter === queueFilter.Completed"
+                    (click)="filterQueueBy(queueFilter.Completed)">Completed</button>
+            <button class="btn btn-sm btn-light"
+                    [class.active]="state.queueFilter === queueFilter.Rejected"
+                    (click)="filterQueueBy(queueFilter.Rejected)">Rejected</button>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <!-- queue -->
+        <table class="table table-striped table-bordered table-sm mt-3">
+            <thead class="thead-inverse">
+                <tr>
+                    <th name="reqNbr">
+                        <a href="javascript:void(0)" (click)="sortColumn('requestNbr')">
+                            Request <span class="text-nowrap"># <span [ngClass]="caretClass('requestNbr')"></span></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" (click)="sortColumn('requestDt')">
+                            Request <span class="text-nowrap">Date <span [ngClass]="caretClass('requestDt')"></span></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" (click)="sortColumn('requestType')">
+                            Request <span class="text-nowrap">Type <span [ngClass]="caretClass('requestType')"></span></span>
+                        </a>
+                    </th>
+                    <th class="align-middle">
+                        <a href="javascript:void(0)" (click)="sortColumn('requestorLastNm')" class="text-nowrap">
+                            Requestor
+                            <span [ngClass]="caretClass('requestorLastNm')"></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" (click)="sortColumn('agncyNm')">
+                            Requestor <span class="text-nowrap">Agency <span [ngClass]="caretClass('agncyNm')"></span></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" (click)="sortColumn('requestStatus')">
+                            Request <span class="text-nowrap">Status <span [ngClass]="caretClass('requestStatus')"></span></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" (click)="sortColumn('userCreatedDt')">
+                            Account <span class="text-nowrap">Created <span [ngClass]="caretClass('userCreatedDt')"></span></span>
+                        </a>
+                    </th>
+                    <th>Action</th>
+                    <th>
+                        <a href="javascript:void(0)" (click)="sortColumn('adminComment')" class="text-nowrap">
+                            Comment
+                            <span [ngClass]="caretClass('adminComment')"></span>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let newUserReq of (filteredRequests | orderby:[state.sortColumnName, state.sortAsc])">
+                    <td>{{newUserReq.requestNbr}}</td>
+                    <td>{{newUserReq.requestDt | date:"MM/dd/yy"}}</td>
+                    <td>{{newUserReq.requestType | requestType }}</td>
+                    <td>{{newUserReq.requestorFirstNm + " " + newUserReq.requestorLastNm}}</td>
+                    <td>{{newUserReq.agncyNm}}</td>
+                    <td>{{newUserReq.requestStatus | requestStatus }}</td>
+                    <td>{{newUserReq.userCreatedDt | date:"MM/dd/yy"}}</td>
+                    <td class="align-middle">
+                        <button class="btn btn-sm btn-primary" [hidden]="hideProcessRequestButton(newUserReq)" (click)="openActionModal(content, newUserReq)">Process Request</button>
+                    </td>
+                    <td>{{newUserReq.adminComment}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <!-- queue count -->
+    <div class="col-12">
+        <b>Showing {{requestShowingCount()}} out of {{totalRequestCount()}} records</b>
+    </div>
+</div>
+
+<ng-template #content let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title">{{state.selectedRequest.requestStatus | requestStatus }}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="container">
+        <request-action-component></request-action-component>
+    </div>
+</ng-template>

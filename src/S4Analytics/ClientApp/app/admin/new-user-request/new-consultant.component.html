@@ -1,0 +1,81 @@
+﻿<ng-template #requestorWarningContent>
+    <div class="row warning-message no-gutters" *ngFor="let msg of state.requestorWarningMessages">
+        <b>-{{ msg }}</b>
+    </div>
+</ng-template>
+
+<ng-template #consultantWarningContent>
+    <div class="row warning-message no-gutters" *ngFor="let msg of state.consultantWarningMessages">
+        <b>-{{ msg }}</b>
+    </div>
+</ng-template>
+
+
+<div class="row">
+    <b>Consultant Name:</b>&nbsp;
+    {{state.selectedRequest.consultantFirstNm}}
+    {{state.selectedRequest.consultantLastNm}}
+</div>
+<div class="row">
+    <b>Email: </b>&nbsp;
+    {{state.selectedRequest.consultantEmail}}
+    <i [hidden]="hideConsultantWarning()">
+        &nbsp;
+        <i class="fa fa-exclamation-circle text-danger"
+           [ngbPopover]="consultantWarningContent"
+           triggers="mouseenter:mouseleave"
+           container="body"
+           placement="right"></i>
+    </i>
+</div>
+<div class="row">
+    <b>Vendor:</b>&nbsp;
+    {{state.selectedRequest.vendorName}}
+</div>
+<div class="row">
+    <div>
+        <b>Contract Start Date: </b>&nbsp;
+        {{state.selectedRequest.contractStartDt | date}}
+    </div>
+    <div>
+        <b>Contract End Date:</b>&nbsp;
+        {{state.selectedRequest.contractEndDt | date: 'shortDate'}}
+    </div>
+</div>
+<div class="row">
+    <b>Contract:</b>
+    <button type="button" class="btn btn-sm btn-link" (click)="openContractViewer()">View Contract</button>
+</div>
+<div class="row">
+    <label><b>Reason for Access:&nbsp;</b></label>
+    <div>{{state.selectedRequest.accessReasonTx}}</div>
+</div>
+<div class="row font-italic">
+    <!-- requestor info-->
+    <b>Request made by:</b>
+</div>
+<div class="row font-italic">
+    <div class="col offset-2">
+        {{state.selectedRequest.requestorFirstNm}}
+        {{state.selectedRequest.requestorLastNm}}
+    </div>
+</div>
+<div class="row font-italic">
+    <div class="col offset-2">
+        {{state.selectedRequest.requestorEmail}}
+        <i [hidden]="hideRequestorWarning()">
+            &nbsp;
+            <i class="fa fa-exclamation-circle text-danger"
+               [ngbPopover]="requestorWarningContent"
+               triggers="mouseenter:mouseleave"
+               container="body"
+               placement="right"></i>
+        </i>
+    </div>
+</div>
+<div class="row font-italic">
+    <div class="col offset-2">
+        {{state.selectedRequest.agncyNm}}
+    </div>
+</div>
+

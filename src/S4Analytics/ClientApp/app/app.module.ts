@@ -1,35 +1,53 @@
 ﻿import { NgModule } from '@angular/core';
-import { BrowserModule, __platform_browser_private__ } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
-import { routing, appRoutingProviders } from './app.routing';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { routes } from './app.routing';
+import { AdminModule } from './admin';
+import { EventAnalysisModule } from './event-analysis';
+import { NetworkAnalysisModule } from './network-analysis';
+import { ReportingModule } from './reporting';
+import { TrendAnalysisModule } from './trend-analysis';
 import { AppComponent } from './app.component';
-import { IndexComponent } from './index.component';
 import { LoginComponent } from './login.component';
-import { ReportViewerComponent } from './report-viewer.component';
-import { PbcatModule } from './pbcat/pbcat.module';
-import { AppState } from './app.state';
-import { OptionsService } from './options.service';
-import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
+import { IndexComponent } from './index.component';
+import { Html5ConduitComponent } from './html5-conduit.component';
+import {
+    IdentityService, KeepSilverlightAliveService, OptionsResolveService,
+    AuthGuard, AnyAdminGuard, GlobalAdminGuard, Html5ConduitResolve,
+    AppStateService
+} from './shared';
 
 @NgModule({
     imports: [
-        BrowserModule,
+        RouterModule.forRoot(routes),
         HttpModule,
-        PbcatModule,
-        routing
+        BrowserModule,
+        FormsModule,
+        NgbModule.forRoot(),
+        AdminModule,
+        EventAnalysisModule,
+        NetworkAnalysisModule,
+        ReportingModule,
+        TrendAnalysisModule
     ],
     declarations: [
         AppComponent,
         IndexComponent,
         LoginComponent,
-        ReportViewerComponent
+        Html5ConduitComponent
     ],
     providers: [
-        AppState,
-        appRoutingProviders,
-        __platform_browser_private__.BROWSER_SANITIZATION_PROVIDERS,
-        OptionsService,
-        KeepSilverlightAliveService
+        OptionsResolveService,
+        IdentityService,
+        AuthGuard,
+        AnyAdminGuard,
+        GlobalAdminGuard,
+        KeepSilverlightAliveService,
+        Html5ConduitResolve,
+        AppStateService
     ],
     bootstrap: [AppComponent]
 })

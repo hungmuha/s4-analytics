@@ -1,59 +1,63 @@
-var path = require('path');
-var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var extractCSS = new ExtractTextPlugin('vendor.css');
-var isDevelopment =
-    process.env.ASPNETCORE_ENVIRONMENT === 'Local' ||
-    process.env.ASPNETCORE_ENVIRONMENT === 'Development';
+const path = require('path');
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const merge = require('webpack-merge');
 
-module.exports = {
-    resolve: {
-        extensions: [ '', '.js' ]
-    },
-    module: {
-        loaders: [
-            { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' },
-            { test: /\.css/, loader: extractCSS.extract(['css']) }
-        ]
-    },
-    entry: {
-        vendor: [
-            '@angular/common',
-            '@angular/compiler',
-            '@angular/core',
-            '@angular/forms',
-            '@angular/http',
-            '@angular/platform-browser',
-            '@angular/platform-browser-dynamic',
-            '@angular/router',
-            'bootstrap',
-            'bootstrap/dist/css/bootstrap.css',
-            'es6-shim',
-            'jquery',
-            'moment',
-            'reflect-metadata',
-            'rxjs',
-            'zone.js'
-        ]
-    },
-    output: {
-        path: path.join(__dirname, 'wwwroot', 'dist'),
-        filename: '[name].js',
-        library: '[name]_[hash]',
-    },
-    plugins: [
-        extractCSS,
-        new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery' }), // Maps these identifiers to the jQuery package (because Bootstrap expects it to be a global variable)
-        new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.DllPlugin({
-            path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
-            name: '[name]_[hash]'
-        })
-    ].concat(isDevelopment ? [] : [
-        new webpack.optimize.UglifyJsPlugin({
-            compress: { warnings: false },
-            minimize: true,
-            mangle: false // Due to https://github.com/angular/angular/issues/6678
-        })
-    ])
-};
+module.exports = (env) => {
+    const extractCSS = new ExtractTextPlugin('vendor.css');
+    const isDevBuild = !(env && env.prod);
+
+    const config = {
+        stats: { modules: false },
+        resolve: { extensions: ['.js'] },
+        module: {
+            rules: [
+                { test: /\.(png|woff|woff2|eot|ttf|svg)(\?|$)/, use: 'url-loader?limit=100000' },
+                { test: /\.css(\?|$)/, use: extractCSS.extract({ use: 'css-loader' }) }
+            ]
+        },
+        entry: {
+            vendor: [
+                '@angular/common',
+                '@angular/compiler',
+                '@angular/core',
+                '@angular/forms',
+                '@angular/http',
+                '@angular/platform-browser',
+                '@angular/platform-browser-dynamic',
+                '@angular/router',
+                '@ng-bootstrap/ng-bootstrap',
+                'bootstrap/dist/css/bootstrap.css',
+                'core-js',
+                'event-source-polyfill',
+                'font-awesome/css/font-awesome.css',
+                'lodash',
+                'moment',
+                'openlayers',
+                'openlayers/dist/ol.css',
+                'reflect-metadata',
+                'zone.js'
+            ]
+        },
+        output: {
+            publicPath: '/dist/',
+            filename: '[name].js',
+            library: '[name]_[hash]',
+            path: path.join(__dirname, 'wwwroot', 'dist')
+        },
+        plugins: [
+            new webpack.ContextReplacementPlugin(/\@angular\b.*\b(bundles|linker)/, path.join(__dirname, './ClientApp')), // Workaround for https://github.com/angular/angular/issues/11580
+            new webpack.ContextReplacementPlugin(/angular(\\|\/)core(\\|\/)@angular/, path.join(__dirname, './ClientApp')), // Workaround for https://github.com/angular/angular/issues/14898
+            new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/), // Exclude unwanted moment locales
+            extractCSS,
+            new webpack.DllPlugin({
+                path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
+                name: '[name]_[hash]'
+            })
+        ].concat(isDevBuild ? [] : [
+            new webpack.optimize.UglifyJsPlugin()
+        ])
+    };
+
+    return config;
+}

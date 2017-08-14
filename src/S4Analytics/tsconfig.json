@@ -10,14 +10,17 @@ http://www.typescriptlang.org/docs/handbook/tsconfig-json.html.
     "moduleResolution": "node",
     "target": "es5",
     "sourceMap": true,
+    "alwaysStrict": true,
     "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipDefaultLibCheck": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "lib": [ "es6", "dom" ],
+    "types": [ "node" ]
   },
-  "exclude": [
-    "node_modules",
-    "wwwroot"
-  ]
+  "exclude": [ "bin", "node_modules" ],
+  "atom": { "rewriteTsconfig": false }
 }
