@@ -12,11 +12,11 @@ namespace S4Analytics.Controllers
     [Authorize]
     public class FileController : Controller
     {
-        ClientOptions _clientOptions;
+        ServerOptions _serverOptions;
 
-        public FileController(IOptions<ClientOptions> clientOptions)
+        public FileController(IOptions<ServerOptions> serverOptions)
         {
-            _clientOptions = clientOptions.Value;
+            _serverOptions = serverOptions.Value;
         }
 
         /// <summary>
@@ -28,9 +28,9 @@ namespace S4Analytics.Controllers
         [Authorize(Policy = "any admin")]
         public IActionResult GetContractPdf(string fileName)
         {
-            var contractShareUrl = _clientOptions.ContractShareUrl;
-            var username = _clientOptions.ContractShareUserName;
-            var password = _clientOptions.ContractSharePassword;
+            var contractShareUrl = _serverOptions.ContractShare.Url;
+            var username = _serverOptions.ContractShare.UserName;
+            var password = _serverOptions.ContractShare.Password;
 
             var url = contractShareUrl + fileName;
 

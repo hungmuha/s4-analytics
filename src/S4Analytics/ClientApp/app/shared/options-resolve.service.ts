@@ -11,9 +11,6 @@ export interface Options {
     baseUrl: string;
     silverlightBaseUrl: string;
     isDevelopment: boolean;
-    contractShareUrl: string;
-    contactShareUserName: string;
-    contractSharePassword: string;
     coordinateSystems: {
         [key: string]: {
             type: string,

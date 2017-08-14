@@ -2,12 +2,6 @@
 
 namespace S4Analytics.Models
 {
-    public class CoordinateSystem_Server
-    {
-        public string Type { get; set; }
-        public int Srid { get; set; }
-    }
-
     public class ServerOptions
     {
         public string MembershipSchema { get; set; }
@@ -20,7 +14,21 @@ namespace S4Analytics.Models
         public string IdentityConnStr { get { return ConnectionStrings[IdentitySchema]; } }
         public Dictionary<string, CoordinateSystem_Server> CoordinateSystems { get; set; }
         public EmailOptions EmailOptions { get; set;}
+        public ContractShareOptions ContractShare { get; set; }
         public string MembershipApplicationName { get; set; }
+    }
+
+    public class ContractShareOptions
+    {
+        public string Url { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class CoordinateSystem_Server
+    {
+        public string Type { get; set; }
+        public int Srid { get; set; }
     }
 
     public class EmailOptions
