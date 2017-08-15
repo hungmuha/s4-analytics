@@ -3,12 +3,23 @@ using Lib.Identity.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace S4Analytics.Models
 {
     public static class ExtensionMethods
     {
+        public static Stream ToStream(this string text)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(text);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
+        }
+
         /// <summary>
         /// Extension method that works like AddDynamicParams() but
         /// does not have the limitation/bug that parameter names are

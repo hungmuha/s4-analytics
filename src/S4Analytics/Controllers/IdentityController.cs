@@ -10,6 +10,9 @@ using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System;
 using Microsoft.AspNetCore.Hosting;
+using System.Runtime.Serialization.Json;
+using System.IO;
+using System.Runtime.Serialization;
 
 namespace S4Analytics.Controllers
 {
@@ -48,8 +51,11 @@ namespace S4Analytics.Controllers
         public async Task<IActionResult> LogInWithToken(string token)
         {
             var tokenAsGuid = Guid.Parse(token);
-            var userName = _html5Conduit.GetUserNameFromToken(tokenAsGuid);
-            var user = await _userManager.FindByNameAsync(userName);
+            var details = _html5Conduit.GetDetailsFromToken(tokenAsGuid);
+            var user = await _userManager.FindByNameAsync(details.UserName);
+            var payloadStream = details.JsonPayload.ToStream();
+            var ser = new DataContractJsonSerializer(typeof(UrlPayload));
+            var payload = (UrlPayload)ser.ReadObject(payloadStream);
 
             if (user == null)
             {
@@ -58,11 +64,15 @@ namespace S4Analytics.Controllers
 
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            // todo: return an S4IdentityUser
             return new ObjectResult(new
             {
-                user.UserName,
-                roles = user.Roles.Select(role => role.RoleName)
+                // todo: return an S4IdentityUser
+                user = new
+                {
+                    user.UserName,
+                    roles = user.Roles.Select(role => role.RoleName)
+                },
+                payload
             });
         }
 
@@ -125,5 +135,12 @@ namespace S4Analytics.Controllers
                 .ToList();
             return roles;
         }
+    }
+
+    [DataContract]
+    class UrlPayload
+    {
+        [DataMember]
+        public string url;
     }
 }
