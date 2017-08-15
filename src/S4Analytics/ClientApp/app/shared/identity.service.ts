@@ -37,9 +37,11 @@ export class IdentityService {
         let url = `api/identity/login/${token}`;
         return this.http
             .post(url, {})
-            .map(response => response.json() as S4IdentityUser)
-            .map(user => {
-                this.currentUser = user;
+            .map(response => response.json() as any)
+            .map(data => {
+                this.currentUser = data.user as S4IdentityUser;
+                let redirectUrl = data.payload.url as string;
+                this.router.navigateByUrl(redirectUrl);
                 return true;
             })
             .catch(() => { // in case of 401 Unauthorized
