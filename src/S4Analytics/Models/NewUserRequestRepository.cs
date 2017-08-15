@@ -763,20 +763,15 @@ namespace S4Analytics.Models
             };
             var fromEmail = new MailAddress(from);
             msg.From = fromEmail;
-            //msg.To.Add(new MailAddress(to));
+            msg.To.Add(new MailAddress(to));
 
             if (cc != null)
             {
-
-                //foreach (string addr in cc)
-                //{
-                //    msg.CC.Add(new MailAddress(addr));
-                //}
+                foreach (string addr in cc)
+                {
+                    msg.CC.Add(new MailAddress(addr));
+                }
             }
-
-#if DEBUG
-            msg.To.Add(new MailAddress("mfowler@ufl.edu"));
-#endif
 
             msg.Subject = subject;
             msg.IsBodyHtml = true;
