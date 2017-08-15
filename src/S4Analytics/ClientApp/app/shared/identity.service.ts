@@ -40,8 +40,8 @@ export class IdentityService {
             .map(response => response.json() as any)
             .map(data => {
                 this.currentUser = data.user as S4IdentityUser;
-                let url = data.payload.url as string;
-                this.router.navigateByUrl(url);
+                let redirectUrl = data.payload.url as string;
+                this.router.navigateByUrl(redirectUrl);
                 return true;
             })
             .catch(() => { // in case of 401 Unauthorized
