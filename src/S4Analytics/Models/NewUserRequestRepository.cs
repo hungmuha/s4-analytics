@@ -61,34 +61,36 @@ namespace S4Analytics.Models
                             LEFT JOIN contractor c
                             ON c.contractor_id = u.contractor_id";
 
-            if (adminUser.IsHSMVAdmin())
+            if (!adminUser.IsGlobalAdmin())
             {
-                // HSMV Admins can view all New Agency requests, and all New Vendor and New Consultant
-                // requests if the requesting agency is not an FDOT agency
-                cmdTxt += $@" WHERE u.req_status = {(int)NewUserRequestStatus.NewAgency}
+                if (adminUser.IsHSMVAdmin())
+                {
+                    // HSMV Admins can view all New Agency requests, and all New Vendor and New Consultant
+                    // requests if the requesting agency is not an FDOT agency
+                    cmdTxt += $@" WHERE u.req_status = {(int)NewUserRequestStatus.NewAgency}
                     OR (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})
                     AND a.agncy_nm NOT LIKE '%FDOT%')";
-            }
-            else if (adminUser.IsFDOTAdmin())
-            {
-                // FDOT Admins can view all New Vendor and New Consultant
-                // requests if the requesting agency is an FDOT agency
-                cmdTxt += $@" WHERE (u.req_status IN (
+                }
+                else if (adminUser.IsFDOTAdmin())
+                {
+                    // FDOT Admins can view all New Vendor and New Consultant
+                    // requests if the requesting agency is an FDOT agency
+                    cmdTxt += $@" WHERE (u.req_status IN (
                     {(int)NewUserRequestStatus.NewVendor},
                     {(int)NewUserRequestStatus.NewConsultant}
                 ) AND a.agncy_nm LIKE '%FDOT%'";
-            }
-            else if (adminUser.IsUserManager())
-            {
-                // Agency User Managers can view New User requests from their agency, or
-                // if a parent agency, requests from its child agencies
-                cmdTxt += $@" WHERE u.req_status = {(int)NewUserRequestStatus.NewUser}
+                }
+                else if (adminUser.IsUserManager())
+                {
+                    // Agency User Managers can view New User requests from their agency, or
+                    // if a parent agency, requests from its child agencies
+                    cmdTxt += $@" WHERE u.req_status = {(int)NewUserRequestStatus.NewUser}
                     AND u.agncy_id IN (
                         {adminAgency.AgencyId},
                         {adminAgency.ParentAgencyId} -- if 0, no problem
                     ) ";
+                }
             }
-
             var results = _conn.Query<NewUserRequest>(cmdTxt);
             return results;
         }
