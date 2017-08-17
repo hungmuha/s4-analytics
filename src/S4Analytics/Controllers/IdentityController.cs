@@ -24,6 +24,7 @@ namespace S4Analytics.Controllers
 
     [Route("api/[controller]")]
     [Authorize]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class IdentityController : Controller
     {
         IHostingEnvironment _env;
