@@ -35,6 +35,7 @@ namespace S4Analytics.Controllers
 
     [Route("api/[controller]")]
     [Authorize(Policy = "any admin")]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class AdminController : Controller
     {
         private INewUserRequestRepository _newUserRequestRepo;
