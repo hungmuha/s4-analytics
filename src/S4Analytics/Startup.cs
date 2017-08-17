@@ -44,7 +44,7 @@ namespace S4Analytics
             {
                 // Return API exceptions as JSON, not HTML.
                 // Include exception detail for local debugging only.
-                var showExceptionDetail = _env.EnvironmentName == "Local";
+                var showExceptionDetail = _env.EnvironmentName != "Release";
                 mvcOptions.Filters.Add(
                     new CustomJsonExceptionFilter(showExceptionDetail));
             });
