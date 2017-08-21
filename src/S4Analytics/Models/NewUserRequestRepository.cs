@@ -55,7 +55,7 @@ namespace S4Analytics.Models
 
             var selectTxt = GetRequestSelectQuery();
             var cmdTxt = $@"{selectTxt}
-                            FROM new_user_req_new u
+                            FROM new_user_req u
                             LEFT JOIN s4_agncy a
                             ON u.agncy_id = a.agncy_id
                             LEFT JOIN contractor c
@@ -68,17 +68,21 @@ namespace S4Analytics.Models
                     // HSMV Admins can view all New Agency requests, and all New Vendor and New Consultant
                     // requests if the requesting agency is not an FDOT agency
                     cmdTxt += $@" WHERE u.req_status = {(int)NewUserRequestStatus.NewAgency}
-                    OR (u.req_status IN ({(int)NewUserRequestStatus.NewVendor}, {(int)NewUserRequestStatus.NewConsultant})
-                    AND a.agncy_nm NOT LIKE '%FDOT%')";
+                    OR (
+                      u.req_status IN (
+                        {(int)NewUserRequestStatus.NewVendor},
+                        {(int)NewUserRequestStatus.NewConsultant}
+                      ) AND a.agncy_nm NOT LIKE '%FDOT%'
+                    )";
                 }
                 else if (adminUser.IsFDOTAdmin())
                 {
                     // FDOT Admins can view all New Vendor and New Consultant
                     // requests if the requesting agency is an FDOT agency
-                    cmdTxt += $@" WHERE (u.req_status IN (
-                    {(int)NewUserRequestStatus.NewVendor},
-                    {(int)NewUserRequestStatus.NewConsultant}
-                ) AND a.agncy_nm LIKE '%FDOT%'";
+                    cmdTxt += $@" WHERE u.req_status IN (
+                      {(int)NewUserRequestStatus.NewVendor},
+                      {(int)NewUserRequestStatus.NewConsultant}
+                    ) AND a.agncy_nm LIKE '%FDOT%'";
                 }
                 else if (adminUser.IsUserManager())
                 {
@@ -86,9 +90,9 @@ namespace S4Analytics.Models
                     // if a parent agency, requests from its child agencies
                     cmdTxt += $@" WHERE u.req_status = {(int)NewUserRequestStatus.NewUser}
                     AND u.agncy_id IN (
-                        {adminAgency.AgencyId},
-                        {adminAgency.ParentAgencyId} -- if 0, no problem
-                    ) ";
+                      {adminAgency.AgencyId},
+                      {adminAgency.ParentAgencyId} -- if 0, no problem
+                    )";
                 }
             }
             var results = _conn.Query<NewUserRequest>(cmdTxt);
@@ -105,7 +109,7 @@ namespace S4Analytics.Models
             var selectTxt = GetRequestSelectQuery();
 
             var cmdTxt = $@"{selectTxt}
-                            FROM new_user_req_new u
+                            FROM new_user_req u
                             LEFT JOIN s4_agncy a
                             ON u.agncy_id = a.agncy_id
                             LEFT JOIN contractor c
@@ -430,7 +434,7 @@ namespace S4Analytics.Models
 
         private bool UpdateApprovedNewUserRequest(NewUserRequest request)
         {
-            var updateTxt = @"UPDATE NEW_USER_REQ_NEW
+            var updateTxt = @"UPDATE NEW_USER_REQ
                             SET
                                 REQ_STATUS = :requestStatus,
                                 AGNCY_ID = :agncyId,
@@ -454,7 +458,7 @@ namespace S4Analytics.Models
 
         private bool UpdateRejectedNewUserRequest(NewUserRequest request)
         {
-            var updateTxt = @"UPDATE NEW_USER_REQ_NEW
+            var updateTxt = @"UPDATE NEW_USER_REQ
                             SET
                                 REQ_STATUS = :requestStatus,
                                 ADMIN_COMMENT = :adminComment
