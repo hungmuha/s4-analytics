@@ -63,34 +63,52 @@ namespace S4Analytics.Models
 
             if (!adminUser.IsGlobalAdmin())
             {
+                var whereClauses = new List<string>();
+
+                // if none of the roles below apply, no results will be returned
+                whereClauses.Add("1 = 0");
+
                 if (adminUser.IsHSMVAdmin())
                 {
                     // HSMV Admins can view all New Agency requests, and all New Vendor and New Consultant
                     // requests if the requesting agency is not an FDOT agency
-                    cmdTxt += $@" WHERE new_agency_nm IS NOT NULL
+                    whereClauses.Add($@"u.new_agncy_nm IS NOT NULL
                     OR (
                       u.contract_start_dt IS NOT NULL
                       AND a.agncy_nm NOT LIKE '%FDOT%'
-                    )";
+                    )");
                 }
-                else if (adminUser.IsFDOTAdmin())
+
+                if (adminUser.IsFDOTAdmin())
                 {
                     // FDOT Admins can view all New Vendor and New Consultant
                     // requests if the requesting agency is an FDOT agency
-                    cmdTxt += $@" WHERE u.contract_start_dt IS NOT NULL
-                    AND a.agncy_nm LIKE '%FDOT%'";
+                    whereClauses.Add($@"u.contract_start_dt IS NOT NULL
+                    AND a.agncy_nm LIKE '%FDOT%'");
                 }
-                else if (adminUser.IsUserManager())
+
+                if (adminUser.IsUserManager())
                 {
                     // Agency User Managers can view New User requests from their agency, or
                     // if a parent agency, requests from its child agencies
-                    cmdTxt += $@" WHERE u.contract_start_dt IS NULL
-                    AND u.agncy_id IN (
-                      {adminAgency.AgencyId},
-                      {adminAgency.ParentAgencyId} -- if 0, no problem
-                    )";
+                    if (adminAgency.ParentAgencyId == 0)
+                    {
+                        whereClauses.Add($@"u.contract_start_dt IS NULL
+                        AND u.agncy_id = {adminAgency.AgencyId}");
+                    }
+                    else
+                    {
+                        whereClauses.Add($@"u.contract_start_dt IS NULL
+                        AND u.agncy_id IN (
+                          {adminAgency.AgencyId},
+                          {adminAgency.ParentAgencyId}
+                        )");
+                    }
                 }
+
+                cmdTxt += " WHERE (" + string.Join(") OR (", whereClauses.ToArray()) + ")";
             }
+
             var results = _conn.Query<NewUserRequest>(cmdTxt);
             return results;
         }
