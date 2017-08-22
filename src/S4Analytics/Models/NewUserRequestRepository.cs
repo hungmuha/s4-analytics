@@ -370,7 +370,7 @@ namespace S4Analytics.Models
 
             var subject = $"New consultant working under {request.AgncyNm} needs approval for Signal Four Account";
             var body = $@"<div>There is a new request from {request.RequestorFirstNm} {request.RequestorLastNm} from {request.AgncyNm} for a contract with {request.VendorName}.<br><br>
-                    Please go to the User Request Queue in Signal Four Analytics
+                    Please go to Manage Requests in Signal Four Analytics
                     to review request and if ok, approve it.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
