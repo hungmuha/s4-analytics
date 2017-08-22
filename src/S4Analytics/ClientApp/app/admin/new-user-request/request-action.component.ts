@@ -2,7 +2,7 @@
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
     NewUserRequestStateService, NewUserRequestService,
-    RequestActionResults, NewUserRequestStatus, QueueFilter
+    RequestActionResults, NewUserRequestStatus
 } from './shared';
 
 
