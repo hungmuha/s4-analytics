@@ -8,8 +8,10 @@ import { NewUserRequestStateService } from './shared';
 
 export class NewConsultantComponent  {
 
-    constructor(public state: NewUserRequestStateService) {
+    constructor(public state: NewUserRequestStateService) { }
 
+    get contractViewerUrl() {
+        return `admin/new-user-request/contract-pdf/${this.state.selectedRequest.contractPdfNm}`;
     }
 
     ngOnInit() {
@@ -47,14 +49,4 @@ export class NewConsultantComponent  {
             this.state.currentRequestActionResults.accessBefore70Days = false;
         }
     }
-
-    openContractViewer() {
-        let contractPdfFileNm = this.state.selectedRequest.contractPdfNm;
-        this.state.contractViewerWindow = window.open(`admin/new-user-request/contract-pdf/${contractPdfFileNm}`,
-            '_blank', 'width=400,height=200');
-    }
-
-
-
 }
-
