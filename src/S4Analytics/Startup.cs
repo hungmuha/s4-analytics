@@ -74,7 +74,7 @@ namespace S4Analytics
             services.Configure<IdentityOptions>(identityOptions =>
             {
                 identityOptions.Password.RequireDigit = false;
-                identityOptions.Password.RequiredLength = 1;
+                identityOptions.Password.RequiredLength = 8;
                 identityOptions.Password.RequireNonAlphanumeric = false;
                 identityOptions.Password.RequireUppercase = false;
                 identityOptions.Password.RequireLowercase = false;
