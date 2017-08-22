@@ -1,8 +1,10 @@
 ﻿import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as _ from 'lodash';
+import { IdentityService, S4IdentityUser } from '../../shared';
 import {
-   NewUserRequestStateService, NewUserRequestService, QueueColumn, QueueFilter, NewUserRequest, NewUserRequestStatus
+    NewUserRequestStateService, NewUserRequestService, QueueColumn,
+    QueueFilter, NewUserRequest, NewUserRequestStatus
 } from './shared';
 
 @Component({
@@ -26,7 +28,8 @@ export class RequestQueueComponent {
                     case QueueFilter.Rejected:
                         return nur.requestStatus === NewUserRequestStatus.Rejected;
                     case QueueFilter.Pending:
-                        return nur.requestStatus !== NewUserRequestStatus.Completed && nur.requestStatus !== NewUserRequestStatus.Rejected;
+                        return nur.requestStatus !== NewUserRequestStatus.Completed
+                            && nur.requestStatus !== NewUserRequestStatus.Rejected;
                     default:
                         return true;
                 }
@@ -36,12 +39,13 @@ export class RequestQueueComponent {
     constructor(
         public state: NewUserRequestStateService,
         private newUserRequestService: NewUserRequestService,
-        private modalService: NgbModal
-       ) {
-    }
+        private modalService: NgbModal,
+        private identityService: IdentityService) { }
 
     ngOnInit() {
-        this.newUserRequestService.getNewUserRequests().subscribe(result => this.state.newUserRequests = result);
+        this.newUserRequestService
+            .getNewUserRequests()
+            .subscribe(result => this.state.newUserRequests = result);
     }
 
     sortColumn(columnName: string): void {
@@ -59,7 +63,13 @@ export class RequestQueueComponent {
     }
 
     hideProcessRequestButton(request: NewUserRequest) {
-        return request.requestStatus === NewUserRequestStatus.Completed || request.requestStatus === NewUserRequestStatus.Rejected;
+        let currentUser = this.identityService.currentUser as S4IdentityUser;
+        return request.requestStatus === NewUserRequestStatus.Completed
+            || request.requestStatus === NewUserRequestStatus.Rejected
+            || (currentUser.roles.indexOf('global admin') > -1 // global admin should only act on create agency tasks
+                && request.requestStatus !== NewUserRequestStatus.CreateAgency)
+            || (currentUser.roles.indexOf('hsmv admin') > -1 // hsmv admin should not act on create agency tasks
+                && request.requestStatus === NewUserRequestStatus.CreateAgency);
     }
 
     totalRequestCount(): number {
@@ -79,8 +89,7 @@ export class RequestQueueComponent {
         }
 
         return '';
-     }
-
+    }
 
     hideCaretDown(columnName: string) {
         return !(this.state.sortColumnName === columnName && !this.state.sortAsc);
