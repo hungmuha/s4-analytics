@@ -1,8 +1,10 @@
 ﻿import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { IdentityService, S4IdentityUser } from '../../shared';
 import {
     NewUserRequestStateService, NewUserRequestService,
-    RequestActionResults, NewUserRequestStatus
+    NewUserRequest, NewUserRequestStatus,
+    RequestActionResults
 } from './shared';
 
 
@@ -20,12 +22,14 @@ export class RequestActionComponent  {
 
     constructor(public state: NewUserRequestStateService,
         private newUserRequestService: NewUserRequestService,
-        public modalService: NgbModal
+        public modalService: NgbModal,
+        private identityService: IdentityService
         ) {
         this.state.currentRequestActionResults = new RequestActionResults(this.state.selectedRequest.requestNbr);
     }
 
     newUserRequestMatch(nur: number) {
+
         return this.state.selectedRequest.requestStatus === nur;
     }
 
@@ -42,6 +46,14 @@ export class RequestActionComponent  {
             ((this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewConsultant) &&
                 (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewVendor) &&
                 (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewAgency));
+    }
+
+    hideRejectButton(request: NewUserRequest) {
+        let currentUser = this.identityService.currentUser as S4IdentityUser;
+
+        return (this.state.selectedRequest.requestStatus === NewUserRequestStatus.CreateAgency)
+            && (currentUser.roles.indexOf('global admin') > -1);
+
     }
 
     disableOKButton() {

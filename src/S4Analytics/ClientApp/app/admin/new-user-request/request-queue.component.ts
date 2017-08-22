@@ -64,6 +64,7 @@ export class RequestQueueComponent {
 
     hideProcessRequestButton(request: NewUserRequest) {
         let currentUser = this.identityService.currentUser as S4IdentityUser;
+
         return request.requestStatus === NewUserRequestStatus.Completed
             || request.requestStatus === NewUserRequestStatus.Rejected
             || (currentUser.roles.indexOf('global admin') > -1 // global admin should only act on create agency tasks
