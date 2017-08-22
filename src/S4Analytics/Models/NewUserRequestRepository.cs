@@ -796,8 +796,6 @@ namespace S4Analytics.Models
             msg.Subject = subject;
             msg.IsBodyHtml = true;
 
-            body += "\nTO: " + to + "\nCC: " + ((cc == null)? "": cc.ToString()) + "\n";
-
             var completedText = new StringBuilder(body);
             completedText.AppendLine("");
             completedText.AppendLine(closing);
