@@ -91,7 +91,6 @@ export class RequestActionComponent  {
                     newUserReq.requestNbr === this.state.selectedRequest.requestNbr);
 
                 this.state.newUserRequests[index] = this.state.selectedRequest;
-                this.state.queueFilter = QueueFilter.Pending;
                 this.state.currentActionForm.close();
             });
     }
@@ -103,7 +102,6 @@ export class RequestActionComponent  {
                 this.state.selectedRequest = result;
                 let index = this.state.newUserRequests.findIndex(newUserReq => newUserReq.requestNbr === this.state.selectedRequest.requestNbr);
                 this.state.newUserRequests[index] = this.state.selectedRequest;
-                this.state.queueFilter = QueueFilter.Pending;
                 this.state.currentActionForm.close();
             });
     }
