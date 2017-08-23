@@ -819,7 +819,7 @@ namespace S4Analytics.Models
             char[] chPassword = new char[length];
 
             //chPunctionations contains the list of legal non-alphanumeric characters
-            char[] chPunctuations = "!@#$%^*()_-+=[{]};:<>|./?".ToCharArray();
+            char[] chPunctuations = "!@#$%^*()_-+=[{]};:|./?".ToCharArray();
 
             //Get a cryptographically strong series of bytes
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
@@ -828,7 +828,7 @@ namespace S4Analytics.Models
             for (int i = 0; i < length; i++)
             {
                 //Convert each byte into its representative character
-                int rndChr = buffer1[i] % 87;
+                int rndChr = buffer1[i] % 85;
                 if (rndChr < 10)
                 {
                     chPassword[i] = Convert.ToChar(Convert.ToUInt16(48 + rndChr));
