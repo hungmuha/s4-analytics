@@ -12,19 +12,17 @@
     <b>Vendor Email Domain:</b>&nbsp;
     {{state.selectedRequest.vendorEmailDomain}}
 </div>
-<div class="row justify-content-between">
-    <div>
-        <b>Contract Start Date: </b>&nbsp;
-        {{state.selectedRequest.contractStartDt | date: 'shortDate'}}
-    </div>
-    <div>
-        <b>Contract End Date:</b>&nbsp;
-        {{state.selectedRequest.contractEndDt | date: 'shortDate'}}
-    </div>
+<div class="row">
+    <b>Contract Start Date: </b>&nbsp;
+    {{state.selectedRequest.contractStartDt | date: 'shortDate'}}
 </div>
 <div class="row">
-    <b>Contract:</b>
-    <button type="button" class="btn btn-sm btn-link" (click)="openContractViewer()">View Contract</button>
+    <b>Contract End Date:</b>&nbsp;
+    {{state.selectedRequest.contractEndDt | date: 'shortDate'}}
+</div>
+<div class="row">
+    <b>Contract:</b>&nbsp;
+    <a [href]="contractViewerUrl" target="_blank">View Contract</a>
 </div>
 <div class="row font-italic">
     <!-- requestor info-->

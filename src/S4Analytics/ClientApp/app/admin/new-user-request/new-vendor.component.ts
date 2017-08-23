@@ -8,9 +8,11 @@ import { NewUserRequestStateService } from './shared';
 
 export class NewVendorComponent {
 
-    constructor(public state: NewUserRequestStateService) {
-
+    get contractViewerUrl() {
+        return `admin/new-user-request/contract-pdf/${this.state.selectedRequest.contractPdfNm}`;
     }
+
+    constructor(public state: NewUserRequestStateService) { }
 
     ngOnInit() {
         this.state.requestorWarningMessages = [];
@@ -30,12 +32,4 @@ export class NewVendorComponent {
             this.state.currentRequestActionResults.rejectionReason = '';
         }
     }
-
-    openContractViewer() {
-        let contractPdfFileNm = this.state.selectedRequest.contractPdfNm;
-        this.state.contractViewerWindow = window.open(`admin/new-user-request/contract-pdf/${contractPdfFileNm}`,
-            '_blank', 'width=400,height=200');
-    }
-
-
 }
