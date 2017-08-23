@@ -59,10 +59,11 @@ export class RequestQueueComponent {
 
     openActionModal(content: any, request: NewUserRequest) {
         this.state.selectedRequest = request;
+        this.state.isSelectedRequestLocked = this.isRequestLocked(request);
         this.state.currentActionForm = this.modalService.open(content, {backdrop: 'static', keyboard: false });
     }
 
-    hideProcessRequestButton(request: NewUserRequest) {
+    isRequestLocked(request: NewUserRequest) {
         let currentUser = this.identityService.currentUser as S4IdentityUser;
 
         return request.requestStatus === NewUserRequestStatus.Completed

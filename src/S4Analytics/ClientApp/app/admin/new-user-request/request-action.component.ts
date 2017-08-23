@@ -7,14 +7,12 @@ import {
     RequestActionResults
 } from './shared';
 
-
 @Component({
     selector: 'request-action-component',
     templateUrl: './request-action.component.html'
 })
 
-
-export class RequestActionComponent  {
+export class RequestActionComponent {
 
     newUserRequestStatus = NewUserRequestStatus;
     closeDialog = true;
@@ -23,14 +21,21 @@ export class RequestActionComponent  {
     constructor(public state: NewUserRequestStateService,
         private newUserRequestService: NewUserRequestService,
         public modalService: NgbModal,
-        private identityService: IdentityService
-        ) {
+        private identityService: IdentityService) {
         this.state.currentRequestActionResults = new RequestActionResults(this.state.selectedRequest.requestNbr);
     }
 
-    newUserRequestMatch(nur: number) {
-
-        return this.state.selectedRequest.requestStatus === nur;
+    requestHasStatus(status: NewUserRequestStatus) {
+        let initStatus = this.state.selectedRequest.initialRequestStatus;
+        let currStatus = this.state.selectedRequest.requestStatus;
+        if (currStatus === NewUserRequestStatus.Completed || currStatus === NewUserRequestStatus.Rejected) {
+            // if the request has been closed (completed or rejected), use its initial status
+            return status === initStatus;
+        }
+        else {
+            // otherwise use its current status
+            return status === currStatus;
+        }
     }
 
     hideReasonTextArea() {

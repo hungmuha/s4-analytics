@@ -6,6 +6,7 @@ export class NewUserRequest {
     requestDesc: string;
     requestType: NewUserRequestType;
     requestStatus: NewUserRequestStatus;
+    initialRequestStatus: NewUserRequestStatus;
     userCreatedDt: Date;
     agncyNm: string;
     agncyEmailDomain: string;

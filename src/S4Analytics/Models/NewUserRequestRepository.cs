@@ -491,6 +491,7 @@ namespace S4Analytics.Models
             return @"SELECT
                             u.req_nbr AS requestnbr,
                             u.req_status AS requeststatus,
+                            u.initial_req_status AS initialrequeststatus,
                             u.req_desc AS requestdesc,
                             u.req_type AS requesttype,
                             u.req_dt AS requestdt,
