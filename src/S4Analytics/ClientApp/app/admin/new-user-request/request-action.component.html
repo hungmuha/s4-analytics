@@ -23,14 +23,15 @@
                 </label>
             </div>
             <div class="col-5">
-                <label for="reject">
+                <label for="reject" [hidden]="hideRejectButton(newUserReq)">
                     <input type="radio" class="form-check-input"
                            id="reject"
                            [(ngModel)]="state.currentRequestActionResults.approved"
                            name="approved"
                            (change)="approved(false)"
                            required
-                           [value]="false" />
+                           [value]="false"
+                           />
                     &nbsp;Reject {{state.selectedRequest.requestStatus | approveRejectType}}
                 </label>
             </div>
