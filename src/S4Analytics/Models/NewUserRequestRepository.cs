@@ -401,6 +401,8 @@ namespace S4Analytics.Models
                 return request;
             }
 
+            approval.SelectedRequest.AgncyId = newAgencyId;
+
             /// User will be created automatically after agency created because there is no one in
             /// the agency since its new. Therefore no one with an account in that agency to approve them
             return await ApproveNewUser(id, approval);
