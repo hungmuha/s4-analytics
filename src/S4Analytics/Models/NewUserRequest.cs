@@ -4,15 +4,6 @@ using Lib.Identity.Models;
 
 namespace S4Analytics.Models
 {
-    public enum AgencyType
-    {
-        NonLEA = 0,
-        FHP = 1,
-        PoliceDept = 2,
-        SheriffsOffice = 3,
-        Other = 4
-    }
-
     public enum NewUserRequestType
     {
         Unknown = 0,
@@ -43,7 +34,6 @@ namespace S4Analytics.Models
         public NewUserRequestStatus RequestStatus { get; set; }
         public DateTime? UserCreatedDt { get; set; }
         public int AgncyId { get; set; }
-        public AgencyType AgncyTypeCd { get; set; }
         public string AgncyNm { get; set; }
         public string AgncyEmailDomain { get; set; }
         public string RequestorFirstNm { get; set; }

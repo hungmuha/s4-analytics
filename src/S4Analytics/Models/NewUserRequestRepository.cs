@@ -324,7 +324,6 @@ namespace S4Analytics.Models
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
             var before70days = approval.Before70Days;
-            var agencyType = request.AgncyTypeCd.ToString();
             var lea = approval.Lea;
 
             // Nothing to update in database. Send email to global admin to create agency
@@ -333,7 +332,6 @@ namespace S4Analytics.Models
                         Below are the specs: <br><br>
                         &nbsp;&nbsp;Agency Name = {request.AgncyNm} <br>
                         &nbsp;&nbsp;Access Before 70 days = {before70days} <br>
-                        &nbsp;&nbsp;AgencyType = {agencyType} <br>
                         &nbsp;&nbsp;Email Domain = {request.AgncyEmailDomain}<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
@@ -501,9 +499,8 @@ namespace S4Analytics.Models
                             u.requestor_last_nm AS requestorlastnm,
                             u.requestor_first_nm AS requestorfirstnm,
                             u.requestor_suffix AS requestorsuffixnm,
-                            CASE WHEN u.agncy_id IS NULL OR u.agncy_id = 0 THEN u.new_agncy_nm ELSE a.agncy_nm END agncynm,
-                            CASE WHEN u.agncy_id IS NULL OR u.agncy_id = 0 THEN u.new_agncy_type_cd ELSE a.agncy_type_cd END newagncytypecd,
-                            CASE WHEN u.agncy_id IS NULL OR u.agncy_id = 0 THEN u.new_agncy_email_domain_tx ELSE a.email_domain END agncyemaildomain,
+                            CASE WHEN u.agncy_id IS NULL THEN u.new_agncy_nm ELSE a.agncy_nm END agncynm,
+                            CASE WHEN u.agncy_id IS NULL THEN u.new_agncy_email_domain_tx ELSE a.email_domain END agncyemaildomain,
                             u.agncy_id AS agncyid,
                             u.user_id AS userid,
                             u.consultant_first_nm AS consultantfirstnm,
@@ -511,8 +508,8 @@ namespace S4Analytics.Models
                             u.consultant_suffix AS consultantsuffixnm,
                             u.consultant_email_addr_tx AS consultantemail,
                             u.contractor_id AS vendorid,
-                            CASE WHEN u.contractor_id is NULL OR u.contractor_id = 0 THEN u.new_contractor_nm ELSE c.contractor_nm END vendorname,
-                            CASE WHEN u.contractor_id is NULL OR u.contractor_id = 0 THEN u.new_contractor_email_domain_tx ELSE c.email_domain END vendoremaildomain,
+                            CASE WHEN u.contractor_id is NULL THEN u.new_contractor_nm ELSE c.contractor_nm END vendorname,
+                            CASE WHEN u.contractor_id is NULL THEN u.new_contractor_email_domain_tx ELSE c.email_domain END vendoremaildomain,
                             u.access_reason_tx AS accessreasontx,
                             u.contract_start_dt AS contractstartdt,
                             u.contract_end_dt AS contractenddt,

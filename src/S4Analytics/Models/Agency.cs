@@ -4,6 +4,15 @@ using System.Linq;
 
 namespace S4Analytics.Models
 {
+    public enum AgencyType
+    {
+        NonLEA = 0,
+        FHP = 1,
+        PoliceDept = 2,
+        SheriffsOffice = 3,
+        Other = 4
+    }
+
     public class Agency
     {
         #region Public Properties
