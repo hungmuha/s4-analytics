@@ -32,6 +32,7 @@ namespace S4Analytics.Models
         public string RequestDesc { get; set; }
         public NewUserRequestType RequestType { get; set; }
         public NewUserRequestStatus RequestStatus { get; set; }
+        public NewUserRequestStatus InitialRequestStatus { get; set; }
         public DateTime? UserCreatedDt { get; set; }
         public int AgncyId { get; set; }
         public string AgncyNm { get; set; }

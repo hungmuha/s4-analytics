@@ -84,7 +84,16 @@
                     <td>{{newUserReq.requestStatus | requestStatus }}</td>
                     <td>{{newUserReq.userCreatedDt | date:"MM/dd/yy"}}</td>
                     <td class="align-middle">
-                        <button class="btn btn-sm btn-primary" [hidden]="hideProcessRequestButton(newUserReq)" (click)="openActionModal(content, newUserReq)">Process Request</button>
+                        <button *ngIf="isRequestLocked(newUserReq); else processRequestButton"
+                                class="btn btn-sm btn-secondary"
+                                (click)="openActionModal(content, newUserReq)">
+                            View Request
+                        </button>
+                        <ng-template #processRequestButton>
+                            <button class="btn btn-sm btn-primary" (click)="openActionModal(content, newUserReq)">
+                                Process Request
+                            </button>
+                        </ng-template>
                     </td>
                     <td>{{newUserReq.adminComment}}</td>
                 </tr>

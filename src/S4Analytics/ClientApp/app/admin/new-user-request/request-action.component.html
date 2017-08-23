@@ -1,15 +1,15 @@
-﻿
-<form name="actionForm" #actionForm="ngForm"  (ngSubmit)="submit()" #spy2>
-    <div class="font-weight-bold">Request #{{state.selectedRequest.requestNbr}} on {{state.selectedRequest.requestDt|date: 'M/d/yy'}}
+﻿<form name="actionForm" #actionForm="ngForm"  (ngSubmit)="submit()" #spy2>
+    <div class="font-weight-bold">
+        Request #{{state.selectedRequest.requestNbr}} on {{state.selectedRequest.requestDt|date: 'M/d/yy'}}
     </div>
     <div class="modal-body">
-        <new-employee-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewUser)" ></new-employee-component>
-        <new-agency-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewAgency)" ></new-agency-component>
-        <agency-create-component *ngIf="newUserRequestMatch(newUserRequestStatus.CreateAgency)"></agency-create-component>
-        <new-vendor-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewVendor)"> </new-vendor-component>
-        <new-consultant-component *ngIf="newUserRequestMatch(newUserRequestStatus.NewConsultant)"></new-consultant-component>
-        <hr />
-        <div class="row font-weight-bold justify-content-center">
+        <new-employee-component *ngIf="requestHasStatus(newUserRequestStatus.NewUser)"></new-employee-component>
+        <new-agency-component *ngIf="requestHasStatus(newUserRequestStatus.NewAgency)"></new-agency-component>
+        <agency-create-component *ngIf="requestHasStatus(newUserRequestStatus.CreateAgency)"></agency-create-component>
+        <new-vendor-component *ngIf="requestHasStatus(newUserRequestStatus.NewVendor)"></new-vendor-component>
+        <new-consultant-component *ngIf="requestHasStatus(newUserRequestStatus.NewConsultant)"></new-consultant-component>
+        <hr *ngIf="!state.isSelectedRequestLocked" />
+        <div class="row font-weight-bold justify-content-center" *ngIf="!state.isSelectedRequestLocked">
             <div class="col-6">
                 <label for="approve">
                     <input type="radio" class="form-check-input"
@@ -58,11 +58,12 @@
     </div>
 
     <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" [disabled]="!(actionForm.valid) || disableOKButton()">
+        <button type="submit" class="btn btn-primary" *ngIf="!state.isSelectedRequestLocked" [disabled]="!(actionForm.valid) || disableOKButton()">
             OK
         </button>
         <button type="button" class="btn btn-light" (click)="cancel()">
-            Cancel
+            <span *ngIf="!state.isSelectedRequestLocked">Cancel</span>
+            <span *ngIf="state.isSelectedRequestLocked">Close</span>
         </button>
     </div>
-  </form>
+</form>

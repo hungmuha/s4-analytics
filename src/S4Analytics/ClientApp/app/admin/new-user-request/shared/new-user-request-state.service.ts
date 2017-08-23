@@ -9,6 +9,7 @@ import { QueueFilter } from './new-user-request-enum';
 export class NewUserRequestStateService {
     newUserRequests: NewUserRequest[];
     selectedRequest: NewUserRequest;
+    isSelectedRequestLocked: boolean;
     currentRequestActionResults: RequestActionResults;
     contractViewerWindow?: Window;
     sortAsc: boolean = true;
