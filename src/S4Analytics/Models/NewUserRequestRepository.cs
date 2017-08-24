@@ -265,6 +265,8 @@ namespace S4Analytics.Models
 
             var user = await _userManager.FindByNameAsync(userName);
 
+            user.Profile.ForcePasswordChange = true;
+            user.Profile.ModifiedBy = approval.AdminUserName;
             user.Profile.AccountStartDate = request.ContractStartDt;
             user.Profile.AccountExpirationDate = request.ContractEndDt;
             user.Profile.EmailAddress = request.ConsultantEmail;
