@@ -459,11 +459,15 @@ namespace S4Analytics.Models
                                 USER_ID = :userId
                             WHERE REQ_NBR = :requestNbr";
 
+            // Do not write 0 when it should be null
+            var agencyId = request.AgncyId == 0 ? (object)DBNull.Value : request.AgncyId;
+            var vendorId = request.VendorId == 0 ? (object)DBNull.Value : request.VendorId;
+
             var rowsUpdated = _conn.Execute(updateTxt, new
             {
                 request.RequestStatus,
-                request.AgncyId,
-                request.VendorId,
+                agencyId,
+                vendorId,
                 request.UserCreatedDt,
                 request.UserId,
                 request.RequestNbr
