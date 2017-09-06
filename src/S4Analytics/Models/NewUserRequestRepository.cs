@@ -19,6 +19,7 @@ namespace S4Analytics.Models
         private string _applicationName;
         private string _connStr;
         private OracleConnection _conn;
+        private string _membershipSchema;
         private SmtpClient _smtp;
         private string _globalAdminEmail;
         private string _supportEmail;
@@ -31,6 +32,9 @@ namespace S4Analytics.Models
             _applicationName = serverOptions.Value.MembershipApplicationName;
             _connStr = serverOptions.Value.IdentityConnStr;
             _conn = new OracleConnection(_connStr);
+
+            _membershipSchema = serverOptions.Value.OracleSchemas.Membership;
+
             _userManager = userManager;
 
             _smtp = new SmtpClient
@@ -724,6 +728,8 @@ namespace S4Analytics.Models
             var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
                                 JOIN USER_ROLE R ON R.ROLE_NM = 'User Manager'
                                 AND R.USER_NM = U.USER_NM
+                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_USERS O ON O.USERNAME = U.USER_NM
+                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_MEMBERSHIP M ON M.USERID = O.USERID AND M.ISAPPROVED = 1
                                 WHERE U.AGNCY_ID = :agencyId";
 
             var results = (_conn.Query<string>(selectTxt, new { agencyId })).ToList(); ;
@@ -741,7 +747,9 @@ namespace S4Analytics.Models
         {
             var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
                                 JOIN USER_ROLE R ON R.ROLE_NM = 'FDOT Admin'
-                                AND R.USER_NM = U.USER_NM";
+                                AND R.USER_NM = U.USER_NM
+                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_USERS O ON O.USERNAME = U.USER_NM
+                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_MEMBERSHIP M ON M.USERID = O.USERID AND M.ISAPPROVED = 1";
 
             var emails = (_conn.Query<string>(selectTxt)).ToList();
 
@@ -758,7 +766,9 @@ namespace S4Analytics.Models
         {
            var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
                                 JOIN USER_ROLE R ON R.ROLE_NM = 'HSMV Admin'
-                                AND R.USER_NM = U.USER_NM";
+                                AND R.USER_NM = U.USER_NM
+                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_USERS O ON O.USERNAME = U.USER_NM
+                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_MEMBERSHIP M ON M.USERID = O.USERID AND M.ISAPPROVED = 1";
 
             var emails = (_conn.Query<string>(selectTxt)).ToList();
 
