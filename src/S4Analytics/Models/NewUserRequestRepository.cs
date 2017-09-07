@@ -725,12 +725,12 @@ namespace S4Analytics.Models
         {
             var emails = new List<string>();
 
-            var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
+            var selectTxt = string.Format( @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
                                 JOIN USER_ROLE R ON R.ROLE_NM = 'User Manager'
                                 AND R.USER_NM = U.USER_NM
-                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_USERS O ON O.USERNAME = U.USER_NM
-                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_MEMBERSHIP M ON M.USERID = O.USERID AND M.ISAPPROVED = 1
-                                WHERE U.AGNCY_ID = :agencyId";
+                                JOIN {0}.ORA_ASPNET_USERS O ON O.USERNAME = U.USER_NM
+                                JOIN {0}.ORA_ASPNET_MEMBERSHIP M ON M.USERID = O.USERID AND M.ISAPPROVED = 1
+                                WHERE U.AGNCY_ID = :agencyId", _membershipSchema);
 
             var results = (_conn.Query<string>(selectTxt, new { agencyId })).ToList(); ;
 
@@ -745,11 +745,11 @@ namespace S4Analytics.Models
 
         private List<string> GetFDOTAdminEmails()
         {
-            var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
+            var selectTxt = string.Format(@"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
                                 JOIN USER_ROLE R ON R.ROLE_NM = 'FDOT Admin'
                                 AND R.USER_NM = U.USER_NM
-                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_USERS O ON O.USERNAME = U.USER_NM
-                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_MEMBERSHIP M ON M.USERID = O.USERID AND M.ISAPPROVED = 1";
+                                JOIN {0}.ORA_ASPNET_USERS O ON O.USERNAME = U.USER_NM
+                                JOIN {0}.ORA_ASPNET_MEMBERSHIP M ON M.USERID = O.USERID AND M.ISAPPROVED = 1", _membershipSchema);
 
             var emails = (_conn.Query<string>(selectTxt)).ToList();
 
@@ -764,11 +764,11 @@ namespace S4Analytics.Models
 
         private List<string> GetHSMVAdminEmails()
         {
-           var selectTxt = @"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
+           var selectTxt = string.Format(@"SELECT DISTINCT(U.EMAIL) FROM S4_USER U
                                 JOIN USER_ROLE R ON R.ROLE_NM = 'HSMV Admin'
                                 AND R.USER_NM = U.USER_NM
-                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_USERS O ON O.USERNAME = U.USER_NM
-                                JOIN :_MEMBERSHIPSCHEMA.ORA_ASPNET_MEMBERSHIP M ON M.USERID = O.USERID AND M.ISAPPROVED = 1";
+                                JOIN {0}.ORA_ASPNET_USERS O ON O.USERNAME = U.USER_NM
+                                JOIN {0}.ORA_ASPNET_MEMBERSHIP M ON M.USERID = O.USERID AND M.ISAPPROVED = 1", _membershipSchema);
 
             var emails = (_conn.Query<string>(selectTxt)).ToList();
 
