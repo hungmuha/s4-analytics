@@ -1,4 +1,5 @@
 /*
+DROP DATABASE LINK s4_warehouse.geoplan.ufl.edu;
 DROP TABLE s4_coord_sys;
 DROP TABLE crash_evt;
 DROP TABLE driver;
@@ -12,6 +13,10 @@ DROP PROCEDURE s4_unregister_sdo_geom;
 DELETE FROM user_sdo_geom_metadata;
 COMMIT;
 */
+
+CREATE DATABASE LINK s4_warehouse.geoplan.ufl.edu
+CONNECT TO s4_warehouse IDENTIFIED BY "heathcote-autogeddon"
+USING 'lime';
 
 CREATE TABLE s4_coord_sys (
   srid NUMBER NOT NULL UNIQUE,
