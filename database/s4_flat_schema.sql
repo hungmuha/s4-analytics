@@ -1,12 +1,12 @@
 /*
 DROP TABLE s4_coord_sys;
-DROP TABLE fact_crash_evt;
-DROP TABLE fact_driver;
-DROP TABLE fact_non_motorist;
-DROP TABLE fact_pass;
-DROP TABLE fact_veh;
-DROP TABLE fact_violation;
-DROP TABLE fact_citation;
+DROP TABLE crash_evt;
+DROP TABLE driver;
+DROP TABLE non_motorist;
+DROP TABLE pass;
+DROP TABLE veh;
+DROP TABLE violation;
+DROP TABLE citation;
 DROP PROCEDURE s4_register_sdo_geom;
 DROP PROCEDURE s4_unregister_sdo_geom;
 DELETE FROM user_sdo_geom_metadata;
@@ -70,7 +70,7 @@ BEGIN
 END;
 /
 
-CREATE TABLE fact_crash_evt (
+CREATE TABLE crash_evt (
     "ID"                         NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr                 NUMBER(*,0),
@@ -215,15 +215,15 @@ CREATE TABLE fact_crash_evt (
     PRIMARY KEY (hsmv_rpt_nbr) USING INDEX ENABLE
 );
 
-CREATE UNIQUE INDEX fact_crash_evt_id_idx ON fact_crash_evt ("ID");
+CREATE UNIQUE INDEX crash_evt_id_idx ON crash_evt ("ID");
 
-CALL s4_register_sdo_geom('fact_crash_evt', 'gps_pt_4326', 4326);
+CALL s4_register_sdo_geom('crash_evt', 'gps_pt_4326', 4326);
 
-CREATE INDEX fact_crash_evt_gps_pt_4326_idx ON
-    fact_crash_evt ( gps_pt_4326 )
+CREATE INDEX crash_evt_gps_pt_4326_idx ON
+    crash_evt ( gps_pt_4326 )
         INDEXTYPE IS mdsys.spatial_index;
 
-CREATE TABLE fact_driver (
+CREATE TABLE driver (
     "ID"                        NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr                NUMBER(*,0),
@@ -323,9 +323,9 @@ CREATE TABLE fact_driver (
     PRIMARY KEY (hsmv_rpt_nbr, veh_nbr, person_nbr) USING INDEX ENABLE
 );
 
-CREATE UNIQUE INDEX fact_driver_id_idx ON fact_driver ("ID");
+CREATE UNIQUE INDEX driver_id_idx ON driver ("ID");
 
-CREATE TABLE fact_non_motorist (
+CREATE TABLE non_motorist (
     "ID"                     NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr             NUMBER(*,0),
@@ -406,9 +406,9 @@ CREATE TABLE fact_non_motorist (
     PRIMARY KEY (hsmv_rpt_nbr, person_nbr) USING INDEX ENABLE
 );
 
-CREATE UNIQUE INDEX fact_non_motorist_id_idx ON fact_non_motorist ("ID");
+CREATE UNIQUE INDEX non_motorist_id_idx ON non_motorist ("ID");
 
-CREATE TABLE fact_pass (
+CREATE TABLE pass (
     "ID"                        NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr                NUMBER(*,0),
@@ -478,9 +478,9 @@ CREATE TABLE fact_pass (
     PRIMARY KEY (hsmv_rpt_nbr, veh_nbr, person_nbr) USING INDEX ENABLE
 );
 
-CREATE UNIQUE INDEX fact_pass_id_idx ON fact_pass ("ID");
+CREATE UNIQUE INDEX pass_id_idx ON pass ("ID");
 
-CREATE TABLE fact_veh (
+CREATE TABLE veh (
     "ID"                         NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr                 NUMBER(*,0),
@@ -604,9 +604,9 @@ CREATE TABLE fact_veh (
     PRIMARY KEY (hsmv_rpt_nbr, veh_nbr) USING INDEX ENABLE
 );
 
-CREATE UNIQUE INDEX fact_veh_id_idx ON fact_veh ("ID");
+CREATE UNIQUE INDEX veh_id_idx ON veh ("ID");
 
-CREATE TABLE fact_violation (
+CREATE TABLE violation (
     "ID"                  NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr          NUMBER(*,0),
@@ -641,9 +641,9 @@ CREATE TABLE fact_violation (
     PRIMARY KEY (hsmv_rpt_nbr, person_nbr, citation_nbr) USING INDEX ENABLE
 );
 
-CREATE UNIQUE INDEX fact_violation_id_idx ON fact_violation ("ID");
+CREATE UNIQUE INDEX violation_id_idx ON violation ("ID");
 
-CREATE TABLE fact_citation (
+CREATE TABLE citation (
     "ID"                           NUMBER
         GENERATED ALWAYS AS IDENTITY,
     citation_nbr                   VARCHAR2(20),
@@ -798,15 +798,15 @@ CREATE TABLE fact_citation (
     PRIMARY KEY (citation_nbr) USING INDEX ENABLE
 );
 
-CREATE UNIQUE INDEX fact_citation_id_idx ON fact_citation ("ID");
+CREATE UNIQUE INDEX citation_id_idx ON citation ("ID");
 
-CALL s4_register_sdo_geom('fact_citation', 'gps_pt_4326', 4326);
-CALL s4_register_sdo_geom('fact_citation', 'navteq_pt_3087', 3087);
+CALL s4_register_sdo_geom('citation', 'gps_pt_4326', 4326);
+CALL s4_register_sdo_geom('citation', 'navteq_pt_3087', 3087);
 
-CREATE INDEX fact_citation_gps_pt_4326_idx ON
-    fact_citation ( gps_pt_4326 )
+CREATE INDEX citation_gps_pt_4326_idx ON
+    citation ( gps_pt_4326 )
         INDEXTYPE IS mdsys.spatial_index;
 
-CREATE INDEX fact_citation_navteq_pt_3087_idx ON
-    fact_citation ( navteq_pt_3087 )
+CREATE INDEX citation_navteq_pt_3087_idx ON
+    citation ( navteq_pt_3087 )
         INDEXTYPE IS mdsys.spatial_index;

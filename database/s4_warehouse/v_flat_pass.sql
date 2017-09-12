@@ -1,4 +1,4 @@
--- CREATE VIEW v_flat_fact_pass AS
+CREATE VIEW v_flat_pass AS
 SELECT
     fp.hsmv_rpt_nbr,
     floor(fp.hsmv_rpt_nbr / 100000) || 'XXXXX' AS hsmv_rpt_nbr_trunc,

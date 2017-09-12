@@ -1,4 +1,4 @@
--- CREATE VIEW v_flat_fact_driver AS
+CREATE VIEW v_flat_driver AS
 SELECT
     fd.hsmv_rpt_nbr,
     floor(fd.hsmv_rpt_nbr / 100000) || 'XXXXX' AS hsmv_rpt_nbr_trunc,

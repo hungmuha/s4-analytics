@@ -1,4 +1,4 @@
--- CREATE VIEW v_flat_fact_veh AS
+CREATE VIEW v_flat_veh AS
 SELECT
     veh.hsmv_rpt_nbr,
     floor(veh.hsmv_rpt_nbr / 100000) || 'XXXXX' AS hsmv_rpt_nbr_trunc,

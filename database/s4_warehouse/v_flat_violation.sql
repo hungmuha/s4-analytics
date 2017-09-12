@@ -1,4 +1,4 @@
--- CREATE VIEW v_flat_fact_violation AS
+CREATE VIEW v_flat_violation AS
 SELECT
     fv.hsmv_rpt_nbr,
     floor(fv.hsmv_rpt_nbr / 100000) || 'XXXXX' AS hsmv_rpt_nbr_trunc,

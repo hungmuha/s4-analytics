@@ -1,4 +1,4 @@
---CREATE VIEW v_flat_fact_crash_evt AS
+CREATE VIEW v_flat_crash_evt AS
 SELECT
     fce.hsmv_rpt_nbr,
     floor(fce.hsmv_rpt_nbr / 100000) || 'XXXXX' AS hsmv_rpt_nbr_trunc,
