@@ -74,7 +74,7 @@ CREATE TABLE crash_evt (
     "ID"                         NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr                 NUMBER(*,0),
-    hsmv_rpt_nbr_trunc           CHAR(8),
+    hsmv_rpt_nbr_trunc           CHAR(9),
     key_crash_dt                 DATE,
     crash_yr                     NUMBER(*,0),
     crash_mm                     NUMBER(*,0),
@@ -227,7 +227,7 @@ CREATE TABLE driver (
     "ID"                        NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr                NUMBER(*,0),
-    hsmv_rpt_nbr_trunc          CHAR(8),
+    hsmv_rpt_nbr_trunc          CHAR(9),
     veh_nbr                     NUMBER(*,0),
     person_nbr                  NUMBER(*,0),
     key_crash_dt                DATE,
@@ -329,7 +329,7 @@ CREATE TABLE non_motorist (
     "ID"                     NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr             NUMBER(*,0),
-    hsmv_rpt_nbr_trunc       CHAR(8),
+    hsmv_rpt_nbr_trunc       CHAR(9),
     person_nbr               NUMBER(*,0),
     key_crash_dt             DATE,
     crash_yr                 NUMBER(*,0),
@@ -412,7 +412,7 @@ CREATE TABLE pass (
     "ID"                        NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr                NUMBER(*,0),
-    hsmv_rpt_nbr_trunc          CHAR(8),
+    hsmv_rpt_nbr_trunc          CHAR(9),
     veh_nbr                     NUMBER(*,0),
     person_nbr                  NUMBER(*,0),
     key_crash_dt                DATE,
@@ -484,7 +484,7 @@ CREATE TABLE veh (
     "ID"                         NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr                 NUMBER(*,0),
-    hsmv_rpt_nbr_trunc           CHAR(8),
+    hsmv_rpt_nbr_trunc           CHAR(9),
     veh_nbr                      NUMBER(*,0),
     key_crash_dt                 DATE,
     crash_yr                     NUMBER(*,0),
@@ -610,7 +610,7 @@ CREATE TABLE violation (
     "ID"                  NUMBER
         GENERATED ALWAYS AS IDENTITY,
     hsmv_rpt_nbr          NUMBER(*,0),
-    hsmv_rpt_nbr_trunc    CHAR(8),
+    hsmv_rpt_nbr_trunc    CHAR(9),
     person_nbr            NUMBER(*,0),
     citation_nbr          VARCHAR2(8),
     citation_nbr_trunc    VARCHAR2(8),
