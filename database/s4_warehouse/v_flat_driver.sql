@@ -1,4 +1,4 @@
-CREATE VIEW v_flat_driver AS
+CREATE OR REPLACE VIEW v_flat_driver AS
 SELECT
     fd.hsmv_rpt_nbr,
     floor(fd.hsmv_rpt_nbr / 100000) || 'XXXXX' AS hsmv_rpt_nbr_trunc,
@@ -93,8 +93,10 @@ SELECT
     fd.prop_dmg_cnt,
     fd.prop_dmg_amt,
     fd.inj_incapacitating_cnt,
-    fd.batch_nbr
+    fd.batch_nbr,
+    fce.last_updt_dt
 FROM fact_driver fd
+INNER JOIN fact_crash_evt fce ON fce.hsmv_rpt_nbr = fd.hsmv_rpt_nbr
 LEFT JOIN dim_date dd ON fd.key_crash_dt = dd.crash_dt
 LEFT JOIN dim_geography dg ON fd.key_geography = dg.ID
 LEFT JOIN dim_agncy da ON fd.key_rptg_agncy = da.ID

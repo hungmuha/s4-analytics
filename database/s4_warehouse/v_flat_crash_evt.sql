@@ -1,4 +1,4 @@
-CREATE VIEW v_flat_crash_evt AS
+CREATE OR REPLACE VIEW v_flat_crash_evt AS
 SELECT
     fce.hsmv_rpt_nbr,
     floor(fce.hsmv_rpt_nbr / 100000) || 'XXXXX' AS hsmv_rpt_nbr_trunc,
@@ -139,7 +139,8 @@ SELECT
     CASE
         WHEN fce.lng IS NULL OR fce.lat IS NULL THEN NULL
         ELSE sdo_geometry(2001, 4326, mdsys.sdo_point_type(fce.lng, fce.lat, NULL), NULL, NULL)
-    END AS gps_pt_4326
+    END AS gps_pt_4326,
+    fce.last_updt_dt
 FROM fact_crash_evt fce
 LEFT JOIN dim_date dd ON fce.key_crash_dt = dd.crash_dt
 LEFT JOIN dim_geography dg ON fce.key_geography = dg.ID

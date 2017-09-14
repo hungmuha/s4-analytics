@@ -1,4 +1,4 @@
-CREATE VIEW v_flat_violation AS
+CREATE OR REPLACE VIEW v_flat_violation AS
 SELECT
     fv.hsmv_rpt_nbr,
     floor(fv.hsmv_rpt_nbr / 100000) || 'XXXXX' AS hsmv_rpt_nbr_trunc,
@@ -26,10 +26,12 @@ SELECT
     fv.key_rptg_unit,
     dau.agncy_nm AS rptg_unit_nm,
     dau.agncy_short_nm AS rptg_unit_short_nm,
-    fl_statute_nbr,
-    charge,
-    batch_nbr
+    fv.fl_statute_nbr,
+    fv.charge,
+    fv.batch_nbr,
+    fce.last_updt_dt
 FROM fact_violation fv
+INNER JOIN fact_crash_evt fce ON fce.hsmv_rpt_nbr = fv.hsmv_rpt_nbr
 LEFT JOIN dim_date dd ON fv.key_crash_dt = dd.crash_dt
 LEFT JOIN dim_geography dg ON fv.key_geography = dg.ID
 LEFT JOIN dim_agncy da ON fv.key_rptg_agncy = da.ID

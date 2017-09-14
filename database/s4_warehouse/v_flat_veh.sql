@@ -1,4 +1,4 @@
-CREATE VIEW v_flat_veh AS
+CREATE OR REPLACE VIEW v_flat_veh AS
 SELECT
     veh.hsmv_rpt_nbr,
     floor(veh.hsmv_rpt_nbr / 100000) || 'XXXXX' AS hsmv_rpt_nbr_trunc,
@@ -117,8 +117,10 @@ SELECT
     veh.inj_possible_cnt,
     veh.inj_non_incapacitating_cnt,
     veh.inj_fatal_30_cnt,
-    veh.inj_fatal_non_traffic_cnt
+    veh.inj_fatal_non_traffic_cnt,
+    fce.last_updt_dt
 FROM v_fact_all_veh veh
+INNER JOIN fact_crash_evt fce ON fce.hsmv_rpt_nbr = veh.hsmv_rpt_nbr
 LEFT JOIN dim_date dd ON veh.key_crash_dt = dd.crash_dt
 LEFT JOIN dim_geography dg ON veh.key_geography = dg.ID
 LEFT JOIN dim_agncy da ON veh.key_rptg_agncy = da.ID
