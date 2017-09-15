@@ -19,7 +19,7 @@ CALL s4_sync_pass();
 CALL s4_sync_veh();
 CALL s4_sync_violation();
 
-DROP UNIQUE INDEX citation_id_idx;
+DROP INDEX citation_id_idx;
 DROP INDEX citation_gps_pt_4326_idx;
 DROP INDEX citation_geocode_pt_3087_idx;
 

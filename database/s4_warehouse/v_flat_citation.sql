@@ -24,8 +24,10 @@ SELECT
     ci.key_driver_age_rng,
     vdar.driver_attr_tx AS driver_age_rng,
     ci.key_violation,
-    nvl(vi.sect_nbr_dsp, ci.sect_nbr) AS sect_nbr,
-    nvl(vi.sub_sect_nbr_dsp, ci.sub_sect_nbr) AS sub_sect_nbr,
+    nvl(vi.sect_nbr, ci.sect_nbr) AS sect_nbr,
+    nvl(vi.sect_nbr_dsp, ci.sect_nbr) AS sect_nbr_dsp,
+    nvl(vi.sub_sect_nbr, ci.sub_sect_nbr) AS sub_sect_nbr,
+    nvl(vi.sub_sect_nbr_dsp, ci.sub_sect_nbr) AS sub_sect_nbr_dsp,
     nvl(vi.violation_cd, ci.violation_cd) AS violation_cd,
     vi.violation_desc,
     vi.violation_class,
@@ -139,7 +141,8 @@ SELECT
     CASE
         WHEN sc.shape IS NULL THEN NULL
         ELSE sdo_geometry(sde.st_astext(sc.shape), 3087)
-    END AS geocode_pt_3087
+    END AS geocode_pt_3087,
+    ci.last_updt_dt
 FROM citation ci
 LEFT JOIN navteq_2015q1.st_citation sc ON sc.citation_nbr = ci.citation_nbr
 LEFT JOIN dim_date dd ON dd.crash_dt = ci.key_date
