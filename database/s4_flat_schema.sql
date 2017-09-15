@@ -76,156 +76,183 @@ END;
 /
 
 CREATE TABLE crash_evt (
-    "ID"                         NUMBER
+    "ID"                          NUMBER
         GENERATED ALWAYS AS IDENTITY,
-    hsmv_rpt_nbr                 NUMBER(*,0),
-    hsmv_rpt_nbr_trunc           CHAR(9),
-    key_crash_dt                 DATE,
-    crash_yr                     NUMBER(*,0),
-    crash_mm                     NUMBER(*,0),
-    crash_mo                     VARCHAR2(9),
-    crash_dd                     NUMBER(*,0),
-    crash_day                    VARCHAR2(9),
-    key_geography                NUMBER(*,0),
-    dot_district_nm              VARCHAR2(15),
-    rpc_nm                       VARCHAR2(30),
-    mpo_nm                       VARCHAR2(35),
-    cnty_cd                      NUMBER(*,0),
-    cnty_nm                      VARCHAR2(15),
-    city_cd                      NUMBER(*,0),
-    city_nm                      VARCHAR2(35),
-    key_rptg_agncy               NUMBER(*,0),
-    rptg_agncy_nm                VARCHAR2(60),
-    rptg_agncy_short_nm          VARCHAR2(40),
-    rptg_agncy_type              VARCHAR2(30),
-    key_rptg_unit                NUMBER(*,0),
-    rptg_unit_nm                 VARCHAR2(60),
-    rptg_unit_short_nm           VARCHAR2(40),
-    key_contrib_circum_env1      NUMBER(*,0),
-    contrib_circum_env1          VARCHAR2(60),
-    key_contrib_circum_env2      NUMBER(*,0),
-    contrib_circum_env2          VARCHAR2(60),
-    key_contrib_circum_env3      NUMBER(*,0),
-    contrib_circum_env3          VARCHAR2(60),
-    key_contrib_circum_rd1       NUMBER(*,0),
-    contrib_circum_rd1           VARCHAR2(60),
-    key_contrib_circum_rd2       NUMBER(*,0),
-    contrib_circum_rd2           VARCHAR2(60),
-    key_contrib_circum_rd3       NUMBER(*,0),
-    contrib_circum_rd3           VARCHAR2(60),
-    key_crash_sev                NUMBER(*,0),
-    crash_sev                    VARCHAR2(60),
-    key_crash_sev_dtl            NUMBER(*,0),
-    crash_sev_dtl                VARCHAR2(60),
-    key_crash_type               NUMBER(*,0),
-    crash_type                   VARCHAR2(60),
-    crash_type_simplified        VARCHAR2(60),
-    crash_type_dir_tx            VARCHAR2(2),
-    key_first_he                 NUMBER(*,0),
-    first_he                     VARCHAR2(60),
-    key_first_he_loc             NUMBER(*,0),
-    first_he_loc                 VARCHAR2(60),
-    key_first_he_rel_to_jct      NUMBER(*,0),
-    first_he_rel_to_jct          VARCHAR2(60),
-    key_light_cond               NUMBER(*,0),
-    light_cond                   VARCHAR2(60),
-    key_loc_in_work_zn           NUMBER(*,0),
-    loc_in_work_zn               VARCHAR2(60),
-    key_manner_of_collision      NUMBER(*,0),
-    manner_of_collision          VARCHAR2(60),
-    key_notif_by                 NUMBER(*,0),
-    notif_by                     VARCHAR2(60),
-    key_rd_sys_id                NUMBER(*,0),
-    rd_sys_id                    VARCHAR2(60),
-    key_rd_surf_cond             NUMBER(*,0),
-    rd_surf_cond                 VARCHAR2(60),
-    key_type_of_intrsect         NUMBER(*,0),
-    type_of_intrsect             VARCHAR2(60),
-    key_type_of_shoulder         NUMBER(*,0),
-    type_of_shoulder             VARCHAR2(60),
-    key_type_of_work_zn          NUMBER(*,0),
-    type_of_work_zn              VARCHAR2(60),
-    key_weather_cond             NUMBER(*,0),
-    weather_cond                 VARCHAR2(60),
-    key_bike_ped_crash_type      NUMBER(*,0),
-    key_bike_ped_crash_group     NUMBER(*,0),
-    bike_ped_bike_or_ped         CHAR(1),
-    bike_ped_crash_grp_nbr       NUMBER(*,0),
-    bike_ped_crash_grp_nm        VARCHAR2(100),
-    bike_ped_crash_type_nbr      NUMBER(*,0),
-    bike_ped_crash_type_nm       VARCHAR2(100),
-    crash_tm                     DATE,
-    intrsect_st_nm               VARCHAR2(80),
-    is_alc_rel                   CHAR(1),
-    is_distracted                CHAR(1),
-    is_drug_rel                  CHAR(1),
-    is_1st_he_within_intrchg     CHAR(1),
-    is_geolocated                CHAR(1),
-    is_le_in_work_zn             CHAR(1),
-    is_pictures_taken            CHAR(1),
-    is_sch_bus_rel               CHAR(1),
-    is_within_city_lim           CHAR(1),
-    is_workers_in_work_zn        CHAR(1),
-    is_work_zn_rel               CHAR(1),
+    hsmv_rpt_nbr                  NUMBER(*,0),
+    hsmv_rpt_nbr_trunc            CHAR(9),
+    key_crash_dt                  DATE,
+    crash_yr                      NUMBER(*,0),
+    crash_mm                      NUMBER(*,0),
+    crash_mo                      VARCHAR2(9),
+    crash_dd                      NUMBER(*,0),
+    crash_day                     VARCHAR2(9),
+    key_geography                 NUMBER(*,0),
+    dot_district_nm               VARCHAR2(15),
+    rpc_nm                        VARCHAR2(30),
+    mpo_nm                        VARCHAR2(35),
+    cnty_cd                       NUMBER(*,0),
+    cnty_nm                       VARCHAR2(15),
+    city_cd                       NUMBER(*,0),
+    city_nm                       VARCHAR2(35),
+    key_rptg_agncy                NUMBER(*,0),
+    rptg_agncy_nm                 VARCHAR2(60),
+    rptg_agncy_short_nm           VARCHAR2(40),
+    rptg_agncy_type_nm            VARCHAR2(30),
+    key_rptg_unit                 NUMBER(*,0),
+    rptg_unit_nm                  VARCHAR2(60),
+    rptg_unit_short_nm            VARCHAR2(40),
+    key_contrib_circum_env1       NUMBER(*,0),
+    contrib_circum_env1           VARCHAR2(60),
+    key_contrib_circum_env2       NUMBER(*,0),
+    contrib_circum_env2           VARCHAR2(60),
+    key_contrib_circum_env3       NUMBER(*,0),
+    contrib_circum_env3           VARCHAR2(60),
+    key_contrib_circum_rd1        NUMBER(*,0),
+    contrib_circum_rd1            VARCHAR2(60),
+    key_contrib_circum_rd2        NUMBER(*,0),
+    contrib_circum_rd2            VARCHAR2(60),
+    key_contrib_circum_rd3        NUMBER(*,0),
+    contrib_circum_rd3            VARCHAR2(60),
+    key_crash_sev                 NUMBER(*,0),
+    crash_sev                     VARCHAR2(60),
+    key_crash_sev_dtl             NUMBER(*,0),
+    crash_sev_dtl                 VARCHAR2(60),
+    key_crash_type                NUMBER(*,0),
+    crash_type                    VARCHAR2(60),
+    crash_type_simplified         VARCHAR2(60),
+    crash_type_dir_tx             VARCHAR2(2),
+    key_first_he                  NUMBER(*,0),
+    first_he                      VARCHAR2(60),
+    key_first_he_loc              NUMBER(*,0),
+    first_he_loc                  VARCHAR2(60),
+    key_first_he_rel_to_jct       NUMBER(*,0),
+    first_he_rel_to_jct           VARCHAR2(60),
+    key_light_cond                NUMBER(*,0),
+    light_cond                    VARCHAR2(60),
+    key_loc_in_work_zn            NUMBER(*,0),
+    loc_in_work_zn                VARCHAR2(60),
+    key_manner_of_collision       NUMBER(*,0),
+    manner_of_collision           VARCHAR2(60),
+    key_notif_by                  NUMBER(*,0),
+    notif_by                      VARCHAR2(60),
+    key_rd_sys_id                 NUMBER(*,0),
+    rd_sys_id                     VARCHAR2(60),
+    key_rd_surf_cond              NUMBER(*,0),
+    rd_surf_cond                  VARCHAR2(60),
+    key_type_of_intrsect          NUMBER(*,0),
+    type_of_intrsect              VARCHAR2(60),
+    key_type_of_shoulder          NUMBER(*,0),
+    type_of_shoulder              VARCHAR2(60),
+    key_type_of_work_zn           NUMBER(*,0),
+    type_of_work_zn               VARCHAR2(60),
+    key_weather_cond              NUMBER(*,0),
+    weather_cond                  VARCHAR2(60),
+    key_bike_ped_crash_type       NUMBER(*,0),
+    key_bike_ped_crash_group      NUMBER(*,0),
+    bike_ped_bike_or_ped          CHAR(1),
+    bike_ped_crash_grp_nbr        NUMBER(*,0),
+    bike_ped_crash_grp_nm         VARCHAR2(100),
+    bike_ped_crash_type_nbr       NUMBER(*,0),
+    bike_ped_crash_type_nm        VARCHAR2(100),
+    crash_tm                      DATE,
+    intrsect_st_nm                VARCHAR2(80),
+    is_alc_rel                    CHAR(1),
+    is_distracted                 CHAR(1),
+    is_drug_rel                   CHAR(1),
+    is_1st_he_within_intrchg      CHAR(1),
+    is_geolocated                 CHAR(1),
+    is_le_in_work_zn              CHAR(1),
+    is_pictures_taken             CHAR(1),
+    is_sch_bus_rel                CHAR(1),
+    is_within_city_lim            CHAR(1),
+    is_workers_in_work_zn         CHAR(1),
+    is_work_zn_rel                CHAR(1),
     --lat                          FLOAT(126),
     --lng                          FLOAT(126),
-    milepost_nbr                 NUMBER(*,0),
-    offset_dir                   VARCHAR2(5),
-    offset_ft                    NUMBER(*,0),
-    rptg_ofcr_rank               VARCHAR2(20),
-    st_nm                        VARCHAR2(80),
-    st_nbr                       VARCHAR2(20),
-    veh_cnt                      NUMBER(*,0),
-    moped_cnt                    NUMBER(*,0),
-    motorcycle_cnt               NUMBER(*,0),
-    nm_cnt                       NUMBER(*,0),
-    pass_cnt                     NUMBER(*,0),
-    trailer_cnt                  NUMBER(*,0),
-    bike_cnt                     NUMBER(*,0),
-    ped_cnt                      NUMBER(*,0),
-    fatality_cnt                 NUMBER(*,0),
-    inj_cnt                      NUMBER(*,0),
-    citation_cnt                 NUMBER(*,0),
-    citation_amt                 NUMBER(*,0),
-    prop_dmg_cnt                 NUMBER(*,0),
-    prop_dmg_amt                 NUMBER(*,0),
-    veh_dmg_cnt                  NUMBER(*,0),
-    veh_dmg_amt                  NUMBER(*,0),
-    tot_dmg_amt                  NUMBER(*,0),
-    trans_by_ems_cnt             NUMBER(*,0),
-    trans_by_le_cnt              NUMBER(*,0),
-    trans_by_oth_cnt             NUMBER(*,0),
-    inj_incapacitating_cnt       NUMBER(*,0),
-    inj_none_cnt                 NUMBER(*,0),
-    inj_possible_cnt             NUMBER(*,0),
-    inj_non_incapacitating_cnt   NUMBER(*,0),
-    inj_fatal_30_cnt             NUMBER(*,0),
-    inj_fatal_non_traffic_cnt    NUMBER(*,0),
-    geo_status_cd                NUMBER(*,0),
-    form_type_cd                 CHAR(1),
-    agncy_rpt_nbr                VARCHAR2(25),
-    batch_nbr                    NUMBER(*,0),
-    data_src_cd                  NUMBER(10,0),
-    is_complete                  CHAR(1),
-    is_aggressive                CHAR(1),
-    rpt_dt                       DATE,
-    notif_tm                     DATE,
-    dispatched_tm                DATE,
-    arrived_tm                   DATE,
-    cleared_tm                   DATE,
+    gps_pt_4326                   SDO_GEOMETRY,
+    milepost_nbr                  NUMBER(*,0),
+    offset_dir                    VARCHAR2(5),
+    offset_ft                     NUMBER(*,0),
+    rptg_ofcr_rank                VARCHAR2(20),
+    st_nm                         VARCHAR2(80),
+    st_nbr                        VARCHAR2(20),
+    veh_cnt                       NUMBER(*,0),
+    moped_cnt                     NUMBER(*,0),
+    motorcycle_cnt                NUMBER(*,0),
+    nm_cnt                        NUMBER(*,0),
+    pass_cnt                      NUMBER(*,0),
+    trailer_cnt                   NUMBER(*,0),
+    bike_cnt                      NUMBER(*,0),
+    ped_cnt                       NUMBER(*,0),
+    fatality_cnt                  NUMBER(*,0),
+    inj_cnt                       NUMBER(*,0),
+    citation_cnt                  NUMBER(*,0),
+    citation_amt                  NUMBER(*,0),
+    prop_dmg_cnt                  NUMBER(*,0),
+    prop_dmg_amt                  NUMBER(*,0),
+    veh_dmg_cnt                   NUMBER(*,0),
+    veh_dmg_amt                   NUMBER(*,0),
+    tot_dmg_amt                   NUMBER(*,0),
+    trans_by_ems_cnt              NUMBER(*,0),
+    trans_by_le_cnt               NUMBER(*,0),
+    trans_by_oth_cnt              NUMBER(*,0),
+    inj_incapacitating_cnt        NUMBER(*,0),
+    inj_none_cnt                  NUMBER(*,0),
+    inj_possible_cnt              NUMBER(*,0),
+    inj_non_incapacitating_cnt    NUMBER(*,0),
+    inj_fatal_30_cnt              NUMBER(*,0),
+    inj_fatal_non_traffic_cnt     NUMBER(*,0),
+    geo_status_cd                 NUMBER(*,0),
+    form_type_cd                  CHAR(1),
+    agncy_rpt_nbr                 VARCHAR2(25),
+    batch_nbr                     NUMBER(*,0),
+    data_src_cd                   NUMBER(10,0),
+    is_complete                   CHAR(1),
+    is_aggressive                 CHAR(1),
+    rpt_dt                        DATE,
+    notif_tm                      DATE,
+    dispatched_tm                 DATE,
+    arrived_tm                    DATE,
+    cleared_tm                    DATE,
     img_file_nm                   VARCHAR2(15),
-    img_src_nm                   VARCHAR2(20),
-    codeable                     CHAR(1),
-    gps_pt_4326                  SDO_GEOMETRY,
-    PRIMARY KEY (hsmv_rpt_nbr) USING INDEX ENABLE
+    img_src_nm                    VARCHAR2(20),
+    codeable                      CHAR(1),
+    crash_seg_id                  NUMBER(*,0),
+    nearest_intrsect_id           NUMBER(*,0),
+    nearest_intrsect_offset_ft    NUMBER(10,0),
+    nearest_intrsect_offset_dir   NUMBER(5,0),
+    ref_intrsect_id               NUMBER(*,0),
+    ref_intrsect_offset_ft        NUMBER(10,0),
+    ref_intrsect_offset_dir       NUMBER(5,0),
+    on_network                    NVARCHAR2(1),
+    dot_on_sys                    NVARCHAR2(1),
+    mapped                        NVARCHAR2(1),
+    gc_key_geography              NUMBER(*,0),
+    gc_dot_district_nm            VARCHAR2(15),
+    gc_rpc_nm                     VARCHAR2(30),
+    gc_mpo_nm                     VARCHAR2(35),
+    gc_cnty_cd                    NUMBER(*,0),
+    gc_cnty_nm                    VARCHAR2(15),
+    gc_city_cd                    NUMBER(*,0),
+    gc_city_nm                    VARCHAR2(35),
+    geocode_pt_3087               SDO_GEOMETRY,
+    PRIMARY KEY ( hsmv_rpt_nbr )
+        USING INDEX enable
 );
 
-CREATE UNIQUE INDEX crash_evt_id_idx ON crash_evt ("ID");
+CREATE UNIQUE INDEX crash_evt_id_idx ON
+    crash_evt ( "ID" );
 
-CALL s4_register_sdo_geom('crash_evt', 'gps_pt_4326', 4326);
+CALL s4_register_sdo_geom('crash_evt','gps_pt_4326',4326);
 
 CREATE INDEX crash_evt_gps_pt_4326_idx ON
     crash_evt ( gps_pt_4326 )
+        INDEXTYPE IS mdsys.spatial_index;
+
+CALL s4_register_sdo_geom('crash_evt','geocode_pt_3087',3087);
+
+CREATE INDEX crash_evt_geocode_pt_3087_idx ON
+    crash_evt ( geocode_pt_3087 )
         INDEXTYPE IS mdsys.spatial_index;
 
 CREATE TABLE driver (
@@ -252,7 +279,7 @@ CREATE TABLE driver (
     key_rptg_agncy              NUMBER(*,0),
     rptg_agncy_nm               VARCHAR2(60),
     rptg_agncy_short_nm         VARCHAR2(40),
-    rptg_agncy_type             VARCHAR2(30),
+    rptg_agncy_type_nm          VARCHAR2(30),
     key_rptg_unit               NUMBER(*,0),
     rptg_unit_nm                VARCHAR2(60),
     rptg_unit_short_nm          VARCHAR2(40),
@@ -325,10 +352,12 @@ CREATE TABLE driver (
     prop_dmg_amt                NUMBER(*,0),
     inj_incapacitating_cnt      NUMBER(*,0),
     batch_nbr                   NUMBER(*,0),
-    PRIMARY KEY (hsmv_rpt_nbr, veh_nbr, person_nbr) USING INDEX ENABLE
+    PRIMARY KEY ( hsmv_rpt_nbr,veh_nbr,person_nbr )
+        USING INDEX enable
 );
 
-CREATE UNIQUE INDEX driver_id_idx ON driver ("ID");
+CREATE UNIQUE INDEX driver_id_idx ON
+    driver ( "ID" );
 
 CREATE TABLE non_motorist (
     "ID"                     NUMBER
@@ -353,7 +382,7 @@ CREATE TABLE non_motorist (
     key_rptg_agncy           NUMBER(*,0),
     rptg_agncy_nm            VARCHAR2(60),
     rptg_agncy_short_nm      VARCHAR2(40),
-    rptg_agncy_type          VARCHAR2(30),
+    rptg_agncy_type_nm       VARCHAR2(30),
     key_rptg_unit            NUMBER(*,0),
     rptg_unit_nm             VARCHAR2(60),
     rptg_unit_short_nm       VARCHAR2(40),
@@ -408,10 +437,12 @@ CREATE TABLE non_motorist (
     prop_dmg_amt             NUMBER(*,0),
     inj_incapacitating_cnt   NUMBER(*,0),
     batch_nbr                NUMBER(*,0),
-    PRIMARY KEY (hsmv_rpt_nbr, person_nbr) USING INDEX ENABLE
+    PRIMARY KEY ( hsmv_rpt_nbr,person_nbr )
+        USING INDEX enable
 );
 
-CREATE UNIQUE INDEX non_motorist_id_idx ON non_motorist ("ID");
+CREATE UNIQUE INDEX non_motorist_id_idx ON
+    non_motorist ( "ID" );
 
 CREATE TABLE pass (
     "ID"                        NUMBER
@@ -437,7 +468,7 @@ CREATE TABLE pass (
     key_rptg_agncy              NUMBER(*,0),
     rptg_agncy_nm               VARCHAR2(60),
     rptg_agncy_short_nm         VARCHAR2(40),
-    rptg_agncy_type             VARCHAR2(30),
+    rptg_agncy_type_nm          VARCHAR2(30),
     key_rptg_unit               NUMBER(*,0),
     rptg_unit_nm                VARCHAR2(60),
     rptg_unit_short_nm          VARCHAR2(40),
@@ -480,10 +511,12 @@ CREATE TABLE pass (
     batch_nbr                   NUMBER(*,0),
     inj_incapacitating_cnt      NUMBER(*,0),
     prop_dmg_amt                NUMBER(*,0),
-    PRIMARY KEY (hsmv_rpt_nbr, veh_nbr, person_nbr) USING INDEX ENABLE
+    PRIMARY KEY ( hsmv_rpt_nbr,veh_nbr,person_nbr )
+        USING INDEX enable
 );
 
-CREATE UNIQUE INDEX pass_id_idx ON pass ("ID");
+CREATE UNIQUE INDEX pass_id_idx ON
+    pass ( "ID" );
 
 CREATE TABLE veh (
     "ID"                         NUMBER
@@ -508,7 +541,7 @@ CREATE TABLE veh (
     key_rptg_agncy               NUMBER(*,0),
     rptg_agncy_nm                VARCHAR2(60),
     rptg_agncy_short_nm          VARCHAR2(40),
-    rptg_agncy_type              VARCHAR2(30),
+    rptg_agncy_type_nm           VARCHAR2(30),
     key_rptg_unit                NUMBER(*,0),
     rptg_unit_nm                 VARCHAR2(60),
     rptg_unit_short_nm           VARCHAR2(40),
@@ -606,10 +639,12 @@ CREATE TABLE veh (
     inj_non_incapacitating_cnt   NUMBER(*,0),
     inj_fatal_30_cnt             NUMBER(*,0),
     inj_fatal_non_traffic_cnt    NUMBER(*,0),
-    PRIMARY KEY (hsmv_rpt_nbr, veh_nbr) USING INDEX ENABLE
+    PRIMARY KEY ( hsmv_rpt_nbr,veh_nbr )
+        USING INDEX enable
 );
 
-CREATE UNIQUE INDEX veh_id_idx ON veh ("ID");
+CREATE UNIQUE INDEX veh_id_idx ON
+    veh ( "ID" );
 
 CREATE TABLE violation (
     "ID"                  NUMBER
@@ -636,17 +671,19 @@ CREATE TABLE violation (
     key_rptg_agncy        NUMBER(*,0),
     rptg_agncy_nm         VARCHAR2(60),
     rptg_agncy_short_nm   VARCHAR2(40),
-    rptg_agncy_type       VARCHAR2(30),
+    rptg_agncy_type_nm    VARCHAR2(30),
     key_rptg_unit         NUMBER(*,0),
     rptg_unit_nm          VARCHAR2(60),
     rptg_unit_short_nm    VARCHAR2(40),
     fl_statute_nbr        VARCHAR2(30),
     charge                VARCHAR2(128),
     batch_nbr             NUMBER(*,0),
-    PRIMARY KEY (hsmv_rpt_nbr, person_nbr, citation_nbr) USING INDEX ENABLE
+    PRIMARY KEY ( hsmv_rpt_nbr,person_nbr,citation_nbr )
+        USING INDEX enable
 );
 
-CREATE UNIQUE INDEX violation_id_idx ON violation ("ID");
+CREATE UNIQUE INDEX violation_id_idx ON
+    violation ( "ID" );
 
 CREATE TABLE citation (
     "ID"                           NUMBER
@@ -671,7 +708,7 @@ CREATE TABLE citation (
     key_agncy                      NUMBER(*,0),
     agncy_nm                       VARCHAR2(60),
     agncy_short_nm                 VARCHAR2(40),
-    agncy_type                     VARCHAR2(30),
+    agncy_type_nm                  VARCHAR2(30),
     key_driver_age_rng             NUMBER(*,0),
     driver_age_rng                 VARCHAR2(100),
     key_violation                  NUMBER(*,0),
@@ -799,19 +836,22 @@ CREATE TABLE citation (
     source_format_cd               NUMBER(5,0),
     addr_used_cd                   NUMBER(5,0),
     gps_pt_4326                    SDO_GEOMETRY,
-    navteq_pt_3087                 SDO_GEOMETRY,
-    PRIMARY KEY (citation_nbr) USING INDEX ENABLE
+    geocode_pt_3087                SDO_GEOMETRY,
+    PRIMARY KEY ( citation_nbr )
+        USING INDEX enable
 );
 
-CREATE UNIQUE INDEX citation_id_idx ON citation ("ID");
+CREATE UNIQUE INDEX citation_id_idx ON
+    citation ( "ID" );
 
-CALL s4_register_sdo_geom('citation', 'gps_pt_4326', 4326);
-CALL s4_register_sdo_geom('citation', 'navteq_pt_3087', 3087);
+CALL s4_register_sdo_geom('citation','gps_pt_4326',4326);
+
+CALL s4_register_sdo_geom('citation','geocode_pt_3087',3087);
 
 CREATE INDEX citation_gps_pt_4326_idx ON
     citation ( gps_pt_4326 )
         INDEXTYPE IS mdsys.spatial_index;
 
-CREATE INDEX citation_navteq_pt_3087_idx ON
-    citation ( navteq_pt_3087 )
+CREATE INDEX citation_geocode_pt_3087_idx ON
+    citation ( geocode_pt_3087 )
         INDEXTYPE IS mdsys.spatial_index;
