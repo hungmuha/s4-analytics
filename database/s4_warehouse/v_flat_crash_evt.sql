@@ -9,17 +9,17 @@ SELECT
     dd.crash_dd,
     dd.crash_day,
     fce.key_geography,
-    dg.dot_district_nm,
-    dg.rpc_nm,
-    dg.mpo_nm,
-    dg.cnty_cd,
-    dg.cnty_nm,
-    dg.city_cd,
-    dg.city_nm,
+    dg1.dot_district_nm,
+    dg1.rpc_nm,
+    dg1.mpo_nm,
+    dg1.cnty_cd,
+    dg1.cnty_nm,
+    dg1.city_cd,
+    dg1.city_nm,
     fce.key_rptg_agncy,
     da.agncy_nm AS rptg_agncy_nm,
     da.agncy_short_nm AS rptg_agncy_short_nm,
-    da.agncy_type_nm AS rptg_agncy_type,
+    da.agncy_type_nm AS rptg_agncy_type_nm,
     fce.key_rptg_unit,
     dau.agncy_nm AS rptg_unit_nm,
     dau.agncy_short_nm AS rptg_unit_short_nm,
@@ -89,6 +89,10 @@ SELECT
     fce.is_within_city_lim,
     fce.is_workers_in_work_zn,
     fce.is_work_zn_rel,
+    CASE
+        WHEN fce.lng IS NULL OR fce.lat IS NULL THEN NULL
+        ELSE sdo_geometry(2001, 4326, mdsys.sdo_point_type(fce.lng, fce.lat, NULL), NULL, NULL)
+    END AS gps_pt_4326,
     fce.milepost_nbr,
     fce.offset_dir,
     fce.offset_ft,
@@ -136,14 +140,38 @@ SELECT
     CASE WHEN fce.img_ext_tx IS NOT NULL THEN fce.hsmv_rpt_nbr || fce.img_ext_tx ELSE NULL END AS img_file_nm,
     fce.img_src_nm,
     fce.codeable,
+    gcr.crash_seg_id,
+    gcr.nearest_intrsect_id,
+    gcr.nearest_intrsect_offset_ft,
+    gcr.nearest_intrsect_offset_dir,
+    gcr.ref_intrsect_id,
+    gcr.ref_intrsect_offset_ft,
+    gcr.ref_intrsect_offset_dir,
+    gcr.on_network,
+    gcr.dot_on_sys,
+    gcr.mapped,
+    gcr.key_geography AS gc_key_geography,
+    dg2.dot_district_nm AS gc_dot_district_nm,
+    dg2.rpc_nm AS gc_rpc_nm,
+    dg2.mpo_nm AS gc_mpo_nm,
+    dg2.cnty_cd AS gc_cnty_cd,
+    dg2.cnty_nm AS gc_cnty_nm,
+    dg2.city_cd AS gc_city_cd,
+    dg2.city_nm AS gc_city_nm,
     CASE
-        WHEN fce.lng IS NULL OR fce.lat IS NULL THEN NULL
-        ELSE sdo_geometry(2001, 4326, mdsys.sdo_point_type(fce.lng, fce.lat, NULL), NULL, NULL)
-    END AS gps_pt_4326,
-    fce.last_updt_dt
+        WHEN gcr.shape IS NULL THEN NULL
+        ELSE sdo_geometry(sde.st_astext(gcr.shape), 3087)
+    END AS geocode_pt_3087,
+    CASE
+        WHEN fce.last_updt_dt IS NULL THEN gcr.last_updt_dt
+        WHEN gcr.last_updt_dt IS NULL THEN fce.last_updt_dt
+        ELSE greatest(fce.last_updt_dt, gcr.last_updt_dt)
+    END AS last_updt_dt -- see https://community.oracle.com/thread/958617
 FROM fact_crash_evt fce
+LEFT JOIN navteq_2015q1.geocode_result gcr ON gcr.hsmv_rpt_nbr = fce.hsmv_rpt_nbr
 LEFT JOIN dim_date dd ON fce.key_crash_dt = dd.crash_dt
-LEFT JOIN dim_geography dg ON fce.key_geography = dg.ID
+LEFT JOIN dim_geography dg1 ON fce.key_geography = dg1.ID
+LEFT JOIN dim_geography dg2 ON gcr.key_geography = dg2.ID
 LEFT JOIN dim_agncy da ON fce.key_rptg_agncy = da.ID
 LEFT JOIN dim_agncy dau ON fce.key_rptg_unit = dau.ID
 LEFT JOIN v_crash_contrib_circum_env cce1 ON fce.key_contrib_circum_env1 = cce1.ID

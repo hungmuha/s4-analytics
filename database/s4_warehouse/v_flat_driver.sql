@@ -21,7 +21,7 @@ SELECT
     fd.key_rptg_agncy,
     da.agncy_nm AS rptg_agncy_nm,
     da.agncy_short_nm AS rptg_agncy_short_nm,
-    da.agncy_type_nm AS rptg_agncy_type,
+    da.agncy_type_nm AS rptg_agncy_type_nm,
     fd.key_rptg_unit,
     dau.agncy_nm AS rptg_unit_nm,
     dau.agncy_short_nm AS rptg_unit_short_nm,
