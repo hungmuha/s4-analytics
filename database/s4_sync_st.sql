@@ -1,0 +1,81 @@
+CREATE OR REPLACE PROCEDURE s4_sync_st
+AS
+BEGIN
+    EXECUTE IMMEDIATE 'TRUNCATE TABLE st';
+
+    INSERT INTO st (
+        link_id,
+        st_name,
+        st_nm_pref,
+        st_typ_bef,
+        st_nm_base,
+        st_nm_suff,
+        st_typ_aft,
+        st_typ_att,
+        ref_in_id,
+        nref_in_id,
+        dironsign,
+        city_cd,
+        cnty_cd,
+        roadway,
+        dot_funclass,
+        dot_on_sys,
+        fhp_bnd_id,
+        dot_bnd_id,
+        mpo_bnd_id,
+        cnty_bnd_id,
+        city_bnd_id,
+        rd_sys_id,
+        rd_sys_interstate,
+        rd_sys_us,
+        rd_sys_state,
+        rd_sys_county,
+        rd_sys_local,
+        rd_sys_toll,
+        rd_sys_forest,
+        rd_sys_private,
+        rd_sys_pk_lot,
+        rd_sys_other,
+        centroid_3087,
+        shape_3087
+    )
+    SELECT
+        link_id,
+        st_name,
+        st_nm_pref,
+        st_typ_bef,
+        st_nm_base,
+        st_nm_suff,
+        st_typ_aft,
+        st_typ_att,
+        ref_in_id,
+        nref_in_id,
+        dironsign,
+        city_cd,
+        cnty_cd,
+        roadway,
+        dot_funclass,
+        dot_on_sys,
+        fhp_bnd_id,
+        dot_bnd_id,
+        mpo_bnd_id,
+        cnty_bnd_id,
+        city_bnd_id,
+        rd_sys_id,
+        rd_sys_interstate,
+        rd_sys_us,
+        rd_sys_state,
+        rd_sys_county,
+        rd_sys_local,
+        rd_sys_toll,
+        rd_sys_forest,
+        rd_sys_private,
+        rd_sys_pk_lot,
+        rd_sys_other,
+        centroid_3087,
+        shape_3087
+    FROM v_flat_st@s4_warehouse;
+
+    COMMIT;
+END;
+/

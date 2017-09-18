@@ -2,7 +2,6 @@ CREATE OR REPLACE VIEW v_flat_intrsect AS
 SELECT
     nt.intersection_id,
     nt.intersection_name,
-    nt.intersection_geom_type,
     nt.is_ramp,
     nt.is_rndabout,
     nt.cnty_cd,

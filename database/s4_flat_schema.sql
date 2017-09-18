@@ -854,4 +854,67 @@ CREATE INDEX citation_gps_pt_4326_idx ON
 
 CREATE INDEX citation_geocode_pt_3087_idx ON
     citation ( geocode_pt_3087 )
-        INDEXTYPE IS mdsys.spatial_index;
+        INDEXTYPE IS mdsys.spatial_index;CREATE TABLE intrsect (
+    intersection_id          NUMBER(10,0),
+    intersection_name        NVARCHAR2(512),
+    --intersection_geom_type   NUMBER(5,0),
+    is_ramp                  NVARCHAR2(1),
+    is_rndabout              NVARCHAR2(1),
+    cnty_cd                  NUMBER(5,0),
+    city_cd                  NUMBER(5,0),
+    rd_sys_id                NUMBER(5,0),
+    rd_sys_interstate        NVARCHAR2(1),
+    rd_sys_us                NVARCHAR2(1),
+    rd_sys_state             NVARCHAR2(1),
+    rd_sys_county            NVARCHAR2(1),
+    rd_sys_local             NVARCHAR2(1),
+    rd_sys_toll              NVARCHAR2(1),
+    rd_sys_forest            NVARCHAR2(1),
+    rd_sys_private           NVARCHAR2(1),
+    rd_sys_pk_lot            NVARCHAR2(1),
+    rd_sys_other             NVARCHAR2(1),
+    geom_type                VARCHAR2(10),
+    centroid_3087            SDO_GEOMETRY,
+    shape_3087               SDO_GEOMETRY,
+    PRIMARY KEY ( intersection_id )
+        USING INDEX enable
+);
+
+CREATE TABLE st (
+    link_id             NUMBER(10,0),
+    st_name             NVARCHAR2(240),
+    st_nm_pref          NVARCHAR2(6),
+    st_typ_bef          NVARCHAR2(90),
+    st_nm_base          NVARCHAR2(105),
+    st_nm_suff          NVARCHAR2(6),
+    st_typ_aft          NVARCHAR2(90),
+    st_typ_att          NVARCHAR2(1),
+    ref_in_id           NUMBER(10,0),
+    nref_in_id          NUMBER(10,0),
+    dironsign           NVARCHAR2(1),
+    city_cd             NUMBER,
+    cnty_cd             NUMBER,
+    roadway             NVARCHAR2(8),
+    dot_funclass        NVARCHAR2(2),
+    dot_on_sys          NUMBER(10,0),
+    fhp_bnd_id          NUMBER(5,0),
+    dot_bnd_id          NUMBER(5,0),
+    mpo_bnd_id          NUMBER(5,0),
+    cnty_bnd_id         NUMBER(5,0),
+    city_bnd_id         NUMBER(5,0),
+    rd_sys_id           NUMBER(5,0),
+    rd_sys_interstate   NVARCHAR2(1),
+    rd_sys_us           NVARCHAR2(1),
+    rd_sys_state        NVARCHAR2(1),
+    rd_sys_county       NVARCHAR2(1),
+    rd_sys_local        NVARCHAR2(1),
+    rd_sys_toll         NVARCHAR2(1),
+    rd_sys_forest       NVARCHAR2(1),
+    rd_sys_private      NVARCHAR2(1),
+    rd_sys_pk_lot       NVARCHAR2(1),
+    rd_sys_other        NVARCHAR2(1),
+    centroid_3087       SDO_GEOMETRY,
+    shape_3087          SDO_GEOMETRY,
+    PRIMARY KEY ( link_id )
+        USING INDEX enable
+);

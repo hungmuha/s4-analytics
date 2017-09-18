@@ -2,7 +2,7 @@ DROP INDEX crash_evt_id_idx;
 DROP INDEX crash_evt_gps_pt_4326_idx;
 DROP INDEX crash_evt_geocode_pt_3087_idx;
 
-CALL s4_sync_crash_evt(); -- 1.5h
+CALL s4_sync_crash_evt(); -- 87m
 
 CREATE UNIQUE INDEX crash_evt_id_idx ON
     crash_evt ( "ID" );
@@ -23,7 +23,7 @@ DROP INDEX citation_id_idx;
 DROP INDEX citation_gps_pt_4326_idx;
 DROP INDEX citation_geocode_pt_3087_idx;
 
-CALL s4_sync_citation();
+CALL s4_sync_citation(); -- 82m
 
 CREATE UNIQUE INDEX citation_id_idx ON
     citation ( "ID" );
@@ -33,3 +33,6 @@ CREATE INDEX citation_gps_pt_4326_idx ON
 CREATE INDEX citation_geocode_pt_3087_idx ON
     citation ( geocode_pt_3087 )
         INDEXTYPE IS mdsys.spatial_index;
+
+CALL s4_sync_st();
+CALL s4_sync_intrsect();
