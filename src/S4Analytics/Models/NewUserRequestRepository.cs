@@ -336,6 +336,7 @@ namespace S4Analytics.Models
             var subject = "New agency needs to be created in Signal Four Analytics";
             var body = $@"<div>{request.AgncyNm} has been approved for creation. Please create new agency.<br> 
                         Below are the specs: <br><br>
+                        &nbsp;&nbsp;Request Number = {request.RequestNbr} <br>
                         &nbsp;&nbsp;Agency Name = {request.AgncyNm} <br>
                         &nbsp;&nbsp;Access Before 70 days = {before70days} <br>
                         &nbsp;&nbsp;Email Domain = {request.AgncyEmailDomain}<br><br></div>";
@@ -375,7 +376,7 @@ namespace S4Analytics.Models
             var subject = $"New consultant working under {request.AgncyNm} needs approval for Signal Four Account";
             var body = $@"<div>There is a new request from {request.RequestorFirstNm} {request.RequestorLastNm} from {request.AgncyNm} for a contract with {request.VendorName}.<br><br>
                     Please go to Manage Requests in Signal Four Analytics
-                    to review request and if ok, approve it.<br><br></div>";
+                    to review request #{request.RequestNbr} and if ok, approve it.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
