@@ -458,15 +458,15 @@ namespace S4Analytics.Models
             var updateTxt = @"UPDATE NEW_USER_REQ
                             SET
                                 REQ_STATUS = :requestStatus,
-                                AGNCY_ID = :agncyId,
+                                AGNCY_ID = :agencyId,
                                 CONTRACTOR_ID = :vendorId,
                                 USER_CREATED_DT = :userCreatedDt,
                                 USER_ID = :userId
                             WHERE REQ_NBR = :requestNbr";
 
             // Do not write 0 when it should be null
-            var agencyId = request.AgncyId == 0 ? (object)DBNull.Value : request.AgncyId;
-            var vendorId = request.VendorId == 0 ? (object)DBNull.Value : request.VendorId;
+            var agencyId = request.AgncyId == 0 ? (int?)null : request.AgncyId;
+            var vendorId = request.VendorId == 0 ? (int?)null : request.VendorId;
 
             var rowsUpdated = _conn.Execute(updateTxt, new
             {
