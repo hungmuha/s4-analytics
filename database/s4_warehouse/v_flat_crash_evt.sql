@@ -89,10 +89,6 @@ SELECT
     fce.is_within_city_lim,
     fce.is_workers_in_work_zn,
     fce.is_work_zn_rel,
-    CASE
-        WHEN fce.lng IS NULL OR fce.lat IS NULL THEN NULL
-        ELSE sdo_geometry(2001, 4326, mdsys.sdo_point_type(fce.lng, fce.lat, NULL), NULL, NULL)
-    END AS gps_pt_4326,
     fce.milepost_nbr,
     fce.offset_dir,
     fce.offset_ft,
@@ -158,6 +154,10 @@ SELECT
     dg2.cnty_nm AS gc_cnty_nm,
     dg2.city_cd AS gc_city_cd,
     dg2.city_nm AS gc_city_nm,
+    CASE
+        WHEN fce.lng IS NULL OR fce.lat IS NULL THEN NULL
+        ELSE sdo_geometry(2001, 4326, mdsys.sdo_point_type(fce.lng, fce.lat, NULL), NULL, NULL)
+    END AS gps_pt_4326,
     CASE
         WHEN gcr.shape IS NULL THEN NULL
         ELSE sdo_geometry(sde.st_astext(gcr.shape), 3087)

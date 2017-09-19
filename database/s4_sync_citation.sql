@@ -151,7 +151,8 @@ BEGIN
         source_format_cd,
         addr_used_cd,
         gps_pt_4326,
-        geocode_pt_3087
+        geocode_pt_3087,
+        geocode_pt_3857
     )
     SELECT
         citation_nbr,
@@ -288,7 +289,8 @@ BEGIN
         source_format_cd,
         addr_used_cd,
         gps_pt_4326,
-        geocode_pt_3087
+        geocode_pt_3087,
+        sdo_cs.transform(geocode_pt_3087, 3857) AS geocode_pt_3857
     FROM v_flat_citation@s4_warehouse vc
     WHERE v_start_dt IS NULL
     OR vc.last_updt_dt >= v_start_dt;

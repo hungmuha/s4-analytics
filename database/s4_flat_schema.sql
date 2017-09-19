@@ -169,7 +169,6 @@ CREATE TABLE crash_evt (
     is_work_zn_rel                CHAR(1),
     --lat                          FLOAT(126),
     --lng                          FLOAT(126),
-    gps_pt_4326                   SDO_GEOMETRY,
     milepost_nbr                  NUMBER(*,0),
     offset_dir                    VARCHAR2(5),
     offset_ft                     NUMBER(*,0),
@@ -235,7 +234,9 @@ CREATE TABLE crash_evt (
     gc_cnty_nm                    VARCHAR2(15),
     gc_city_cd                    NUMBER(*,0),
     gc_city_nm                    VARCHAR2(35),
+    gps_pt_4326                   SDO_GEOMETRY,
     geocode_pt_3087               SDO_GEOMETRY,
+    geocode_pt_3857               SDO_GEOMETRY,
     PRIMARY KEY ( hsmv_rpt_nbr )
         USING INDEX enable
 );
@@ -244,15 +245,11 @@ CREATE UNIQUE INDEX crash_evt_id_idx ON
     crash_evt ( "ID" );
 
 CALL s4_register_sdo_geom('crash_evt','gps_pt_4326',4326);
-
-CREATE INDEX crash_evt_gps_pt_4326_idx ON
-    crash_evt ( gps_pt_4326 )
-        INDEXTYPE IS mdsys.spatial_index;
-
 CALL s4_register_sdo_geom('crash_evt','geocode_pt_3087',3087);
+CALL s4_register_sdo_geom('crash_evt','geocode_pt_3857',3857);
 
-CREATE INDEX crash_evt_geocode_pt_3087_idx ON
-    crash_evt ( geocode_pt_3087 )
+CREATE INDEX crash_evt_geocode_pt_3857_idx ON
+    crash_evt ( geocode_pt_3857 )
         INDEXTYPE IS mdsys.spatial_index;
 
 CREATE TABLE driver (
@@ -837,6 +834,7 @@ CREATE TABLE citation (
     addr_used_cd                   NUMBER(5,0),
     gps_pt_4326                    SDO_GEOMETRY,
     geocode_pt_3087                SDO_GEOMETRY,
+    geocode_pt_3857                SDO_GEOMETRY,
     PRIMARY KEY ( citation_nbr )
         USING INDEX enable
 );
@@ -845,16 +843,14 @@ CREATE UNIQUE INDEX citation_id_idx ON
     citation ( "ID" );
 
 CALL s4_register_sdo_geom('citation','gps_pt_4326',4326);
-
 CALL s4_register_sdo_geom('citation','geocode_pt_3087',3087);
+CALL s4_register_sdo_geom('citation','geocode_pt_3857',3857);
 
-CREATE INDEX citation_gps_pt_4326_idx ON
-    citation ( gps_pt_4326 )
+CREATE INDEX citation_geocode_pt_3857_idx ON
+    citation ( geocode_pt_3857 )
         INDEXTYPE IS mdsys.spatial_index;
 
-CREATE INDEX citation_geocode_pt_3087_idx ON
-    citation ( geocode_pt_3087 )
-        INDEXTYPE IS mdsys.spatial_index;CREATE TABLE intrsect (
+CREATE TABLE intrsect (
     intersection_id          NUMBER(10,0),
     intersection_name        NVARCHAR2(512),
     --intersection_geom_type   NUMBER(5,0),

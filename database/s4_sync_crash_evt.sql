@@ -36,7 +36,7 @@ BEGIN
         key_rptg_agncy,
         rptg_agncy_nm,
         rptg_agncy_short_nm,
-        rptg_agncy_type,
+        rptg_agncy_type_nm,
         key_rptg_unit,
         rptg_unit_nm,
         rptg_unit_short_nm,
@@ -106,7 +106,6 @@ BEGIN
         is_within_city_lim,
         is_workers_in_work_zn,
         is_work_zn_rel,
-        gps_pt_4326,
         milepost_nbr,
         offset_dir,
         offset_ft,
@@ -172,7 +171,9 @@ BEGIN
         gc_cnty_nm,
         gc_city_cd,
         gc_city_nm,
-        geocode_pt_3087
+        gps_pt_4326,
+        geocode_pt_3087,
+        geocode_pt_3857
     )
     SELECT
         hsmv_rpt_nbr,
@@ -194,7 +195,7 @@ BEGIN
         key_rptg_agncy,
         rptg_agncy_nm,
         rptg_agncy_short_nm,
-        rptg_agncy_type,
+        rptg_agncy_type_nm,
         key_rptg_unit,
         rptg_unit_nm,
         rptg_unit_short_nm,
@@ -264,7 +265,6 @@ BEGIN
         is_within_city_lim,
         is_workers_in_work_zn,
         is_work_zn_rel,
-        gps_pt_4326,
         milepost_nbr,
         offset_dir,
         offset_ft,
@@ -330,7 +330,9 @@ BEGIN
         gc_cnty_nm,
         gc_city_cd,
         gc_city_nm,
-        geocode_pt_3087
+        gps_pt_4326,
+        geocode_pt_3087,
+        sdo_cs.transform(geocode_pt_3087, 3857) AS geocode_pt_3857
     FROM v_flat_crash_evt@s4_warehouse vce
     WHERE v_start_dt IS NULL
     OR vce.last_updt_dt >= v_start_dt;
