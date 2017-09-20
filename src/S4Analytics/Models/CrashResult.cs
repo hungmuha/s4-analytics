@@ -7,14 +7,10 @@ namespace S4Analytics.Models
         public int id;
         public DateTime? crashDate;
         public DateTime? crashTime;
-        public int? hsmvReportNumber;
-        public string hsmvReportNumberDsp;
+        public string hsmvReportNumber;
         public string agencyReportNumber;
-        public string agencyReportNumberDsp;
         public double? mapPointX;
         public double? mapPointY;
-        public double? centerLineX;
-        public double? centerLineY;
         public int? symbolAngle;
         public int? crashSegId;
         public int? nearestIntrsectId;
@@ -23,7 +19,7 @@ namespace S4Analytics.Models
         public int? refIntrsectOffsetFt;
         public int? nearIntrsectOffsetDir;
         public int? refIntrsectOffsetDir;
-        public string imgExtTx;
+        public string imgFileNm;
         public string formType;
         public int? keyCrashSev;
         public int? keyCrashSevDtl;
