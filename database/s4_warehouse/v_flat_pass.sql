@@ -53,7 +53,7 @@ SELECT
     fp.addr_state,
     fp.addr_zip,
     fp.dl_state,
-    fp.is_using_eye_protection,
+    DECODE(fp.is_using_eye_protection, '1', 'Y', '0', 'N', NULL) AS is_using_eye_protection,
     fp.fatality_cnt,
     fp.fatality_unrestrained_cnt,
     fp.inj_cnt,
