@@ -17,7 +17,9 @@ CALL s4_sync_violation();
 CALL s4_sync_citation(); -- 82m
 
 CALL s4_sync_st();
+CALL s4_sync_zlevel();
 CALL s4_sync_intrsect();
+CALL s4_sync_intrsect_node();
 
 CREATE UNIQUE INDEX crash_evt_id_idx ON
     crash_evt ( "ID" );

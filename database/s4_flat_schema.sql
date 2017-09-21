@@ -1,6 +1,10 @@
 /*
 DROP DATABASE LINK s4_warehouse.geoplan.ufl.edu;
 DROP TABLE s4_coord_sys;
+DROP TABLE intrsect_node;
+DROP TABLE intrsect;
+DROP TABLE zlevel;
+DROP TABLE st;
 DROP TABLE crash_evt;
 DROP TABLE driver;
 DROP TABLE non_motorist;
@@ -859,32 +863,6 @@ CREATE INDEX citation_geocode_pt_3857_idx ON
     citation ( geocode_pt_3857 )
         INDEXTYPE IS mdsys.spatial_index;
 
-CREATE TABLE intrsect (
-    intersection_id          NUMBER(10,0),
-    intersection_name        VARCHAR2(512),
-    --intersection_geom_type   NUMBER(5,0),
-    is_ramp                  VARCHAR2(1),
-    is_rndabout              VARCHAR2(1),
-    cnty_cd                  NUMBER(5,0),
-    city_cd                  NUMBER(5,0),
-    rd_sys_id                NUMBER(5,0),
-    rd_sys_interstate        VARCHAR2(1),
-    rd_sys_us                VARCHAR2(1),
-    rd_sys_state             VARCHAR2(1),
-    rd_sys_county            VARCHAR2(1),
-    rd_sys_local             VARCHAR2(1),
-    rd_sys_toll              VARCHAR2(1),
-    rd_sys_forest            VARCHAR2(1),
-    rd_sys_private           VARCHAR2(1),
-    rd_sys_pk_lot            VARCHAR2(1),
-    rd_sys_other             VARCHAR2(1),
-    geom_type                VARCHAR2(10),
-    centroid_3087            SDO_GEOMETRY,
-    shape_3087               SDO_GEOMETRY,
-    PRIMARY KEY ( intersection_id )
-        USING INDEX enable
-);
-
 CREATE TABLE st (
     link_id             NUMBER(10,0),
     st_name             VARCHAR2(240),
@@ -920,6 +898,61 @@ CREATE TABLE st (
     rd_sys_other        VARCHAR2(1),
     centroid_3087       SDO_GEOMETRY,
     shape_3087          SDO_GEOMETRY,
+    shape_3857          SDO_GEOMETRY,
     PRIMARY KEY ( link_id )
         USING INDEX enable
+);
+
+CALL s4_register_sdo_geom('st','centroid_3087',3087);
+CALL s4_register_sdo_geom('st','shape_3087',3087);
+CALL s4_register_sdo_geom('st','shape_3857',3857);
+
+CREATE TABLE zlevel (
+    link_id                 NUMBER(10,0),
+    point_num               NUMBER(4,0),
+    node_id                 NUMBER(10,0),
+    z_level                 NUMBER(2,0),
+    intrsect                VARCHAR2(1),
+    dot_shape               NUMBER(2,0),
+    aligned                 VARCHAR2(1),
+    shape_3087              SDO_GEOMETRY,
+    shape_3857              SDO_GEOMETRY
+);
+
+CALL s4_register_sdo_geom('zlevel','shape_3087',3087);
+CALL s4_register_sdo_geom('zlevel','shape_3857',3857);
+
+CREATE TABLE intrsect (
+    intersection_id          NUMBER(10,0),
+    intersection_name        VARCHAR2(512),
+    is_ramp                  VARCHAR2(1),
+    is_rndabout              VARCHAR2(1),
+    cnty_cd                  NUMBER(5,0),
+    city_cd                  NUMBER(5,0),
+    rd_sys_id                NUMBER(5,0),
+    rd_sys_interstate        VARCHAR2(1),
+    rd_sys_us                VARCHAR2(1),
+    rd_sys_state             VARCHAR2(1),
+    rd_sys_county            VARCHAR2(1),
+    rd_sys_local             VARCHAR2(1),
+    rd_sys_toll              VARCHAR2(1),
+    rd_sys_forest            VARCHAR2(1),
+    rd_sys_private           VARCHAR2(1),
+    rd_sys_pk_lot            VARCHAR2(1),
+    rd_sys_other             VARCHAR2(1),
+    geom_type                VARCHAR2(10),
+    centroid_3087            SDO_GEOMETRY,
+    shape_3087               SDO_GEOMETRY,
+    shape_3857               SDO_GEOMETRY,
+    PRIMARY KEY ( intersection_id )
+        USING INDEX enable
+);
+
+CALL s4_register_sdo_geom('intrsect','centroid_3087',3087);
+CALL s4_register_sdo_geom('intrsect','shape_3087',3087);
+CALL s4_register_sdo_geom('intrsect','shape_3857',3857);
+
+CREATE TABLE intrsect_node (
+    node_id             NUMBER(10,0),
+    intersection_id     NUMBER(10,0)
 );

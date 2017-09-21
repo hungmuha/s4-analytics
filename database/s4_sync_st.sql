@@ -37,7 +37,8 @@ BEGIN
         rd_sys_pk_lot,
         rd_sys_other,
         centroid_3087,
-        shape_3087
+        shape_3087,
+        shape_3857
     )
     SELECT
         link_id,
@@ -73,7 +74,8 @@ BEGIN
         rd_sys_pk_lot,
         rd_sys_other,
         centroid_3087,
-        shape_3087
+        shape_3087,
+        sdo_cs.transform(shape_3087, 3857) AS shape_3857
     FROM v_flat_st@s4_warehouse;
 
     COMMIT;
