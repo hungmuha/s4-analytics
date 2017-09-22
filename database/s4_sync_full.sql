@@ -8,13 +8,15 @@ DROP INDEX violation_id_idx;
 DROP INDEX citation_id_idx;
 DROP INDEX citation_geocode_pt_3857_idx;
 
-CALL s4_sync_crash_evt(); -- 87m
+CALL s4_sync_crash_evt();
 CALL s4_sync_driver();
 CALL s4_sync_non_motorist();
 CALL s4_sync_pass();
 CALL s4_sync_veh();
 CALL s4_sync_violation();
-CALL s4_sync_citation(); -- 82m
+CALL s4_sync_citation();
+
+CALL s4_sync_ref_tables();
 
 CALL s4_sync_st();
 CALL s4_sync_zlevel();

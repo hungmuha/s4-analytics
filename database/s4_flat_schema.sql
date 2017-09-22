@@ -1,5 +1,18 @@
 /*
 DROP DATABASE LINK s4_warehouse.geoplan.ufl.edu;
+DROP TABLE cnty_city;
+DROP TABLE dim_agncy;
+DROP TABLE dim_crash_attrs;
+DROP TABLE dim_date;
+DROP TABLE dim_driver_attrs;
+DROP TABLE dim_geography;
+DROP TABLE dim_harmful_evt;
+DROP TABLE dim_nm_attrs;
+DROP TABLE dim_pass_attrs;
+DROP TABLE dim_veh_attrs;
+DROP TABLE dim_violation;
+DROP TABLE bike_ped_crash_type;
+DROP TABLE bike_ped_crash_grp;
 DROP TABLE s4_coord_sys;
 DROP TABLE intrsect_node;
 DROP TABLE intrsect;
@@ -955,4 +968,154 @@ CALL s4_register_sdo_geom('intrsect','shape_3857',3857);
 CREATE TABLE intrsect_node (
     node_id             NUMBER(10,0),
     intersection_id     NUMBER(10,0)
+);
+
+CREATE TABLE cnty_city (
+    "ID"             NUMBER(*,0),
+    cnty_cd          NUMBER(*,0),
+    city_cd          NUMBER(*,0),
+    cnty_nm          VARCHAR2(15),
+    cnty_navteq_nm   VARCHAR2(15),
+    city_nm          VARCHAR2(35),
+    city_navteq_nm   VARCHAR2(35),
+    navteq_area_id   NUMBER(*,0),
+    courthouse_tx    VARCHAR2(255),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE TABLE dim_agncy (
+    "ID"                 NUMBER(*,0),
+    parent_agncy_id      NUMBER(10,0),
+    agncy_nbr            VARCHAR2(7),
+    agncy_nm             VARCHAR2(60),
+    agncy_short_nm       VARCHAR2(40),
+    agncy_type_nm        VARCHAR2(30),
+    hierarchy_lvl_nbr    NUMBER(*,0),
+    is_workflow_lvl_cd   NUMBER(*,0),
+    org_unit_type_nm     VARCHAR2(60),
+    extent_min_x         NUMBER,
+    extent_min_y         NUMBER,
+    extent_max_x         NUMBER,
+    extent_max_y         NUMBER,
+    obsolete_cd          VARCHAR2(1),
+    vendor_nm            VARCHAR2(40),
+    ori_nbr              VARCHAR2(9),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE INDEX fk_dim_agncy_parent_agncy ON
+    dim_agncy ( parent_agncy_id );
+
+CREATE TABLE dim_crash_attrs (
+    "ID"            NUMBER(*,0),
+    crash_attr_nm   VARCHAR2(40),
+    crash_attr_cd   NUMBER(*,0),
+    crash_attr_tx   VARCHAR2(60),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE TABLE dim_date (
+    evt_dt    DATE,
+    evt_yr    NUMBER(*,0),
+    evt_mm    NUMBER(*,0),
+    evt_mo    VARCHAR2(9),
+    evt_dd    NUMBER(*,0),
+    evt_day   VARCHAR2(9),
+    evt_d     NUMBER(1,0),
+    PRIMARY KEY ( evt_dt )
+        USING INDEX enable
+);
+
+CREATE TABLE dim_driver_attrs (
+    "ID"             NUMBER(*,0),
+    driver_attr_nm   VARCHAR2(40),
+    driver_attr_cd   NUMBER(*,0),
+    driver_attr_tx   VARCHAR2(100),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE TABLE dim_geography (
+    "ID"              NUMBER(*,0),
+    state_nm          VARCHAR2(30),
+    dot_district_nm   VARCHAR2(15),
+    rpc_nm            VARCHAR2(30),
+    mpo_nm            VARCHAR2(35),
+    cnty_cd           NUMBER(*,0),
+    cnty_nm           VARCHAR2(15),
+    city_cd           NUMBER(*,0),
+    city_nm           VARCHAR2(35),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE TABLE dim_harmful_evt (
+    "ID"                  NUMBER(*,0),
+    harmful_evt_type_nm   VARCHAR2(60),
+    harmful_evt_cd        NUMBER(*,0),
+    harmful_evt_tx        VARCHAR2(60),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE TABLE dim_nm_attrs (
+    "ID"         NUMBER(*,0),
+    nm_attr_nm   VARCHAR2(40),
+    nm_attr_cd   NUMBER(*,0),
+    nm_attr_tx   VARCHAR2(100),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE TABLE dim_pass_attrs (
+    "ID"           NUMBER(*,0),
+    pass_attr_nm   VARCHAR2(40),
+    pass_attr_cd   NUMBER(*,0),
+    pass_attr_tx   VARCHAR2(60),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE TABLE dim_veh_attrs (
+    "ID"          NUMBER(*,0),
+    veh_attr_nm   VARCHAR2(40),
+    veh_attr_cd   NUMBER(*,0),
+    veh_attr_tx   VARCHAR2(80),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE TABLE dim_violation (
+    "ID"               NUMBER(*,0),
+    sect_nbr           VARCHAR2(11),
+    sect_nbr_dsp       VARCHAR2(11),
+    sub_sect_nbr       VARCHAR2(11),
+    sub_sect_nbr_dsp   VARCHAR2(15),
+    violation_cd       VARCHAR2(3),
+    violation_desc     VARCHAR2(256),
+    violation_class    VARCHAR2(10),
+    violation_type     VARCHAR2(50),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE TABLE bike_ped_crash_grp (
+    "ID"            NUMBER,
+    bike_or_ped     VARCHAR2(1),
+    crash_grp_nbr   NUMBER,
+    crash_grp_nm    VARCHAR2(100),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
+);
+
+CREATE TABLE bike_ped_crash_type (
+    "ID"             NUMBER,
+    crash_grp_id     NUMBER,
+    crash_type_nbr   NUMBER,
+    crash_type_nm    VARCHAR2(100),
+    PRIMARY KEY ( "ID" )
+        USING INDEX enable
 );
