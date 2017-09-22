@@ -7,6 +7,9 @@ DROP INDEX veh_id_idx;
 DROP INDEX violation_id_idx;
 DROP INDEX citation_id_idx;
 DROP INDEX citation_geocode_pt_3857_idx;
+DROP INDEX st_shape_3857_idx;
+DROP INDEX zlevel_shape_3857_idx;
+DROP INDEX intrsect_shape_3857_idx;
 
 CALL s4_sync_crash_evt();
 CALL s4_sync_driver();
@@ -42,4 +45,13 @@ CREATE UNIQUE INDEX citation_id_idx ON
     citation ( "ID" );
 CREATE INDEX citation_geocode_pt_3857_idx ON
     citation ( geocode_pt_3857 )
+        INDEXTYPE IS mdsys.spatial_index;
+CREATE INDEX st_shape_3857_idx ON
+    st ( shape_3857 )
+        INDEXTYPE IS mdsys.spatial_index;
+CREATE INDEX zlevel_shape_3857_idx ON
+    zlevel ( shape_3857 )
+        INDEXTYPE IS mdsys.spatial_index;
+CREATE INDEX intrsect_shape_3857_idx ON
+    intrsect ( shape_3857 )
         INDEXTYPE IS mdsys.spatial_index;

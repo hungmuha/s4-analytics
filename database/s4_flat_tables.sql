@@ -920,6 +920,10 @@ CALL s4_register_sdo_geom('st','centroid_3087',3087);
 CALL s4_register_sdo_geom('st','shape_3087',3087);
 CALL s4_register_sdo_geom('st','shape_3857',3857);
 
+CREATE INDEX st_shape_3857_idx ON
+    st ( shape_3857 )
+        INDEXTYPE IS mdsys.spatial_index;
+
 CREATE TABLE zlevel (
     link_id                 NUMBER(10,0),
     point_num               NUMBER(4,0),
@@ -934,6 +938,10 @@ CREATE TABLE zlevel (
 
 CALL s4_register_sdo_geom('zlevel','shape_3087',3087);
 CALL s4_register_sdo_geom('zlevel','shape_3857',3857);
+
+CREATE INDEX zlevel_shape_3857_idx ON
+    zlevel ( shape_3857 )
+        INDEXTYPE IS mdsys.spatial_index;
 
 CREATE TABLE intrsect (
     intersection_id          NUMBER(10,0),
@@ -964,6 +972,10 @@ CREATE TABLE intrsect (
 CALL s4_register_sdo_geom('intrsect','centroid_3087',3087);
 CALL s4_register_sdo_geom('intrsect','shape_3087',3087);
 CALL s4_register_sdo_geom('intrsect','shape_3857',3857);
+
+CREATE INDEX intrsect_shape_3857_idx ON
+    intrsect ( shape_3857 )
+        INDEXTYPE IS mdsys.spatial_index;
 
 CREATE TABLE intrsect_node (
     node_id             NUMBER(10,0),
