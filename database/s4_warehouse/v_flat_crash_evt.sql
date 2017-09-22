@@ -93,7 +93,7 @@ SELECT
     DECODE(fce.is_le_in_work_zn, '1', 'Y', '0', 'N', NULL) AS is_le_in_work_zn,
     DECODE(fce.is_pictures_taken, '1', 'Y', '0', 'N', NULL) AS is_pictures_taken,
     DECODE(fce.is_sch_bus_rel, '1', 'Y', '0', 'N', NULL) AS is_sch_bus_rel,
-    DECODE(fce.is_within_city_lim, '1', 'Y', '0', 'N', NULL) AS is_within_city_lim,
+    CASE WHEN fce.is_within_city_lim = '1' OR MOD(gcr.key_geography, 100) <> 0 THEN 'Y' ELSE 'N' END AS is_within_city_lim,
     DECODE(fce.is_workers_in_work_zn, '1', 'Y', '0', 'N', NULL) AS is_workers_in_work_zn,
     DECODE(fce.is_work_zn_rel, '1', 'Y', '0', 'N', NULL) AS is_work_zn_rel,
     fce.milepost_nbr,
