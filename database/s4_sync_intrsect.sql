@@ -23,7 +23,8 @@ BEGIN
         rd_sys_other,
         geom_type,
         centroid_3087,
-        shape_3087
+        shape_3087,
+        shape_3857
     )
     SELECT
         intersection_id,
@@ -45,7 +46,8 @@ BEGIN
         rd_sys_other,
         geom_type,
         centroid_3087,
-        shape_3087
+        shape_3087,
+        sdo_cs.transform(shape_3087, 3857) AS shape_3857
     FROM v_flat_intrsect@s4_warehouse;
 
     COMMIT;

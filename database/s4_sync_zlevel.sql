@@ -11,7 +11,8 @@ BEGIN
         intrsect,
         dot_shape,
         aligned,
-        shape_3087
+        shape_3087,
+        shape_3857
     )
     SELECT
         link_id,
@@ -21,7 +22,8 @@ BEGIN
         intrsect,
         dot_shape,
         aligned,
-        shape_3087
+        shape_3087,
+        sdo_cs.transform(shape_3087, 3857) AS shape_3857
     FROM v_flat_zlevel@s4_warehouse;
 
     COMMIT;
