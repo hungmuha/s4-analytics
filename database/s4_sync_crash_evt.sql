@@ -1,8 +1,27 @@
 CREATE OR REPLACE PROCEDURE s4_sync_crash_evt (p_days_back INT DEFAULT NULL)
 AS
     v_start_dt DATE;
+    v_rebuild_indexes BOOLEAN;
+    CURSOR index_cur IS
+        SELECT index_name
+        FROM user_indexes
+        WHERE index_type IN ('NORMAL', 'DOMAIN', 'BITMAP')
+        AND index_name NOT LIKE 'SYS_%'
+        AND index_name NOT LIKE '%_ID_IDX'
+        AND table_name = 'CRASH_EVT';
 BEGIN
     v_start_dt := CASE WHEN p_days_back IS NOT NULL THEN TRUNC(SYSDATE - p_days_back) ELSE NULL END;
+    v_rebuild_indexes := p_days_back IS NULL OR p_days_back > 30;
+    dbms_output.put_line('rebuild indexes: ' || case when v_rebuild_indexes then 'yes' else 'no' end);
+
+    IF v_rebuild_indexes THEN
+        -- disable indexes
+        FOR rec IN index_cur LOOP
+          dbms_utility.exec_ddl_statement('ALTER INDEX ' || rec.index_name || ' UNUSABLE');
+        END LOOP;
+        -- skip disabled indexes
+        EXECUTE IMMEDIATE 'ALTER SESSION SET skip_unusable_indexes=TRUE';
+    END IF;
 
     IF v_start_dt IS NULL THEN
         EXECUTE IMMEDIATE 'TRUNCATE TABLE crash_evt';
@@ -354,5 +373,12 @@ BEGIN
     OR vce.last_updt_dt >= v_start_dt;
 
     COMMIT;
+
+    IF v_rebuild_indexes THEN
+        -- rebuild indexes
+        FOR rec IN index_cur LOOP
+          dbms_utility.exec_ddl_statement('ALTER INDEX ' || rec.index_name || ' REBUILD');
+        END LOOP;
+    END IF;
 END;
 /
