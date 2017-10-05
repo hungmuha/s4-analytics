@@ -1,8 +1,8 @@
 ﻿import { Injectable } from '@angular/core';
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NewUserRequest } from './new-user-request';
 import { RequestActionResults } from './request-action-results';
 import { QueueFilter } from './new-user-request-enum';
+import { CurrentActionForm } from './current-action-form';
 
 
 @Injectable()
@@ -15,9 +15,8 @@ export class NewUserRequestStateService {
     sortAsc: boolean = true;
     sortColumnName: string = 'requestNbr';
     queueFilter: QueueFilter = QueueFilter.Pending;
-    currentActionForm: NgbModalRef;
+    currentActionForm: CurrentActionForm = new CurrentActionForm();
     requestorWarningMessages: string[];
     consultantWarningMessages: string[];
-
     warningMessages: string[];
 }

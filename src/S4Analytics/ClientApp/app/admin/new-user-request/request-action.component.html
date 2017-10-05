@@ -58,7 +58,8 @@
     </div>
 
     <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" *ngIf="!state.isSelectedRequestLocked" [disabled]="!(actionForm.valid) || disableOKButton()">
+
+        <button type="submit" name="temp" class="btn btn-primary" *ngIf="!state.isSelectedRequestLocked" [disabled]="!(actionForm.valid) || disableOKButton()">
             OK
         </button>
         <button type="button" class="btn btn-light" (click)="cancel()">
