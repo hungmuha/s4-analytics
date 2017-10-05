@@ -61,9 +61,13 @@ export class RequestActionComponent {
 
     }
 
+    validDate(dateStr: string) {
+        let dateRegex = /^([1-9]|[12][0-9]|3[01])[\/\-]([1-9]|1[012])[\/\-]\d{4}$/;
+        return dateRegex.test(dateStr);
+    }
+
     disableOKButton() {
-        // disable if trying to approve the creation of an agency that has not been created, even if rest of form is valid
-        return (this.state.currentRequestActionResults.approved && !this.state.currentRequestActionResults.agencyCreated);
+        return (this.state.currentRequestActionResults.approved && (!this.state.currentActionForm.valid));
     }
 
     submit() {

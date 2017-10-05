@@ -19,20 +19,22 @@ class NewAgencyRequestApproval extends RequestApproval {
         public selectedRequest: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
-        public before70Days: boolean,
-        public lea?: boolean
+        public before70Days: boolean
+       // ,        public lea?: boolean
         ) {
         super(requestNumber, selectedRequest, currentStatus, newStatus);
         }
 }
 
-class NewConsultantRequestApproval extends RequestApproval {
+class NewConsultantVendorRequestApproval extends RequestApproval {
     constructor(
         public requestNumber: number,
         public selectedRequest: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
-        public before70Days: boolean) {
+        public before70Days: boolean,
+        public contractEndDt: string
+        ) {
         super(requestNumber, selectedRequest, currentStatus, newStatus);
         }
 }
@@ -73,10 +75,13 @@ export class NewUserRequestService {
 
         switch (currentStatus) {
             case NewUserRequestStatus.NewVendor:
-                reqWrapper = new RequestApproval(requestActionResults.requestNumber,
+                reqWrapper = new NewConsultantVendorRequestApproval(
+                    requestActionResults.requestNumber,
                     selectedRequest,
                     NewUserRequestStatus.NewVendor,
-                    NewUserRequestStatus.NewConsultant);
+                    NewUserRequestStatus.NewConsultant,
+                    requestActionResults.accessBefore70Days,
+                    requestActionResults.contractEndDt);
                 break;
             case NewUserRequestStatus.NewAgency:
 
@@ -85,8 +90,8 @@ export class NewUserRequestService {
                     selectedRequest,
                     NewUserRequestStatus.NewAgency,
                     NewUserRequestStatus.CreateAgency,
-                    requestActionResults.accessBefore70Days,
-                    requestActionResults.lea
+                    requestActionResults.accessBefore70Days
+                    //,requestActionResults.lea
                 );
 
                 break;
@@ -99,14 +104,14 @@ export class NewUserRequestService {
                 break;
             case NewUserRequestStatus.NewConsultant:
 
-                reqWrapper = new NewConsultantRequestApproval(
+                reqWrapper = new NewConsultantVendorRequestApproval(
                     requestActionResults.requestNumber,
                     selectedRequest,
                     NewUserRequestStatus.NewConsultant,
                     NewUserRequestStatus.Completed,
-                    requestActionResults.accessBefore70Days
+                    requestActionResults.accessBefore70Days,
+                    requestActionResults.contractEndDt
                 );
-
                 break;
             default:
                 reqWrapper = new RequestApproval(
@@ -144,7 +149,6 @@ export class NewUserRequestService {
     }
 
     doesAgencyExist(agencyNm: string) {
-
         let encodedAgencyNm = encodeURI(agencyNm);
         let url = `api/admin/new-user-request/${encodedAgencyNm}/verify-agency`;
         return this.http
@@ -158,12 +162,14 @@ export class NewUserRequestService {
         return Observable.throw(errMsg);
     }
 
-    private getApproveType(status: NewUserRequestStatus): 'agency' | 'consultant' | '' {
+    private getApproveType(status: NewUserRequestStatus): 'agency' | 'consultant' | 'vendor' |'' {
         switch (status) {
             case NewUserRequestStatus.NewAgency:
                 return 'agency';
             case NewUserRequestStatus.NewConsultant:
                 return 'consultant';
+            case NewUserRequestStatus.NewVendor:
+                return 'vendor';
             default:
                 return '';
         }
