@@ -1,4 +1,4 @@
-﻿import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 export class CurrentActionForm {
     form: NgbModalRef;
