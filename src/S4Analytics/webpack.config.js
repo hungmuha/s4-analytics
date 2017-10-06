@@ -18,6 +18,7 @@ module.exports = (env) => {
     const extractCSS = new ExtractTextPlugin('main.css');
     const isDevBuild = !(env && env.prod);
     const outputDir = './wwwroot/dist';
+    const imgBaseUrl = '/' + process.env.CI_WEB_PATH + '/dist/';
 
     const config = {
         stats: { modules: false },
@@ -34,7 +35,7 @@ module.exports = (env) => {
                 { test: /\.ts$/, include: /ClientApp/, use: ['awesome-typescript-loader?silent=true', 'angular2-template-loader'] },
                 { test: /\.html$/, use: 'html-loader?minimize=false' },
                 { test: /\.css(\?|$)/, use: extractCSS.extract({ use: ['css-loader', 'postcss-loader'] }) },
-                { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' }
+                { test: /\.(png|jpg|jpeg|gif|svg)$/, use: { loader: 'url-loader', options: { publicPath: imgBaseUrl, useRelativePath: true, limit: 25000 } } }
             ]
         },
         plugins: [
