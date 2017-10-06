@@ -18,7 +18,7 @@ module.exports = (env) => {
     const extractCSS = new ExtractTextPlugin('main.css');
     const isDevBuild = !(env && env.prod);
     const outputDir = './wwwroot/dist';
-    const imgBaseUrl = '/' + process.env.CI_WEB_PATH + '/dist/';
+    const imgBaseUrl = process.env.CI_WEB_PATH ? '/' + process.env.CI_WEB_PATH + '/dist/' : '/dist/';
 
     const config = {
         stats: { modules: false },
