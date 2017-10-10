@@ -33,16 +33,22 @@
     {{state.selectedRequest.vendorName}}
 </div>
 <div class="row">
-    <div>
-        <b>Contract Start Date: </b>&nbsp;
-        {{state.selectedRequest.contractStartDt | date : 'shortDate'}}
-    </div>
+    <b>Contract Start Date: </b>&nbsp;
+    {{state.selectedRequest.contractStartDt | date : 'shortDate'}}
 </div>
-<div class="row">
-    <div>
-        <b>Contract End Date:</b>&nbsp;
-        {{state.selectedRequest.contractEndDt | date: 'shortDate'}}
-    </div>
+<div class="row form-inline form-group">
+    <label class="font-weight-bold">Contract End Date:&nbsp;</label>
+    <!-- older browsers do not support date input types -->
+    <input type="text" class="form-control" rows="1"
+           maxlength="10"
+           pattern="state.dateRegex"
+           [ngModel]="contractEndDateStr"
+           (ngModelChange)="contractEndDateStrChanged($event)"
+           [disabled]="isContractEndDateReadOnly()">
+    <span *ngIf="!isValidDate(contractEndDateStr)"
+         class="warning-message font-italic font-weight-bold">&nbsp;m/d/yyyy</span>
+    <span *ngIf="isValidDate(contractEndDateStr) && !isValidDateRange()"
+          class="warning-message font-italic font-weight-bold">&nbsp;Must be after<br/>&nbsp;start date</span>
 </div>
 <div class="row">
     <b>Contract:</b>&nbsp;

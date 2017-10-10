@@ -25,11 +25,4 @@ export class NewVendorComponent {
     hideRequestorWarning(): boolean {
         return !this.state.selectedRequest.warnRequestorEmailCd;
     }
-
-    approved(approved: boolean) {
-
-        if (approved) {
-            this.state.currentRequestActionResults.rejectionReason = '';
-        }
-    }
 }

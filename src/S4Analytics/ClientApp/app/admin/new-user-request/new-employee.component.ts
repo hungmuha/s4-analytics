@@ -27,11 +27,4 @@ export class NewEmployeeComponent {
     hideRequestorWarning(): boolean {
         return !this.state.selectedRequest.warnRequestorEmailCd && !this.state.selectedRequest.warnDuplicateEmailCd;
     }
-
-    approved(approved: boolean) {
-
-        if (approved) {
-            this.state.currentRequestActionResults.rejectionReason = '';
-        }
-    }
 }

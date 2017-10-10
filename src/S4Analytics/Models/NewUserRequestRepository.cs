@@ -219,6 +219,7 @@ namespace S4Analytics.Models
             var user = new S4IdentityUser<S4UserProfile>(userName);
 
             request.CreatedBy = approval.AdminUserName;
+            request.ContractEndDt = approval.ContractEndDt;
             user.Profile = CreateS4UserProfile(request);
             user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
 
@@ -316,21 +317,11 @@ namespace S4Analytics.Models
             return request;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="before70days"></param>
-        /// <param name="lea"></param>
-        /// <param name="newStatus"></param>
-        /// <param name="selectedRequest"></param>
-        /// <returns></returns>
         public NewUserRequest ApproveAgency(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
             var before70days = approval.Before70Days;
-            var lea = approval.Lea;
 
             // Nothing to update in database. Send email to global admin to create agency
             var subject = "New agency needs to be created in Signal Four Analytics";
@@ -356,8 +347,7 @@ namespace S4Analytics.Models
         /// Create new vendor in CONTRACTOR
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="newStatus"></param>
-        /// <param name="selectedRequest"></param>
+        /// <param name="approval"></param>
         /// <returns></returns>
         public NewUserRequest ApproveNewVendor(int id, RequestApproval approval)
         {
@@ -388,13 +378,6 @@ namespace S4Analytics.Models
             return request;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="newStatus"></param>
-        /// <param name="selectedRequest"></param>
-        /// <returns></returns>
         public async Task<NewUserRequest> ApproveCreatedNewAgency(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;

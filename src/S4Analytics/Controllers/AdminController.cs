@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace S4Analytics.Controllers
@@ -21,6 +22,7 @@ namespace S4Analytics.Controllers
         public NewUserRequestStatus CurrentStatus { get; set; }
         public bool Before70Days { get; set; }
         public bool Lea { get; set; }
+        public DateTime ContractEndDt { get; set; }
         public string AdminUserName { get; set; }
     }
 
@@ -90,13 +92,18 @@ namespace S4Analytics.Controllers
             {
                 case NewUserRequestStatus.NewUser:
                     return new ObjectResult(await _newUserRequestRepo.ApproveNewUser(id, approval));
-                case NewUserRequestStatus.NewVendor:
-                    return new ObjectResult(_newUserRequestRepo.ApproveNewVendor(id, approval));
                 case NewUserRequestStatus.CreateAgency:
                     return new ObjectResult(await _newUserRequestRepo.ApproveCreatedNewAgency(id, approval));
             }
 
             return null;
+        }
+
+        [HttpPatch("new-user-request/{id}/approve/vendor")]
+        public IActionResult ApproveVendor(int id, [FromBody]RequestApproval approval)
+        {
+            approval.AdminUserName = User.Identity.Name;
+            return new ObjectResult(_newUserRequestRepo.ApproveNewVendor(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/approve/consultant")]

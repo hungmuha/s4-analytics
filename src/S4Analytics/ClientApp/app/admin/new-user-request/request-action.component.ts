@@ -61,9 +61,12 @@ export class RequestActionComponent {
 
     }
 
+    validDate(dateStr: string) {
+        return dateRegex.test(this.state.dateRegex);
+    }
+
     disableOKButton() {
-        // disable if trying to approve the creation of an agency that has not been created, even if rest of form is valid
-        return (this.state.currentRequestActionResults.approved && !this.state.currentRequestActionResults.agencyCreated);
+        return (this.state.currentRequestActionResults.approved && (!this.state.currentActionForm.valid));
     }
 
     submit() {

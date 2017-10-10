@@ -11,10 +11,6 @@ export class NewAgencyComponent {
     constructor(public state: NewUserRequestStateService) {
     }
 
-    disableRejectRb() {
-        return this.state.currentRequestActionResults.lea === undefined;
-    }
-
     ngOnInit() {
         this.state.requestorWarningMessages = [];
 
@@ -26,16 +22,4 @@ export class NewAgencyComponent {
     hideRequestorWarning(): boolean {
         return !this.state.selectedRequest.warnRequestorEmailCd;
     }
-
-    approved(approved: boolean) {
-
-        if (approved) {
-            this.state.currentRequestActionResults.rejectionReason = '';
-        }
-        else {
-            this.state.currentRequestActionResults.lea = undefined;
-            this.state.currentRequestActionResults.accessBefore70Days = false;
-        }
-    }
-
 }

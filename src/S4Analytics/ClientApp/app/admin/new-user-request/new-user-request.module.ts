@@ -1,5 +1,6 @@
 ﻿import { NgModule  } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RequestQueueComponent } from './request-queue.component';
@@ -38,7 +39,8 @@ import {
     ],
     providers: [
         NewUserRequestService,
-        NewUserRequestStateService
+        NewUserRequestStateService,
+        DatePipe
     ]
 })
 export class RequestQueueModule { }

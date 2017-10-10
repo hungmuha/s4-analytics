@@ -17,17 +17,8 @@ export class AgencyCreateComponent {
         this.newUserRequestService.doesAgencyExist(this.state.selectedRequest.agncyNm)
             .subscribe(
             result => {
-                this.state.currentRequestActionResults.agencyCreated = result;
+                this.state.currentActionForm.valid = result;
             }
             );
     }
-
-    approved(approved: boolean) {
-
-        if (approved) {
-            this.state.currentRequestActionResults.rejectionReason = '';
-        }
-    }
-
-
 }
