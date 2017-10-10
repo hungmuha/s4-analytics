@@ -11,6 +11,8 @@ import { IdentityService, S4IdentityUser } from '../../shared';
 
 export class NewConsultantComponent  {
 
+    contractEndDateStr: string;
+
     constructor(
         public state: NewUserRequestStateService,
         private datePipe: DatePipe,
@@ -36,10 +38,8 @@ export class NewConsultantComponent  {
             this.state.requestorWarningMessages.push('Requestor/Agency email domain mismatch');
         }
 
-        if (this.state.selectedRequest.contractEndDt !== undefined) {
-            let transformDt = this.datePipe.transform(this.state.selectedRequest.contractEndDt, 'M/d/yyyy');
-            this.state.currentRequestActionResults.contractEndDt = (transformDt) ? transformDt : '';
-        }
+        let transformDt = this.datePipe.transform(this.state.selectedRequest.contractEndDt, 'M/d/yyyy');
+        this.contractEndDateStr = (transformDt) ? transformDt : '';
     }
 
     hideRequestorWarning(): boolean {
@@ -50,20 +50,19 @@ export class NewConsultantComponent  {
         return !this.state.selectedRequest.warnConsultantEmailCd && !this.state.selectedRequest.warnDuplicateEmailCd;
     }
 
-    invalidDateRange(): boolean {
-        let startDt = new Date(this.state.selectedRequest.contractStartDt);
-        let endDt = new Date(this.state.currentRequestActionResults.contractEndDt);
-
-        this.state.currentActionForm.valid = (endDt >= startDt);
-        return (endDt < startDt);
+    isValidDate(dateStr: string) {
+        let dateRegex = this.state.dateRegex;
+        return dateRegex.test(this.contractEndDateStr);
     }
 
-    showInvalidDateMsg(endDtInvalid: boolean): boolean {
-        this.state.currentActionForm.valid = !endDtInvalid;
-        return endDtInvalid;
+    // Check if end of contract date is after start of contract date
+    isValidDateRange(): boolean {
+        let startDt = this.state.selectedRequest.contractStartDt;
+        let endDt = new Date(this.contractEndDateStr);
+        return (endDt >= startDt);
     }
 
-    contractEndDateReadOnly(): boolean {
+    isContractEndDateReadOnly(): boolean {
         let currentUser = this.identityService.currentUser as S4IdentityUser;
         let request = this.state.selectedRequest;
 
@@ -72,13 +71,15 @@ export class NewConsultantComponent  {
             || currentUser.roles.indexOf('global admin') > -1;
     }
 
-    approved(approved: boolean) {
+    contractEndDateStrChanged(dateStr: string) {
+        this.contractEndDateStr = dateStr;
+        this.state.currentActionForm.valid = this.isComponentValid();
+        if (this.isComponentValid()) {
+            this.state.currentRequestActionResults.contractEndDt = new Date(this.contractEndDateStr);
+        }
+    }
 
-        if (approved) {
-            this.state.currentRequestActionResults.rejectionReason = '';
-        }
-        else {
-            this.state.currentRequestActionResults.accessBefore70Days = false;
-        }
+    isComponentValid(): boolean {
+        return this.isValidDateRange();
     }
 }

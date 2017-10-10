@@ -32,7 +32,7 @@ class NewConsultantVendorRequestApproval extends RequestApproval {
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
         public before70Days: boolean,
-        public contractEndDt: string
+        public contractEndDt: Date
         ) {
         super(requestNumber, selectedRequest, currentStatus, newStatus);
         }

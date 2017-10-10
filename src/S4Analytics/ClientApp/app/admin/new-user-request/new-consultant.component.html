@@ -39,16 +39,15 @@
 <div class="row form-inline form-group">
     <label class="font-weight-bold">Contract End Date:&nbsp;</label>
     <!-- older browsers do not support date input types -->
-    <input type="text" class="form-control" id="contractEndDate" rows="1" name="contractEndDate"
+    <input type="text" class="form-control" rows="1"
            maxlength="10"
-           pattern="^([1-9]|[12][0-9]|3[01])[\/\-]([1-9]|1[012])[\/\-]\d{4}$"
-           required
-           #contractEndDate ="ngModel"
-           [(ngModel)]="state.currentRequestActionResults.contractEndDt"
-           [disabled]="contractEndDateReadOnly()">
-    <span *ngIf="showInvalidDateMsg(contractEndDate.invalid && (contractEndDate.dirty || contractEndDate.touched))"
+           pattern="state.dateRegex"
+           [ngModel]="contractEndDateStr"
+           (ngModelChange)="contractEndDateStrChanged($event)"
+           [disabled]="isContractEndDateReadOnly()">
+    <span *ngIf="!isValidDate(contractEndDateStr)"
          class="warning-message font-italic font-weight-bold">&nbsp;m/d/yyyy</span>
-    <span *ngIf="contractEndDate.valid && invalidDateRange()"
+    <span *ngIf="isValidDate(contractEndDateStr) && !isValidDateRange()"
           class="warning-message font-italic font-weight-bold">&nbsp;Must be after<br/>&nbsp;start date</span>
 </div>
 <div class="row">

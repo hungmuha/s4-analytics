@@ -22,15 +22,4 @@ export class NewAgencyComponent {
     hideRequestorWarning(): boolean {
         return !this.state.selectedRequest.warnRequestorEmailCd;
     }
-
-    approved(approved: boolean) {
-
-        if (approved) {
-            this.state.currentRequestActionResults.rejectionReason = '';
-        }
-        else {
-            this.state.currentRequestActionResults.accessBefore70Days = false;
-        }
-    }
-
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using S4Analytics.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace S4Analytics.Controllers
@@ -21,7 +22,7 @@ namespace S4Analytics.Controllers
         public NewUserRequestStatus CurrentStatus { get; set; }
         public bool Before70Days { get; set; }
         public bool Lea { get; set; }
-        public string ContractEndDt { get; set; }
+        public DateTime ContractEndDt { get; set; }
         public string AdminUserName { get; set; }
     }
 

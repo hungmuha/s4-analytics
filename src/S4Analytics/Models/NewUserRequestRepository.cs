@@ -219,10 +219,10 @@ namespace S4Analytics.Models
             var user = new S4IdentityUser<S4UserProfile>(userName);
 
             request.CreatedBy = approval.AdminUserName;
-            request.ContractEndDt = DateTime.Parse(approval.ContractEndDt);
+            request.ContractEndDt = approval.ContractEndDt;
             user.Profile = CreateS4UserProfile(request);
             user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
-            
+
             var passwordText = GenerateRandomPassword(8, 0);
             await _userManager.CreateAsync(user, passwordText);
             await _userManager.SetEmailAsync(user, user.Profile.EmailAddress);
@@ -322,7 +322,7 @@ namespace S4Analytics.Models
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
             var before70days = approval.Before70Days;
-           
+
             // Nothing to update in database. Send email to global admin to create agency
             var subject = "New agency needs to be created in Signal Four Analytics";
             var body = $@"<div>{request.AgncyNm} has been approved for creation. Please create new agency.<br> 

@@ -3,7 +3,7 @@
     public approved: boolean;
     public rejectionReason: string;
     public accessBefore70Days: boolean;
-    public contractEndDt: string;
+    public contractEndDt: Date;
 
     constructor(id: number) {
         this.requestNumber = id;

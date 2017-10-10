@@ -62,8 +62,7 @@ export class RequestActionComponent {
     }
 
     validDate(dateStr: string) {
-        let dateRegex = /^([1-9]|[12][0-9]|3[01])[\/\-]([1-9]|1[012])[\/\-]\d{4}$/;
-        return dateRegex.test(dateStr);
+        return dateRegex.test(this.state.dateRegex);
     }
 
     disableOKButton() {

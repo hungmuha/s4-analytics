@@ -21,13 +21,4 @@ export class AgencyCreateComponent {
             }
             );
     }
-
-    approved(approved: boolean) {
-
-        if (approved) {
-            this.state.currentRequestActionResults.rejectionReason = '';
-        }
-    }
-
-
 }
