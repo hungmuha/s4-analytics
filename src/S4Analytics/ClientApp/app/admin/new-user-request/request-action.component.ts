@@ -62,7 +62,7 @@ export class RequestActionComponent {
     }
 
     validDate(dateStr: string) {
-        return dateRegex.test(this.state.dateRegex);
+        return this.state.dateRegex.test(dateStr);
     }
 
     disableOKButton() {
