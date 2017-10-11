@@ -349,7 +349,7 @@ namespace S4Analytics.Models
         /// <param name="id"></param>
         /// <param name="approval"></param>
         /// <returns></returns>
-        public NewUserRequest ApproveNewVendor(int id, RequestApproval approval)
+        public Task<NewUserRequest> ApproveNewVendor(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
             var request = approval.SelectedRequest;
@@ -360,22 +360,9 @@ namespace S4Analytics.Models
 
             var result = StoreVendor(vendor);
 
-            // Notify appropriate admin by email they need to approve user
-            var adminEmails = IsFDOTRequest(request) ? GetFDOTAdminEmails() : GetHSMVAdminEmails();
+            approval.SelectedRequest.VendorId = vendor.VendorId;
 
-            var subject = $"New consultant working under {request.AgncyNm} needs approval for Signal Four Account";
-            var body = $@"<div>There is a new request from {request.RequestorFirstNm} {request.RequestorLastNm} from {request.AgncyNm} for a contract with {request.VendorName}.<br><br>
-                    Please go to Manage Requests in Signal Four Analytics
-                    to review request #{request.RequestNbr} and if ok, approve it.<br><br></div>";
-
-            var closing = GetEmailNotificationClosing();
-
-            SendEmail(adminEmails[0], adminEmails.GetRange(1, adminEmails.Count - 1), _supportEmail, subject, body, closing);
-
-            request.RequestStatus = newStatus;
-            request.VendorId = vendor.VendorId;
-            UpdateApprovedNewUserRequest(request);
-            return request;
+            return ApproveConsultant(id, approval);
         }
 
         public async Task<NewUserRequest> ApproveCreatedNewAgency(int id, RequestApproval approval)

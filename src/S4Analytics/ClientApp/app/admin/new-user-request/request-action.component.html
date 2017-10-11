@@ -6,7 +6,7 @@
         <new-employee-component *ngIf="requestHasStatus(newUserRequestStatus.NewUser)"></new-employee-component>
         <new-agency-component *ngIf="requestHasStatus(newUserRequestStatus.NewAgency)"></new-agency-component>
         <agency-create-component *ngIf="requestHasStatus(newUserRequestStatus.CreateAgency)"></agency-create-component>
-        <new-vendor-component *ngIf="requestHasStatus(newUserRequestStatus.NewVendor)"></new-vendor-component>
+        <new-consultant-component *ngIf="requestHasStatus(newUserRequestStatus.NewVendor)"></new-consultant-component>
         <new-consultant-component *ngIf="requestHasStatus(newUserRequestStatus.NewConsultant)"></new-consultant-component>
         <hr *ngIf="!state.isSelectedRequestLocked" />
         <div class="row font-weight-bold justify-content-center" *ngIf="!state.isSelectedRequestLocked">

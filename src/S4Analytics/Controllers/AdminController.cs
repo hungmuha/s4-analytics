@@ -100,10 +100,10 @@ namespace S4Analytics.Controllers
         }
 
         [HttpPatch("new-user-request/{id}/approve/vendor")]
-        public IActionResult ApproveVendor(int id, [FromBody]RequestApproval approval)
+        public async Task<IActionResult> ApproveVendor(int id, [FromBody]RequestApproval approval)
         {
             approval.AdminUserName = User.Identity.Name;
-            return new ObjectResult(_newUserRequestRepo.ApproveNewVendor(id, approval));
+            return new ObjectResult(await _newUserRequestRepo.ApproveNewVendor(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/approve/consultant")]
