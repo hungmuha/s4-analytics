@@ -71,6 +71,10 @@ export class NewConsultantComponent  {
             || currentUser.roles.indexOf('global admin') > -1;
     }
 
+    isNewVendor(): boolean {
+        return this.state.selectedRequest.initialRequestStatus === NewUserRequestStatus.NewVendor;
+    }
+
     contractEndDateStrChanged(dateStr: string) {
         this.contractEndDateStr = dateStr;
         this.state.currentActionForm.valid = this.isComponentValid();
@@ -80,6 +84,6 @@ export class NewConsultantComponent  {
     }
 
     isComponentValid(): boolean {
-        return this.isValidDateRange();
+        return this.isValidDate(this.contractEndDateStr) && this.isValidDateRange();
     }
 }
