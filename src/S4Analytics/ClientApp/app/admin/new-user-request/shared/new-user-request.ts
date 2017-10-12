@@ -30,4 +30,36 @@ export class NewUserRequest {
     adminComment: string;
     accessBefore70Days: boolean = false;
     contractPdfNm: string;
+
+    constructor(data: NewUserRequest) {
+        this.requestNbr = data.requestNbr;
+        this.requestDt = data.requestDt;
+        this.requestDesc = data.requestDesc;
+        this.requestType = data.requestType;
+        this.requestStatus = data.requestStatus;
+        this.initialRequestStatus = data.initialRequestStatus;
+        this.userCreatedDt = new Date(data.userCreatedDt);
+        this.agncyNm = data.agncyNm;
+        this.agncyEmailDomain = data.agncyEmailDomain;
+        this.requestorFirstNm = data.requestorFirstNm;
+        this.requestorLastNm = data.requestorLastNm;
+        this.requestorSuffixNm = data.requestorSuffixNm;
+        this.requestorEmail = data.requestorEmail;
+        this.vendorName = data.vendorName;
+        this.vendorEmailDomain = data.vendorEmailDomain;
+        this.consultantFirstNm = data.consultantFirstNm;
+        this.consultantLastNm = data.consultantLastNm;
+        this.consultantSuffixNm = data.consultantSuffixNm;
+        this.consultantEmail = data.consultantEmail;
+        this.accessReasonTx = data.accessReasonTx;
+        this.contractStartDt = new Date(data.contractStartDt);
+        this.contractEndDt = new Date(data.contractEndDt);
+        this.userId = data.userId;
+        this.warnRequestorEmailCd = data.warnRequestorEmailCd;
+        this.warnConsultantEmailCd = data.warnConsultantEmailCd;
+        this.warnDuplicateEmailCd = data.warnDuplicateEmailCd;
+        this.adminComment = data.adminComment;
+        this.accessBefore70Days = data.accessBefore70Days;
+        this.contractPdfNm = data.contractPdfNm;
+    }
 }

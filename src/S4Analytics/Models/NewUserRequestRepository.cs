@@ -147,7 +147,7 @@ namespace S4Analytics.Models
         public async Task<NewUserRequest> ApproveNewUser(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
-            var request = approval.SelectedRequest;
+            var request = approval.Request;
 
             var preferredUserName = (request.RequestorFirstNm[0] + request.RequestorLastNm).ToLower();
             var userName = await GenerateUserName(preferredUserName);
@@ -205,7 +205,7 @@ namespace S4Analytics.Models
         public async Task<NewUserRequest> ApproveConsultant(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
-            var request = approval.SelectedRequest;
+            var request = approval.Request;
             var before70days = approval.Before70Days;
 
             if (request.UserId != null)
@@ -264,7 +264,7 @@ namespace S4Analytics.Models
         public async Task<NewUserRequest> ApproveExistingConsultant(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
-            var request = approval.SelectedRequest;
+            var request = approval.Request;
             var before70days = approval.Before70Days;
             var userName = request.UserId;
 
@@ -320,7 +320,7 @@ namespace S4Analytics.Models
         public NewUserRequest ApproveAgency(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
-            var request = approval.SelectedRequest;
+            var request = approval.Request;
             var before70days = approval.Before70Days;
 
             // Nothing to update in database. Send email to global admin to create agency
@@ -352,7 +352,7 @@ namespace S4Analytics.Models
         public Task<NewUserRequest> ApproveNewVendor(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
-            var request = approval.SelectedRequest;
+            var request = approval.Request;
             request.CreatedBy = approval.AdminUserName;
 
             //Create new Vendor in CONTRACTOR
@@ -360,7 +360,7 @@ namespace S4Analytics.Models
 
             var result = StoreVendor(vendor);
 
-            approval.SelectedRequest.VendorId = vendor.VendorId;
+            approval.Request.VendorId = vendor.VendorId;
 
             return ApproveConsultant(id, approval);
         }
@@ -368,7 +368,7 @@ namespace S4Analytics.Models
         public async Task<NewUserRequest> ApproveCreatedNewAgency(int id, RequestApproval approval)
         {
             var newStatus = approval.NewStatus;
-            var request = approval.SelectedRequest;
+            var request = approval.Request;
 
             // Verify that new agency has been created.
             var newAgencyId = FindAgencyIdByName(request.AgncyNm);
@@ -378,7 +378,7 @@ namespace S4Analytics.Models
                 return request;
             }
 
-            approval.SelectedRequest.AgncyId = newAgencyId;
+            approval.Request.AgncyId = newAgencyId;
 
             /// User will be created automatically after agency created because there is no one in
             /// the agency since its new. Therefore no one with an account in that agency to approve them

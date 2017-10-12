@@ -55,7 +55,14 @@ export class NewUserRequestService {
         let url = 'api/admin/new-user-request';
         return this.http
             .get(url)
-            .map((r: Response) => r.json() as NewUserRequest[]);
+            .map((r: Response) => <NewUserRequest[]> r.json())
+            .map(data => {
+                let result:NewUserRequest[] = [];
+                data.map((d) => {
+                    result.push(new NewUserRequest(d));
+                });
+                return result;
+            });
     }
 
     filterNewUserRequestsBy(s: string): Observable<NewUserRequest[]> {

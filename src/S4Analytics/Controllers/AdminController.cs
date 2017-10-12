@@ -17,7 +17,7 @@ namespace S4Analytics.Controllers
     public class RequestApproval
     {
         public int RequestNumber { get; set; }
-        public NewUserRequest SelectedRequest { get; set; }
+        public NewUserRequest Request { get; set; }
         public NewUserRequestStatus NewStatus { get; set; }
         public NewUserRequestStatus CurrentStatus { get; set; }
         public bool Before70Days { get; set; }
