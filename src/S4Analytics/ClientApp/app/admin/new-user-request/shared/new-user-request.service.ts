@@ -55,9 +55,9 @@ export class NewUserRequestService {
         let url = 'api/admin/new-user-request';
         return this.http
             .get(url)
-            .map((r: Response) => <NewUserRequest[]> r.json())
+            .map((r: Response) => r.json() as NewUserRequest[])
             .map(data => {
-                let result:NewUserRequest[] = [];
+                let result: NewUserRequest[] = [];
                 data.map((d) => {
                     result.push(new NewUserRequest(d));
                 });
