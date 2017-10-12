@@ -32,6 +32,10 @@
     <b>Vendor:</b>&nbsp;
     {{state.selectedRequest.vendorName}}
 </div>
+<div class="row" *ngIf="isNewVendor()">
+    <b>Vendor Email Domain:</b>&nbsp;
+    {{state.selectedRequest.vendorEmailDomain}}
+</div>
 <div class="row">
     <b>Contract Start Date: </b>&nbsp;
     {{state.selectedRequest.contractStartDt | date : 'shortDate'}}

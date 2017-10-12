@@ -55,7 +55,8 @@ export class NewUserRequestService {
         let url = 'api/admin/new-user-request';
         return this.http
             .get(url)
-            .map((r: Response) => r.json() as NewUserRequest[]);
+            .map((r: Response) => r.json() as NewUserRequest[])
+            .map(data => data.map(d => new NewUserRequest(d)));
     }
 
     filterNewUserRequestsBy(s: string): Observable<NewUserRequest[]> {
@@ -78,12 +79,11 @@ export class NewUserRequestService {
                     requestActionResults.requestNumber,
                     selectedRequest,
                     NewUserRequestStatus.NewVendor,
-                    NewUserRequestStatus.NewConsultant,
+                    NewUserRequestStatus.Completed,
                     requestActionResults.accessBefore70Days,
                     requestActionResults.contractEndDt);
                 break;
             case NewUserRequestStatus.NewAgency:
-
                 reqWrapper = new NewAgencyRequestApproval(
                     requestActionResults.requestNumber,
                     selectedRequest,
@@ -91,7 +91,6 @@ export class NewUserRequestService {
                     NewUserRequestStatus.CreateAgency,
                     requestActionResults.accessBefore70Days
                 );
-
                 break;
             case NewUserRequestStatus.CreateAgency:
                 reqWrapper = new RequestApproval(
@@ -101,7 +100,6 @@ export class NewUserRequestService {
                     NewUserRequestStatus.NewUser);
                 break;
             case NewUserRequestStatus.NewConsultant:
-
                 reqWrapper = new NewConsultantVendorRequestApproval(
                     requestActionResults.requestNumber,
                     selectedRequest,

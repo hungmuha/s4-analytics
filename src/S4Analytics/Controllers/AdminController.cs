@@ -17,7 +17,7 @@ namespace S4Analytics.Controllers
     public class RequestApproval
     {
         public int RequestNumber { get; set; }
-        public NewUserRequest SelectedRequest { get; set; }
+        public NewUserRequest Request { get; set; }
         public NewUserRequestStatus NewStatus { get; set; }
         public NewUserRequestStatus CurrentStatus { get; set; }
         public bool Before70Days { get; set; }
@@ -100,10 +100,10 @@ namespace S4Analytics.Controllers
         }
 
         [HttpPatch("new-user-request/{id}/approve/vendor")]
-        public IActionResult ApproveVendor(int id, [FromBody]RequestApproval approval)
+        public async Task<IActionResult> ApproveVendor(int id, [FromBody]RequestApproval approval)
         {
             approval.AdminUserName = User.Identity.Name;
-            return new ObjectResult(_newUserRequestRepo.ApproveNewVendor(id, approval));
+            return new ObjectResult(await _newUserRequestRepo.ApproveNewVendor(id, approval));
         }
 
         [HttpPatch("new-user-request/{id}/approve/consultant")]
