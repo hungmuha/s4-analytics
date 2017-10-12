@@ -359,7 +359,6 @@ namespace S4Analytics.Models
             var vendor = CreateNewVendor(request);
 
             var result = StoreVendor(vendor);
-
             approval.Request.VendorId = vendor.VendorId;
 
             return ApproveConsultant(id, approval);
