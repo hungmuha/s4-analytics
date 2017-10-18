@@ -8,7 +8,7 @@ import { RequestActionResults } from './request-action-results';
 class RequestApproval {
     constructor(
         public requestNumber: number,
-        public selectedRequest: NewUserRequest,
+        public request: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus) { }
 }
@@ -16,32 +16,32 @@ class RequestApproval {
 class NewAgencyRequestApproval extends RequestApproval {
     constructor(
         public requestNumber: number,
-        public selectedRequest: NewUserRequest,
+        public request: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
         public before70Days: boolean
         ) {
-        super(requestNumber, selectedRequest, currentStatus, newStatus);
+        super(requestNumber, request, currentStatus, newStatus);
         }
 }
 
 class NewConsultantVendorRequestApproval extends RequestApproval {
     constructor(
         public requestNumber: number,
-        public selectedRequest: NewUserRequest,
+        public request: NewUserRequest,
         public currentStatus: NewUserRequestStatus,
         public newStatus: NewUserRequestStatus,
         public before70Days: boolean,
         public contractEndDt: Date
         ) {
-        super(requestNumber, selectedRequest, currentStatus, newStatus);
+        super(requestNumber, request, currentStatus, newStatus);
         }
 }
 
 class RequestRejection {
     constructor(
         public requestNumber: number,
-        public selectedRequest: NewUserRequest,
+        public request: NewUserRequest,
         public rejectionReason: string,
         public newStatus: NewUserRequestStatus
        ) { }
@@ -64,7 +64,8 @@ export class NewUserRequestService {
 
         return this.http
             .get(url)
-            .map((r: Response) => r.json() as NewUserRequest[]);
+            .map((r: Response) => r.json() as NewUserRequest[])
+            .map(data => data.map(d => new NewUserRequest(d)));
     }
 
     approve(selectedRequest: NewUserRequest,
@@ -123,7 +124,7 @@ export class NewUserRequestService {
 
         return this.http
             .patch(url, reqWrapper)
-            .map(res =>  res.json())
+            .map(res => new NewUserRequest(res.json()))
             .catch((error: any) => this.handleError(error));
     }
 
@@ -140,7 +141,7 @@ export class NewUserRequestService {
 
         return this.http
             .patch(url, reqWrapper)
-            .map(res => res.json())
+            .map(res => new NewUserRequest(res.json()))
             .catch(this.handleError);
     }
 

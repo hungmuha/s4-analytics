@@ -7,7 +7,8 @@ export class NewUserRequest {
     requestType: NewUserRequestType;
     requestStatus: NewUserRequestStatus;
     initialRequestStatus: NewUserRequestStatus;
-    userCreatedDt: Date;
+    userCreatedDt?: Date;
+    agncyId: number;
     agncyNm: string;
     agncyEmailDomain: string;
     requestorFirstNm: string;
@@ -21,8 +22,8 @@ export class NewUserRequest {
     consultantSuffixNm: string;
     consultantEmail: string;
     accessReasonTx:  string;
-    contractStartDt: Date;
-    contractEndDt: Date;
+    contractStartDt?: Date;
+    contractEndDt?: Date;
     userId: string;
     warnRequestorEmailCd: boolean;
     warnConsultantEmailCd: boolean;
@@ -38,7 +39,8 @@ export class NewUserRequest {
         this.requestType = data.requestType;
         this.requestStatus = data.requestStatus;
         this.initialRequestStatus = data.initialRequestStatus;
-        this.userCreatedDt = new Date(data.userCreatedDt);
+        this.userCreatedDt = (data.userCreatedDt == undefined) ? undefined : new Date(data.userCreatedDt);
+        this.agncyId = data.agncyId;
         this.agncyNm = data.agncyNm;
         this.agncyEmailDomain = data.agncyEmailDomain;
         this.requestorFirstNm = data.requestorFirstNm;
@@ -52,8 +54,8 @@ export class NewUserRequest {
         this.consultantSuffixNm = data.consultantSuffixNm;
         this.consultantEmail = data.consultantEmail;
         this.accessReasonTx = data.accessReasonTx;
-        this.contractStartDt = new Date(data.contractStartDt);
-        this.contractEndDt = new Date(data.contractEndDt);
+        this.contractStartDt = (data.contractStartDt == undefined) ? undefined : new Date(data.contractStartDt); 
+        this.contractEndDt = (data.contractEndDt == undefined) ? undefined : new Date(data.contractEndDt);
         this.userId = data.userId;
         this.warnRequestorEmailCd = data.warnRequestorEmailCd;
         this.warnConsultantEmailCd = data.warnConsultantEmailCd;
