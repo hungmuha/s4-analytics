@@ -387,7 +387,7 @@ namespace S4Analytics.Models
         public NewUserRequest Reject(int id, RequestRejection rejection)
         {
             var newStatus = rejection.NewStatus;
-            var request = rejection.SelectedRequest;
+            var request = rejection.Request;
             var rejectionReason = rejection.RejectionReason;
 
             // Send the rejection the email here.
@@ -583,7 +583,7 @@ namespace S4Analytics.Models
                 FirstName = request.RequestorFirstNm,
                 LastName = request.RequestorLastNm,
                 SuffixName = request.RequestorSuffixNm,
-                CrashReportAccess = (request.AccessBefore70Days)?CrashReportAccess.Within60Days:CrashReportAccess.After60Days,
+                CrashReportAccess = (request.AccessBefore70Days) ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days,
                 Agency = GetAgency(request.AgncyId),
                 ForcePasswordChange = true
             };
@@ -591,6 +591,18 @@ namespace S4Analytics.Models
             profile.ViewableCounties = profile.Agency.DefaultViewableCounties;
             profile.CrashReportAccess = profile.Agency.CrashReportAccess;
             return profile;
+        }
+
+        private List<UserCounty> GetViewableCountiesForConsultant(Agency agency)
+        {
+            if (agency.ParentAgencyId == 0)
+            {
+                return agency.DefaultViewableCounties;
+            }
+
+            // child agency inherit geographic area scope of its parent agency
+            var parentAgency = GetAgency(agency.ParentAgencyId);
+            return parentAgency.DefaultViewableCounties;
         }
 
         private S4UserProfile CreateConsultantProfile(NewUserRequest request)
@@ -609,7 +621,7 @@ namespace S4Analytics.Models
                 ForcePasswordChange = true
             };
 
-            profile.ViewableCounties = profile.Agency.DefaultViewableCounties;
+            profile.ViewableCounties = GetViewableCountiesForConsultant(profile.Agency);
             profile.TimeLimitedAccount = true;
 
             return profile;

@@ -29,7 +29,7 @@ namespace S4Analytics.Controllers
     public class RequestRejection
     {
         public int RequestNumber{ get; set;}
-        public NewUserRequest SelectedRequest{ get; set;}
+        public NewUserRequest Request{ get; set;}
         public string RejectionReason { get; set; }
         public NewUserRequestStatus NewStatus { get; set; }
         public string AdminUserName { get; set; }

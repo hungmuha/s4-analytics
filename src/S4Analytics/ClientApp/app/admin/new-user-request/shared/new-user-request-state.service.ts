@@ -8,7 +8,7 @@ import { CurrentActionForm } from './current-action-form';
 @Injectable()
 export class NewUserRequestStateService {
     get dateRegex() {
-        return /^([1-9]|[12][0-9]|3[01])[\/]([1-9]|1[012])[\/]20\d{2}$/;
+        return /^([1-9]|1[012])[\/]([1-9]|[12][0-9]|3[01])[\/]20\d{2}$/;
     }
 
     newUserRequests: NewUserRequest[];
