@@ -57,7 +57,7 @@ export class NewConsultantComponent  {
 
     // Check if end of contract date is after start of contract date
     isValidDateRange(): boolean {
-        if (!this.state.selectedRequest.contractStartDt) { return false;}
+        if (!this.state.selectedRequest.contractStartDt) { return false; }
 
         let startDt = this.state.selectedRequest.contractStartDt;
         let endDt = new Date(this.contractEndDateStr);

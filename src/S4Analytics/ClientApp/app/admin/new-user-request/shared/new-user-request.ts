@@ -54,7 +54,7 @@ export class NewUserRequest {
         this.consultantSuffixNm = data.consultantSuffixNm;
         this.consultantEmail = data.consultantEmail;
         this.accessReasonTx = data.accessReasonTx;
-        this.contractStartDt = (data.contractStartDt == undefined) ? undefined : new Date(data.contractStartDt); 
+        this.contractStartDt = (data.contractStartDt == undefined) ? undefined : new Date(data.contractStartDt);
         this.contractEndDt = (data.contractEndDt == undefined) ? undefined : new Date(data.contractEndDt);
         this.userId = data.userId;
         this.warnRequestorEmailCd = data.warnRequestorEmailCd;
