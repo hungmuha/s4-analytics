@@ -27,7 +27,7 @@
     <div class="col-12">
         <!-- queue -->
         <table class="table table-striped table-bordered table-sm mt-3">
-            <thead class="thead-inverse">
+            <thead class="thead-dark">
                 <tr>
                     <th name="reqNbr">
                         <a href="javascript:void(0)" (click)="sortColumn('requestNbr')">
@@ -44,8 +44,8 @@
                             Request <span class="text-nowrap">Type <span [ngClass]="caretClass('requestType')"></span></span>
                         </a>
                     </th>
-                    <th class="align-middle">
-                        <a href="javascript:void(0)" (click)="sortColumn('requestorLastNm')" class="text-nowrap">
+                    <th>
+                        <a class="text-nowrap" href="javascript:void(0)" (click)="sortColumn('requestorLastNm')">
                             Requestor
                             <span [ngClass]="caretClass('requestorLastNm')"></span>
                         </a>
@@ -67,7 +67,7 @@
                     </th>
                     <th>Action</th>
                     <th>
-                        <a href="javascript:void(0)" (click)="sortColumn('adminComment')" class="text-nowrap">
+                        <a class="text-nowrap" href="javascript:void(0)" (click)="sortColumn('adminComment')">
                             Comment
                             <span [ngClass]="caretClass('adminComment')"></span>
                         </a>
