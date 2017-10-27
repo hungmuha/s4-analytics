@@ -9,9 +9,9 @@ namespace S4Analytics.Controllers
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class CrashController : Controller
     {
-        private ICrashRepository _crashRepo;
+        private CrashRepository _crashRepo;
 
-        public CrashController(ICrashRepository repo)
+        public CrashController(CrashRepository repo)
         {
             _crashRepo = repo;
         }

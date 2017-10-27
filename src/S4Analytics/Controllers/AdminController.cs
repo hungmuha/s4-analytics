@@ -40,9 +40,9 @@ namespace S4Analytics.Controllers
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class AdminController : Controller
     {
-        private INewUserRequestRepository _newUserRequestRepo;
+        private NewUserRequestRepository _newUserRequestRepo;
 
-        public AdminController(INewUserRequestRepository repo)
+        public AdminController(NewUserRequestRepository repo)
         {
             _newUserRequestRepo = repo;
         }

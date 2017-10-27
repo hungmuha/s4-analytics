@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace S4Analytics.Models
 {
-    public class ViolationRepository : IViolationRepository
+    public class ViolationRepository
     {
 
     }

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace S4Analytics.Models
 {
-    public class NewUserRequestRepository : INewUserRequestRepository
+    public class NewUserRequestRepository
     {
         private string _applicationName;
         private string _connStr;

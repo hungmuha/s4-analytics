@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace S4Analytics.Models
 {
-    public class CrashRepository : ICrashRepository
+    public class CrashRepository
     {
         private readonly string _connStr;
         private readonly string _warehouseSchema;
