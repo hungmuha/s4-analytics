@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReportingComponent } from './reporting.component';
+import { CrashesOverTimeComponent } from './crashes-over-time.component';
 
 @NgModule({
     imports: [
@@ -9,7 +10,8 @@ import { ReportingComponent } from './reporting.component';
         CommonModule
     ],
     declarations: [
-        ReportingComponent
+        ReportingComponent,
+        CrashesOverTimeComponent
     ]
 })
 export class ReportingModule { }
