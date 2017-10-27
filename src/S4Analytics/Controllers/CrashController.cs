@@ -61,6 +61,27 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
+        [HttpGet("report/year")]
+        public IActionResult GetCrashCountsByYear()
+        {
+            var results = _crashRepo.GetCrashCountsByYear();
+            return new ObjectResult(results);
+        }
+
+        [HttpGet("report/{year}/month")]
+        public IActionResult GetCrashCountsByMonth(int year)
+        {
+            var results = _crashRepo.GetCrashCountsByMonth();
+            return new ObjectResult(results);
+        }
+
+        [HttpGet("report/{year}/day")]
+        public IActionResult GetCrashCountsByDay(int year)
+        {
+            var results = _crashRepo.GetCrashCountsByDay();
+            return new ObjectResult(results);
+        }
+
         // TODO: parameterize the specific attribute(s) to summarize
         [HttpGet("{queryToken}/summary/crash-severity")]
         public IActionResult GetCrashSeveritySummary(string queryToken)

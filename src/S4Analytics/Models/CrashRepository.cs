@@ -188,6 +188,94 @@ namespace S4Analytics.Models
             }
         }
 
+        public IEnumerable<ReportOverTimeByYear> GetCrashCountsByYear()
+        {
+            var queryText = $@"WITH grouped_cts AS (
+                -- count matching crashes, grouped by year and month
+                SELECT
+                    crash_yr,
+                    crash_mm,
+                    COUNT(*) ct
+                FROM crash_evt
+                -- INSERT FILTERS HERE
+                GROUP BY crash_yr, crash_mm
+            )
+            SELECT -- sum previous counts, grouped by series and year
+                CASE WHEN crash_mm < 10 THEN 'Jan 1 - Sep 30' ELSE 'Oct 1 - Dec 31' END AS s,
+                crash_yr AS y,
+                SUM(ct) AS v
+            FROM grouped_cts
+            WHERE (crash_yr < 2017 OR crash_mm < 10)
+            GROUP BY CASE WHEN crash_mm < 10 THEN 'Jan 1 - Sep 30' ELSE 'Oct 1 - Dec 31' END, crash_yr
+            ORDER BY CASE WHEN crash_mm < 10 THEN 'Jan 1 - Sep 30' ELSE 'Oct 1 - Dec 31' END, crash_yr";
+
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var results = conn.Query<ReportOverTimeByYear>(queryText, new { });
+                return results;
+            }
+        }
+
+        public IEnumerable<ReportOverTimeByMonth> GetCrashCountsByMonth()
+        {
+            var queryText = $@"WITH grouped_cts AS (
+                -- count matching crashes, grouped by year and month
+                SELECT
+                    crash_yr,
+                    crash_mm,
+                    COUNT(*) ct
+                FROM crash_evt
+                WHERE crash_yr IN (2017, 2016)
+                -- INSERT FILTERS HERE
+                GROUP BY crash_yr, crash_mm
+            )
+            SELECT -- sum previous counts, grouped by series and month
+                CAST(crash_yr AS VARCHAR2(4)) AS s,
+                crash_mm AS m,
+                SUM(ct) AS v
+            FROM grouped_cts
+            WHERE (crash_yr < 2017 OR crash_mm < 10)
+            GROUP BY crash_yr, crash_mm
+            ORDER BY crash_yr, crash_mm";
+
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var results = conn.Query<ReportOverTimeByMonth>(queryText, new { });
+                return results;
+            }
+        }
+
+        public IEnumerable<ReportOverTimeByDay> GetCrashCountsByDay()
+        {
+            var queryText = $@"WITH grouped_cts AS (
+                -- count matching crashes, grouped by year, month, and day
+                SELECT
+                    crash_yr,
+                    crash_mm,
+                    crash_dd,
+                    COUNT(*) ct
+                FROM crash_evt
+                WHERE crash_yr IN (2017, 2016)
+                -- INSERT FILTERS HERE
+                GROUP BY crash_yr, crash_mm, crash_dd
+            )
+            SELECT -- sum previous counts, grouped by series, month, and day
+                CAST(crash_yr AS VARCHAR2(4)) AS s,
+                crash_mm AS m,
+                crash_dd AS d,
+                SUM(ct) AS v
+            FROM grouped_cts
+            WHERE (crash_yr < 2017 OR crash_mm < 10)
+            GROUP BY crash_yr, crash_mm, crash_dd
+            ORDER BY crash_yr, crash_mm, crash_dd";
+
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var results = conn.Query<ReportOverTimeByDay>(queryText, new { });
+                return results;
+            }
+        }
+
         public IEnumerable<AttributeSummary> GetCrashSeveritySummary(string queryToken)
         {
             // TODO: move to a new repository for summary results?
