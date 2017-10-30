@@ -1,1 +1,6 @@
-﻿<div id="crashesOverTime"></div>
+﻿<div class="btn btn-group">
+    <button class="btn btn-secondary" [class.active]="selected==='year'" (click)="byYear()">Year</button>
+    <button class="btn btn-secondary" [class.active]="selected==='month'" (click)="byMonth()">Month</button>
+    <button class="btn btn-secondary" [class.active]="selected==='day'" (click)="byDay()">Day</button>
+</div>
+<div id="crashesOverTime"></div>

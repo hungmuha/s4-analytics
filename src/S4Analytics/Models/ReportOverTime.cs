@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace S4Analytics.Models
 {
@@ -10,24 +11,22 @@ namespace S4Analytics.Models
         public IEnumerable<T> data;
     }
 
-    public class ReportOverTimeByYear
+    public class ReportOverTime<T>
     {
         public IEnumerable<string> categories;
-        public IEnumerable<ReportSeries<int>> series;
+        public IEnumerable<ReportSeries<T>> series;
     }
 
-    public class ReportOverTimeByMonth
+    public class ReportSeriesByDay<T>
     {
-        public string s; // series
-        public int m; // month
-        public int v; // value
+        public string name;
+        public DateTime minDate;
+        public DateTime maxDate;
+        public IEnumerable<T> data;
     }
 
-    public class ReportOverTimeByDay
+    public class ReportOverTimeByDay<T>
     {
-        public string s; // series
-        public int m; // month
-        public int d; // day
-        public int v; // value
+        public IEnumerable<ReportSeriesByDay<T>> series;
     }
 }
