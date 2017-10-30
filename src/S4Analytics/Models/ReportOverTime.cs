@@ -1,12 +1,19 @@
-﻿namespace S4Analytics.Models
+﻿using System.Collections.Generic;
+
+namespace S4Analytics.Models
 {
     // variable names are short to keep the json payload small
 
+    public class ReportSeries<T>
+    {
+        public string name;
+        public IEnumerable<T> data;
+    }
+
     public class ReportOverTimeByYear
     {
-        public string s; // series
-        public int y; // year
-        public int v; // value
+        public IEnumerable<string> categories;
+        public IEnumerable<ReportSeries<int>> series;
     }
 
     public class ReportOverTimeByMonth

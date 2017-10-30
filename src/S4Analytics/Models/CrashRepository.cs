@@ -2,6 +2,7 @@
 using GeoJSON.Net.Feature;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using MoreLinq;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
@@ -188,7 +189,7 @@ namespace S4Analytics.Models
             }
         }
 
-        public IEnumerable<ReportOverTimeByYear> GetCrashCountsByYear()
+        public ReportOverTimeByYear GetCrashCountsByYear()
         {
             var queryText = $@"WITH grouped_cts AS (
                 -- count matching crashes, grouped by year and month
@@ -201,19 +202,33 @@ namespace S4Analytics.Models
                 GROUP BY crash_yr, crash_mm
             )
             SELECT -- sum previous counts, grouped by series and year
-                CASE WHEN crash_mm < 10 THEN 'Jan 1 - Sep 30' ELSE 'Oct 1 - Dec 31' END AS s,
-                crash_yr AS y,
-                SUM(ct) AS v
+                CASE WHEN crash_mm < 10 THEN 1 ELSE 2 END AS seq,
+                CASE WHEN crash_mm < 10 THEN 'Jan 1 - Sep 30' ELSE 'Oct 1 - Dec 31' END AS series,
+                CAST(crash_yr AS VARCHAR2(4)) AS crash_yr,
+                SUM(ct) AS ct
             FROM grouped_cts
             WHERE (crash_yr < 2017 OR crash_mm < 10)
-            GROUP BY CASE WHEN crash_mm < 10 THEN 'Jan 1 - Sep 30' ELSE 'Oct 1 - Dec 31' END, crash_yr
-            ORDER BY CASE WHEN crash_mm < 10 THEN 'Jan 1 - Sep 30' ELSE 'Oct 1 - Dec 31' END, crash_yr";
+            GROUP BY CASE WHEN crash_mm < 10 THEN 1 ELSE 2 END, CASE WHEN crash_mm < 10 THEN 'Jan 1 - Sep 30' ELSE 'Oct 1 - Dec 31' END, crash_yr
+            ORDER BY CASE WHEN crash_mm < 10 THEN 1 ELSE 2 END, crash_yr";
 
+            var report = new ReportOverTimeByYear();
             using (var conn = new OracleConnection(_connStr))
             {
-                var results = conn.Query<ReportOverTimeByYear>(queryText, new { });
-                return results;
+                var results = conn.Query(queryText, new { });
+                report.categories = results.DistinctBy(r => r.CRASH_YR).Select(r => (string)(r.CRASH_YR));
+                var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
+                var series = new List<ReportSeries<int>>();
+                foreach (var seriesName in seriesNames)
+                {
+                    series.Add(new ReportSeries<int>()
+                    {
+                        name = seriesName,
+                        data = results.Where(r => r.SERIES == seriesName).Select(r => (int)r.CT)
+                    });
+                }
+                report.series = series;
             }
+            return report;
         }
 
         public IEnumerable<ReportOverTimeByMonth> GetCrashCountsByMonth()

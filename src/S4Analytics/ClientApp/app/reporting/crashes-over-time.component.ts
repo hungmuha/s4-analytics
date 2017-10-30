@@ -1,5 +1,6 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
+import { ReportingService } from './shared';
 
 @Component({
     selector: 'crashes-over-time',
@@ -7,10 +8,12 @@ import * as Highcharts from 'highcharts';
 })
 export class CrashesOverTimeComponent implements OnInit {
 
-    options: Object;
+    chart: Highcharts.ChartObject;
+
+    constructor(private reporting: ReportingService) { }
 
     ngOnInit() {
-        this.options = {
+        let options = {
             chart: {
                 renderTo: 'crashesOverTime',
                 type: 'column'
@@ -18,14 +21,12 @@ export class CrashesOverTimeComponent implements OnInit {
             title: {
                 text: 'Stacked column chart'
             },
-            xAxis: {
-                categories: ['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas']
-            },
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Total fruit consumption'
+                    text: 'Total'
                 },
+                reversedStacks: false,
                 stackLabels: {
                     enabled: true,
                     style: {
@@ -57,18 +58,13 @@ export class CrashesOverTimeComponent implements OnInit {
                         color: 'white'
                     }
                 }
-            },
-            series: [{
-                name: 'John',
-                data: [5, 3, 4, 7, 2]
-            }, {
-                name: 'Jane',
-                data: [2, 2, 3, 2, 1]
-            }, {
-                name: 'Joe',
-                data: [3, 4, 4, 2, 5]
-            }]
+            }
         };
-        let chart = Highcharts.chart(this.options);
+        this.reporting.getCrashesOverTime().subscribe(report => {
+            options = { ...options, xAxis: { categories: report.categories }, series: report.series };
+            this.chart = Highcharts.chart(options);
+            // this.chart.options.xAxis = { categories: report.categories };
+            // this.chart.options.series = report.series;
+        });
     }
 }

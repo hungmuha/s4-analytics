@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReportingComponent } from './reporting.component';
 import { CrashesOverTimeComponent } from './crashes-over-time.component';
+import { ReportingService } from './shared';
 
 @NgModule({
     imports: [
@@ -12,6 +13,9 @@ import { CrashesOverTimeComponent } from './crashes-over-time.component';
     declarations: [
         ReportingComponent,
         CrashesOverTimeComponent
+    ],
+    providers: [
+        ReportingService
     ]
 })
 export class ReportingModule { }
