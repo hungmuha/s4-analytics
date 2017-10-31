@@ -273,78 +273,31 @@ namespace S4Analytics.Models
             return report;
         }
 
-        private Int32 UnixTimestamp(DateTime dateTime) {
-            return (Int32)(dateTime.Subtract(new DateTime(1970, 1, 1))).TotalSeconds * 1000;
-        }
-
-        public ReportOverTime<Tuple<int, int>> GetCrashCountsByDay2()
-        {
-            var queryText = $@"WITH grouped_cts AS (
-                -- count matching crashes, grouped by year, month, and day
-                SELECT
-                    crash_yr,
-                    crash_mm,
-                    crash_dd,
-                    COUNT(*) ct
-                FROM crash_evt
-                WHERE crash_yr IN (2017, 2016)
-                AND (crash_yr < 2017 OR crash_mm < 10)
-                -- INSERT FILTERS HERE
-                GROUP BY crash_yr, crash_mm, crash_dd
-            )
-            SELECT -- sum previous counts, grouped by series, month, and day
-                CAST(crash_yr AS VARCHAR2(4)) AS series,
-                TO_DATE(crash_mm || '-' || crash_dd || '-2017', 'MM-DD-YYYY') AS dt, -- use current year for prior year dates?
-                SUM(ct) AS ct
-            FROM grouped_cts
-            GROUP BY crash_yr, crash_mm, crash_dd";
-
-            var report = new ReportOverTime<Tuple<int, int>>();
-            using (var conn = new OracleConnection(_connStr))
-            {
-                var results = conn.Query(queryText, new { });
-                var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
-                var series = new List<ReportSeries<Tuple<int, int>>>();
-                foreach (var seriesName in seriesNames)
-                {
-                    series.Add(new ReportSeries<Tuple<int, int>>()
-                    {
-                        name = seriesName,
-                        data = results.Where(r => r.SERIES == seriesName).Select(r => new Tuple<int,int>(UnixTimestamp((DateTime)r.DT), (int)r.CT))
-                    });
-                }
-                report.series = series;
-            }
-            return report;
-        }
-
-        public ReportOverTimeByDay<int> GetCrashCountsByDay()
+        public ReportOverTime<int> GetCrashCountsByDay()
         {
             var queryText = $@"-- count matching crashes, grouped by day
                 SELECT
                     CAST(crash_yr AS VARCHAR2(4)) AS series,
-                    key_crash_dt,
                     COUNT(*) ct
                 FROM crash_evt
                 WHERE crash_yr IN (2017, 2016)
                 AND (crash_yr < 2017 OR crash_mm < 10)
                 -- INSERT FILTERS HERE
-                GROUP BY crash_yr, key_crash_dt";
+                GROUP BY crash_yr, key_crash_dt
+                ORDER BY crash_yr, key_crash_dt";
 
-            var report = new ReportOverTimeByDay<int>();
+            var report = new ReportOverTime<int>();
             using (var conn = new OracleConnection(_connStr))
             {
                 var results = conn.Query(queryText, new { });
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
-                var series = new List<ReportSeriesByDay<int>>();
+                var series = new List<ReportSeries<int>>();
                 foreach (var seriesName in seriesNames)
                 {
                     var seriesData = results.Where(r => r.SERIES == seriesName);
-                    series.Add(new ReportSeriesByDay<int>()
+                    series.Add(new ReportSeries<int>()
                     {
                         name = seriesName,
-                        minDate = (DateTime)(seriesData.MinBy(r => (DateTime)r.KEY_CRASH_DT).KEY_CRASH_DT),
-                        maxDate = (DateTime)(seriesData.MaxBy(r => (DateTime)r.KEY_CRASH_DT).KEY_CRASH_DT),
                         data = seriesData.Select(r => (int)r.CT)
                     });
                 }

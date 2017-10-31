@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import { ReportOverTime, ReportOverTimeByDay } from './report-over-time';
+import { ReportOverTime } from './report-over-time';
 
 @Injectable()
 export class ReportingService {
@@ -19,9 +19,9 @@ export class ReportingService {
             .map(response => response.json() as ReportOverTime);
     }
 
-    getCrashesOverTimeByDay(): Observable<ReportOverTimeByDay> {
+    getCrashesOverTimeByDay(): Observable<ReportOverTime> {
         return this.http
             .get('api/crash/report/2017/day')
-            .map(response => response.json() as ReportOverTimeByDay);
+            .map(response => response.json() as ReportOverTime);
     }
 }
