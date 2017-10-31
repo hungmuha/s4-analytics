@@ -14,7 +14,7 @@ export class CrashesOverTimeComponent implements OnInit {
     constructor(private reporting: ReportingService) { }
 
     ngOnInit() {
-        this.byYear();
+        this.byDay();
     }
 
     byYear() {
@@ -106,38 +106,36 @@ export class CrashesOverTimeComponent implements OnInit {
         this.selected = 'day';
 
         let options: any = {
-            chart: {
-                renderTo: 'crashesOverTime'
-            },
             rangeSelector: {
                 selected: 4
             },
             yAxis: {
+                top: '10%',
+                height: '90%',
                 plotLines: [{
                     value: 0,
                     width: 2,
                     color: 'silver'
                 }]
             },
-            plotOptions: {
-                series: {
-                    compare: 'percent',
-                    showInNavigator: true
-                }
-            },
             tooltip: {
-                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+                pointFormat: '<span style="color:{series.color}">{series.name}</span>: {Highcharts.dateFormat(" % A, %b % e, %Y", this.x)} <b>{point.y}</b><br/>',
                 valueDecimals: 2,
                 split: true
+            },
+            plotOptions: {
+                series: {
+                    pointStart: Date.UTC(2017, 0, 1),
+                    pointInterval: 24 * 3600 * 1000 // one day
+                }
             }
         };
         this.reporting.getCrashesOverTimeByDay().subscribe(report => {
             options = {
                 ...options,
-                // xAxis: { range: [{ min: new Date('01/01/2016'), max: new Date('12/31/2016') }, { min: new Date('01/01/2017'), max: new Date('12/31/2017') }] },
                 series: report.series
             };
-            Highstock.chart(options);
+            Highstock.stockChart('crashesOverTime', options);
         });
     }
 }

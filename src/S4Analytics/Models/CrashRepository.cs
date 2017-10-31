@@ -318,33 +318,31 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTimeByDay<int> GetCrashCountsByDay()
+        public ReportOverTime<int> GetCrashCountsByDay()
         {
             var queryText = $@"-- count matching crashes, grouped by day
                 SELECT
                     CAST(crash_yr AS VARCHAR2(4)) AS series,
-                    key_crash_dt,
                     COUNT(*) ct
                 FROM crash_evt
                 WHERE crash_yr IN (2017, 2016)
                 AND (crash_yr < 2017 OR crash_mm < 10)
                 -- INSERT FILTERS HERE
-                GROUP BY crash_yr, key_crash_dt";
+                GROUP BY crash_yr, key_crash_dt
+                ORDER BY crash_yr, key_crash_dt";
 
-            var report = new ReportOverTimeByDay<int>();
+            var report = new ReportOverTime<int>();
             using (var conn = new OracleConnection(_connStr))
             {
                 var results = conn.Query(queryText, new { });
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
-                var series = new List<ReportSeriesByDay<int>>();
+                var series = new List<ReportSeries<int>>();
                 foreach (var seriesName in seriesNames)
                 {
                     var seriesData = results.Where(r => r.SERIES == seriesName);
-                    series.Add(new ReportSeriesByDay<int>()
+                    series.Add(new ReportSeries<int>()
                     {
                         name = seriesName,
-                        minDate = (DateTime)(seriesData.MinBy(r => (DateTime)r.KEY_CRASH_DT).KEY_CRASH_DT),
-                        maxDate = (DateTime)(seriesData.MaxBy(r => (DateTime)r.KEY_CRASH_DT).KEY_CRASH_DT),
                         data = seriesData.Select(r => (int)r.CT)
                     });
                 }

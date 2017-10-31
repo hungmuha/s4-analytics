@@ -16,17 +16,4 @@ namespace S4Analytics.Models
         public IEnumerable<string> categories;
         public IEnumerable<ReportSeries<T>> series;
     }
-
-    public class ReportSeriesByDay<T>
-    {
-        public string name;
-        public DateTime minDate;
-        public DateTime maxDate;
-        public IEnumerable<T> data;
-    }
-
-    public class ReportOverTimeByDay<T>
-    {
-        public IEnumerable<ReportSeriesByDay<T>> series;
-    }
 }
