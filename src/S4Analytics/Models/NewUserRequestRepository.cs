@@ -24,6 +24,7 @@ namespace S4Analytics.Models
         private string _globalAdminEmail;
         private string _supportEmail;
         private UserManager<S4IdentityUser<S4UserProfile>> _userManager;
+        private string _newUserDocumentsUrl;
 
         public NewUserRequestRepository(
             IOptions<ServerOptions> serverOptions,
@@ -46,6 +47,7 @@ namespace S4Analytics.Models
 
             _globalAdminEmail = serverOptions.Value.EmailOptions.GlobalAdminEmail;
             _supportEmail = serverOptions.Value.EmailOptions.SupportEmail;
+            _newUserDocumentsUrl = serverOptions.Value.NewUserDocumentsUrl;
         }
 
         /// <summary>
@@ -172,15 +174,19 @@ namespace S4Analytics.Models
             var subject = "Signal Four Analytics user account created";
             var body = $@"<div>Dear {request.RequestorFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been created. 
-                        You can access the system at http://s4.geoplan.ufl.edu/. <br><br>
-                        To login click on the Login link at the upper right of the screen 
+                        You can access the system at <a href=""http://s4.geoplan.ufl.edu/"">http://s4.geoplan.ufl.edu.</a>
+                        <br><br>To login click on the Login link at the upper right of the screen
                         and enter the information below: <br><br>
                         username = {userName} <br>
                         password = {passwordText} <br><br>
-                        Upon login you will be prompted to change your password. You will also be 
-                        prompted to read and accept Signal Four Analytics user agreement before 
-                        using the system.<br><br>
-                        Please let me know if you need further assistance.<br><br></div>";
+                        Upon login you will be prompted to change your password. You will also be
+                        prompted to read and accept Signal Four Analytics user agreement before
+                        using the system.
+                        <br><br>Below are some links to some resources that should help familiarize you
+                        with the system. <br><br>
+                        <a href =""{_newUserDocumentsUrl}/S4_Analytics_FAQ.PDF"">S4 Analytics FAQ</a><br>
+                        <a href=""{_newUserDocumentsUrl}/S4_Analytics_Slides_&_Recordings_10-6-2015.pdf"">S4 Analytics Webinar</a>
+                        <br><br>Please let me know if you need further assistance.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
@@ -236,18 +242,22 @@ namespace S4Analytics.Models
             // Send the approval the emails here.  Send password cred to new user.
             var subject = $@"Your Signal Four Analytics individual account as employee of {request.AgncyNm} has been created";
 
-            var body = $@"<div>
-                Dear {request.ConsultantFirstNm} <br><br>
-                Your Signal Four Analytics individual account has been created. 
-                You can access the system at http://s4.geoplan.ufl.edu/. <br><br>
-                To login click on the Login link at the upper right of the screen and enter the information below: <br><br>
-                username: {userName} <br>
-                password: {passwordText} <br><br>
-                Upon login you will be prompted to change your password. You will also be
-                prompted to read and accept Signal Four Analytics user agreement before
-                using the system.<br><br>
-                Note that this account will expire on {request.ContractEndDt.ToString()}).
-                Please let me know if you need further assistance.<br><br></div> ";
+            var body = $@"<div>Dear {request.RequestorFirstNm}, <br><br>
+                        Your Signal Four Analytics individual account has been created. 
+                        You can access the system at <a href=""http://s4.geoplan.ufl.edu/"">http://s4.geoplan.ufl.edu.</a>
+                        <br><br>To login click on the Login link at the upper right of the screen
+                        and enter the information below: <br><br>
+                        username = {userName} <br>
+                        password = {passwordText} <br><br>
+                        Upon login you will be prompted to change your password. You will also be
+                        prompted to read and accept Signal Four Analytics user agreement before
+                        using the system.<br><br>
+                        Note that this account will expire on {request.ContractEndDt.ToString()}.
+                        <br><br>Below are some links to some resources that should help familiarize you
+                        with the system. <br><br>
+                        <a href =""{_newUserDocumentsUrl}/S4_Analytics_FAQ.PDF"">S4 Analytics FAQ</a><br>
+                        <a href=""{_newUserDocumentsUrl}/S4_Analytics_Slides_&_Recordings_10-6-2015.pdf"">S4 Analytics Webinar</a>
+                        <br><br>Please let me know if you need further assistance.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
@@ -774,13 +784,15 @@ namespace S4Analytics.Models
 
         private void SendEmail(string to, List<string> cc, string from, string subject, string body, string closing)
         {
-            // TODO:  change back to send to correct people
+            var fromEmail = new MailAddress(from);
+
             var msg = new MailMessage()
             {
-                IsBodyHtml = true
+                IsBodyHtml = true,
+                Subject = subject,
+                From = fromEmail
             };
-            var fromEmail = new MailAddress(from);
-            msg.From = fromEmail;
+
             msg.To.Add(new MailAddress(to));
 
             if (cc != null)
@@ -791,15 +803,11 @@ namespace S4Analytics.Models
                 }
             }
 
-            msg.Subject = subject;
-            msg.IsBodyHtml = true;
-
             var completedText = new StringBuilder(body);
             completedText.AppendLine("");
             completedText.AppendLine(closing);
 
             msg.Body = completedText.ToString();
-
             _smtp.Send(msg);
         }
 
