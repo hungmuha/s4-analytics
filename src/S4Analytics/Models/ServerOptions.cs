@@ -13,6 +13,7 @@ namespace S4Analytics.Models
         public EmailOptions EmailOptions { get; set;}
         public ContractShareOptions ContractShare { get; set; }
         public string MembershipApplicationName { get; set; }
+        public string NewUserDocumentsUrl { get; set; }
     }
 
     public class OracleSchemaNames

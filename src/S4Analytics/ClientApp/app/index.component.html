@@ -76,6 +76,11 @@
             <li class="nav-item hidden-md-up">
                 <a class="nav-link" href="javascript:void(0)">Change password</a>
             </li>-->
+
+            <li class="nav-item hidden-md-up" [hidden]="!identity.isAuthenticated">
+                <a class="nav-link" (click)="gotoRequestQueue()" href="javascript:void(0)">Request Queue</a>
+            </li>
+
             <li class="nav-item hidden-md-up" [hidden]="!identity.isAuthenticated">
                 <a class="nav-link" (click)="logOut()" href="javascript:void(0)">Log out</a>
             </li>

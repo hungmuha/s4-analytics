@@ -43,4 +43,8 @@ export class IndexComponent implements OnInit, OnDestroy {
     logOut(): void {
         this.identity.logOut().subscribe();
     }
+
+    gotoRequestQueue(): void {
+        this.router.navigate(['admin/request-queue']);
+    }
 }
