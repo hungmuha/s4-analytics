@@ -31,6 +31,7 @@ module.exports = (env) => {
                 'core-js',
                 'event-source-polyfill',
                 'font-awesome/css/font-awesome.css',
+                'highcharts',
                 'lodash',
                 'moment',
                 'openlayers',

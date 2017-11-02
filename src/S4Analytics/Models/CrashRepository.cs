@@ -2,6 +2,7 @@
 using GeoJSON.Net.Feature;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using MoreLinq;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Linq;
 
 namespace S4Analytics.Models
 {
-    public class CrashRepository : ICrashRepository
+    public class CrashRepository
     {
         private readonly string _connStr;
         private readonly string _warehouseSchema;

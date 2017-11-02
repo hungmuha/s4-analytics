@@ -161,9 +161,10 @@ namespace S4Analytics
             services.AddScoped<SignInManager<S4IdentityUser<S4UserProfile>>>();
 
             // Add repositories.
-            services.AddSingleton<INewUserRequestRepository, NewUserRequestRepository>();
-            services.AddSingleton<ICrashRepository, CrashRepository>();
-            services.AddSingleton<IViolationRepository, ViolationRepository>();
+            services.AddSingleton<NewUserRequestRepository>();
+            services.AddSingleton<CrashRepository>();
+            services.AddSingleton<ViolationRepository>();
+            services.AddSingleton<ReportRepository>();
             services.AddSingleton<Html5Conduit>();
         }
 
