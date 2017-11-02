@@ -14,7 +14,7 @@ export class CrashesOverTimeComponent implements OnInit {
     constructor(private reporting: ReportingService) { }
 
     ngOnInit() {
-        this.byDay();
+        this.byYear();
     }
 
     byYear() {

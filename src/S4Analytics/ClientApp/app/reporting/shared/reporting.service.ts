@@ -9,19 +9,19 @@ export class ReportingService {
 
     getCrashesOverTimeByYear(): Observable<ReportOverTime> {
         return this.http
-            .get('api/crash/report/year')
+            .get('api/report/crash/year')
             .map(response => response.json() as ReportOverTime);
     }
 
     getCrashesOverTimeByMonth(): Observable<ReportOverTime> {
         return this.http
-            .get('api/crash/report/2017/month')
+            .get('api/report/crash/2017/month')
             .map(response => response.json() as ReportOverTime);
     }
 
     getCrashesOverTimeByDay(): Observable<ReportOverTime> {
         return this.http
-            .get('api/crash/report/2017/day')
+            .get('api/report/crash/2017/day')
             .map(response => response.json() as ReportOverTime);
     }
 }
