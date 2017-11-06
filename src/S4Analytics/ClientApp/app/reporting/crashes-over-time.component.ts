@@ -131,6 +131,28 @@ export class CrashesOverTimeComponent implements OnInit {
             }
         };
         this.reporting.getCrashesOverTimeByDay().subscribe(report => {
+            // calculate a 2016 moving average series
+            let d = report.series[0].data;
+            let period = 14;
+            let movingAverageSeries = d.map((val, i) => {
+                if (i >= period - 1) {
+                    let sum = 0;
+                    for (let j = 0; j < period; j++) {
+                        sum += d[i + j];
+                    }
+                    let avg = sum / period;
+                    return avg;
+                }
+                else {
+                    return null;
+                }
+            });
+            report.series.push({ name: '2016 Moving Average', data: movingAverageSeries } as any);
+
+            // shift 2017 to align by day of week
+            report.series[1].data = [null, null, ...report.series[1].data] as number[];
+
+            // configure and create chart
             options = {
                 ...options,
                 series: report.series
