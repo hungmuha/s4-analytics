@@ -10,13 +10,11 @@ namespace S4Analytics.Models
     public class ReportRepository
     {
         private readonly string _connStr;
-        private readonly string _warehouseSchema;
 
         public ReportRepository(
             IOptions<ServerOptions> serverOptions)
         {
-            _connStr = serverOptions.Value.WarehouseConnStr;
-            _warehouseSchema = serverOptions.Value.OracleSchemas.Warehouse;
+            _connStr = serverOptions.Value.FlatConnStr;
         }
 
         public ReportOverTime<int> GetCrashCountsByYear()

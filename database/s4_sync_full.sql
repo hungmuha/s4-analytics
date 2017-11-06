@@ -1,0 +1,12 @@
+CALL s4_sync_crash_evt();
+CALL s4_sync_driver();
+CALL s4_sync_non_motorist();
+CALL s4_sync_pass();
+CALL s4_sync_veh();
+CALL s4_sync_violation();
+CALL s4_sync_citation();
+CALL s4_sync_ref_tables();
+CALL s4_sync_st();
+CALL s4_sync_zlevel();
+CALL s4_sync_intrsect();
+CALL s4_sync_intrsect_node();

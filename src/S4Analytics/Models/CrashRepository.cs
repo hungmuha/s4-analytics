@@ -13,8 +13,6 @@ namespace S4Analytics.Models
     public class CrashRepository
     {
         private readonly string _connStr;
-        private readonly string _warehouseSchema;
-        private readonly string _spatialSchema;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IList<string> _PSEUDO_EMPTY_STRING_LIST = new List<string>() { "" };
         private readonly IList<int> _PSEUDO_EMPTY_INT_LIST = new List<int>() { -1 };
@@ -23,9 +21,7 @@ namespace S4Analytics.Models
             IOptions<ServerOptions> serverOptions,
             IHttpContextAccessor httpContextAccessor)
         {
-            _connStr = serverOptions.Value.WarehouseConnStr;
-            _warehouseSchema = serverOptions.Value.OracleSchemas.Warehouse;
-            _spatialSchema = serverOptions.Value.OracleSchemas.Spatial;
+            _connStr = serverOptions.Value.FlatConnStr;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -79,102 +75,69 @@ namespace S4Analytics.Models
             var queryText = $@"SELECT *
             FROM (
                 SELECT
-                fact_crash_evt.hsmv_rpt_nbr AS id,
-                fact_crash_evt.key_crash_dt AS crashDate,
-                fact_crash_evt.crash_tm AS crashTime,
-                fact_crash_evt.hsmv_rpt_nbr AS hsmvReportNumber,
-                fact_crash_evt.hsmv_rpt_nbr AS hsmvReportNumberDsp,
-                fact_crash_evt.agncy_rpt_nbr AS agencyReportNumber,
-                fact_crash_evt.agncy_rpt_nbr AS agencyReportNumberDsp,
-                geocode_result.shape_merc.sdo_point.x AS mapPointX,
-                geocode_result.shape_merc.sdo_point.y AS mapPointY,
-                geocode_result.center_line_x AS centerLineX,
-                geocode_result.center_line_y AS centerLineY,
-                geocode_result.sym_angle AS symbolAngle,
-                geocode_result.crash_seg_id AS crashSegId,
-                geocode_result.nearest_intrsect_id AS nearestIntrsectId,
-                geocode_result.nearest_intrsect_offset_ft AS nearestIntrsectOffsetFt,
-                geocode_result.ref_intrsect_id AS refIntrsectId,
-                geocode_result.ref_intrsect_offset_ft AS refIntrsectOffsetFt,
-                geocode_result.nearest_intrsect_offset_dir AS nearIntrsectOffsetDir,
-                geocode_result.ref_intrsect_offset_dir AS refIntrsectOffsetDir,
-                fact_crash_evt.img_ext_tx AS imgExtTx,
-                decode(fact_crash_evt.form_type_cd, 'L', 'Long', 'S', 'Short', '') AS formType,
-                fact_crash_evt.key_crash_sev AS keyCrashSev,
-                fact_crash_evt.key_crash_sev_dtl AS keyCrashSevDtl,
-                fact_crash_evt.key_crash_type AS keyCrashType,
-                v_crash_sev.crash_attr_tx AS crashSeverity,
-                CASE v_crash_sev_dtl.crash_attr_tx WHEN 'No Injuries Coded' THEN 'No Injury' ELSE v_crash_sev_dtl.crash_attr_tx END AS crashSeverityDetailed,
-                v_crash_type_simplified.crash_attr_tx AS crashType,
-                v_crash_type.crash_attr_tx AS crashTypeDetail,
-                v_crash_light_cond.crash_attr_tx AS lightCond,
-                v_crash_weather_cond.crash_attr_tx AS weatherCond,
-                dim_geography.cnty_nm AS county,
-                dim_geography.city_nm AS city,
-                geocode_result.st_nm AS streetName,
-                geocode_result.intrsect_st_nm AS intersectingStreet,
-                fact_crash_evt.is_alc_rel AS isAlcoholRelated,
-                fact_crash_evt.is_distracted AS isDistracted,
-                fact_crash_evt.is_drug_rel AS isDrugRelated,
-                fact_crash_evt.lat AS lat,
-                fact_crash_evt.lng AS lng,
-                fact_crash_evt.offset_dir AS offsetDir,
-                fact_crash_evt.offset_ft AS offsetFt,
-                fact_crash_evt.veh_cnt AS vehicleCount,
-                fact_crash_evt.nm_cnt AS nonmotoristCount,
-                fact_crash_evt.fatality_cnt AS fatalityCount,
-                fact_crash_evt.inj_cnt AS injuryCount,
-                fact_crash_evt.tot_dmg_amt AS totDmgAmt,
-                dim_agncy.agncy_short_nm AS agncyNm,
-                dim_agncy.ID AS agncyId,
-                geocode_result.cnty_cd AS cntyCd,
-                geocode_result.city_cd AS cityCd,
-                fact_crash_evt.crash_type_dir_tx AS crashTypeDir,
-                v_crash_road_surf_cond.crash_attr_tx AS crashRoadSurfCond,
-                dim_harmful_evt.harmful_evt_tx AS firstHarmfulEvent,
-                CASE
-                  WHEN v_bike_ped_crash_type.bike_or_ped IS NOT NULL THEN v_bike_ped_crash_type.bike_or_ped
-                  WHEN (fact_crash_evt.ped_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedestrian') AND (fact_crash_evt.bike_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedalcycle') THEN '?'
-                  WHEN fact_crash_evt.ped_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedestrian' THEN 'P'
-                  WHEN fact_crash_evt.bike_cnt > 0 OR dim_harmful_evt.harmful_evt_tx = 'Pedalcycle' THEN 'B'
-                END AS bikeOrPed,
-                v_bike_ped_crash_type.crash_type_nm AS bikePedCrashTypeName,
-                fact_crash_evt.bike_cnt AS bikeCount,
-                fact_crash_evt.ped_cnt AS pedCount,
-                fact_crash_evt.inj_none_cnt as injuryNoneCount,
-                fact_crash_evt.inj_possible_cnt AS injuryPossibleCount,
-                fact_crash_evt.inj_non_incapacitating_cnt AS injuryNonIncapacitatingCount,
-                fact_crash_evt.inj_incapacitating_cnt AS injuryIncapacitatingCount,
-                fact_crash_evt.inj_fatal_30_cnt as injuryFatal30Count,
-                fact_crash_evt.inj_fatal_non_traffic_cnt AS injuryFatalNonTrafficCount,
+                id,
+                key_crash_dt AS crashDate,
+                crash_tm AS crashTime,
+                hsmv_rpt_nbr_trunc AS hsmvReportNumber,
+                agncy_rpt_nbr_trunc AS agencyReportNumber,
+                ce1.geocode_pt_3857.sdo_point.x AS mapPointX,
+                ce1.geocode_pt_3857.sdo_point.y AS mapPointY,
+                sym_angle AS symbolAngle,
+                crash_seg_id AS crashSegId,
+                nearest_intrsect_id AS nearestIntrsectId,
+                nearest_intrsect_offset_ft AS nearestIntrsectOffsetFt,
+                ref_intrsect_id AS refIntrsectId,
+                ref_intrsect_offset_ft AS refIntrsectOffsetFt,
+                nearest_intrsect_offset_dir AS nearIntrsectOffsetDir,
+                ref_intrsect_offset_dir AS refIntrsectOffsetDir,
+                img_file_nm AS imgFileNm,
+                form_type_tx AS formType,
+                key_crash_sev AS keyCrashSev,
+                key_crash_sev_dtl AS keyCrashSevDtl,
+                key_crash_type AS keyCrashType,
+                crash_sev AS crashSeverity,
+                crash_sev_dtl AS crashSeverityDetailed,
+                crash_type_simplified AS crashType,
+                crash_type AS crashTypeDetail,
+                light_cond AS lightCond,
+                weather_cond AS weatherCond,
+                cnty_nm AS county,
+                city_nm AS city,
+                gc_st_nm AS streetName,
+                gc_intrsect_st_nm AS intersectingStreet,
+                is_alc_rel AS isAlcoholRelated,
+                is_distracted AS isDistracted,
+                is_drug_rel AS isDrugRelated,
+                ce1.gps_pt_4326.sdo_point.x AS lng,
+                ce1.gps_pt_4326.sdo_point.y AS lat,
+                offset_dir AS offsetDir,
+                offset_ft AS offsetFt,
+                veh_cnt AS vehicleCount,
+                nm_cnt AS nonmotoristCount,
+                fatality_cnt AS fatalityCount,
+                inj_cnt AS injuryCount,
+                tot_dmg_amt AS totDmgAmt,
+                rptg_agncy_short_nm AS agncyNm,
+                key_rptg_agncy AS agncyId,
+                gc_cnty_cd AS cntyCd,
+                gc_city_cd AS cityCd,
+                crash_type_dir_tx AS crashTypeDir,
+                rd_surf_cond AS crashRoadSurfCond,
+                first_he AS firstHarmfulEvent,
+                bike_or_ped AS bikeOrPed,
+                bike_ped_crash_type_nm AS bikePedCrashTypeName,
+                bike_cnt AS bikeCount,
+                ped_cnt AS pedCount,
+                inj_none_cnt as injuryNoneCount,
+                inj_possible_cnt AS injuryPossibleCount,
+                inj_non_incapacitating_cnt AS injuryNonIncapacitatingCount,
+                inj_incapacitating_cnt AS injuryIncapacitatingCount,
+                inj_fatal_30_cnt as injuryFatal30Count,
+                inj_fatal_non_traffic_cnt AS injuryFatalNonTrafficCount,
                 ROWNUM AS rnum
-                FROM {_warehouseSchema}.fact_crash_evt
-                INNER JOIN ({preparedQuery.queryText}) prepared_query
-                  ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                INNER JOIN {_spatialSchema}.geocode_result geocode_result
-                  ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                LEFT JOIN {_warehouseSchema}.dim_agncy
-                  ON fact_crash_evt.key_rptg_agncy = dim_agncy.ID
-                LEFT JOIN {_warehouseSchema}.dim_geography
-                  ON fact_crash_evt.key_geography = dim_geography.ID
-                LEFT JOIN {_warehouseSchema}.v_crash_sev
-                  ON fact_crash_evt.key_crash_sev = v_crash_sev.ID
-                LEFT JOIN {_warehouseSchema}.v_crash_sev_dtl
-                  ON fact_crash_evt.key_crash_sev_dtl = v_crash_sev_dtl.ID
-                LEFT JOIN {_warehouseSchema}.v_crash_weather_cond
-                  ON fact_crash_evt.key_weather_cond = v_crash_weather_cond.ID
-                LEFT JOIN {_warehouseSchema}.v_crash_light_cond
-                  ON fact_crash_evt.key_light_cond = v_crash_light_cond.ID
-                LEFT JOIN {_warehouseSchema}.v_crash_type_simplified
-                  ON fact_crash_evt.key_crash_type = v_crash_type_simplified.ID
-                LEFT JOIN {_warehouseSchema}.v_crash_type
-                  ON fact_crash_evt.key_crash_type = v_crash_type.ID
-                LEFT JOIN {_warehouseSchema}.v_crash_road_surf_cond
-                  ON fact_crash_evt.key_rd_surf_cond = v_crash_road_surf_cond.ID
-                LEFT JOIN {_warehouseSchema}.dim_harmful_evt
-                  ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID
-                LEFT JOIN {_warehouseSchema}.v_bike_ped_crash_type
-                  ON fact_crash_evt.key_bike_ped_crash_type = v_bike_ped_crash_type.crash_type_id
+                FROM crash_evt ce1
+                INNER JOIN ({preparedQuery.queryText}) pq
+                  ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
                 WHERE ROWNUM <= :toIndex + 1
             )
             WHERE rnum >= :fromIndex + 1";
@@ -200,13 +163,11 @@ namespace S4Analytics.Models
             var queryText = $@"SELECT attribute, COUNT(*) AS count
                 FROM (
                   SELECT
-                  CASE v_crash_sev_dtl.ID WHEN 220 THEN 221 ELSE v_crash_sev_dtl.ID END AS sort_order,
-                  CASE v_crash_sev_dtl.crash_attr_tx WHEN 'No Injuries Coded' THEN 'No Injury' ELSE v_crash_sev_dtl.crash_attr_tx END AS attribute
-                  FROM {_warehouseSchema}.fact_crash_evt
-                  INNER JOIN ({preparedQuery.queryText}) prepared_query
-                    ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                  LEFT JOIN {_warehouseSchema}.v_crash_sev_dtl
-                    ON fact_crash_evt.key_crash_sev_dtl = v_crash_sev_dtl.ID
+                    key_crash_sev_dtl AS sort_order,
+                    crash_sev_dtl AS attribute
+                  FROM crash_evt ce1
+                  INNER JOIN ({preparedQuery.queryText}) pq
+                    ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
                 )
                 GROUP BY attribute, sort_order
                 ORDER BY sort_order";
@@ -234,13 +195,19 @@ namespace S4Analytics.Models
             });
 
             var countQueryText = $@"SELECT COUNT(*)
-                FROM {_warehouseSchema}.fact_crash_evt
-                INNER JOIN ({preparedQuery.queryText}) prepared_query
-                  ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                INNER JOIN {_spatialSchema}.geocode_result geocode_result
-                  ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                WHERE geocode_result.shape_merc.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                  AND geocode_result.shape_merc.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                FROM crash_evt ce1
+                INNER JOIN ({preparedQuery.queryText}) pq
+                  ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
+                WHERE sdo_inside(ce1.geocode_pt_3857, MDSYS.SDO_GEOMETRY(
+                    2003,  -- 2-dimensional polygon
+                    3857,  -- SRID
+                    NULL,
+                    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3), -- one rectangle (1003 = exterior)
+                    MDSYS.SDO_ORDINATE_ARRAY(
+                        :mapExtentMinX, :mapExtentMinY, -- bottom left corner
+                        :mapExtentMaxX, :mapExtentMaxY -- top right corner
+                    )
+                  )) = 'TRUE'";
 
             int eventCount;
 
@@ -256,36 +223,48 @@ namespace S4Analytics.Models
                 var samplePercentage = 100.0 * maxPoints / eventCount;
                 queryText = $@"WITH sample_evts AS (
                   SELECT hsmv_rpt_nbr
-                  FROM {_warehouseSchema}.fact_crash_evt
+                  FROM crash_evt
                   SAMPLE({samplePercentage})
                 )
                 SELECT
                   NULL AS eventId, -- do not retrieve ids for sample
-                  geocode_result.shape_merc.sdo_point.x AS x,
-                  geocode_result.shape_merc.sdo_point.y AS y
-                FROM {_warehouseSchema}.fact_crash_evt
+                  ce1.geocode_pt_3857.sdo_point.x AS x,
+                  ce1.geocode_pt_3857.sdo_point.y AS y
+                FROM crash_evt ce1
                 INNER JOIN sample_evts
-                  ON sample_evts.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                INNER JOIN ({preparedQuery.queryText}) prepared_query
-                    ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                INNER JOIN {_spatialSchema}.geocode_result geocode_result
-                    ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                WHERE geocode_result.shape_merc.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                AND geocode_result.shape_merc.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                  ON sample_evts.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
+                INNER JOIN ({preparedQuery.queryText}) pq
+                    ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
+                WHERE sdo_inside(ce1.geocode_pt_3857, MDSYS.SDO_GEOMETRY(
+                    2003,  -- 2-dimensional polygon
+                    3857,  -- SRID
+                    NULL,
+                    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3), -- one rectangle (1003 = exterior)
+                    MDSYS.SDO_ORDINATE_ARRAY(
+                        :mapExtentMinX, :mapExtentMinY, -- bottom left corner
+                        :mapExtentMaxX, :mapExtentMaxY -- top right corner
+                    )
+                  )) = 'TRUE'";
             }
             else
             {
                 queryText = $@"SELECT
-                  fact_crash_evt.hsmv_rpt_nbr AS eventId,
-                  geocode_result.shape_merc.sdo_point.x AS x,
-                  geocode_result.shape_merc.sdo_point.y AS y
-                FROM {_warehouseSchema}.fact_crash_evt
-                INNER JOIN ({preparedQuery.queryText}) prepared_query
-                    ON prepared_query.hsmv_rpt_nbr = fact_crash_evt.hsmv_rpt_nbr
-                INNER JOIN {_spatialSchema}.geocode_result geocode_result
-                    ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                WHERE geocode_result.shape_merc.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                AND geocode_result.shape_merc.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+                  id AS eventId,
+                  ce1.geocode_pt_3857.sdo_point.x AS x,
+                  ce1.geocode_pt_3857.sdo_point.y AS y
+                FROM crash_evt ce1
+                INNER JOIN ({preparedQuery.queryText}) pq
+                    ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
+                WHERE sdo_inside(ce1.geocode_pt_3857, MDSYS.SDO_GEOMETRY(
+                    2003,  -- 2-dimensional polygon
+                    3857,  -- SRID
+                    NULL,
+                    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3), -- one rectangle (1003 = exterior)
+                    MDSYS.SDO_ORDINATE_ARRAY(
+                        :mapExtentMinX, :mapExtentMinY, -- bottom left corner
+                        :mapExtentMaxX, :mapExtentMaxY -- top right corner
+                    )
+                  )) = 'TRUE'";
             }
 
             List<EventPoint> eventPoints;
@@ -314,12 +293,8 @@ namespace S4Analytics.Models
         private PreparedQuery PrepareCrashQuery(CrashQuery query)
         {
             var queryText = $@"SELECT /*+ RESULT_CACHE */
-                  fact_crash_evt.hsmv_rpt_nbr
-                FROM {_warehouseSchema}.fact_crash_evt
-                INNER JOIN {_spatialSchema}.geocode_result geocode_result
-                  ON fact_crash_evt.hsmv_rpt_nbr = geocode_result.hsmv_rpt_nbr
-                LEFT JOIN {_warehouseSchema}.dim_harmful_evt
-                  ON fact_crash_evt.key_1st_he = dim_harmful_evt.ID";
+                  hsmv_rpt_nbr
+                FROM crash_evt ce0";
 
             // initialize where clause and query parameter collections
             var whereClauses = new List<string>();
@@ -400,7 +375,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "FACT_CRASH_EVT.KEY_CRASH_DT BETWEEN :startDate AND :endDate";
+            var whereClause = "key_crash_dt BETWEEN :startDate AND :endDate";
 
             // define oracle parameters
             var parameters = new {
@@ -422,7 +397,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "TO_CHAR(FACT_CRASH_EVT.KEY_CRASH_DT, 'D') IN :dayOfWeek";
+            var whereClause = "crash_d IN :dayOfWeek";
 
             // define oracle parameters
             var parameters = new { dayOfWeek };
@@ -440,13 +415,10 @@ namespace S4Analytics.Models
             // define where clause
             var whereClause = @"(
                 :startTime <= :endTime -- same day
-                AND CAST(TO_CHAR(CRASH_TM, 'HH24MI') AS INTEGER) BETWEEN :startTime AND :endTime
+                AND crash_hh24mi BETWEEN :startTime AND :endTime
             ) OR (
                 :startTime > :endTime -- crosses midnight boundary
-                AND (
-                  CAST(TO_CHAR(CRASH_TM, 'HH24MI') AS INTEGER) >= :startTime
-                  OR CAST(TO_CHAR(CRASH_TM, 'HH24MI') AS INTEGER) <= :endTime
-                )
+                AND ( crash_hh24mi >= :startTime OR crash_hh24mi <= :endTime )
             )";
 
             // define oracle parameters
@@ -486,8 +458,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY / 100) IN :dotDistrictCountyCodes
-                OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY / 100) IN :dotDistrictCountyCodes";
+            var whereClause = @"cnty_cd IN :dotDistrictCountyCodes
+                OR gc_cnty_cd IN :dotDistrictCountyCodes";
 
             // define oracle parameters
             var parameters = new { dotDistrictCountyCodes };
@@ -552,12 +524,12 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes
-                OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY / 100) IN :mpoCountyCodes
+            var whereClause = @"cnty_cd IN :mpoCountyCodes
+                OR gc_cnty_cd IN :mpoCountyCodes
                 OR EXISTS (
-                    SELECT NULL FROM {_spatialSchema}.ST_EXT
-                    WHERE LINK_ID = GEOCODE_RESULT.CRASH_SEG_ID
-                    AND MPO_BND_ID IN :partialCountyMpoIds
+                    SELECT NULL FROM st
+                    WHERE st.link_id = ce0.crash_seg_id
+                    AND st.mpo_bnd_id IN :partialCountyMpoIds
                 )";
 
             // define oracle parameters
@@ -571,7 +543,7 @@ namespace S4Analytics.Models
 
         private (string whereClause, object parameters) GenerateCountyPredicate(IList<int> county)
         {
-            // TODO: join to dim_geography rather than divide by 100 in where clause
+            // TODO: redesign inputs to make "unincorporated" option explicit
 
             // test for valid filter
             if (county == null || county.Count == 0)
@@ -586,10 +558,10 @@ namespace S4Analytics.Models
             var unincorporatedCountyCodes = county.Where(countyCode => countyCode >= 100).ToList();
 
             // define where clause
-            var whereClause = @"FLOOR(FACT_CRASH_EVT.KEY_GEOGRAPHY/100) IN :fullCountyCodes
-                OR FLOOR(GEOCODE_RESULT.KEY_GEOGRAPHY/100) IN :fullCountyCodes
-                OR FACT_CRASH_EVT.KEY_GEOGRAPHY IN :unincorporatedCountyCodes
-                OR GEOCODE_RESULT.KEY_GEOGRAPHY IN :unincorporatedCountyCodes";
+            var whereClause = @"cnty_cd IN :fullCountyCodes
+                OR gc_cnty_cd IN :fullCountyCodes
+                OR key_geography IN :unincorporatedCountyCodes
+                OR gc_key_geography IN :unincorporatedCountyCodes";
 
             // define oracle parameters
             var parameters = new {
@@ -609,7 +581,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "FACT_CRASH_EVT.KEY_GEOGRAPHY IN :cityCodes OR GEOCODE_RESULT.KEY_GEOGRAPHY IN :cityCodes";
+            var whereClause = @"key_geography IN :cityCodes
+                OR gc_key_geography IN :cityCodes";
 
             // define oracle parameters
             var parameters = new {
@@ -627,22 +600,15 @@ namespace S4Analytics.Models
                 return (null, null);
             }
 
-            var customAreaMinX = customArea.Min(coords => coords.x);
-            var customAreaMinY = customArea.Min(coords => coords.y);
-            var customAreaMaxX = customArea.Max(coords => coords.x);
-            var customAreaMaxY = customArea.Max(coords => coords.y);
             var coordsAsText = customArea.Select(coords => $"{coords.x} {coords.y}");
             var customAreaPolygon = $"POLYGON (({string.Join(", ", coordsAsText)}))";
 
             // define where clause
-            var whereClause = @"geocode_result.shape_merc.sdo_point.x BETWEEN :customAreaMinX AND :customAreaMaxX
-                geocode_result.shape_merc.sdo_point.y BETWEEN :customAreaMinY AND :customAreaMaxY
-                AND sdo_relate(geocode_result.shape_merc, sdo_geometry(:customAreaPolygon, :customAreaSrid)) = 'TRUE'";
+            var whereClause = @"sdo_inside(ce0.geocode_pt_3857, sdo_geometry(:customAreaPolygon, 3857)) = 'TRUE'";
 
             // define oracle parameters
             var parameters = new {
-                customAreaMinX, customAreaMinY, customAreaMaxX, customAreaMaxY,
-                customAreaPolygon, customAreaSrid = 3087 // TODO: parameterize srid
+                customAreaPolygon
             };
 
             return (whereClause, parameters);
@@ -657,8 +623,16 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"geocode_result.shape_merc.sdo_point.x BETWEEN :customExtentMinX AND :customExtentMaxX
-                AND geocode_result.shape_merc.sdo_point.y BETWEEN :customExtentMinY AND :customExtentMaxY";
+            var whereClause = @"sdo_inside(ce0.geocode_pt_3857, MDSYS.SDO_GEOMETRY(
+                    2003,  -- 2-dimensional polygon
+                    3857,  -- SRID
+                    NULL,
+                    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3), -- one rectangle (1003 = exterior)
+                    MDSYS.SDO_ORDINATE_ARRAY(
+                        :customExtentMinX, :customExtentMinY, -- bottom left corner
+                        :customExtentMaxX, :customExtentMaxY -- top right corner
+                    )
+                  )) = 'TRUE'";
 
             // define oracle parameters
             var parameters = new {
@@ -680,13 +654,9 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"EXISTS (
-                SELECT NULL FROM {_spatialSchema}.GEOCODE_RESULT
-                WHERE GEOCODE_RESULT.HSMV_RPT_NBR = FACT_CRASH_EVT.HSMV_RPT_NBR
-                AND GEOCODE_RESULT.NEAREST_INTRSECT_ID = :intersectionId
-                AND GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= :intersectionOffsetFeet
-            )
-            AND (:matchAnyIntersectionOffsetDir = 1 OR FACT_CRASH_EVT.OFFSET_DIR IN :intersectionOffsetDirs)";
+            var whereClause = @"NEAREST_INTRSECT_ID = :intersectionId
+                AND NEAREST_INTRSECT_OFFSET_FT <= :intersectionOffsetFeet
+                AND (:matchAnyIntersectionOffsetDir = 1 OR OFFSET_DIR IN :intersectionOffsetDirs)";
 
             // define oracle parameters
             var anyOffsetDir = intersection.offsetDirection == null || intersection.offsetDirection.Count == 0;
@@ -711,20 +681,20 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"GEOCODE_RESULT.CRASH_SEG_ID IN :streetLinkIds
+            var whereClause = @"CRASH_SEG_ID IN :streetLinkIds
                 OR (
                   :matchCrossStreets = 1
-                  AND GEOCODE_RESULT.NEAREST_INTRSECT_OFFSET_FT <= 100
-                  AND GEOCODE_RESULT.NEAREST_INTRSECT_ID IN (
-                    SELECT DISTINCT INTRSECT_NODE.INTERSECTION_ID
-                    FROM {_spatialSchema}.INTRSECT_NODE
-                    WHERE INTRSECT_NODE.NODE_ID IN (
+                  AND NEAREST_INTRSECT_OFFSET_FT <= 100
+                  AND NEAREST_INTRSECT_ID IN (
+                    SELECT DISTINCT INTERSECTION_ID
+                    FROM INTRSECT_NODE
+                    WHERE NODE_ID IN (
                         SELECT ST.REF_IN_ID
-                        FROM {_spatialSchema}.ST
+                        FROM ST
                         WHERE ST.LINK_ID IN :streetLinkIds
                         UNION
                         SELECT ST.NREF_IN_ID
-                        FROM {_spatialSchema}.ST
+                        FROM ST
                         WHERE ST.LINK_ID IN :streetLinkIds
                     )
                   )
@@ -748,7 +718,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "GEOCODE_RESULT.CRASH_SEG_ID IN :customNetworkLinkIds";
+            var whereClause = "CRASH_SEG_ID IN :customNetworkLinkIds";
 
             // define oracle parameters
             var parameters = new {
@@ -767,7 +737,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "FACT_CRASH_EVT.KEY_RD_SYS_ID IN (140,141,142,143,144,145)";
+            var whereClause = "is_public_rd = 'Y'";
 
             return (whereClause, null);
         }
@@ -781,7 +751,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "FACT_CRASH_EVT.FORM_TYPE_CD IN :formType";
+            var whereClause = "FORM_TYPE_CD IN :formType";
 
             // define oracle parameters
             var parameters = new { formType };
@@ -798,7 +768,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "FACT_CRASH_EVT.CODEABLE = 'T'";
+            var whereClause = "CODEABLE = 'Y'";
 
             return (whereClause, null);
         }
@@ -838,8 +808,8 @@ namespace S4Analytics.Models
                 .ToList();
 
             // define where clause
-            var whereClause = @"FACT_CRASH_EVT.KEY_RPTG_AGNCY IN :agencyIds
-                OR (FACT_CRASH_EVT.KEY_RPTG_AGNCY = 1 AND FACT_CRASH_EVT.KEY_RPTG_UNIT IN :fhpTroops)";
+            var whereClause = @"KEY_RPTG_AGNCY IN :agencyIds
+                OR (KEY_RPTG_AGNCY = 1 AND KEY_RPTG_UNIT IN :fhpTroops)";
 
             // define oracle parameters
             var parameters = new {
@@ -859,10 +829,10 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"EXISTS (
-                SELECT NULL FROM {_warehouseSchema}.FACT_DRIVER
-                WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
-                AND FACT_DRIVER.KEY_GENDER IN :driverGender
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM DRIVER
+                WHERE ce0.HSMV_RPT_NBR = DRIVER.HSMV_RPT_NBR
+                AND DRIVER.KEY_GENDER IN :driverGender
             )";
 
             // define oracle parameters
@@ -885,19 +855,17 @@ namespace S4Analytics.Models
             var ageRanges = driverAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
 
             // define where clause
-            var whereClause = $@"(:matchUnknownDriverAge = 1
+            var whereClause = @"(:matchUnknownDriverAge = 1
                 AND NOT EXISTS (
-                    SELECT NULL FROM {_warehouseSchema}.FACT_DRIVER
-                    WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
+                    SELECT NULL FROM DRIVER
+                    WHERE ce0.HSMV_RPT_NBR = DRIVER.HSMV_RPT_NBR
                 )
             ) OR EXISTS (
-                SELECT NULL FROM {_warehouseSchema}.FACT_DRIVER
-                LEFT OUTER JOIN {_warehouseSchema}.V_DRIVER_AGE_RNG
-                    ON FACT_DRIVER.KEY_AGE_RNG = V_DRIVER_AGE_RNG.ID
-                WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_DRIVER.HSMV_RPT_NBR
+                SELECT NULL FROM DRIVER
+                WHERE ce0.HSMV_RPT_NBR = DRIVER.HSMV_RPT_NBR
                 AND (
-                    V_DRIVER_AGE_RNG.DRIVER_ATTR_TX IN :driverAgeRanges
-                    OR (:matchUnknownDriverAge = 1 AND V_DRIVER_AGE_RNG.DRIVER_ATTR_TX IS NULL)
+                    AGE_RNG IN :driverAgeRanges
+                    OR (:matchUnknownDriverAge = 1 AND AGE_RNG IS NULL)
                 )
             )";
 
@@ -922,15 +890,13 @@ namespace S4Analytics.Models
             var ageRanges = pedestrianAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
 
             // define where clause
-            var whereClause = $@"EXISTS (
-                SELECT NULL FROM {_warehouseSchema}.FACT_NON_MOTORIST
-                LEFT OUTER JOIN {_warehouseSchema}.V_NM_AGE_RNG
-                    ON FACT_NON_MOTORIST.KEY_AGE_RNG = V_NM_AGE_RNG.ID
-                WHERE FACT_NON_MOTORIST.KEY_DESC IN (230, 231)
-                AND FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_NON_MOTORIST.HSMV_RPT_NBR
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM NON_MOTORIST
+                WHERE NON_MOTORIST.KEY_DESC IN (230, 231)
+                AND ce0.HSMV_RPT_NBR = NON_MOTORIST.HSMV_RPT_NBR
                 AND (
-                    V_NM_AGE_RNG.NM_ATTR_TX IN :pedestrianAgeRanges
-                    OR (:matchUnknownPedestrianAge = 1 AND V_NM_AGE_RNG.NM_ATTR_TX IS NULL)
+                    AGE_RNG IN :pedestrianAgeRanges
+                    OR (:matchUnknownPedestrianAge = 1 AND AGE_RNG IS NULL)
                 )
             )";
 
@@ -955,15 +921,13 @@ namespace S4Analytics.Models
             var ageRanges = cyclistAgeRange.Where(ageRange => ageRange != "Unknown").ToList();
 
             // define where clause
-            var whereClause = $@"EXISTS (
-                SELECT NULL FROM {_warehouseSchema}.FACT_NON_MOTORIST
-                LEFT OUTER JOIN {_warehouseSchema}.V_NM_AGE_RNG
-                    ON FACT_NON_MOTORIST.KEY_AGE_RNG = V_NM_AGE_RNG.ID
-                WHERE FACT_NON_MOTORIST.KEY_DESC IN (232, 233)
-                AND FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_NON_MOTORIST.HSMV_RPT_NBR
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM NON_MOTORIST
+                WHERE NON_MOTORIST.KEY_DESC IN (232, 233)
+                AND ce0.HSMV_RPT_NBR = NON_MOTORIST.HSMV_RPT_NBR
                 AND (
-                  V_NM_AGE_RNG.NM_ATTR_TX IN :cyclistAgeRanges
-                  OR (:matchUnknownCyclistAge = 1 AND V_NM_AGE_RNG.NM_ATTR_TX IS NULL)
+                  AGE_RNG IN :cyclistAgeRanges
+                  OR (:matchUnknownCyclistAge = 1 AND AGE_RNG IS NULL)
                 )
             )";
 
@@ -985,10 +949,10 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"(:matchNonAutoModePed = 1 AND FACT_CRASH_EVT.PED_CNT > 0)
-                OR (:matchNonAutoModeBike = 1 AND FACT_CRASH_EVT.BIKE_CNT > 0)
-                OR (:matchNonAutoModeMoped = 1 AND FACT_CRASH_EVT.MOPED_CNT > 0)
-                OR (:matchNonAutoModeMotorcycle = 1 AND FACT_CRASH_EVT.MOTORCYCLE_CNT > 0)";
+            var whereClause = @"(:matchNonAutoModePed = 1 AND PED_CNT > 0)
+                OR (:matchNonAutoModeBike = 1 AND BIKE_CNT > 0)
+                OR (:matchNonAutoModeMoped = 1 AND MOPED_CNT > 0)
+                OR (:matchNonAutoModeMotorcycle = 1 AND MOTORCYCLE_CNT > 0)";
 
             // define oracle parameters
             var parameters = new {
@@ -1010,9 +974,9 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"(:matchTransportEms = 1 AND FACT_CRASH_EVT.TRANS_BY_EMS_CNT > 0)
-                OR (:matchTransportLawEnforcement = 1 AND FACT_CRASH_EVT.TRANS_BY_LE_CNT > 0)
-                OR (:matchTransportOther = 1 AND FACT_CRASH_EVT.TRANS_BY_OTH_CNT > 0)";
+            var whereClause = @"(:matchTransportEms = 1 AND TRANS_BY_EMS_CNT > 0)
+                OR (:matchTransportLawEnforcement = 1 AND TRANS_BY_LE_CNT > 0)
+                OR (:matchTransportOther = 1 AND TRANS_BY_OTH_CNT > 0)";
 
             // define oracle parameters
             var parameters = new {
@@ -1033,10 +997,10 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"(:matchBehavioralAlcohol = 1 AND FACT_CRASH_EVT.IS_ALC_REL = '1')
-                OR (:matchBehavioralDrugs = 1 AND FACT_CRASH_EVT.IS_DRUG_REL = '1')
-                OR (:matchBehavioralDistraction = 1 AND FACT_CRASH_EVT.IS_DISTRACTED = '1')
-                OR (:matchBehavioralAggressive = 1 AND FACT_CRASH_EVT.IS_AGGRESSIVE = '1')";
+            var whereClause = @"(:matchBehavioralAlcohol = 1 AND IS_ALC_REL = 'Y')
+                OR (:matchBehavioralDrugs = 1 AND IS_DRUG_REL = 'Y')
+                OR (:matchBehavioralDistraction = 1 AND IS_DISTRACTED = 'Y')
+                OR (:matchBehavioralAggressive = 1 AND IS_AGGRESSIVE = 'Y')";
 
             // define oracle parameters
             var parameters = new {
@@ -1051,7 +1015,7 @@ namespace S4Analytics.Models
 
         private (string whereClause, object parameters) GenerateCommonViolationPredicate(CommonViolations commonViolations)
         {
-            // TODO: tag crashes with common violation types in oracle
+            // TODO: if this filter should remain, tag crashes with common violation types in etl
 
             // test for valid filter
             if (commonViolations == null)
@@ -1060,38 +1024,38 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"EXISTS (
-              SELECT NULL FROM {_warehouseSchema}.FACT_VIOLATION
-              WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_VIOLATION.HSMV_RPT_NBR
+            var whereClause = @"EXISTS (
+              SELECT NULL FROM VIOLATION
+              WHERE ce0.HSMV_RPT_NBR = VIOLATION.HSMV_RPT_NBR
               AND (
-                (:matchViolationSpeed = 1 AND UPPER(FACT_VIOLATION.CHARGE) LIKE '%SPEED%')
+                (:matchViolationSpeed = 1 AND UPPER(VIOLATION.CHARGE) LIKE '%SPEED%')
                 OR (
                   :matchViolationRightOfWay = 1
                   AND (
-                    UPPER(FACT_VIOLATION.CHARGE) LIKE '%FAIL% TO YIELD%'
-                    OR UPPER(FACT_VIOLATION.CHARGE) LIKE '%RIGHT OF WAY%'
+                    UPPER(VIOLATION.CHARGE) LIKE '%FAIL% TO YIELD%'
+                    OR UPPER(VIOLATION.CHARGE) LIKE '%RIGHT OF WAY%'
                   )
                 )
-                OR (:matchViolationTrafficControl = 1 AND UPPER(FACT_VIOLATION.CHARGE) LIKE '%TRAFFIC CONTROL%')
-                OR (:matchViolationCarelessDriving = 1 AND UPPER(FACT_VIOLATION.CHARGE) LIKE '%CARELESS%')
+                OR (:matchViolationTrafficControl = 1 AND UPPER(VIOLATION.CHARGE) LIKE '%TRAFFIC CONTROL%')
+                OR (:matchViolationCarelessDriving = 1 AND UPPER(VIOLATION.CHARGE) LIKE '%CARELESS%')
                 OR (
                   :matchViolationDui = 1
                   AND (
-                    REGEXP_LIKE(FACT_VIOLATION.FL_STATUTE_NBR, '^316(\.|-|\,| |)193(\.|-|\,| |\(|$)')
+                    REGEXP_LIKE(VIOLATION.FL_STATUTE_NBR, '^316(\.|-|\,| |)193(\.|-|\,| |\(|$)')
                     OR (
-                      REGEXP_LIKE(UPPER(FACT_VIOLATION.FL_STATUTE_NBR), '^(|CHAPTER )316$')
-                      AND REGEXP_LIKE(UPPER(FACT_VIOLATION.CHARGE), '^D(|\.| )U(|\.| )I')
+                      REGEXP_LIKE(UPPER(VIOLATION.FL_STATUTE_NBR), '^(|CHAPTER )316$')
+                      AND REGEXP_LIKE(UPPER(VIOLATION.CHARGE), '^D(|\.| )U(|\.| )I')
                     )
                   )
                 )
-                OR (:matchViolationRedLight = 1 AND UPPER(FACT_VIOLATION.FL_STATUTE_NBR) LIKE '316%075%1%C%')
+                OR (:matchViolationRedLight = 1 AND UPPER(VIOLATION.FL_STATUTE_NBR) LIKE '316%075%1%C%')
               )
             )
             OR (
               :matchViolationRedLight = 1
               AND EXISTS (
-                SELECT NULL FROM {_warehouseSchema}.FACT_DRIVER FD
-                WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FD.HSMV_RPT_NBR
+                SELECT NULL FROM DRIVER FD
+                WHERE ce0.HSMV_RPT_NBR = FD.HSMV_RPT_NBR
                 AND ( FD.KEY_ACTION1 = 7 OR FD.KEY_ACTION2 = 7 OR FD.KEY_ACTION3 = 7 OR FD.KEY_ACTION4 = 7 )
               )
             )";
@@ -1118,10 +1082,10 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"EXISTS (
-                SELECT NULL FROM {_warehouseSchema}.V_FACT_ALL_VEH
-                WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
-                AND V_FACT_ALL_VEH.KEY_VEH_TYPE IN :vehicleTypes
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM VEH
+                WHERE ce0.HSMV_RPT_NBR = VEH.HSMV_RPT_NBR
+                AND VEH.KEY_VEH_TYPE IN :vehicleTypes
             )";
 
             // define oracle parameters
@@ -1139,11 +1103,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"EXISTS (
-                SELECT NULL FROM {_warehouseSchema}.V_CRASH_TYPE_SIMPLIFIED
-                WHERE FACT_CRASH_EVT.KEY_CRASH_TYPE = V_CRASH_TYPE_SIMPLIFIED.ID
-                AND V_CRASH_TYPE_SIMPLIFIED.CRASH_ATTR_TX IN :crashTypeSimple
-            )";
+            var whereClause = "crash_type_simplified = :crashTypeSimple";
 
             // define oracle parameters
             var parameters = new {
@@ -1162,11 +1122,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"EXISTS (
-                SELECT NULL FROM {_warehouseSchema}.V_CRASH_TYPE
-                WHERE FACT_CRASH_EVT.KEY_CRASH_TYPE = V_CRASH_TYPE.ID
-                AND V_CRASH_TYPE.ID IN :crashTypeDetailed
-            )";
+            var whereClause = "key_crash_type = :crashTypeDetailed";
 
             // define oracle parameters
             var parameters = new { crashTypeDetailed };
@@ -1183,15 +1139,15 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"FACT_CRASH_EVT.KEY_BIKE_PED_CRASH_TYPE IN :bikePedCrashType
+            var whereClause = @"KEY_BIKE_PED_CRASH_TYPE IN :bikePedCrashType
             OR (
                 :matchBikePedUntyped = 1
                 AND (
-                    FACT_CRASH_EVT.PED_CNT > 0
-                    OR FACT_CRASH_EVT.BIKE_CNT > 0
-                    OR DIM_HARMFUL_EVT.HARMFUL_EVT_TX IN ('Pedestrian', 'Pedalcycle')
+                    PED_CNT > 0
+                    OR BIKE_CNT > 0
+                    OR FIRST_HE IN ('Pedestrian', 'Pedalcycle')
                 )
-                AND FACT_CRASH_EVT.KEY_BIKE_PED_CRASH_TYPE IS NULL
+                AND KEY_BIKE_PED_CRASH_TYPE IS NULL
             )";
 
             // define oracle parameters
@@ -1212,10 +1168,10 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"EXISTS (
-                SELECT NULL FROM {_warehouseSchema}.FACT_COMM_VEH
-                WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = FACT_COMM_VEH.HSMV_RPT_NBR
-                AND FACT_COMM_VEH.KEY_CMV_CONFIG IN :cmvConfiguration
+            var whereClause = @"EXISTS (
+                SELECT NULL FROM VEH
+                WHERE ce0.HSMV_RPT_NBR = VEH.HSMV_RPT_NBR
+                AND VEH.KEY_CMV_CONFIG IN :cmvConfiguration
             )";
 
             // define oracle parameters
@@ -1233,9 +1189,9 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_ENV1 IN :environmentalCircumstance
-                OR FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_ENV2 IN :environmentalCircumstance
-                OR FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_ENV3 IN :environmentalCircumstance";
+            var whereClause = @"KEY_CONTRIB_CIRCUM_ENV1 IN :environmentalCircumstance
+                OR KEY_CONTRIB_CIRCUM_ENV2 IN :environmentalCircumstance
+                OR KEY_CONTRIB_CIRCUM_ENV3 IN :environmentalCircumstance";
 
             // define oracle parameters
             var parameters = new { environmentalCircumstance };
@@ -1252,9 +1208,9 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_RD1 IN :roadCircumstance
-                OR FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_RD2 IN :roadCircumstance
-                OR FACT_CRASH_EVT.KEY_CONTRIB_CIRCUM_RD3 IN :roadCircumstance";
+            var whereClause = @"KEY_CONTRIB_CIRCUM_RD1 IN :roadCircumstance
+                OR KEY_CONTRIB_CIRCUM_RD2 IN :roadCircumstance
+                OR KEY_CONTRIB_CIRCUM_RD3 IN :roadCircumstance";
 
             // define oracle parameters
             var parameters = new { roadCircumstance };
@@ -1271,7 +1227,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "FACT_CRASH_EVT.KEY_1ST_HE IN :firstHarmfulEvent";
+            var whereClause = "KEY_FIRST_HE IN :firstHarmfulEvent";
 
             // define oracle parameters
             var parameters = new { firstHarmfulEvent };
@@ -1288,7 +1244,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"FACT_CRASH_EVT.KEY_LIGHT_COND IN :lightCondition";
+            var whereClause = @"KEY_LIGHT_COND IN :lightCondition";
 
             // define oracle parameters
             var parameters = new { lightCondition };
@@ -1305,7 +1261,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"FACT_CRASH_EVT.KEY_RD_SYS_ID IN :roadSystemIdentifier";
+            var whereClause = @"KEY_RD_SYS_ID IN :roadSystemIdentifier";
 
             // define oracle parameters
             var parameters = new { roadSystemIdentifier };
@@ -1322,7 +1278,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"FACT_CRASH_EVT.KEY_WEATHER_COND IN :weatherCondition";
+            var whereClause = @"KEY_WEATHER_COND IN :weatherCondition";
 
             // define oracle parameters
             var parameters = new { weatherCondition };
@@ -1332,9 +1288,7 @@ namespace S4Analytics.Models
 
         private (string whereClause, object parameters) GenerateLaneDeparturePredicate(LaneDepartures laneDepartures)
         {
-            // TODO: tag crashes with lane departure in oracle
-            // TODO: for off-road, we should join V_CRASH_TYPE and filter on V_CRASH_TYPE.CRASH_ATTR_CD = 6
-            // TODO: for collision with fixed object, we should join DIM_HARMFUL_EVT and filter on DIM_HARMFUL_EVT.HARMFUL_EVT_CD BETWEEN 19 AND 39 (except 20)
+            // TODO: if this filter should remain, tag crashes with lane departure types in etl
 
             // test for valid filter
             if (laneDepartures == null)
@@ -1343,43 +1297,43 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"(:matchLaneDepartureOffRoad = 1 AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45)
+            var whereClause = @"(:matchLaneDepartureOffRoad = 1 AND KEY_CRASH_TYPE = 45)
                 OR (
                     :matchLaneDepartureRollover = 1
-                    AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45
+                    AND KEY_CRASH_TYPE = 45
                     AND (
                         EXISTS (
-                            SELECT NULL FROM {_warehouseSchema}.V_FACT_ALL_VEH
-                            WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
+                            SELECT NULL FROM VEH
+                            WHERE ce0.HSMV_RPT_NBR = VEH.HSMV_RPT_NBR
                             AND (
-                                V_FACT_ALL_VEH.KEY_MOST_HE = 1
-                                OR V_FACT_ALL_VEH.KEY_HE1 = 1
-                                OR V_FACT_ALL_VEH.KEY_HE2 = 1
-                                OR V_FACT_ALL_VEH.KEY_HE3 = 1
-                                OR V_FACT_ALL_VEH.KEY_HE4 = 1
+                                VEH.KEY_MOST_HE = 1
+                                OR VEH.KEY_HE1 = 1
+                                OR VEH.KEY_HE2 = 1
+                                OR VEH.KEY_HE3 = 1
+                                OR VEH.KEY_HE4 = 1
                             )
                         )
                     )
                 )
                 OR (
                     :matchLaneDepartureCollision = 1
-                    AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 45
+                    AND KEY_CRASH_TYPE = 45
                     AND (
                         EXISTS (
-                            SELECT NULL FROM {_warehouseSchema}.V_FACT_ALL_VEH
-                            WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
+                            SELECT NULL FROM VEH
+                            WHERE ce0.HSMV_RPT_NBR = VEH.HSMV_RPT_NBR
                             AND (
-                                V_FACT_ALL_VEH.KEY_MOST_HE IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
-                                OR V_FACT_ALL_VEH.KEY_HE1 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
-                                OR V_FACT_ALL_VEH.KEY_HE2 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
-                                OR V_FACT_ALL_VEH.KEY_HE3 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
-                                OR V_FACT_ALL_VEH.KEY_HE4 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
+                                VEH.KEY_MOST_HE IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
+                                OR VEH.KEY_HE1 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
+                                OR VEH.KEY_HE2 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
+                                OR VEH.KEY_HE3 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
+                                OR VEH.KEY_HE4 IN (40,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60)
                             )
                         )
                     )
                 )
-                OR (:matchLaneDepartureOncoming = 1 AND FACT_CRASH_EVT.KEY_CRASH_TYPE = 41)
-                OR (:matchLaneDepartureSideswipe = 1 AND FACT_CRASH_EVT.KEY_CRASH_TYPE IN (46,55))";
+                OR (:matchLaneDepartureOncoming = 1 AND KEY_CRASH_TYPE = 41)
+                OR (:matchLaneDepartureSideswipe = 1 AND KEY_CRASH_TYPE IN (46,55))";
 
             // define oracle parameters
             var parameters = new {
@@ -1395,6 +1349,8 @@ namespace S4Analytics.Models
 
         private (string whereClause, object parameters) GenerateOtherCircumstancePredicate(OtherCircumstances otherCircumstances)
         {
+            // TODO: if this filter should remain, tag crashes with hit and run in etl
+
             // test for valid filter
             if (otherCircumstances == null)
             {
@@ -1402,24 +1358,18 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = $@"(:matchSchoolBusRelated = 1 AND FACT_CRASH_EVT.IS_SCH_BUS_REL = '1')
-                OR (
-                  :matchWithinCityLimits = 1
-                  AND (
-                    FACT_CRASH_EVT.IS_WITHIN_CITY_LIM = '1'
-                    OR MOD(GEOCODE_RESULT.KEY_GEOGRAPHY, 100) <> 0
-                  )
-                )
-                OR (:matchWithinInterchange = 1 AND FACT_CRASH_EVT.IS_1ST_HE_WITHIN_INTRCHG = '1')
-                OR (:matchWorkZoneRelated = 1 AND FACT_CRASH_EVT.IS_WORK_ZN_REL = '1')
-                OR (:matchWorkersInWorkZone = 1 AND FACT_CRASH_EVT.IS_WORKERS_IN_WORK_ZN = '1')
-                OR (:matchLawEnforcementInWorkZone = 1 AND FACT_CRASH_EVT.IS_LE_IN_WORK_ZN = '1')
+            var whereClause = @"(:matchSchoolBusRelated = 1 AND IS_SCH_BUS_REL = 'Y')
+                OR (:matchWithinCityLimits = 1 AND IS_WITHIN_CITY_LIM = 'Y')
+                OR (:matchWithinInterchange = 1 AND IS_1ST_HE_WITHIN_INTRCHG = 'Y')
+                OR (:matchWorkZoneRelated = 1 AND IS_WORK_ZN_REL = 'Y')
+                OR (:matchWorkersInWorkZone = 1 AND IS_WORKERS_IN_WORK_ZN = 'Y')
+                OR (:matchLawEnforcementInWorkZone = 1 AND IS_LE_IN_WORK_ZN = 'Y')
                 OR (
                   :matchHitAndRun = 1
                   AND EXISTS (
-                    SELECT NULL FROM {_warehouseSchema}.V_FACT_ALL_VEH
-                    WHERE FACT_CRASH_EVT.HSMV_RPT_NBR = V_FACT_ALL_VEH.HSMV_RPT_NBR
-                    AND V_FACT_ALL_VEH.IS_HIT_AND_RUN = '1'
+                    SELECT NULL FROM VEH
+                    WHERE ce0.HSMV_RPT_NBR = VEH.HSMV_RPT_NBR
+                    AND VEH.IS_HIT_AND_RUN = 'Y'
                   )
                 )";
 

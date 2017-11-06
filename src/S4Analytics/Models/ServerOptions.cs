@@ -6,9 +6,9 @@ namespace S4Analytics.Models
     {
         public OracleSchemaNames OracleSchemas { get; set; }
         public Dictionary<string, string> ConnectionStrings { get; set; }
-        public string MembershipConnStr { get { return ConnectionStrings[OracleSchemas.Membership]; } }
-        public string WarehouseConnStr { get { return ConnectionStrings[OracleSchemas.Warehouse]; } }
+        public string FlatConnStr { get { return ConnectionStrings[OracleSchemas.Flat]; } }
         public string IdentityConnStr { get { return ConnectionStrings[OracleSchemas.Identity]; } }
+        public string MembershipConnStr { get { return ConnectionStrings[OracleSchemas.Membership]; } }
         public Dictionary<string, CoordinateSystem_Server> CoordinateSystems { get; set; }
         public EmailOptions EmailOptions { get; set;}
         public ContractShareOptions ContractShare { get; set; }
@@ -19,10 +19,9 @@ namespace S4Analytics.Models
 
     public class OracleSchemaNames
     {
-        public string Membership { get; set; }
-        public string Warehouse { get; set; }
+        public string Flat { get; set; }
         public string Identity { get; set; }
-        public string Spatial { get; set; }
+        public string Membership { get; set; }
     }
 
     public class ContractShareOptions
