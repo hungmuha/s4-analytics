@@ -21,7 +21,7 @@ namespace S4Analytics.Models
             IOptions<ServerOptions> serverOptions,
             IHttpContextAccessor httpContextAccessor)
         {
-            _connStr = serverOptions.Value.WarehouseConnStr;
+            _connStr = serverOptions.Value.FlatConnStr;
             _httpContextAccessor = httpContextAccessor;
         }
 
