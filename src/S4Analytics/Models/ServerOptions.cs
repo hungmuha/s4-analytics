@@ -14,6 +14,7 @@ namespace S4Analytics.Models
         public ContractShareOptions ContractShare { get; set; }
         public string MembershipApplicationName { get; set; }
         public string NewUserDocumentsUrl { get; set; }
+        public string WebinarUrl { get; set; }
     }
 
     public class OracleSchemaNames

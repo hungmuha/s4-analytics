@@ -25,6 +25,7 @@ namespace S4Analytics.Models
         private string _supportEmail;
         private UserManager<S4IdentityUser<S4UserProfile>> _userManager;
         private string _newUserDocumentsUrl;
+        private string _webinarUrl;
 
         public NewUserRequestRepository(
             IOptions<ServerOptions> serverOptions,
@@ -48,6 +49,7 @@ namespace S4Analytics.Models
             _globalAdminEmail = serverOptions.Value.EmailOptions.GlobalAdminEmail;
             _supportEmail = serverOptions.Value.EmailOptions.SupportEmail;
             _newUserDocumentsUrl = serverOptions.Value.NewUserDocumentsUrl;
+            _webinarUrl = serverOptions.Value.WebinarUrl;
         }
 
         /// <summary>
@@ -175,7 +177,7 @@ namespace S4Analytics.Models
             var body = $@"<div>Dear {request.RequestorFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been created. 
                         You can access the system at <a href=""http://s4.geoplan.ufl.edu/"">http://s4.geoplan.ufl.edu.</a>
-                        <br><br>To login click on the Login link at the upper right of the screen
+                        <br><br>To login, click on the Login link at the upper right of the screen
                         and enter the information below: <br><br>
                         username = {userName} <br>
                         password = {passwordText} <br><br>
@@ -185,8 +187,9 @@ namespace S4Analytics.Models
                         <br><br>Below are some links to some resources that should help familiarize you
                         with the system. <br><br>
                         <a href =""{_newUserDocumentsUrl}/S4_Analytics_FAQ.PDF"">S4 Analytics FAQ</a><br>
-                        <a href=""{_newUserDocumentsUrl}/S4_Analytics_Slides_&_Recordings_10-6-2015.pdf"">S4 Analytics Webinar</a>
-                        <br><br>Please let me know if you need further assistance.<br><br></div>";
+                        <a href=""{_newUserDocumentsUrl}/S4_Analytics_Slides_&_Recordings_10-6-2015.pdf"">S4 Analytics Training Slides</a><br>
+                        <a href=""{_webinarUrl}"">S4 Analytics Training Webinar Recording</a>
+                        <br><br>Please let us know if you need further assistance.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
@@ -245,7 +248,7 @@ namespace S4Analytics.Models
             var body = $@"<div>Dear {request.RequestorFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been created. 
                         You can access the system at <a href=""http://s4.geoplan.ufl.edu/"">http://s4.geoplan.ufl.edu.</a>
-                        <br><br>To login click on the Login link at the upper right of the screen
+                        <br><br>To login, click on the Login link at the upper right of the screen
                         and enter the information below: <br><br>
                         username = {userName} <br>
                         password = {passwordText} <br><br>
@@ -256,8 +259,9 @@ namespace S4Analytics.Models
                         <br><br>Below are some links to some resources that should help familiarize you
                         with the system. <br><br>
                         <a href =""{_newUserDocumentsUrl}/S4_Analytics_FAQ.PDF"">S4 Analytics FAQ</a><br>
-                        <a href=""{_newUserDocumentsUrl}/S4_Analytics_Slides_&_Recordings_10-6-2015.pdf"">S4 Analytics Webinar</a>
-                        <br><br>Please let me know if you need further assistance.<br><br></div>";
+                        <a href=""{_newUserDocumentsUrl}/S4_Analytics_Slides_&_Recordings_10-6-2015.pdf"">S4 Analytics Training Slides</a><br>
+                        <a href=""{_webinarUrl}"">S4 Analytics Training Webinar Recording</a>
+                        <br><br>Please let us know if you need further assistance.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
