@@ -1037,6 +1037,8 @@ CREATE TABLE dim_date (
     evt_dd    NUMBER(*,0),
     evt_day   VARCHAR2(9),
     evt_d     NUMBER(1,0),
+    prev_yr_dt_align_day_of_wk  DATE,
+    prev_yr_dt_align_day_of_mo  DATE,
     PRIMARY KEY ( evt_dt )
         USING INDEX enable
 );
