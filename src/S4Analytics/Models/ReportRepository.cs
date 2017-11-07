@@ -10,6 +10,7 @@ namespace S4Analytics.Models
 {
     public class ReportRepository
     {
+        private const int MIN_DAYS_BACK = 15;
         private readonly string _connStr;
 
         public ReportRepository(
@@ -18,18 +19,13 @@ namespace S4Analytics.Models
             _connStr = serverOptions.Value.FlatConnStr;
         }
 
-        private DateTime CalculateMaxDate()
-        {
-            // find the last day of the last full month that ended at least 15 days ago
-            var fifteenDaysAgo = DateTime.Now.Subtract(new TimeSpan(15, 0, 0, 0));
-            var maxDate = new DateTime(fifteenDaysAgo.Year, fifteenDaysAgo.Month, 1).Subtract(new TimeSpan(1, 0, 0, 0));
-            return maxDate;
-        }
-
         public ReportOverTime<int> GetCrashCountsByYear()
         {
             string[] monthNames = new[] { "","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec" };
-            DateTime maxDate = CalculateMaxDate();
+
+            // find the last day of the last full month that ended at least MIN_DAYS_BACK days ago
+            var nDaysAgo = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+            var maxDate = new DateTime(nDaysAgo.Year, nDaysAgo.Month, 1).Subtract(new TimeSpan(1, 0, 0, 0));
             bool isFullYear = maxDate.Month == 12;
 
             int series1StartMonth = 1;
@@ -102,8 +98,17 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int> GetCrashCountsByMonth()
+        public ReportOverTime<int> GetCrashCountsByMonth(int? year = null)
         {
+            // find the last day of the last full month that ended at least MIN_DAYS_BACK days ago
+            var nDaysAgo = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+            var maxDate = new DateTime(nDaysAgo.Year, nDaysAgo.Month, 1).Subtract(new TimeSpan(1, 0, 0, 0));
+
+            if (year != null && year < maxDate.Year)
+            {
+                maxDate = new DateTime((int)year, 12, 31);
+            }
+
             var queryText = $@"WITH grouped_cts AS (
                 -- count matching crashes, grouped by year and month
                 SELECT
@@ -111,7 +116,8 @@ namespace S4Analytics.Models
                     crash_mm,
                     COUNT(*) ct
                 FROM crash_evt
-                WHERE crash_yr IN (2017, 2016)
+                WHERE crash_yr IN (:year, :year - 1)
+                AND key_crash_dt < :maxDate + 1
                 -- INSERT FILTERS HERE
                 GROUP BY crash_yr, crash_mm
             )
@@ -120,14 +126,16 @@ namespace S4Analytics.Models
                 CAST(crash_mm AS VARCHAR2(2)) AS category,
                 SUM(ct) AS ct
             FROM grouped_cts
-            WHERE (crash_yr < 2017 OR crash_mm < 10)
             GROUP BY crash_yr, crash_mm
             ORDER BY crash_yr, crash_mm";
 
             var report = new ReportOverTime<int>();
             using (var conn = new OracleConnection(_connStr))
             {
-                var results = conn.Query(queryText, new { });
+                var results = conn.Query(queryText, new {
+                    maxDate,
+                    maxDate.Year
+                });
                 report.categories = results.DistinctBy(r => r.CATEGORY).Select(r => (string)(r.CATEGORY));
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
                 var series = new List<ReportSeries<int>>();
@@ -144,15 +152,23 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int> GetCrashCountsByDay()
+        public ReportOverTime<int> GetCrashCountsByDay(int? year = null)
         {
+            // find the date MIN_DAYS_BACK days ago
+            DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+
+            if (year != null && year < maxDate.Year)
+            {
+                maxDate = new DateTime((int)year, 12, 31);
+            }
+
             var queryText = $@"-- count matching crashes, grouped by day
                 SELECT
                     CAST(crash_yr AS VARCHAR2(4)) AS series,
                     COUNT(*) ct
                 FROM crash_evt
-                WHERE crash_yr IN (2017, 2016)
-                AND (crash_yr < 2017 OR crash_mm < 10)
+                WHERE crash_yr IN (:year, :year - 1)
+                AND key_crash_dt < :maxDate + 1
                 -- INSERT FILTERS HERE
                 GROUP BY crash_yr, key_crash_dt
                 ORDER BY crash_yr, key_crash_dt";
@@ -160,7 +176,10 @@ namespace S4Analytics.Models
             var report = new ReportOverTime<int>();
             using (var conn = new OracleConnection(_connStr))
             {
-                var results = conn.Query(queryText, new { });
+                var results = conn.Query(queryText, new {
+                    maxDate,
+                    maxDate.Year
+                });
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
                 var series = new List<ReportSeries<int>>();
                 foreach (var seriesName in seriesNames)
