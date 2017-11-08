@@ -55,7 +55,7 @@ namespace S4Analytics.Models
                     crash_mm,
                     COUNT(*) ct
                 FROM crash_evt
-                WHERE key_crash_dt < :maxDate + 1
+                WHERE key_crash_dt < TRUNC(:maxDate + 1)
                 -- INSERT FILTERS HERE
                 GROUP BY crash_yr, crash_mm
             )
@@ -98,15 +98,15 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int> GetCrashCountsByMonth(int? year = null)
+        public ReportOverTime<int> GetCrashCountsByMonth(int year, bool yearOnYear = false)
         {
             // find the last day of the last full month that ended at least MIN_DAYS_BACK days ago
             var nDaysAgo = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
             var maxDate = new DateTime(nDaysAgo.Year, nDaysAgo.Month, 1).Subtract(new TimeSpan(1, 0, 0, 0));
 
-            if (year != null && year < maxDate.Year)
+            if (year < maxDate.Year)
             {
-                maxDate = new DateTime((int)year, 12, 31);
+                maxDate = new DateTime(year, 12, 31);
             }
 
             var queryText = @"WITH grouped_cts AS (
@@ -116,8 +116,8 @@ namespace S4Analytics.Models
                     crash_mm,
                     COUNT(*) ct
                 FROM crash_evt
-                WHERE crash_yr IN (:year, :year - 1)
-                AND key_crash_dt < :maxDate + 1
+                WHERE (crash_yr = :year OR (:yearOnYear = 1 AND crash_yr = :year - 1))
+                AND key_crash_dt < TRUNC(:maxDate + 1)
                 -- INSERT FILTERS HERE
                 GROUP BY crash_yr, crash_mm
             )
@@ -134,7 +134,8 @@ namespace S4Analytics.Models
             {
                 var results = conn.Query(queryText, new {
                     maxDate,
-                    maxDate.Year
+                    maxDate.Year,
+                    yearOnYear = yearOnYear ? 1 : 0
                 });
                 report.categories = results.DistinctBy(r => r.CATEGORY).Select(r => (string)(r.CATEGORY));
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
@@ -152,14 +153,14 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int?> GetCrashCountsByDay(bool alignByWeek = true, bool yearOnYear = true, int? year = null)
+        public ReportOverTime<int?> GetCrashCountsByDay(int year, bool yearOnYear = true, bool alignByWeek = true)
         {
             // find the date MIN_DAYS_BACK days ago
             DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
 
-            if (year != null && year < maxDate.Year)
+            if (year < maxDate.Year)
             {
-                maxDate = new DateTime((int)year, 12, 31);
+                maxDate = new DateTime(year, 12, 31);
             }
 
             string innerQueryText;
@@ -216,7 +217,7 @@ namespace S4Analytics.Models
                 series,
                 seq,
                 evt_dt,
-                CASE WHEN evt_dt IS NULL OR evt_dt > :maxDate THEN NULL ELSE ct END AS ct
+                CASE WHEN evt_dt IS NULL OR evt_dt >= TRUNC(:maxDate + 1) THEN NULL ELSE ct END AS ct
             FROM (
                 SELECT TO_CHAR(ad.yr) AS series, ad.seq, ad.evt_dt, COUNT(*) ct
                 FROM aligned_dts ad
