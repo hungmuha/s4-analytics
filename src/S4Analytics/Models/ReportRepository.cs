@@ -50,7 +50,7 @@ namespace S4Analytics.Models
 
             var queryText = @"WITH grouped_cts AS (
                 -- count matching crashes, grouped by year and month
-                SELECT
+                SELECT /*+ RESULT_CACHE */
                     crash_yr,
                     crash_mm,
                     COUNT(*) ct
@@ -59,7 +59,7 @@ namespace S4Analytics.Models
                 -- INSERT FILTERS HERE
                 GROUP BY crash_yr, crash_mm
             )
-            SELECT -- sum previous counts, grouped by series and year
+            SELECT /*+ RESULT_CACHE */ -- sum previous counts, grouped by series and year
                 CASE WHEN crash_mm <= :series1EndMonth THEN 1 ELSE 2 END AS seq,
                 CASE WHEN crash_mm <= :series1EndMonth THEN :series1Label ELSE :series2Label END AS series,
                 CAST(crash_yr AS VARCHAR2(4)) AS category,
@@ -98,7 +98,7 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int> GetCrashCountsByMonth(int year, bool yearOnYear = false)
+        public ReportOverTime<int> GetCrashCountsByMonth(int year, bool yearOnYear = true)
         {
             // find the last day of the last full month that ended at least MIN_DAYS_BACK days ago
             var nDaysAgo = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
@@ -111,7 +111,7 @@ namespace S4Analytics.Models
 
             var queryText = @"WITH grouped_cts AS (
                 -- count matching crashes, grouped by year and month
-                SELECT
+                SELECT /*+ RESULT_CACHE */
                     crash_yr,
                     crash_mm,
                     COUNT(*) ct
@@ -121,7 +121,7 @@ namespace S4Analytics.Models
                 -- INSERT FILTERS HERE
                 GROUP BY crash_yr, crash_mm
             )
-            SELECT -- sum previous counts, grouped by series and month
+            SELECT /*+ RESULT_CACHE */ -- sum previous counts, grouped by series and month
                 CAST(crash_yr AS VARCHAR2(4)) AS series,
                 CAST(crash_mm AS VARCHAR2(2)) AS category,
                 SUM(ct) AS ct
