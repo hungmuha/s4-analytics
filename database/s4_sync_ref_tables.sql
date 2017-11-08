@@ -106,7 +106,7 @@ BEGIN
         crash_mo AS evt_mo,
         crash_dd AS evt_dd,
         crash_day AS evt_day,
-        CAST(to_char(crash_dt, 'D') AS INTEGER) AS evt_d,
+        CAST(TO_CHAR(crash_dt, 'D') AS INTEGER) AS evt_d,
         CASE
             WHEN TO_CHAR(crash_dt, 'DDD') < 365 THEN crash_dt - 364
             ELSE NULL

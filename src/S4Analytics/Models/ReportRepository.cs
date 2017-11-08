@@ -98,7 +98,7 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int> GetCrashCountsByMonth(int year, bool yearOnYear = true)
+        public ReportOverTime<int> GetCrashCountsByMonth(int year, bool yearOnYear)
         {
             // find the last day of the last full month that ended at least MIN_DAYS_BACK days ago
             var nDaysAgo = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
@@ -153,7 +153,7 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int?> GetCrashCountsByDay(int year, bool yearOnYear = true, bool alignByWeek = true)
+        public ReportOverTime<int?> GetCrashCountsByDay(int year, bool yearOnYear, bool alignByWeek)
         {
             // find the date MIN_DAYS_BACK days ago
             DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));

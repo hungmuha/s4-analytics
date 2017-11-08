@@ -13,15 +13,15 @@ export class ReportingService {
             .map(response => response.json() as ReportOverTime);
     }
 
-    getCrashesOverTimeByMonth(): Observable<ReportOverTime> {
+    getCrashesOverTimeByMonth(year: number, yearOnYear: boolean): Observable<ReportOverTime> {
         return this.http
-            .get('api/report/crash/2017/month')
+            .get(`api/report/crash/${year}/month?yearOnYear=${yearOnYear}`)
             .map(response => response.json() as ReportOverTime);
     }
 
-    getCrashesOverTimeByDay(): Observable<ReportOverTime> {
+    getCrashesOverTimeByDay(year: number, yearOnYear: boolean, alignByWeek: boolean): Observable<ReportOverTime> {
         return this.http
-            .get('api/report/crash/2017/day')
+            .get(`api/report/crash/${year}/day?yearOnYear=${yearOnYear}&alignByWeek=${alignByWeek}`)
             .map(response => response.json() as ReportOverTime);
     }
 }

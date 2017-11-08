@@ -10,11 +10,17 @@ import { ReportingService } from './shared';
 export class CrashesOverTimeComponent implements OnInit {
 
     selected: 'year' | 'month' | 'day';
+    reportYear: number;
+    yearOnYear: boolean;
+    alignByWeek: boolean;
 
     constructor(private reporting: ReportingService) { }
 
     ngOnInit() {
-        this.byDay();
+        this.reportYear = 2017;
+        this.yearOnYear = true;
+        this.alignByWeek = true;
+        this.byYear();
     }
 
     byYear() {
@@ -80,7 +86,7 @@ export class CrashesOverTimeComponent implements OnInit {
                 type: 'line'
             },
             title: {
-                text: 'Crashes over time by month, 2016-2017'
+                text: 'Crashes over time by month'
             },
             yAxis: {
                 title: {
@@ -96,7 +102,7 @@ export class CrashesOverTimeComponent implements OnInit {
                 }
             }
         };
-        this.reporting.getCrashesOverTimeByMonth().subscribe(report => {
+        this.reporting.getCrashesOverTimeByMonth(this.reportYear, this.yearOnYear).subscribe(report => {
             options = { ...options, xAxis: { categories: report.categories }, series: report.series };
             Highcharts.chart(options);
         });
@@ -106,6 +112,9 @@ export class CrashesOverTimeComponent implements OnInit {
         this.selected = 'day';
 
         let options: any = {
+            title: {
+                text: 'Crashes over time by day'
+            },
             rangeSelector: {
                 selected: 4
             },
@@ -125,12 +134,12 @@ export class CrashesOverTimeComponent implements OnInit {
             },
             plotOptions: {
                 series: {
-                    pointStart: Date.UTC(2017, 0, 1),
+                    pointStart: Date.UTC(this.reportYear, 0, 1),
                     pointInterval: 24 * 3600 * 1000 // one day
                 }
             }
         };
-        this.reporting.getCrashesOverTimeByDay().subscribe(report => {
+        this.reporting.getCrashesOverTimeByDay(this.reportYear, this.yearOnYear, this.alignByWeek).subscribe(report => {
             // configure and create chart
             options = {
                 ...options,
