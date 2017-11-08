@@ -48,7 +48,7 @@ namespace S4Analytics.Models
                 series2Label = string.Format(series2Format, monthNames[(int)series2StartMonth], monthNames[(int)series2EndMonth]);
             }
 
-            var queryText = $@"WITH grouped_cts AS (
+            var queryText = @"WITH grouped_cts AS (
                 -- count matching crashes, grouped by year and month
                 SELECT
                     crash_yr,
@@ -109,7 +109,7 @@ namespace S4Analytics.Models
                 maxDate = new DateTime((int)year, 12, 31);
             }
 
-            var queryText = $@"WITH grouped_cts AS (
+            var queryText = @"WITH grouped_cts AS (
                 -- count matching crashes, grouped by year and month
                 SELECT
                     crash_yr,
@@ -152,7 +152,7 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int> GetCrashCountsByDay(int? year = null)
+        public ReportOverTime<int?> GetCrashCountsByDay(bool alignByWeek = true, bool yearOnYear = true, int? year = null)
         {
             // find the date MIN_DAYS_BACK days ago
             DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
@@ -162,33 +162,94 @@ namespace S4Analytics.Models
                 maxDate = new DateTime((int)year, 12, 31);
             }
 
-            var queryText = $@"-- count matching crashes, grouped by day
-                SELECT
-                    CAST(crash_yr AS VARCHAR2(4)) AS series,
-                    COUNT(*) ct
-                FROM crash_evt
-                WHERE crash_yr IN (:year, :year - 1)
-                AND key_crash_dt < :maxDate + 1
-                -- INSERT FILTERS HERE
-                GROUP BY crash_yr, key_crash_dt
-                ORDER BY crash_yr, key_crash_dt";
+            string innerQueryText;
 
-            var report = new ReportOverTime<int>();
+            if (!yearOnYear)
+            {
+                innerQueryText = @"SELECT
+                    :year AS yr,
+                    dd1.evt_dt,
+                    NULL AS prev_yr,
+                    NULL AS prev_yr_dt
+                FROM dim_date dd1
+                WHERE dd1.evt_yr = :year
+                ORDER BY dd1.evt_dt";
+            }
+            else if (alignByWeek)
+            {
+                innerQueryText = @"SELECT
+                    :year AS yr,
+                    dd1.evt_dt,
+                    :year - 1 AS prev_yr,
+                    dd2.evt_dt AS prev_yr_dt
+                FROM dim_date dd2
+                FULL OUTER JOIN dim_date dd1
+                    ON dd1.prev_yr_dt_align_day_of_wk = dd2.evt_dt -- align by day of week
+                WHERE dd1.evt_yr = :year
+                OR dd2.evt_yr = :year - 1
+                ORDER BY dd2.evt_dt, dd1.evt_dt";
+            }
+            else
+            {
+                innerQueryText = @"SELECT
+                    :year AS yr,
+                    dd1.evt_dt,
+                    :year - 1 AS prev_yr,
+                    dd2.evt_dt AS prev_yr_dt
+                FROM dim_date dd2
+                FULL OUTER JOIN dim_date dd1
+                    ON dd1.prev_yr_dt_align_day_of_mo = dd2.evt_dt -- align by day of month
+                WHERE dd1.evt_yr = :year
+                OR dd2.evt_yr = :year - 1
+                ORDER BY CASE -- ensure that NULL value for Feb 29 doesn't sort to the bottom
+                    WHEN :isLeapYear = 1 THEN dd1.evt_dt
+                    ELSE dd2.evt_dt
+                END";
+            }
+
+            var queryText = $@"WITH aligned_dts AS (
+                SELECT ROWNUM AS seq, yr, evt_dt, prev_yr, prev_yr_dt
+                FROM ( {innerQueryText} )
+            )
+            SELECT
+                series,
+                seq,
+                evt_dt,
+                CASE WHEN evt_dt IS NULL OR evt_dt > :maxDate THEN NULL ELSE ct END AS ct
+            FROM (
+                SELECT TO_CHAR(ad.yr) AS series, ad.seq, ad.evt_dt, COUNT(*) ct
+                FROM aligned_dts ad
+                LEFT OUTER JOIN crash_evt ce
+                    ON ce.key_crash_dt = ad.evt_dt
+                GROUP BY ad.seq, ad.yr, ad.evt_dt
+                UNION ALL
+                SELECT TO_CHAR(ad.prev_yr) AS series, ad.seq, ad.prev_yr_dt AS evt_dt, COUNT(*) ct
+                FROM aligned_dts ad
+                LEFT OUTER JOIN crash_evt ce
+                    ON ce.key_crash_dt = ad.prev_yr_dt
+                WHERE :yearOnYear = 1
+                GROUP BY ad.seq, ad.prev_yr, ad.prev_yr_dt
+            ) res
+            ORDER BY series, seq";
+
+            var report = new ReportOverTime<int?>();
             using (var conn = new OracleConnection(_connStr))
             {
                 var results = conn.Query(queryText, new {
                     maxDate,
-                    maxDate.Year
+                    maxDate.Year,
+                    isLeapYear = DateTime.IsLeapYear(maxDate.Year) ? 1 : 0,
+                    yearOnYear = yearOnYear ? 1 : 0
                 });
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
-                var series = new List<ReportSeries<int>>();
+                var series = new List<ReportSeries<int?>>();
                 foreach (var seriesName in seriesNames)
                 {
                     var seriesData = results.Where(r => r.SERIES == seriesName);
-                    series.Add(new ReportSeries<int>()
+                    series.Add(new ReportSeries<int?>()
                     {
                         name = seriesName,
-                        data = seriesData.Select(r => (int)r.CT)
+                        data = seriesData.Select(r => (int?)r.CT)
                     });
                 }
                 report.series = series;
