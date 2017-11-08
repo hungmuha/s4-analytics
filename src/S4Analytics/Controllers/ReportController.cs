@@ -26,14 +26,14 @@ namespace S4Analytics.Controllers
         [HttpGet("crash/{year}/month")]
         public IActionResult GetCrashCountsByMonth(int year)
         {
-            var results = _reportRepo.GetCrashCountsByMonth();
+            var results = _reportRepo.GetCrashCountsByMonth(year);
             return new ObjectResult(results);
         }
 
         [HttpGet("crash/{year}/day")]
         public IActionResult GetCrashCountsByDay(int year)
         {
-            var results = _reportRepo.GetCrashCountsByDay();
+            var results = _reportRepo.GetCrashCountsByDay(year);
             return new ObjectResult(results);
         }
     }

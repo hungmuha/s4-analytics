@@ -95,7 +95,9 @@ BEGIN
         evt_mo,
         evt_dd,
         evt_day,
-        evt_d
+        evt_d,
+        prev_yr_dt_align_day_of_wk,
+        prev_yr_dt_align_day_of_mo
     )
     SELECT
         crash_dt AS evt_dt,
@@ -104,7 +106,15 @@ BEGIN
         crash_mo AS evt_mo,
         crash_dd AS evt_dd,
         crash_day AS evt_day,
-        CAST(TO_CHAR(crash_dt, 'D') AS INTEGER) AS evt_d
+        CAST(to_char(crash_dt, 'D') AS INTEGER) AS evt_d,
+        CASE
+            WHEN TO_CHAR(crash_dt, 'DDD') < 365 THEN crash_dt - 364
+            ELSE NULL
+        END AS prev_yr_dt_align_day_of_wk,
+        CASE
+            WHEN crash_mm = 2 AND crash_dd = 29 THEN NULL
+            ELSE TO_DATE(crash_yr - 1 || '-' || crash_mm  || '-' || crash_dd, 'YYYY-MM-DD')
+        END AS prev_yr_dt_align_day_of_mo
     FROM dim_date@s4_warehouse;
 
     INSERT INTO dim_driver_attrs (

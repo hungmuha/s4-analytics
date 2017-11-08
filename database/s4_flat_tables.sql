@@ -270,6 +270,10 @@ CREATE TABLE crash_evt (
 CREATE UNIQUE INDEX crash_evt_id_idx ON
     crash_evt ( "ID" );
 
+CREATE INDEX crash_evt_yr_mm ON crash_evt (crash_yr, crash_mm);
+CREATE INDEX crash_evt_yr_mm_dd ON crash_evt (crash_yr, crash_mm, crash_dd);
+CREATE INDEX crash_evt_dt ON crash_evt (key_crash_dt);
+
 CALL s4_register_sdo_geom('crash_evt','gps_pt_4326',4326);
 CALL s4_register_sdo_geom('crash_evt','geocode_pt_3087',3087);
 CALL s4_register_sdo_geom('crash_evt','geocode_pt_3857',3857);
@@ -1037,6 +1041,8 @@ CREATE TABLE dim_date (
     evt_dd    NUMBER(*,0),
     evt_day   VARCHAR2(9),
     evt_d     NUMBER(1,0),
+    prev_yr_dt_align_day_of_wk  DATE,
+    prev_yr_dt_align_day_of_mo  DATE,
     PRIMARY KEY ( evt_dt )
         USING INDEX enable
 );
