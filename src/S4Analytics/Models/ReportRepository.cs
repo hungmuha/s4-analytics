@@ -208,10 +208,11 @@ namespace S4Analytics.Models
             }
 
             var queryText = $@"WITH aligned_dts AS (
-                SELECT ROWNUM AS seq, yr, evt_dt, prev_yr, prev_yr_dt
+                SELECT /*+ RESULT_CACHE */
+                    ROWNUM AS seq, yr, evt_dt, prev_yr, prev_yr_dt
                 FROM ( {innerQueryText} )
             )
-            SELECT
+            SELECT /*+ RESULT_CACHE */
                 series,
                 seq,
                 evt_dt,
