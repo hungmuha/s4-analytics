@@ -98,7 +98,7 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int> GetCrashCountsByMonth(int year, bool yearOnYear)
+        public ReportOverTime<int> GetCrashCountsByMonth(int year)
         {
             // find the last day of the last full month that ended at least MIN_DAYS_BACK days ago
             var nDaysAgo = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
@@ -116,7 +116,7 @@ namespace S4Analytics.Models
                     crash_mm,
                     COUNT(*) ct
                 FROM crash_evt
-                WHERE (crash_yr = :year OR (:yearOnYear = 1 AND crash_yr = :year - 1))
+                WHERE crash_yr IN (:year, :year - 1)
                 AND key_crash_dt < TRUNC(:maxDate + 1)
                 -- INSERT FILTERS HERE
                 GROUP BY crash_yr, crash_mm
@@ -134,8 +134,7 @@ namespace S4Analytics.Models
             {
                 var results = conn.Query(queryText, new {
                     maxDate,
-                    maxDate.Year,
-                    yearOnYear = yearOnYear ? 1 : 0
+                    maxDate.Year
                 });
                 report.categories = results.DistinctBy(r => r.CATEGORY).Select(r => (string)(r.CATEGORY));
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
@@ -153,7 +152,7 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int?> GetCrashCountsByDay(int year, bool yearOnYear, bool alignByWeek)
+        public ReportOverTime<int?> GetCrashCountsByDay(int year, bool alignByWeek)
         {
             // find the date MIN_DAYS_BACK days ago
             DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
@@ -165,18 +164,7 @@ namespace S4Analytics.Models
 
             string innerQueryText;
 
-            if (!yearOnYear)
-            {
-                innerQueryText = @"SELECT
-                    :year AS yr,
-                    dd1.evt_dt,
-                    NULL AS prev_yr,
-                    NULL AS prev_yr_dt
-                FROM dim_date dd1
-                WHERE dd1.evt_yr = :year
-                ORDER BY dd1.evt_dt";
-            }
-            else if (alignByWeek)
+            if (alignByWeek)
             {
                 innerQueryText = @"SELECT
                     :year AS yr,
@@ -229,7 +217,6 @@ namespace S4Analytics.Models
                 FROM aligned_dts ad
                 LEFT OUTER JOIN crash_evt ce
                     ON ce.key_crash_dt = ad.prev_yr_dt
-                WHERE :yearOnYear = 1
                 GROUP BY ad.seq, ad.prev_yr, ad.prev_yr_dt
             ) res
             ORDER BY series, seq";
@@ -240,8 +227,7 @@ namespace S4Analytics.Models
                 var results = conn.Query(queryText, new {
                     maxDate,
                     maxDate.Year,
-                    isLeapYear = DateTime.IsLeapYear(maxDate.Year) ? 1 : 0,
-                    yearOnYear = yearOnYear ? 1 : 0
+                    isLeapYear = DateTime.IsLeapYear(maxDate.Year) ? 1 : 0
                 });
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
                 var series = new List<ReportSeries<int?>>();

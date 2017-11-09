@@ -1,4 +1,5 @@
-﻿import { Component, OnInit, OnChanges, Input } from '@angular/core';
+﻿import { Component, OnChanges, Input } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
 import * as Highstock from 'highcharts/highstock';
 import { ReportingService } from './shared';
 
@@ -6,17 +7,15 @@ import { ReportingService } from './shared';
     selector: 'crashes-by-day',
     template: '<div id="crashesByDay"></div>'
 })
-export class CrashesByDayComponent implements OnInit, OnChanges {
+export class CrashesByDayComponent implements OnChanges {
+
+    private sub: Subscription;
 
     @Input() reportYear: number;
     @Input() yearOnYear: boolean;
     @Input() alignByWeek: boolean;
 
     constructor(private reporting: ReportingService) { }
-
-    ngOnInit() {
-        this.refresh();
-    }
 
     ngOnChanges() {
         this.refresh();
@@ -68,38 +67,46 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
                 }
             }
         };
-        this.reporting.getCrashesOverTimeByDay(this.reportYear, this.yearOnYear, this.alignByWeek).subscribe(report => {
-            let xAxisMaxDate = new Date(report.maxDate);
-            xAxisMaxDate.setDate(xAxisMaxDate.getDate() + 5);
-            // configure and create chart
-            options = {
-                ...options,
-                xAxis: {
-                    min: Date.UTC(this.reportYear, 0, 1),
-                    max: Date.UTC(xAxisMaxDate.getFullYear(), xAxisMaxDate.getMonth(), xAxisMaxDate.getDate())
-                },
-                series: report.series /* [
-                    ...report.series,
-                    {
-                        // todo: implement flags server-side
-                        // (irma flags are just for example)
-                        type: 'flags',
-                        data: [{
-                            x: Date.UTC(2017, 8, 7),
-                            title: '1',
-                            text: 'Irma evacuation'
-                        }, {
-                            x: Date.UTC(2017, 8, 12),
-                            title: '2',
-                            text: 'Irma landfall'
-                        }],
-                        onSeries: '2017',
-                        shape: 'circlepin',
-                        width: 16
-                    }
-                ] */
-            };
-            Highstock.stockChart('crashesByDay', options);
-        });
+
+        // cancel any prior request or the user may get unexpected results
+        if (this.sub !== undefined && !this.sub.closed) {
+            this.sub.unsubscribe();
+        }
+
+        this.sub = this.reporting
+            .getCrashesOverTimeByDay(this.reportYear, this.alignByWeek)
+            .subscribe(report => {
+                let xAxisMaxDate = new Date(report.maxDate);
+                xAxisMaxDate.setDate(xAxisMaxDate.getDate() + 5);
+                // configure and create chart
+                options = {
+                    ...options,
+                    xAxis: {
+                        min: Date.UTC(this.reportYear, 0, 1),
+                        max: Date.UTC(xAxisMaxDate.getFullYear(), xAxisMaxDate.getMonth(), xAxisMaxDate.getDate())
+                    },
+                    series: [
+                        ...(this.yearOnYear ? report.series : [report.series[0]]),
+                        {
+                            // todo: implement flags server-side
+                            // (irma flags are just for example)
+                            type: 'flags',
+                            data: this.yearOnYear ? [{
+                                x: Date.UTC(2017, 8, 7),
+                                title: '1',
+                                text: 'Irma evacuation'
+                            }, {
+                                x: Date.UTC(2017, 8, 12),
+                                title: '2',
+                                text: 'Irma landfall'
+                            }] : [],
+                            onSeries: '2017',
+                            shape: 'circlepin',
+                            width: 16
+                        }
+                    ]
+                };
+                Highstock.stockChart('crashesByDay', options);
+            });
     }
 }

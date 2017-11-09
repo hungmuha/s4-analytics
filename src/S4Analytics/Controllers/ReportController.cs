@@ -24,16 +24,16 @@ namespace S4Analytics.Controllers
         }
 
         [HttpGet("crash/{year}/month")]
-        public IActionResult GetCrashCountsByMonth(int year, bool yearOnYear)
+        public IActionResult GetCrashCountsByMonth(int year)
         {
-            var results = _reportRepo.GetCrashCountsByMonth(year, yearOnYear);
+            var results = _reportRepo.GetCrashCountsByMonth(year);
             return new ObjectResult(results);
         }
 
         [HttpGet("crash/{year}/day")]
-        public IActionResult GetCrashCountsByDay(int year, bool yearOnYear, bool alignByWeek)
+        public IActionResult GetCrashCountsByDay(int year, bool alignByWeek)
         {
-            var results = _reportRepo.GetCrashCountsByDay(year, yearOnYear, alignByWeek);
+            var results = _reportRepo.GetCrashCountsByDay(year, alignByWeek);
             return new ObjectResult(results);
         }
     }

@@ -1,4 +1,5 @@
 ﻿import { Component, OnInit, Input } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
 import * as Highcharts from 'highcharts';
 import { ReportingService } from './shared';
 
@@ -7,6 +8,8 @@ import { ReportingService } from './shared';
     template: '<div id="crashesByYear"></div>'
 })
 export class CrashesByYearComponent implements OnInit {
+
+    private sub: Subscription;
 
     constructor(private reporting: ReportingService) { }
 
@@ -62,9 +65,17 @@ export class CrashesByYearComponent implements OnInit {
                 }
             }
         };
-        this.reporting.getCrashesOverTimeByYear().subscribe(report => {
-            options = { ...options, xAxis: { categories: report.categories }, series: report.series };
-            Highcharts.chart(options);
-        });
+
+        // cancel any prior request or the user may get unexpected results
+        if (this.sub !== undefined && !this.sub.closed) {
+            this.sub.unsubscribe();
+        }
+
+        this.sub = this.reporting
+            .getCrashesOverTimeByYear()
+            .subscribe(report => {
+                options = { ...options, xAxis: { categories: report.categories }, series: report.series };
+                Highcharts.chart(options);
+            });
     }
 }
