@@ -1,6 +1,29 @@
-﻿<div class="btn btn-group">
-    <button class="btn btn-secondary" [class.active]="selected==='year'" (click)="byYear()">Year</button>
-    <button class="btn btn-secondary" [class.active]="selected==='month'" (click)="byMonth()">Month</button>
-    <button class="btn btn-secondary" [class.active]="selected==='day'" (click)="byDay()">Day</button>
+﻿<div class="row">
+    <div class="col-12">
+        <div class="btn btn-group">
+            <button class="btn btn-secondary" [class.active]="selected==='year'" (click)="byYear()">Year</button>
+            <button class="btn btn-secondary" [class.active]="selected==='month'" (click)="byMonth()">Month</button>
+            <button class="btn btn-secondary" [class.active]="selected==='day'" (click)="byDay()">Day</button>
+        </div>
+        <div class="btn btn-group" *ngIf="selected!=='year'">
+            <ng-container *ngFor="let year of years; let i = index">
+                <button class="btn btn-secondary" [class.active]="reportYear===year" (click)="reportYear=year">{{year}}</button>
+            </ng-container>
+        </div>
+        <label *ngIf="selected!=='year'">
+            <input type="checkbox" [(ngModel)]="yearOnYear" /> Year-on-year
+        </label>
+        <label *ngIf="selected==='day'">
+            <input type="checkbox" [(ngModel)]="alignByWeek" [disabled]="!yearOnYear" /> Align by week
+        </label>
+    </div>
 </div>
-<div id="crashesOverTime"></div>
+
+<crashes-by-year *ngIf="selected==='year'"></crashes-by-year>
+<crashes-by-month [reportYear]="reportYear"
+                  [yearOnYear]="yearOnYear"
+                  *ngIf="selected==='month'"></crashes-by-month>
+<crashes-by-day [reportYear]="reportYear"
+                [yearOnYear]="yearOnYear"
+                [alignByWeek]="alignByWeek"
+                *ngIf="selected==='day'"></crashes-by-day>

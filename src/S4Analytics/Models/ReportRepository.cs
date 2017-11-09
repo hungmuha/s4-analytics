@@ -73,7 +73,7 @@ namespace S4Analytics.Models
                 CASE WHEN crash_mm <= :series1EndMonth THEN 1 ELSE 2 END,
                 crash_yr";
 
-            var report = new ReportOverTime<int>();
+            var report = new ReportOverTime<int>() { maxDate = maxDate };
             using (var conn = new OracleConnection(_connStr))
             {
                 var results = conn.Query(queryText, new {
@@ -129,7 +129,7 @@ namespace S4Analytics.Models
             GROUP BY crash_yr, crash_mm
             ORDER BY crash_yr, crash_mm";
 
-            var report = new ReportOverTime<int>();
+            var report = new ReportOverTime<int>() { maxDate = maxDate };
             using (var conn = new OracleConnection(_connStr))
             {
                 var results = conn.Query(queryText, new {
@@ -234,7 +234,7 @@ namespace S4Analytics.Models
             ) res
             ORDER BY series, seq";
 
-            var report = new ReportOverTime<int?>();
+            var report = new ReportOverTime<int?>() { maxDate = maxDate };
             using (var conn = new OracleConnection(_connStr))
             {
                 var results = conn.Query(queryText, new {
