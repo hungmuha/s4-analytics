@@ -9,11 +9,11 @@ import { ReportingService } from './shared';
 })
 export class CrashesByDayComponent implements OnChanges {
 
-    private sub: Subscription;
-
     @Input() reportYear: number;
     @Input() yearOnYear: boolean;
     @Input() alignByWeek: boolean;
+
+    private sub: Subscription;
 
     constructor(private reporting: ReportingService) { }
 
@@ -81,10 +81,10 @@ export class CrashesByDayComponent implements OnChanges {
                 // configure and create chart
                 options = {
                     ...options,
-                    //xAxis: {
-                    //    min: Date.UTC(this.reportYear, 0, 1),
-                    //    max: Date.UTC(xAxisMaxDate.getFullYear(), xAxisMaxDate.getMonth(), xAxisMaxDate.getDate())
-                    //},
+                    // xAxis: {
+                    //     min: Date.UTC(this.reportYear, 0, 1),
+                    //     max: Date.UTC(xAxisMaxDate.getFullYear(), xAxisMaxDate.getMonth(), xAxisMaxDate.getDate())
+                    // },
                     series: [
                         /* {
                             // todo: implement flags server-side

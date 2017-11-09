@@ -6,12 +6,12 @@
 })
 export class CrashesOverTimeComponent implements OnInit {
 
-    private currentYear = (new Date()).getFullYear();
-
     selected: 'year' | 'month' | 'day';
     reportYear: number;
     yearOnYear: boolean;
     alignByWeek: boolean;
+
+    private currentYear = (new Date()).getFullYear();
 
     ngOnInit() {
         this.reportYear = this.currentYear;
@@ -21,7 +21,7 @@ export class CrashesOverTimeComponent implements OnInit {
     }
 
     get years(): number[] {
-        let vals = [this.currentYear, this.currentYear-1, this.currentYear-2, this.currentYear-3];
+        let vals = [this.currentYear, this.currentYear - 1, this.currentYear - 2, this.currentYear - 3];
         return vals;
     }
 

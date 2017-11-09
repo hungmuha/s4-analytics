@@ -9,10 +9,10 @@ import { ReportingService } from './shared';
 })
 export class CrashesByMonthComponent implements OnChanges {
 
-    private sub: Subscription;
-
     @Input() reportYear: number;
     @Input() yearOnYear: boolean;
+
+    private sub: Subscription;
 
     constructor(private reporting: ReportingService) { }
 
