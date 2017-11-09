@@ -57,7 +57,7 @@ export class CrashesByMonthComponent implements OnChanges {
                     xAxis: {
                         categories: report.categories
                     },
-                    series: this.yearOnYear ? report.series : [ report.series[0] ]
+                    series: this.yearOnYear ? report.series : [ report.series[1] ]
                 };
                 Highcharts.chart(options);
             });

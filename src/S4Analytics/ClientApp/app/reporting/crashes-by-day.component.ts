@@ -81,13 +81,12 @@ export class CrashesByDayComponent implements OnChanges {
                 // configure and create chart
                 options = {
                     ...options,
-                    xAxis: {
-                        min: Date.UTC(this.reportYear, 0, 1),
-                        max: Date.UTC(xAxisMaxDate.getFullYear(), xAxisMaxDate.getMonth(), xAxisMaxDate.getDate())
-                    },
+                    //xAxis: {
+                    //    min: Date.UTC(this.reportYear, 0, 1),
+                    //    max: Date.UTC(xAxisMaxDate.getFullYear(), xAxisMaxDate.getMonth(), xAxisMaxDate.getDate())
+                    //},
                     series: [
-                        ...(this.yearOnYear ? report.series : [report.series[0]]),
-                        {
+                        /* {
                             // todo: implement flags server-side
                             // (irma flags are just for example)
                             type: 'flags',
@@ -103,7 +102,8 @@ export class CrashesByDayComponent implements OnChanges {
                             onSeries: '2017',
                             shape: 'circlepin',
                             width: 16
-                        }
+                        }, */
+                        ...(this.yearOnYear ? report.series : [report.series[1]])
                     ]
                 };
                 Highstock.stockChart('crashesByDay', options);
