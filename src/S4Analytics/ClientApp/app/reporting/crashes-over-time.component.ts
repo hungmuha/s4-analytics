@@ -17,7 +17,7 @@ export class CrashesOverTimeComponent implements OnInit {
         this.reportYear = this.currentYear;
         this.yearOnYear = true;
         this.alignByWeek = true;
-        this.byYear();
+        this.byDay();
     }
 
     get years(): number[] {

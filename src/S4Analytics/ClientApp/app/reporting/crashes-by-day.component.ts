@@ -1,6 +1,8 @@
 ﻿import { Component, OnChanges, Input } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
+import * as Highcharts from 'highcharts';
 import * as Highstock from 'highcharts/highstock';
+import * as moment from 'moment';
 import { ReportingService } from './shared';
 
 @Component({
@@ -57,12 +59,12 @@ export class CrashesByDayComponent implements OnChanges {
                 style: {
                     width: '200px'
                 },
-                valueDecimals: 4,
+                valueDecimals: 0,
                 shared: true
             },
             plotOptions: {
                 series: {
-                    pointStart: Date.UTC(this.reportYear, 0, 1),
+                    pointStart: this.xAxisStartUtc(),
                     pointInterval: 24 * 3600 * 1000 // one day
                 }
             }
@@ -81,32 +83,25 @@ export class CrashesByDayComponent implements OnChanges {
                 // configure and create chart
                 options = {
                     ...options,
-                    // xAxis: {
-                    //     min: Date.UTC(this.reportYear, 0, 1),
-                    //     max: Date.UTC(xAxisMaxDate.getFullYear(), xAxisMaxDate.getMonth(), xAxisMaxDate.getDate())
-                    // },
-                    series: [
-                        /* {
-                            // todo: implement flags server-side
-                            // (irma flags are just for example)
-                            type: 'flags',
-                            data: this.yearOnYear ? [{
-                                x: Date.UTC(2017, 8, 7),
-                                title: '1',
-                                text: 'Irma evacuation'
-                            }, {
-                                x: Date.UTC(2017, 8, 12),
-                                title: '2',
-                                text: 'Irma landfall'
-                            }] : [],
-                            onSeries: '2017',
-                            shape: 'circlepin',
-                            width: 16
-                        }, */
-                        ...(this.yearOnYear ? report.series : [report.series[1]])
-                    ]
+                    series: this.yearOnYear ? report.series : [report.series[1]]
                 };
                 Highstock.stockChart('crashesByDay', options);
             });
+    }
+
+    private xAxisStartUtc(): number {
+        // the x axis represents the current year.
+        // if the prior year series is aligned by day of week,
+        // there will be 1 or 2 data points before jan 1 of
+        // the current year series. we have to set the start
+        // date of the x axis accordingly.
+        let startDate = moment([this.reportYear, 0, 1]);
+        if (this.yearOnYear && this.alignByWeek) {
+            let isPriorYearLeapYear = moment([this.reportYear - 1]).isLeapYear();
+            let offsetDays = isPriorYearLeapYear ? 2 : 1; // 366 % 7 = 2 whereas 365 % 7 = 1
+            startDate = startDate.subtract(offsetDays, 'days');
+        }
+        let startUtc = Date.UTC(startDate.year(), startDate.month(), startDate.date());
+        return startUtc;
     }
 }

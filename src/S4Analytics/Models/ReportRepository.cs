@@ -171,11 +171,10 @@ namespace S4Analytics.Models
                     dd1.evt_dt,
                     :year - 1 AS prev_yr,
                     dd2.evt_dt AS prev_yr_dt
-                FROM dim_date dd2
-                FULL OUTER JOIN dim_date dd1
-                    ON dd1.prev_yr_dt_align_day_of_wk = dd2.evt_dt -- align by day of week
-                WHERE dd1.evt_yr = :year
-                OR dd2.evt_yr = :year - 1
+                FROM dim_date dd1
+                FULL OUTER JOIN dim_date dd2
+                    ON dd2.evt_dt = dd1.prev_yr_dt_align_day_of_wk -- align by day of week
+                WHERE ( dd1.evt_yr = :year OR dd2.evt_yr = :year - 1 )
                 ORDER BY dd2.evt_dt, dd1.evt_dt";
             }
             else
@@ -185,15 +184,15 @@ namespace S4Analytics.Models
                     dd1.evt_dt,
                     :year - 1 AS prev_yr,
                     dd2.evt_dt AS prev_yr_dt
-                FROM dim_date dd2
-                FULL OUTER JOIN dim_date dd1
-                    ON dd1.prev_yr_dt_align_day_of_mo = dd2.evt_dt -- align by day of month
-                WHERE dd1.evt_yr = :year
-                OR dd2.evt_yr = :year - 1
-                ORDER BY CASE -- ensure that NULL value for Feb 29 doesn't sort to the bottom
-                    WHEN :isLeapYear = 1 THEN dd1.evt_dt
-                    ELSE dd2.evt_dt
-                END";
+                FROM dim_date dd1
+                FULL OUTER JOIN dim_date dd2
+                    ON dd2.evt_dt = dd1.prev_yr_dt_align_day_of_mo -- align by day of month
+                WHERE ( dd1.evt_yr = :year OR dd2.evt_yr = :year - 1 )
+                AND (
+                    dd2.evt_dt IS NULL -- INCLUDE null record if current year has feb 29
+                    OR dd2.evt_mm <> 2 OR dd2.evt_dd <> 29  -- EXCLUDE feb 29 prior year
+                )
+                ORDER BY dd1.evt_dt";
             }
 
             var queryText = $@"WITH aligned_dts AS (
