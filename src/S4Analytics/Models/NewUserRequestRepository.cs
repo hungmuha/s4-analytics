@@ -444,24 +444,35 @@ namespace S4Analytics.Models
                                 AGNCY_ID = :agencyId,
                                 CONTRACTOR_ID = :vendorId,
                                 USER_CREATED_DT = :userCreatedDt,
-                                USER_ID = :userId
+                                USER_ID = :userId,
+                                CONTRACT_END_DT = :contractEndDt
                             WHERE REQ_NBR = :requestNbr";
 
             // Do not write 0 when it should be null
             var agencyId = request.AgncyId == 0 ? (int?)null : request.AgncyId;
             var vendorId = request.VendorId == 0 ? (int?)null : request.VendorId;
 
-            var rowsUpdated = _conn.Execute(updateTxt, new
+            try
             {
-                request.RequestStatus,
-                agencyId,
-                vendorId,
-                request.UserCreatedDt,
-                request.UserId,
-                request.RequestNbr
-            });
 
-            return rowsUpdated == 1;
+                var rowsUpdated = _conn.Execute(updateTxt, new
+                {
+                    request.RequestStatus,
+                    agencyId,
+                    vendorId,
+                    request.UserCreatedDt,
+                    request.UserId,
+                    request.ContractEndDt,
+                    request.RequestNbr
+                });
+
+                return rowsUpdated == 1;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
         }
 
         private bool UpdateRejectedNewUserRequest(NewUserRequest request)
