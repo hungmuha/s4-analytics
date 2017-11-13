@@ -1,4 +1,4 @@
-﻿import { Component, Input, Output, EventEmitter } from '@angular/core';
+﻿import { Component, Input } from '@angular/core';
 import * as _ from 'lodash';
 import { AbstractValueAccessor, makeProvider } from './abstract-value-accessor';
 
