@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { ButtonGroupComponent } from '../shared';
 import { ReportingComponent } from './reporting.component';
 import { CrashesOverTimeComponent } from './crashes-over-time.component';
 import { CrashesByYearComponent } from './crashes-by-year.component';
@@ -16,6 +17,7 @@ import { ReportingService } from './shared';
         FormsModule
     ],
     declarations: [
+        ButtonGroupComponent,
         ReportingComponent,
         CrashesOverTimeComponent,
         CrashesByYearComponent,

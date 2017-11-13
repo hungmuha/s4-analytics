@@ -7,6 +7,7 @@ export * from './html5-conduit-resolve.service';
 export * from './app-state.service';
 export * from './checkbox-group.component';
 export * from './radio-button-group.component';
+export * from './button-group.component';
 
 import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
 import { OptionsResolveService, Options } from './options-resolve.service';
@@ -15,13 +16,6 @@ import { AuthGuard, AnyAdminGuard, GlobalAdminGuard } from './auth-guard.service
 import { S4IdentityUser } from './s4-identity-user';
 import { Html5ConduitResolve } from './html5-conduit-resolve.service';
 import { AppStateService } from './app-state.service';
-import { CheckboxGroupComponent } from './checkbox-group.component';
-import { RadioButtonGroupComponent } from './radio-button-group.component';
-
-export const DECLARATIONS: any[] = [
-    CheckboxGroupComponent,
-    RadioButtonGroupComponent,
-];
 
 export const PROVIDERS: any[] = [
     KeepSilverlightAliveService,

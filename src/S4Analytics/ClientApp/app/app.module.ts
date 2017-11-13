@@ -14,7 +14,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login.component';
 import { IndexComponent } from './index.component';
 import { Html5ConduitComponent } from './html5-conduit.component';
-import { DECLARATIONS, PROVIDERS } from './shared';
+import { PROVIDERS } from './shared';
 
 @NgModule({
     imports: [
@@ -33,8 +33,7 @@ import { DECLARATIONS, PROVIDERS } from './shared';
         AppComponent,
         IndexComponent,
         LoginComponent,
-        Html5ConduitComponent,
-        ...DECLARATIONS
+        Html5ConduitComponent
     ],
     providers: PROVIDERS,
     bootstrap: [AppComponent]
