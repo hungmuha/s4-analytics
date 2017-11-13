@@ -1,6 +1,5 @@
 ﻿import { Component, OnChanges, Input } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
-import * as Highcharts from 'highcharts';
 import * as Highstock from 'highcharts/highstock';
 import * as moment from 'moment';
 import { ReportingService } from './shared';
