@@ -14,11 +14,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login.component';
 import { IndexComponent } from './index.component';
 import { Html5ConduitComponent } from './html5-conduit.component';
-import {
-    IdentityService, KeepSilverlightAliveService, OptionsResolveService,
-    AuthGuard, AnyAdminGuard, GlobalAdminGuard, Html5ConduitResolve,
-    AppStateService
-} from './shared';
+import { DECLARATIONS, PROVIDERS } from './shared';
 
 @NgModule({
     imports: [
@@ -37,18 +33,10 @@ import {
         AppComponent,
         IndexComponent,
         LoginComponent,
-        Html5ConduitComponent
+        Html5ConduitComponent,
+        ...DECLARATIONS
     ],
-    providers: [
-        OptionsResolveService,
-        IdentityService,
-        AuthGuard,
-        AnyAdminGuard,
-        GlobalAdminGuard,
-        KeepSilverlightAliveService,
-        Html5ConduitResolve,
-        AppStateService
-    ],
+    providers: PROVIDERS,
     bootstrap: [AppComponent]
 })
 export class AppModule { }
