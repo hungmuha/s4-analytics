@@ -5,7 +5,13 @@ import { AbstractValueAccessor, makeProvider } from './abstract-value-accessor';
 @Component({
     selector: 'button-group',
     providers: [makeProvider(ButtonGroupComponent)],
-    template: `<div class="btn btn-group">
+    template: `<div class="btn btn-group btn-group-sm">
+                    <button class="btn btn-secondary"
+                            *ngIf="hasAnyOrAll"
+                            [class.active]="isAnyOrAllChecked"
+                            (click)="toggleAnyOrAll()">
+                        {{anyOrAllText}}
+                    </button>
                     <button class="btn btn-secondary"
                             *ngFor="let item of items"
                             [class.active]="isChecked(item)"
@@ -19,52 +25,67 @@ export class ButtonGroupComponent extends AbstractValueAccessor {
     @Input() labelMember?: string;
     @Input() tooltipMember?: string; // todo: implement in template
     @Input() valueMember?: string;
+    @Input() multipleSelect: boolean = false;
+    @Input() anyOrAllText?: string;
 
-    get isAllChecked(): boolean {
-        return this.selectedItemValues !== undefined && this.selectedItemValues.length === 0;
+    get hasAnyOrAll(): boolean {
+        return !!this.anyOrAllText
+            && this.anyOrAllText.length > 0;
     }
 
-    private get selectedItemValues(): any[] {
+    get isAnyOrAllChecked(): boolean {
+        return !this.selectedItemValue
+            || this.selectedItemValue.length === 0;
+    }
+
+    private get selectedItemValue(): any | any[] {
         // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
         return this.value;
     }
 
-    private set selectedItemValues(value: any[]) {
+    private set selectedItemValue(value: any | any[]) {
         // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
         this.value = value;
     }
 
     onValueChange(): void {
         // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
-        if (this.value === undefined) {
+        if (this.multipleSelect && this.value === undefined) {
             this.value = [];
         }
     }
 
-    toggleAll() {
-        if (!this.isAllChecked) {
-            this.selectedItemValues = [];
+    toggleAnyOrAll() {
+        if (!this.isAnyOrAllChecked) {
+            this.selectedItemValue = this.multipleSelect ? [] : undefined;
         }
     }
 
     isChecked(item: any): boolean {
         let itemValue = this.getItemValue(item);
-        return _.includes(this.selectedItemValues, itemValue);
+        return this.multipleSelect
+            ? _.includes(this.selectedItemValue, itemValue)
+            : this.selectedItemValue === itemValue;
     }
 
     toggle(item: any) {
         let itemValue = this.getItemValue(item);
-        let newItemValues = [...this.selectedItemValues]; // create a copy
-        let isChecked = _.includes(newItemValues, itemValue);
-        if (isChecked) {
-            _.remove(newItemValues, v => v === itemValue);
+        if (this.multipleSelect) {
+            let newItemValues = [...this.selectedItemValue]; // create a copy
+            let isChecked = _.includes(newItemValues, itemValue);
+            if (isChecked) {
+                _.remove(newItemValues, v => v === itemValue);
+            }
+            else {
+                newItemValues.push(itemValue);
+            }
+            // to allow change detection to work as expected, we must overwrite
+            // selectedItemValues rather than remove or insert an item directly
+            this.selectedItemValue = newItemValues;
         }
         else {
-            newItemValues.push(itemValue);
+            this.selectedItemValue = itemValue;
         }
-        // to allow change detection to work as expected, we must overwrite
-        // selectedItemValues rather than remove or insert an item directly
-        this.selectedItemValues = newItemValues;
     }
 
     getItemLabel(item: any): any {

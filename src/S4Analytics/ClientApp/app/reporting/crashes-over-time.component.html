@@ -1,29 +1,92 @@
-﻿<div class="row">
-    <div class="col-12">
-        <div class="btn btn-group">
-            <button class="btn btn-secondary" [class.active]="selected==='year'" (click)="byYear()">Year</button>
-            <button class="btn btn-secondary" [class.active]="selected==='month'" (click)="byMonth()">Month</button>
-            <button class="btn btn-secondary" [class.active]="selected==='day'" (click)="byDay()">Day</button>
+﻿<h2 class="mt-4">Crashes over time report</h2>
+<div class="card">
+    <div class="card-header border-bottom-0">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                Geographic area
+                <input type="text" class="form-control" [(ngModel)]="model" placeholder="Search" />
+            </div>
+            <div class="col-12 col-md-6">
+                Reporting agency
+                <input type="text" class="form-control" [(ngModel)]="model" placeholder="Search" />
+            </div>
         </div>
-        <div class="btn btn-group" *ngIf="selected!=='year'">
-            <ng-container *ngFor="let year of years; let i = index">
-                <button class="btn btn-secondary" [class.active]="reportYear===year" (click)="reportYear=year">{{year}}</button>
-            </ng-container>
+        <div class="row">
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                Severity<br />
+                <button-group anyOrAllText="All"
+                              [multipleSelect]="true"
+                              [items]="severities"
+                              [(ngModel)]="selectedSeverities"></button-group>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                Impairment<br />
+                <button-group anyOrAllText="All"
+                              [multipleSelect]="true"
+                              [items]="impairments"
+                              [(ngModel)]="selectedImpairments"></button-group>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                Bike/Ped<br />
+                <button-group anyOrAllText="Any"
+                              [multipleSelect]="true"
+                              [items]="bikePedTypes"
+                              [(ngModel)]="selectedBikePedTypes"></button-group>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                CMV-related<br />
+                <button-group anyOrAllText="Any"
+                              [items]="yesNo"
+                              [(ngModel)]="selectedCmvRelated"></button-group>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                Codeable<br />
+                <button-group anyOrAllText="Any"
+                              [items]="yesNo"
+                              [(ngModel)]="selectedCodeable"></button-group>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                Form type<br />
+                <button-group anyOrAllText="Any"
+                              [items]="formTypes"
+                              [(ngModel)]="selectedFormType"></button-group>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3 offset-xl-3">
+                <br /><button class="btn btn-sm btn-primary">Refresh</button>
+            </div>
         </div>
-        <label *ngIf="selected!=='year'">
-            <input type="checkbox" [(ngModel)]="yearOnYear" /> Year-on-year
-        </label>
-        <label *ngIf="selected==='day'">
-            <input type="checkbox" [(ngModel)]="alignByWeek" [disabled]="!yearOnYear" /> Align by week
-        </label>
     </div>
 </div>
 
-<crashes-by-year *ngIf="selected==='year'"></crashes-by-year>
-<crashes-by-month [reportYear]="reportYear"
-                  [yearOnYear]="yearOnYear"
-                  *ngIf="selected==='month'"></crashes-by-month>
-<crashes-by-day [reportYear]="reportYear"
-                [yearOnYear]="yearOnYear"
-                [alignByWeek]="alignByWeek"
-                *ngIf="selected==='day'"></crashes-by-day>
+<div class="card my-3">
+    <div class="card-header d-flex justify-content-between">
+        <div>
+            Chart by
+            <button-group [items]="reportScopes"
+                          [(ngModel)]="selectedReportScope"></button-group>
+        </div>
+        <div>
+            <label *ngIf="selectedReportScope==='Day'">
+                <input type="checkbox" [(ngModel)]="alignByWeek" [disabled]="!yearOnYear" /> Align by week
+            </label>
+            <label *ngIf="selectedReportScope!=='Year'" class="ml-2">
+                <input type="checkbox" [(ngModel)]="yearOnYear" /> Year-on-year
+            </label>
+            <button-group *ngIf="selectedReportScope!=='Year'"
+                          [items]="years"
+                          [(ngModel)]="selectedYear"></button-group>
+        </div>
+    </div>
+    <div class="card-block">
+        <div class="m-3">
+            <crashes-by-year [hidden]="selectedReportScope!=='Year'"></crashes-by-year>
+            <crashes-by-month [reportYear]="selectedYear"
+                              [yearOnYear]="yearOnYear"
+                              [hidden]="selectedReportScope!=='Month'"></crashes-by-month>
+            <crashes-by-day [reportYear]="selectedYear"
+                            [yearOnYear]="yearOnYear"
+                            [alignByWeek]="alignByWeek"
+                            [hidden]="selectedReportScope!=='Day'"></crashes-by-day>
+        </div>
+    </div>
+</div>

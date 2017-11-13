@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonGroupComponent } from '../shared';
 import { ReportingComponent } from './reporting.component';
 import { CrashesOverTimeComponent } from './crashes-over-time.component';
@@ -14,7 +15,8 @@ import { ReportingService } from './shared';
     imports: [
         RouterModule,
         CommonModule,
-        FormsModule
+        FormsModule,
+        NgbModule
     ],
     declarations: [
         ButtonGroupComponent,
