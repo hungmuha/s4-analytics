@@ -19,7 +19,27 @@ namespace S4Analytics.Models
             _connStr = serverOptions.Value.FlatConnStr;
         }
 
-        public ReportOverTime<int> GetCrashCountsByYear()
+        private class PreparedQuery
+        {
+            public string queryText;
+            public Dictionary<string, object> queryParameters;
+            public DynamicParameters DynamicParams
+            {
+                get
+                {
+                    var dynamicParams = new DynamicParameters();
+                    dynamicParams.AddDict(queryParameters);
+                    return dynamicParams;
+                }
+            }
+            public PreparedQuery(string queryText, Dictionary<string, object> queryParameters)
+            {
+                this.queryText = queryText;
+                this.queryParameters = queryParameters;
+            }
+        }
+
+        public ReportOverTime<int> GetCrashCountsByYear(CrashesOverTimeQuery query)
         {
             string[] monthNames = new[] { "","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec" };
 
@@ -48,7 +68,9 @@ namespace S4Analytics.Models
                 series2Label = string.Format(series2Format, monthNames[(int)series2StartMonth], monthNames[(int)series2EndMonth]);
             }
 
-            var queryText = @"WITH grouped_cts AS (
+            // var queryFilterText = PrepareFilterQueryText(query);
+
+            var queryText = $@"WITH grouped_cts AS (
                 -- count matching crashes, grouped by year and month
                 SELECT /*+ RESULT_CACHE */
                     crash_yr,
@@ -56,7 +78,7 @@ namespace S4Analytics.Models
                     COUNT(*) ct
                 FROM crash_evt
                 WHERE key_crash_dt < TRUNC(:maxDate + 1)
-                -- INSERT FILTERS HERE
+                -- AND ( queryFilterText )
                 GROUP BY crash_yr, crash_mm
             )
             SELECT /*+ RESULT_CACHE */ -- sum previous counts, grouped by series and year
@@ -98,7 +120,7 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int> GetCrashCountsByMonth(int year)
+        public ReportOverTime<int> GetCrashCountsByMonth(int year, CrashesOverTimeQuery query)
         {
             // find the last day of the last full month that ended at least MIN_DAYS_BACK days ago
             var nDaysAgo = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
@@ -109,7 +131,9 @@ namespace S4Analytics.Models
                 maxDate = new DateTime(year, 12, 31);
             }
 
-            var queryText = @"WITH grouped_cts AS (
+            // var queryFilterText = PrepareFilterQueryText(query);
+
+            var queryText = $@"WITH grouped_cts AS (
                 -- count matching crashes, grouped by year and month
                 SELECT /*+ RESULT_CACHE */
                     crash_yr,
@@ -118,7 +142,7 @@ namespace S4Analytics.Models
                 FROM crash_evt
                 WHERE crash_yr IN (:year, :year - 1)
                 AND key_crash_dt < TRUNC(:maxDate + 1)
-                -- INSERT FILTERS HERE
+                -- AND ( queryFilterText )
                 GROUP BY crash_yr, crash_mm
             )
             SELECT /*+ RESULT_CACHE */ -- sum previous counts, grouped by series and month
@@ -152,7 +176,7 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int?> GetCrashCountsByDay(int year, bool alignByWeek)
+        public ReportOverTime<int?> GetCrashCountsByDay(int year, bool alignByWeek, CrashesOverTimeQuery query)
         {
             // find the date MIN_DAYS_BACK days ago
             DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
@@ -195,6 +219,8 @@ namespace S4Analytics.Models
                 ORDER BY dd1.evt_dt";
             }
 
+            var preparedQuery = PrepareQuery(query);
+
             var queryText = $@"WITH aligned_dts AS (
                 SELECT /*+ RESULT_CACHE */
                     ROWNUM AS seq, yr, evt_dt, prev_yr, prev_yr_dt
@@ -210,24 +236,30 @@ namespace S4Analytics.Models
                 FROM aligned_dts ad
                 LEFT OUTER JOIN crash_evt ce
                     ON ce.key_crash_dt = ad.evt_dt
+                    AND ( {preparedQuery.queryText} )
                 GROUP BY ad.seq, ad.yr, ad.evt_dt
                 UNION ALL
                 SELECT TO_CHAR(ad.prev_yr) AS series, ad.seq, ad.prev_yr_dt AS evt_dt, COUNT(*) ct
                 FROM aligned_dts ad
                 LEFT OUTER JOIN crash_evt ce
                     ON ce.key_crash_dt = ad.prev_yr_dt
+                    AND ( {preparedQuery.queryText} )
                 GROUP BY ad.seq, ad.prev_yr, ad.prev_yr_dt
             ) res
             ORDER BY series, seq";
 
+            var dynamicParams = preparedQuery.DynamicParams;
+            dynamicParams.Add(new
+            {
+                maxDate,
+                maxDate.Year,
+                isLeapYear = DateTime.IsLeapYear(maxDate.Year) ? 1 : 0
+            });
+
             var report = new ReportOverTime<int?>() { maxDate = maxDate };
             using (var conn = new OracleConnection(_connStr))
             {
-                var results = conn.Query(queryText, new {
-                    maxDate,
-                    maxDate.Year,
-                    isLeapYear = DateTime.IsLeapYear(maxDate.Year) ? 1 : 0
-                });
+                var results = conn.Query(queryText, dynamicParams);
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
                 var series = new List<ReportSeries<int?>>();
                 foreach (var seriesName in seriesNames)
@@ -242,6 +274,204 @@ namespace S4Analytics.Models
                 report.series = series;
             }
             return report;
+        }
+
+        private PreparedQuery PrepareQuery(CrashesOverTimeQuery query)
+        {
+            // initialize where clause and query parameter collections
+            var whereClauses = new List<string>();
+            var queryParameters = new Dictionary<string, object>();
+
+            // get predicate methods
+            var predicateMethods = GetPredicateMethods(query);
+
+            // generate where clause and query parameters for each valid filter
+            predicateMethods.ForEach(generatePredicate => {
+                (var whereClause, var parameters) = generatePredicate.Invoke();
+                if (whereClause != null)
+                {
+                    whereClauses.Add(whereClause);
+                    if (parameters != null)
+                    {
+                        queryParameters.AddFields(parameters);
+                    }
+                }
+            });
+
+            // join where clauses
+            var queryText = "(" + string.Join(")\r\nAND (", whereClauses) + ")";
+
+            return new PreparedQuery(queryText, queryParameters);
+        }
+
+        private List<Func<(string, object)>> GetPredicateMethods(CrashesOverTimeQuery query)
+        {
+            Func<(string, object)>[] predicateMethods =
+            {
+                () => GenerateGeographyPredicate(query.geographyId),
+                () => GenerateReportingAgencyPredicate(query.reportingAgencyId),
+                () => GenerateSeverityPredicate(query.severity),
+                () => GenerateAlcoholDrugPredicate(query.impairment),
+                () => GenerateBikePedPredicate(query.bikePedRelated),
+                () => GenerateCmvPredicate(query.cmvRelated),
+                () => GenerateCodeablePredicate(query.codeable),
+                () => GenerateFormTypePredicate(query.formType)
+            };
+            return predicateMethods.ToList();
+        }
+
+        private (string whereClause, object parameters) GenerateGeographyPredicate(int? geographyId)
+        {
+            // test for valid filter
+            if (geographyId == null)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"key_geography = :geographyId";
+
+            // define oracle parameters
+            var parameters = new { geographyId };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateReportingAgencyPredicate(int? reportingAgencyId)
+        {
+            // test for valid filter
+            if (reportingAgencyId == null)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"key_rptg_agncy = :reportingAgencyId";
+
+            // define oracle parameters
+            var parameters = new { reportingAgencyId };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateSeverityPredicate(CrashesOverTimeSeverity severity)
+        {
+            // test for valid filter
+            if (severity == null || !(severity.propertyDamageOnly || severity.injury || severity.fatality))
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"(:pdo = 1 AND key_crash_sev = 30)
+                OR (:injury = 1 AND key_crash_sev = 31)
+                OR (:fatality = 1 AND key_crash_sev = 32)";
+
+            // define oracle parameters
+            var parameters = new {
+                pdo = severity.propertyDamageOnly ? 1 : 0,
+                injury = severity.injury ? 1 : 0,
+                fatality = severity.fatality ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateAlcoholDrugPredicate(CrashesOverTimeImpairment impairment)
+        {
+            // test for valid filter
+            if (impairment == null || !(impairment.drugRelated || impairment.alcoholRelated))
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"(:drugRelated = 1 AND is_drug_rel = 'Y')
+                OR (:alcoholRelated = 1 AND is_alc_rel = 'Y')";
+
+            // define oracle parameters
+            var parameters = new {
+                drugRelated = impairment.drugRelated ? 1 : 0,
+                alcoholRelated = impairment.alcoholRelated ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateBikePedPredicate(CrashesOverTimeBikePedRelated bikePedRelated)
+        {
+            // test for valid filter
+            if (bikePedRelated == null || !(bikePedRelated.bikeRelated || bikePedRelated.pedRelated))
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"(:bikeRelated = 1 AND (bike_cnt > 0 OR key_first_he = 11))
+                OR (:pedRelated = 1 AND (ped_cnt > 0 OR key_first_he = 10))";
+
+            // define oracle parameters
+            var parameters = new {
+                bikeRelated = bikePedRelated.bikeRelated ? 1 : 0,
+                pedRelated = bikePedRelated.pedRelated ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCmvPredicate(bool? cmvRelated)
+        {
+            // test for valid filter
+            if (cmvRelated == null || cmvRelated != true)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"comm_veh_cnt > 0";
+
+            // define oracle parameters
+            var parameters = new { };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateCodeablePredicate(bool? codeable)
+        {
+            // test for valid filter
+            if (codeable == null || codeable != true)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"codeable = 'Y'";
+
+            // define oracle parameters
+            var parameters = new { };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateFormTypePredicate(CrashesOverTimeFormType formTypes)
+        {
+            // test for valid filter
+            if (formTypes == null || !(formTypes.longForm || formTypes.shortForm))
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"(:longForm = 1 AND form_type_cd = 'L')
+                OR (:shortForm = 1 AND form_type_cd = 'S')";
+
+            // define oracle parameters
+            var parameters = new {
+                longForm = formTypes.longForm ? 1 : 0,
+                shortForm = formTypes.shortForm ? 1 : 0
+            };
+
+            return (whereClause, parameters);
         }
     }
 }
