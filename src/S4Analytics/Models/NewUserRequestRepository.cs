@@ -177,12 +177,12 @@ namespace S4Analytics.Models
             var body = $@"<div>Dear {request.RequestorFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been created. 
                         You can access the system at <a href=""http://s4.geoplan.ufl.edu/"">http://s4.geoplan.ufl.edu.</a>
-                        <br><br>To login, click on the Login link at the upper right of the screen
+                        <br><br>To login, click on the Login link at the upper right corner of the screen
                         and enter the information below: <br><br>
                         username = {userName} <br>
                         password = {passwordText} <br><br>
                         Upon login you will be prompted to change your password. You will also be
-                        prompted to read and accept Signal Four Analytics user agreement before
+                        prompted to read and accept the Signal Four Analytics user agreement before
                         using the system.
                         <br><br>Below are some links to some resources that should help familiarize you
                         with the system. <br><br>
@@ -248,14 +248,14 @@ namespace S4Analytics.Models
             var body = $@"<div>Dear {request.RequestorFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been created. 
                         You can access the system at <a href=""http://s4.geoplan.ufl.edu/"">http://s4.geoplan.ufl.edu.</a>
-                        <br><br>To login, click on the Login link at the upper right of the screen
+                        <br><br>To login, click on the Login link at the upper right corner of the screen
                         and enter the information below: <br><br>
                         username = {userName} <br>
                         password = {passwordText} <br><br>
                         Upon login you will be prompted to change your password. You will also be
-                        prompted to read and accept Signal Four Analytics user agreement before
+                        prompted to read and accept the Signal Four Analytics user agreement before
                         using the system.<br><br>
-                        Note that this account will expire on {request.ContractEndDt.ToString()}.
+                        Note that this account will expire on {((DateTime)request.ContractEndDt).ToShortDateString()}.
                         <br><br>Below are some links to some resources that should help familiarize you
                         with the system. <br><br>
                         <a href =""{_newUserDocumentsUrl}/S4_Analytics_FAQ.PDF"">S4 Analytics FAQ</a><br>
@@ -309,14 +309,14 @@ namespace S4Analytics.Models
             var body = $@"<div>Dear {request.ConsultantFirstNm}, <br><br>
                         Your Signal Four Analytics individual account has been renewed. 
                         You can access the system at http://s4.geoplan.ufl.edu/. <br><br>
-                        To login click on the Login link at the upper right of the screen
+                        To login click on the Login link at the upper right corner of the screen
                         and enter the information below: <br><br>
                         username = {userName} <br>
                         password = {passwordText} <br><br>
                         Upon login you will be prompted to change your password. You will also be 
-                        prompted to read and accept Signal Four Analytics user agreement before 
+                        prompted to read and accept the Signal Four Analytics user agreement before 
                         using the system.<br><br>
-                        Note that this account will expire on {3}. <br><br>
+                        Note that this account will expire on {((DateTime)request.ContractEndDt).ToShortDateString()}. <br><br>
                         Please let me know if you need further assistance.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
@@ -339,12 +339,13 @@ namespace S4Analytics.Models
 
             // Nothing to update in database. Send email to global admin to create agency
             var subject = "New agency needs to be created in Signal Four Analytics";
-            var body = $@"<div>{request.AgncyNm} has been approved for creation. Please create new agency.<br> 
-                        Below are the specs: <br><br>
+            var body = $@"<div>{request.AgncyNm} has been approved for creation. Please create new agency with the following specs: 
+                        <br><br>
                         &nbsp;&nbsp;Request Number = {request.RequestNbr} <br>
                         &nbsp;&nbsp;Agency Name = {request.AgncyNm} <br>
                         &nbsp;&nbsp;Access Before 70 days = {before70days} <br>
-                        &nbsp;&nbsp;Email Domain = {request.AgncyEmailDomain}<br><br></div>";
+                        &nbsp;&nbsp;Email Domain = {request.AgncyEmailDomain}<br><br>
+                        After creation, please go to Manage Requests in Signal Four Analytics to approve request #{request.RequestNbr}.<br><br></div>";
 
             var closing = GetEmailNotificationClosing();
 
@@ -444,7 +445,8 @@ namespace S4Analytics.Models
                                 AGNCY_ID = :agencyId,
                                 CONTRACTOR_ID = :vendorId,
                                 USER_CREATED_DT = :userCreatedDt,
-                                USER_ID = :userId
+                                USER_ID = :userId,
+                                CONTRACT_END_DT = :contractEndDt
                             WHERE REQ_NBR = :requestNbr";
 
             // Do not write 0 when it should be null
@@ -458,6 +460,7 @@ namespace S4Analytics.Models
                 vendorId,
                 request.UserCreatedDt,
                 request.UserId,
+                request.ContractEndDt,
                 request.RequestNbr
             });
 

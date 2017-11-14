@@ -40,6 +40,7 @@ export class NewConsultantComponent  {
 
         let transformDt = this.datePipe.transform(this.state.selectedRequest.contractEndDt, 'M/d/yyyy');
         this.contractEndDateStr = (transformDt) ? transformDt : '';
+        this.state.currentRequestActionResults.contractEndDt = new Date(this.contractEndDateStr);
     }
 
     hideRequestorWarning(): boolean {

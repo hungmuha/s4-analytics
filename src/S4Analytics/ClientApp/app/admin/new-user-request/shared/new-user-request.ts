@@ -15,6 +15,7 @@ export class NewUserRequest {
     requestorLastNm:  string;
     requestorSuffixNm: string;
     requestorEmail: string;
+    vendorId: number;
     vendorName: string;
     vendorEmailDomain: string;
     consultantFirstNm: string;
@@ -47,6 +48,7 @@ export class NewUserRequest {
         this.requestorLastNm = data.requestorLastNm;
         this.requestorSuffixNm = data.requestorSuffixNm;
         this.requestorEmail = data.requestorEmail;
+        this.vendorId = data.vendorId;
         this.vendorName = data.vendorName;
         this.vendorEmailDomain = data.vendorEmailDomain;
         this.consultantFirstNm = data.consultantFirstNm;
