@@ -36,5 +36,19 @@ namespace S4Analytics.Controllers
             var results = _reportRepo.GetCrashCountsByDay(year, alignByWeek, query);
             return new ObjectResult(results);
         }
+
+        [HttpGet("geographies")]
+        public IActionResult GetGeographyLookups()
+        {
+            var results = _reportRepo.GetGeographyLookups();
+            return new ObjectResult(results);
+        }
+
+        [HttpGet("agencies")]
+        public IActionResult GetAgencyLookups()
+        {
+            var results = _reportRepo.GetAgencyLookups();
+            return new ObjectResult(results);
+        }
     }
 }

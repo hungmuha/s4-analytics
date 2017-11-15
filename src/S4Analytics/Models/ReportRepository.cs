@@ -8,6 +8,12 @@ using System.Linq;
 
 namespace S4Analytics.Models
 {
+    public class LookupKeyAndName
+    {
+        public int key;
+        public string name;
+    }
+
     public class ReportRepository
     {
         private const int MIN_DAYS_BACK = 15;
@@ -17,6 +23,39 @@ namespace S4Analytics.Models
             IOptions<ServerOptions> serverOptions)
         {
             _connStr = serverOptions.Value.FlatConnStr;
+        }
+
+        public IEnumerable<LookupKeyAndName> GetGeographyLookups()
+        {
+            var queryText = @"SELECT id AS key, cnty_nm || ' County, FL' AS name
+                FROM dim_geography
+                WHERE city_cd = 0
+                AND cnty_cd <> 68
+                UNION ALL
+                SELECT id AS key, city_nm || ', FL' AS name
+                FROM dim_geography
+                WHERE city_cd <> 0
+                AND cnty_cd <> 68
+                ORDER BY name";
+            IEnumerable<LookupKeyAndName> results;
+            using (var conn = new OracleConnection(_connStr))
+            {
+                results = conn.Query<LookupKeyAndName>(queryText, new { });
+            }
+            return results;
+        }
+
+        public IEnumerable<LookupKeyAndName> GetAgencyLookups()
+        {
+            var queryText = @"SELECT id AS key, agncy_nm AS name
+                FROM dim_agncy
+                ORDER BY agncy_nm";
+            IEnumerable<LookupKeyAndName> results;
+            using (var conn = new OracleConnection(_connStr))
+            {
+                results = conn.Query<LookupKeyAndName>(queryText, new { });
+            }
+            return results;
         }
 
         private class PreparedQuery
@@ -341,8 +380,12 @@ namespace S4Analytics.Models
                 return (null, null);
             }
 
+            var isCounty = geographyId % 100 == 0;
+
             // define where clause
-            var whereClause = @"key_geography = :geographyId";
+            var whereClause = isCounty
+                ? @"cnty_cd = :geographyId / 100"
+                : @"key_geography = :geographyId";
 
             // define oracle parameters
             var parameters = new { geographyId };

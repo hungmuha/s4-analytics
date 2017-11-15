@@ -1,6 +1,14 @@
 ﻿import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/distinctUntilChanged';
 import * as _ from 'lodash';
-import { CrashesOverTimeQuery } from './shared';
+import { CrashesOverTimeQuery, ReportingService } from './shared';
+
+class Lookup {
+    key: number;
+    name: string;
+}
 
 @Component({
     selector: 'crashes-over-time',
@@ -10,6 +18,8 @@ export class CrashesOverTimeComponent implements OnInit {
 
     query = new CrashesOverTimeQuery();
 
+    agencies: Lookup[];
+    geographies: Lookup[];
     severities = ['Fatal', 'Injury', 'PDO'];
     impairments = ['Alcohol', 'Drugs'];
     bikePedTypes = ['Bike', 'Ped'];
@@ -27,12 +37,19 @@ export class CrashesOverTimeComponent implements OnInit {
     selectedReportScope: string;
     selectedYear: number;
 
+    selectedGeography: Lookup | string;
+    selectedAgency: Lookup | string;
+
     yearOnYear: boolean;
     alignByWeek: boolean;
+
+    constructor(private reporting: ReportingService) { }
 
     private currentYear = (new Date()).getFullYear();
 
     ngOnInit() {
+        this.reporting.getReportingAgencies().subscribe(results => this.agencies = results);
+        this.reporting.getGeographies().subscribe(results => this.geographies = results);
         this.years = [this.currentYear, this.currentYear - 1, this.currentYear - 2, this.currentYear - 3];
         this.selectedReportScope = 'Year';
         this.selectedYear = this.currentYear;
@@ -40,10 +57,36 @@ export class CrashesOverTimeComponent implements OnInit {
         this.alignByWeek = true;
     }
 
+    formatLookup(value: Lookup) {
+        return value.name;
+    }
+
+    searchGeographies = (text: Observable<string>) =>
+        text.debounceTime(200)
+            .distinctUntilChanged()
+            .map(term => term.length === 0
+                ? []
+                : _.filter(this.geographies, g => g.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10));
+
+    searchAgencies = (text: Observable<string>) =>
+        text.debounceTime(200)
+            .distinctUntilChanged()
+            .map(term => term.length === 0
+                ? []
+                : _.filter(this.agencies, g => g.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10));
+
     refresh() {
+        // clear geography & agency fields if a valid selection was not made
+        if (this.selectedGeography === undefined || !this.selectedGeography.hasOwnProperty('key')) {
+            this.selectedGeography = '';
+        }
+        if (this.selectedAgency === undefined || !this.selectedAgency.hasOwnProperty('key')) {
+            this.selectedAgency = '';
+        }
+
         let query: CrashesOverTimeQuery = {
-            geographyId: undefined, // todo
-            reportingAgencyId: undefined, // todo
+            geographyId: this.selectedGeography !== '' ? (this.selectedGeography as Lookup).key : undefined,
+            reportingAgencyId: this.selectedAgency !== '' ? (this.selectedAgency as Lookup).key : undefined,
             severity: this.selectedSeverities.length > 0
                 ? {
                     fatality: _.includes(this.selectedSeverities, 'Fatal'),
@@ -71,7 +114,7 @@ export class CrashesOverTimeComponent implements OnInit {
                     longForm: this.selectedFormType === 'Long',
                     shortForm: this.selectedFormType === 'Short'
                 } : undefined
-        }
+        };
         this.query = query;
     }
 }

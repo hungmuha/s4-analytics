@@ -28,4 +28,16 @@ export class ReportingService {
             .map(response => response.json() as ReportOverTime)
             .map(report => new ReportOverTime(report));
     }
+
+    getGeographies(): Observable<{ key: number, name: string }[]> {
+        return this.http
+            .get('api/report/geographies')
+            .map(response => response.json());
+    }
+
+    getReportingAgencies(): Observable<{ key: number, name: string }[]> {
+        return this.http
+            .get('api/report/agencies')
+            .map(response => response.json());
+    }
 }
