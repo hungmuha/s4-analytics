@@ -1,19 +1,21 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnChanges, Input } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import * as Highcharts from 'highcharts';
-import { ReportingService } from './shared';
+import { ReportingService, CrashesOverTimeQuery } from './shared';
 
 @Component({
     selector: 'crashes-by-year',
     template: '<div id="crashesByYear"></div>'
 })
-export class CrashesByYearComponent implements OnInit {
+export class CrashesByYearComponent implements OnChanges {
+
+    @Input() query: CrashesOverTimeQuery;
 
     private sub: Subscription;
 
     constructor(private reporting: ReportingService) { }
 
-    ngOnInit() {
+    ngOnChanges() {
         this.refresh();
     }
 
@@ -72,7 +74,7 @@ export class CrashesByYearComponent implements OnInit {
         }
 
         this.sub = this.reporting
-            .getCrashesOverTimeByYear()
+            .getCrashesOverTimeByYear(this.query)
             .subscribe(report => {
                 options = { ...options, xAxis: { categories: report.categories }, series: report.series };
                 Highcharts.chart(options);

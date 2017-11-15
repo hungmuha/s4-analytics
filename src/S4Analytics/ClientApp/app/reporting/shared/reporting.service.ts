@@ -2,28 +2,29 @@
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { ReportOverTime } from './report-over-time';
+import { CrashesOverTimeQuery } from './crashes-over-time-query';
 
 @Injectable()
 export class ReportingService {
     constructor(private http: Http) { }
 
-    getCrashesOverTimeByYear(): Observable<ReportOverTime> {
+    getCrashesOverTimeByYear(query: CrashesOverTimeQuery): Observable<ReportOverTime> {
         return this.http
-            .get('api/report/crash/year')
+            .post('api/report/crash/year', query)
             .map(response => response.json() as ReportOverTime)
             .map(report => new ReportOverTime(report));
     }
 
-    getCrashesOverTimeByMonth(year: number): Observable<ReportOverTime> {
+    getCrashesOverTimeByMonth(year: number, query: CrashesOverTimeQuery): Observable<ReportOverTime> {
         return this.http
-            .get(`api/report/crash/${year}/month`)
+            .post(`api/report/crash/${year}/month`, query)
             .map(response => response.json() as ReportOverTime)
             .map(report => new ReportOverTime(report));
     }
 
-    getCrashesOverTimeByDay(year: number, alignByWeek: boolean): Observable<ReportOverTime> {
+    getCrashesOverTimeByDay(year: number, alignByWeek: boolean, query: CrashesOverTimeQuery): Observable<ReportOverTime> {
         return this.http
-            .get(`api/report/crash/${year}/day?alignByWeek=${alignByWeek}`)
+            .post(`api/report/crash/${year}/day?alignByWeek=${alignByWeek}`, query)
             .map(response => response.json() as ReportOverTime)
             .map(report => new ReportOverTime(report));
     }

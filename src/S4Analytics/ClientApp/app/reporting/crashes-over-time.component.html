@@ -52,7 +52,7 @@
                               [(ngModel)]="selectedFormType"></button-group>
             </div>
             <div class="col-12 col-sm-6 col-lg-4 col-xl-3 offset-xl-3">
-                <br /><button class="btn btn-sm btn-primary">Refresh</button>
+                <br /><button class="btn btn-sm btn-primary" (click)="refresh()">Refresh</button>
             </div>
         </div>
     </div>
@@ -79,14 +79,17 @@
     </div>
     <div class="card-block">
         <div class="m-3">
-            <crashes-by-year [hidden]="selectedReportScope!=='Year'"></crashes-by-year>
+            <crashes-by-year [query]="query"
+                             *ngIf="selectedReportScope==='Year'"></crashes-by-year>
             <crashes-by-month [reportYear]="selectedYear"
                               [yearOnYear]="yearOnYear"
-                              [hidden]="selectedReportScope!=='Month'"></crashes-by-month>
+                              [query]="query"
+                              *ngIf="selectedReportScope==='Month'"></crashes-by-month>
             <crashes-by-day [reportYear]="selectedYear"
                             [yearOnYear]="yearOnYear"
                             [alignByWeek]="alignByWeek"
-                            [hidden]="selectedReportScope!=='Day'"></crashes-by-day>
+                            [query]="query"
+                            *ngIf="selectedReportScope==='Day'"></crashes-by-day>
         </div>
     </div>
 </div>

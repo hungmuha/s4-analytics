@@ -2,7 +2,7 @@
 import { Subscription } from 'rxjs/Subscription';
 import * as Highstock from 'highcharts/highstock';
 import * as moment from 'moment';
-import { ReportingService } from './shared';
+import { ReportingService, CrashesOverTimeQuery } from './shared';
 
 @Component({
     selector: 'crashes-by-day',
@@ -13,6 +13,7 @@ export class CrashesByDayComponent implements OnChanges {
     @Input() reportYear: number;
     @Input() yearOnYear: boolean;
     @Input() alignByWeek: boolean;
+    @Input() query: CrashesOverTimeQuery;
 
     private sub: Subscription;
 
@@ -75,7 +76,7 @@ export class CrashesByDayComponent implements OnChanges {
         }
 
         this.sub = this.reporting
-            .getCrashesOverTimeByDay(this.reportYear, this.alignByWeek)
+            .getCrashesOverTimeByDay(this.reportYear, this.alignByWeek, this.query)
             .subscribe(report => {
                 let xAxisMaxDate = new Date(report.maxDate);
                 xAxisMaxDate.setDate(xAxisMaxDate.getDate() + 5);

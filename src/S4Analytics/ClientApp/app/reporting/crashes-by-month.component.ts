@@ -1,7 +1,7 @@
 ﻿import { Component, OnChanges, Input } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import * as Highcharts from 'highcharts';
-import { ReportingService } from './shared';
+import { ReportingService, CrashesOverTimeQuery } from './shared';
 
 @Component({
     selector: 'crashes-by-month',
@@ -11,6 +11,7 @@ export class CrashesByMonthComponent implements OnChanges {
 
     @Input() reportYear: number;
     @Input() yearOnYear: boolean;
+    @Input() query: CrashesOverTimeQuery;
 
     private sub: Subscription;
 
@@ -50,7 +51,7 @@ export class CrashesByMonthComponent implements OnChanges {
         }
 
         this.sub = this.reporting
-            .getCrashesOverTimeByMonth(this.reportYear)
+            .getCrashesOverTimeByMonth(this.reportYear, this.query)
             .subscribe(report => {
                 options = {
                     ...options,
