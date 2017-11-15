@@ -68,7 +68,7 @@ namespace S4Analytics.Models
                 series2Label = string.Format(series2Format, monthNames[(int)series2StartMonth], monthNames[(int)series2EndMonth]);
             }
 
-            // var queryFilterText = PrepareFilterQueryText(query);
+            var preparedQuery = PrepareQuery(query);
 
             var queryText = $@"WITH grouped_cts AS (
                 -- count matching crashes, grouped by year and month
@@ -78,7 +78,7 @@ namespace S4Analytics.Models
                     COUNT(*) ct
                 FROM crash_evt
                 WHERE key_crash_dt < TRUNC(:maxDate + 1)
-                -- AND ( queryFilterText )
+                AND ( {preparedQuery.queryText} )
                 GROUP BY crash_yr, crash_mm
             )
             SELECT /*+ RESULT_CACHE */ -- sum previous counts, grouped by series and year
@@ -95,15 +95,19 @@ namespace S4Analytics.Models
                 CASE WHEN crash_mm <= :series1EndMonth THEN 1 ELSE 2 END,
                 crash_yr";
 
+            var dynamicParams = preparedQuery.DynamicParams;
+            dynamicParams.Add(new
+            {
+                series1EndMonth,
+                series1Label,
+                series2Label,
+                maxDate
+            });
+
             var report = new ReportOverTime<int>() { maxDate = maxDate };
             using (var conn = new OracleConnection(_connStr))
             {
-                var results = conn.Query(queryText, new {
-                    series1EndMonth,
-                    series1Label,
-                    series2Label,
-                    maxDate
-                });
+                var results = conn.Query(queryText, dynamicParams);
                 report.categories = results.DistinctBy(r => r.CATEGORY).Select(r => (string)(r.CATEGORY));
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
                 var series = new List<ReportSeries<int>>();
@@ -131,7 +135,7 @@ namespace S4Analytics.Models
                 maxDate = new DateTime(year, 12, 31);
             }
 
-            // var queryFilterText = PrepareFilterQueryText(query);
+            var preparedQuery = PrepareQuery(query);
 
             var queryText = $@"WITH grouped_cts AS (
                 -- count matching crashes, grouped by year and month
@@ -142,7 +146,7 @@ namespace S4Analytics.Models
                 FROM crash_evt
                 WHERE crash_yr IN (:year, :year - 1)
                 AND key_crash_dt < TRUNC(:maxDate + 1)
-                -- AND ( queryFilterText )
+                AND ( {preparedQuery.queryText} )
                 GROUP BY crash_yr, crash_mm
             )
             SELECT /*+ RESULT_CACHE */ -- sum previous counts, grouped by series and month
@@ -153,13 +157,17 @@ namespace S4Analytics.Models
             GROUP BY crash_yr, crash_mm
             ORDER BY crash_yr, crash_mm";
 
+            var dynamicParams = preparedQuery.DynamicParams;
+            dynamicParams.Add(new
+            {
+                maxDate,
+                maxDate.Year
+            });
+
             var report = new ReportOverTime<int>() { maxDate = maxDate };
             using (var conn = new OracleConnection(_connStr))
             {
-                var results = conn.Query(queryText, new {
-                    maxDate,
-                    maxDate.Year
-                });
+                var results = conn.Query(queryText, dynamicParams);
                 report.categories = results.DistinctBy(r => r.CATEGORY).Select(r => (string)(r.CATEGORY));
                 var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
                 var series = new List<ReportSeries<int>>();
@@ -299,6 +307,11 @@ namespace S4Analytics.Models
             });
 
             // join where clauses
+            if (whereClauses.Count == 0)
+            {
+                // prevent the query from breaking if there are no where clauses
+                whereClauses.Add("1=1");
+            }
             var queryText = "(" + string.Join(")\r\nAND (", whereClauses) + ")";
 
             return new PreparedQuery(queryText, queryParameters);
