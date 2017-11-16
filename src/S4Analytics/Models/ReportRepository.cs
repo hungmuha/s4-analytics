@@ -268,30 +268,38 @@ namespace S4Analytics.Models
 
             var preparedQuery = PrepareQuery(query);
 
-            var queryText = $@"WITH aligned_dts AS (
+            var queryText = $@"WITH
+            aligned_dts AS (
                 SELECT /*+ RESULT_CACHE */
                     ROWNUM AS seq, yr, evt_dt, prev_yr, prev_yr_dt
                 FROM ( {innerQueryText} )
+            ),
+            crash_cts AS (
+                SELECT /*+ RESULT_CACHE */
+                    key_crash_dt, COUNT(*) AS ct
+                FROM crash_evt ce
+                WHERE crash_yr BETWEEN :year - 1 AND :year
+                AND ( {preparedQuery.queryText} )
+                GROUP BY key_crash_dt
             )
             SELECT /*+ RESULT_CACHE */
-                series,
-                seq,
-                evt_dt,
-                CASE WHEN evt_dt IS NULL OR evt_dt >= TRUNC(:maxDate + 1) THEN NULL ELSE ct END AS ct
+                series, seq, evt_dt,
+                CASE
+                    WHEN evt_dt IS NULL OR evt_dt >= TRUNC(:maxDate + 1) THEN NULL
+                    ELSE NVL(ct, 0)
+                END AS ct
             FROM (
-                SELECT TO_CHAR(ad.yr) AS series, ad.seq, ad.evt_dt, COUNT(*) ct
+                SELECT
+                    TO_CHAR(ad.yr) AS series, ad.seq, ad.evt_dt, cts.ct
                 FROM aligned_dts ad
-                LEFT OUTER JOIN crash_evt ce
-                    ON ce.key_crash_dt = ad.evt_dt
-                    AND ( {preparedQuery.queryText} )
-                GROUP BY ad.seq, ad.yr, ad.evt_dt
+                LEFT OUTER JOIN crash_cts cts
+                    ON cts.key_crash_dt = ad.evt_dt
                 UNION ALL
-                SELECT TO_CHAR(ad.prev_yr) AS series, ad.seq, ad.prev_yr_dt AS evt_dt, COUNT(*) ct
+                SELECT
+                    TO_CHAR(ad.prev_yr) AS series, ad.seq, ad.prev_yr_dt AS evt_dt, cts.ct
                 FROM aligned_dts ad
-                LEFT OUTER JOIN crash_evt ce
-                    ON ce.key_crash_dt = ad.prev_yr_dt
-                    AND ( {preparedQuery.queryText} )
-                GROUP BY ad.seq, ad.prev_yr, ad.prev_yr_dt
+                LEFT OUTER JOIN crash_cts cts
+                    ON cts.key_crash_dt = ad.prev_yr_dt
             ) res
             ORDER BY series, seq";
 
@@ -402,10 +410,15 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"key_rptg_agncy = :reportingAgencyId";
+            var whereClause = @"(:isFhpTroop = 0 AND key_rptg_agncy = :reportingAgencyId)
+                OR (:isFhpTroop = 1 AND key_rptg_agncy = 1 AND key_rptg_unit = :reportingAgencyId)";
 
             // define oracle parameters
-            var parameters = new { reportingAgencyId };
+            var parameters = new
+            {
+                isFhpTroop = reportingAgencyId > 1 && reportingAgencyId <= 14 ? 1 : 0,
+                reportingAgencyId
+            };
 
             return (whereClause, parameters);
         }
