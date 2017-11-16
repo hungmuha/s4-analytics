@@ -1,4 +1,4 @@
-﻿import { Component, OnChanges, Input } from '@angular/core';
+﻿import { Component, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import * as Highcharts from 'highcharts';
 import { ReportingService, CrashesOverTimeQuery } from './shared';
@@ -12,6 +12,7 @@ export class CrashesByMonthComponent implements OnChanges {
     @Input() reportYear: number;
     @Input() yearOnYear: boolean;
     @Input() query: CrashesOverTimeQuery;
+    @Output() loaded = new EventEmitter<any>();
 
     private sub: Subscription;
 
@@ -61,6 +62,7 @@ export class CrashesByMonthComponent implements OnChanges {
                     series: this.yearOnYear ? report.series : [ report.series[1] ]
                 };
                 Highcharts.chart(options);
+                this.loaded.emit();
             });
     }
 }

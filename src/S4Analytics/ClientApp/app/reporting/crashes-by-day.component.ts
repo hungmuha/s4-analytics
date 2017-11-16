@@ -1,4 +1,4 @@
-﻿import { Component, OnChanges, Input } from '@angular/core';
+﻿import { Component, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import * as Highstock from 'highcharts/highstock';
 import * as moment from 'moment';
@@ -14,6 +14,7 @@ export class CrashesByDayComponent implements OnChanges {
     @Input() yearOnYear: boolean;
     @Input() alignByWeek: boolean;
     @Input() query: CrashesOverTimeQuery;
+    @Output() loaded = new EventEmitter<any>();
 
     private sub: Subscription;
 
@@ -86,6 +87,7 @@ export class CrashesByDayComponent implements OnChanges {
                     series: this.yearOnYear ? report.series : [report.series[1]]
                 };
                 Highstock.stockChart('crashesByDay', options);
+                this.loaded.emit();
             });
     }
 

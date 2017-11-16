@@ -1,4 +1,4 @@
-﻿import { Component, OnChanges, Input } from '@angular/core';
+﻿import { Component, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import * as Highcharts from 'highcharts';
 import { ReportingService, CrashesOverTimeQuery } from './shared';
@@ -10,10 +10,16 @@ import { ReportingService, CrashesOverTimeQuery } from './shared';
 export class CrashesByYearComponent implements OnChanges {
 
     @Input() query: CrashesOverTimeQuery;
+    @Output() loaded = new EventEmitter<any>();
 
     private sub: Subscription;
+    private chart: Highcharts.ChartObject;
 
     constructor(private reporting: ReportingService) { }
+
+    ngOnInit() {
+
+    }
 
     ngOnChanges() {
         this.refresh();
@@ -78,6 +84,7 @@ export class CrashesByYearComponent implements OnChanges {
             .subscribe(report => {
                 options = { ...options, xAxis: { categories: report.categories }, series: report.series };
                 Highcharts.chart(options);
+                this.loaded.emit();
             });
     }
 }

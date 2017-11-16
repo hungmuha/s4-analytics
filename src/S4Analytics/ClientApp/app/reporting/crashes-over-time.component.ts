@@ -17,6 +17,7 @@ class Lookup {
 export class CrashesOverTimeComponent implements OnInit {
 
     query = new CrashesOverTimeQuery();
+    loading: boolean;
 
     agencies: Lookup[];
     geographies: Lookup[];
@@ -43,11 +44,12 @@ export class CrashesOverTimeComponent implements OnInit {
     yearOnYear: boolean;
     alignByWeek: boolean;
 
-    constructor(private reporting: ReportingService) { }
-
     private currentYear = (new Date()).getFullYear();
 
+    constructor(private reporting: ReportingService) { }
+
     ngOnInit() {
+        this.beginLoad();
         this.reporting.getReportingAgencies().subscribe(results => this.agencies = results);
         this.reporting.getGeographies().subscribe(results => this.geographies = results);
         this.years = [this.currentYear, this.currentYear - 1, this.currentYear - 2, this.currentYear - 3];
@@ -55,6 +57,14 @@ export class CrashesOverTimeComponent implements OnInit {
         this.selectedYear = this.currentYear;
         this.yearOnYear = true;
         this.alignByWeek = true;
+    }
+
+    beginLoad() {
+        this.loading = true;
+    }
+
+    endLoad() {
+        this.loading = false;
     }
 
     formatLookup(value: Lookup) {
@@ -66,16 +76,18 @@ export class CrashesOverTimeComponent implements OnInit {
             .distinctUntilChanged()
             .map(term => term.length === 0
                 ? []
-                : _.filter(this.geographies, g => g.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10));
+                : _.filter(this.geographies, g => g.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
 
     searchAgencies = (text: Observable<string>) =>
         text.debounceTime(200)
             .distinctUntilChanged()
             .map(term => term.length === 0
                 ? []
-                : _.filter(this.agencies, g => g.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10));
+                : _.filter(this.agencies, g => g.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
 
     refresh() {
+        this.beginLoad();
+
         // clear geography & agency fields if a valid selection was not made
         if (this.selectedGeography === undefined || !this.selectedGeography.hasOwnProperty('key')) {
             this.selectedGeography = '';
@@ -85,8 +97,12 @@ export class CrashesOverTimeComponent implements OnInit {
         }
 
         let query: CrashesOverTimeQuery = {
-            geographyId: this.selectedGeography !== '' ? (this.selectedGeography as Lookup).key : undefined,
-            reportingAgencyId: this.selectedAgency !== '' ? (this.selectedAgency as Lookup).key : undefined,
+            geographyId: this.selectedGeography !== ''
+                ? (this.selectedGeography as Lookup).key
+                : undefined,
+            reportingAgencyId: this.selectedAgency !== ''
+                ? (this.selectedAgency as Lookup).key
+                : undefined,
             severity: this.selectedSeverities.length > 0
                 ? {
                     fatality: _.includes(this.selectedSeverities, 'Fatal'),
