@@ -85,6 +85,7 @@ namespace S4Analytics.Models
             // find the last day of the last full month that ended at least MIN_DAYS_BACK days ago
             var nDaysAgo = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
             var maxDate = new DateTime(nDaysAgo.Year, nDaysAgo.Month, 1).Subtract(new TimeSpan(1, 0, 0, 0));
+            var minDate = new DateTime(maxDate.Year - 4, 1, 1); // include 4 calendar years prior to maxDate
             bool isFullYear = maxDate.Month == 12;
 
             int series1StartMonth = 1;
@@ -116,7 +117,7 @@ namespace S4Analytics.Models
                     crash_mm,
                     COUNT(*) ct
                 FROM crash_evt
-                WHERE key_crash_dt < TRUNC(:maxDate + 1)
+                WHERE key_crash_dt BETWEEN TRUNC(:minDate) AND TRUNC(:maxDate + 1)
                 AND ( {preparedQuery.queryText} )
                 GROUP BY crash_yr, crash_mm
             )
@@ -140,7 +141,8 @@ namespace S4Analytics.Models
                 series1EndMonth,
                 series1Label,
                 series2Label,
-                maxDate
+                maxDate,
+                minDate
             });
 
             var report = new ReportOverTime<int>() { maxDate = maxDate };
@@ -283,25 +285,25 @@ namespace S4Analytics.Models
                 GROUP BY key_crash_dt
             )
             SELECT /*+ RESULT_CACHE */
-                series, seq, evt_dt,
+                TO_CHAR(yr) AS series, seq, evt_dt,
                 CASE
                     WHEN evt_dt IS NULL OR evt_dt >= TRUNC(:maxDate + 1) THEN NULL
                     ELSE NVL(ct, 0)
                 END AS ct
             FROM (
                 SELECT
-                    TO_CHAR(ad.yr) AS series, ad.seq, ad.evt_dt, cts.ct
+                    ad.yr, ad.seq, ad.evt_dt, cts.ct
                 FROM aligned_dts ad
                 LEFT OUTER JOIN crash_cts cts
                     ON cts.key_crash_dt = ad.evt_dt
                 UNION ALL
                 SELECT
-                    TO_CHAR(ad.prev_yr) AS series, ad.seq, ad.prev_yr_dt AS evt_dt, cts.ct
+                    ad.prev_yr AS yr, ad.seq, ad.prev_yr_dt AS evt_dt, cts.ct
                 FROM aligned_dts ad
                 LEFT OUTER JOIN crash_cts cts
                     ON cts.key_crash_dt = ad.prev_yr_dt
             ) res
-            ORDER BY series, seq";
+            ORDER BY yr, seq";
 
             var dynamicParams = preparedQuery.DynamicParams;
             dynamicParams.Add(new
