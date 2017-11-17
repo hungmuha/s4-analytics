@@ -19,32 +19,23 @@ export class CrashesOverTimeComponent implements OnInit {
     query = new CrashesOverTimeQuery();
     loading: boolean;
 
-    agencies: Lookup[];
     geographies: Lookup[];
+    agencies: Lookup[];
     severities = ['Fatal', 'Injury', 'PDO'];
     impairments = ['Alcohol', 'Drugs'];
     bikePedTypes = ['Bike', 'Ped'];
     yesNo = ['Yes', 'No'];
     formTypes = ['Long', 'Short'];
-    reportScopes = ['Year', 'Month', 'Day'];
     years: number[];
 
+    selectedGeography: Lookup | string;
+    selectedAgency: Lookup | string;
     selectedSeverities: string[] = [];
     selectedImpairments: string[] = [];
     selectedBikePedTypes: string[] = [];
     selectedCmvRelated?: string = undefined;
     selectedCodeable?: string = undefined;
     selectedFormType?: string = undefined;
-    selectedReportScope: string;
-    selectedYear: number;
-
-    selectedGeography: Lookup | string;
-    selectedAgency: Lookup | string;
-
-    yearOnYear: boolean;
-    alignByWeek: boolean;
-
-    private currentYear = (new Date()).getFullYear();
 
     constructor(private reporting: ReportingService) { }
 
@@ -52,11 +43,8 @@ export class CrashesOverTimeComponent implements OnInit {
         this.beginLoad();
         this.reporting.getReportingAgencies().subscribe(results => this.agencies = results);
         this.reporting.getGeographies().subscribe(results => this.geographies = results);
-        this.years = [this.currentYear, this.currentYear - 1, this.currentYear - 2, this.currentYear - 3];
-        this.selectedReportScope = 'Year';
-        this.selectedYear = this.currentYear;
-        this.yearOnYear = true;
-        this.alignByWeek = true;
+        let currentYear = (new Date()).getFullYear();
+        this.years = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3];
     }
 
     beginLoad() {

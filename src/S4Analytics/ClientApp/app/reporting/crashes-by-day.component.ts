@@ -6,25 +6,74 @@ import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared
 
 @Component({
     selector: 'crashes-by-day',
-    template: '<div id="crashesByDay"></div>'
+    template: `<card>
+        <ng-container card-header>
+            Crashes by day
+        </ng-container>
+        <div class="m-3" card-block>
+            <div id="crashesByDay"></div>
+        </div>
+        <div card-footer>
+            <label>
+                <input type="checkbox" [(ngModel)]="alignByWeek" [disabled]="!yearOnYear" />
+                Align by week
+            </label>
+            <label class="ml-2">
+                <input type="checkbox" [(ngModel)]="yearOnYear" />
+                Year-on-year
+            </label>
+            <button-group [items]="years" [(ngModel)]="reportYear"></button-group>
+        </div>
+    </card>`
 })
 export class CrashesByDayComponent implements OnInit, OnChanges {
 
-    @Input() reportYear: number;
-    @Input() yearOnYear: boolean;
-    @Input() alignByWeek: boolean;
     @Input() query: CrashesOverTimeQuery;
     @Output() loaded = new EventEmitter<any>();
+    @Input() years: number[];
+
+    get alignByWeek(): boolean {
+        return this._alignByWeek;
+    }
+    set alignByWeek(value: boolean) {
+        this._alignByWeek = value;
+        this.ngOnChanges();
+    }
+
+    get yearOnYear(): boolean {
+        return this._yearOnYear;
+    }
+    set yearOnYear(value: boolean) {
+        this._yearOnYear = value;
+        this.ngOnChanges();
+    }
+
+    get reportYear(): number {
+        return this._reportYear;
+    }
+    set reportYear(value: number) {
+        this._reportYear = value;
+        this.ngOnChanges();
+    }
+
+    private _alignByWeek: boolean;
+    private _yearOnYear: boolean;
+    private _reportYear: number;
 
     private sub: Subscription;
     private chart: Highstock.ChartObject;
+    private initialized: boolean;
 
     constructor(private reporting: ReportingService) { }
 
     ngOnInit() {
+        this.alignByWeek = true;
+        this.yearOnYear = true;
+        this.reportYear = this.years[0];
+
         let options: any = {
             title: {
-                text: 'Crashes over time by day'
+                text: ''
             },
             rangeSelector: {
                 buttons: [{
@@ -62,9 +111,18 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
             }
         };
         this.chart = Highstock.stockChart('crashesByDay', options);
+
+        this.initialized = true;
+        this.retrieveData();
     }
 
     ngOnChanges() {
+        this.retrieveData();
+    }
+
+    private retrieveData() {
+        if (!this.initialized) { return; }
+
         // cancel any prior request or the user may get unexpected results
         if (this.sub !== undefined && !this.sub.closed) {
             this.sub.unsubscribe();
@@ -72,10 +130,10 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
 
         this.sub = this.reporting
             .getCrashesOverTimeByDay(this.reportYear, this.alignByWeek, this.query)
-            .subscribe(report => this.drawReportData(report));
+            .subscribe(report => this.drawData(report));
     }
 
-    private drawReportData(report: ReportOverTime) {
+    private drawData(report: ReportOverTime) {
         // set x-axis labels
         let options = {
             xAxis: { categories: report.categories },

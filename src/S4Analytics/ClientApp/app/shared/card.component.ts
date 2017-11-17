@@ -1,5 +1,7 @@
 ﻿import { Component, Input } from '@angular/core';
 
+// see https://scotch.io/tutorials/angular-2-transclusion-using-ng-content
+
 @Component({
     selector: 'card',
     template: `<div class="card mb-3" [class.collapsible]="collapsible" [class.collapsed]="collapsed">
@@ -21,17 +23,17 @@
     </div>`
 })
 export class CardComponent {
-    private _collapsed: boolean;
-
     @Input() hideHeader: boolean;
     @Input() hideFooter: boolean;
     @Input() collapsible: boolean = true;
     @Input() set collapsed(value: boolean) {
         this._collapsed = this.collapsible ? value : false;
-    };
+    }
     get collapsed(): boolean {
         return this._collapsed;
     }
+
+    private _collapsed: boolean;
 
     toggle() {
         if (this.collapsible) {

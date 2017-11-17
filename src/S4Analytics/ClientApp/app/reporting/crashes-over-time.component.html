@@ -1,9 +1,10 @@
-﻿<h2 class="mt-4">Crashes over time report</h2>
-
-<div class="card">
-    <div class="card-header border-bottom-0">
+﻿<div class="row">
+    <div class="analytics-filters">
         <div class="row">
-            <div class="col-12 col-md-6">
+            <div class="col-12">
+                <h2>Crashes over time report</h2>
+            </div>
+            <div class="col-12">
                 Geographic area (city or county)
                 <input type="text"
                        class="form-control"
@@ -13,7 +14,7 @@
                        [inputFormatter]="formatLookup"
                        [resultFormatter]="formatLookup" />
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12">
                 Reporting agency
                 <input type="text"
                        class="form-control"
@@ -23,92 +24,55 @@
                        [inputFormatter]="formatLookup"
                        [resultFormatter]="formatLookup" />
             </div>
-        </div>
-        <div class="row">
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                Severity<br />
+            <div class="col-12">
+                Severity
                 <button-group anyOrAllText="All"
                               [multipleSelect]="true"
                               [items]="severities"
                               [(ngModel)]="selectedSeverities"></button-group>
             </div>
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                Impairment<br />
+            <div class="col-12">
+                Impairment
                 <button-group anyOrAllText="All"
                               [multipleSelect]="true"
                               [items]="impairments"
                               [(ngModel)]="selectedImpairments"></button-group>
             </div>
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                Bike/Ped<br />
+            <div class="col-12">
+                Bike/Ped
                 <button-group anyOrAllText="Any"
                               [multipleSelect]="true"
                               [items]="bikePedTypes"
                               [(ngModel)]="selectedBikePedTypes"></button-group>
             </div>
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                CMV-related<br />
+            <div class="col-12">
+                CMV-related
                 <button-group anyOrAllText="Any"
                               [items]="yesNo"
                               [(ngModel)]="selectedCmvRelated"></button-group>
             </div>
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                Codeable<br />
+            <div class="col-12">
+                Codeable
                 <button-group anyOrAllText="Any"
                               [items]="yesNo"
                               [(ngModel)]="selectedCodeable"></button-group>
             </div>
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                Form type<br />
+            <div class="col-12">
+                Form type
                 <button-group anyOrAllText="Any"
                               [items]="formTypes"
                               [(ngModel)]="selectedFormType"></button-group>
             </div>
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3 offset-xl-3">
-                <br />
+            <div class="col-12">
                 <button class="btn btn-sm btn-primary" [disabled]="loading" (click)="refresh()">
                     Refresh <span class="fa fa-spin fa-spinner" [hidden]="!loading"></span>
                 </button>
             </div>
         </div>
     </div>
-</div>
-
-<div class="card my-3">
-    <div class="card-header d-flex justify-content-between">
-        <div>
-            Chart by
-            <button-group [items]="reportScopes"
-                          [(ngModel)]="selectedReportScope"></button-group>
-        </div>
-        <div>
-            <label *ngIf="selectedReportScope==='Day'">
-                <input type="checkbox" [(ngModel)]="alignByWeek" [disabled]="!yearOnYear" /> Align by week
-            </label>
-            <label *ngIf="selectedReportScope!=='Year'" class="ml-2">
-                <input type="checkbox" [(ngModel)]="yearOnYear" /> Year-on-year
-            </label>
-            <button-group *ngIf="selectedReportScope!=='Year'"
-                          [items]="years"
-                          [(ngModel)]="selectedYear"></button-group>
-        </div>
-    </div>
-    <div class="card-block">
-        <div class="m-3">
-            <crashes-by-year [query]="query"
-                             (loaded)="endLoad()"
-                             *ngIf="selectedReportScope==='Year'"></crashes-by-year>
-            <crashes-by-month [reportYear]="selectedYear"
-                              [yearOnYear]="yearOnYear"
-                              [query]="query"
-                              (loaded)="endLoad()"
-                              *ngIf="selectedReportScope==='Month'"></crashes-by-month>
-            <crashes-by-day [reportYear]="selectedYear"
-                            [yearOnYear]="yearOnYear"
-                            [alignByWeek]="alignByWeek"
-                            [query]="query"
-                            (loaded)="endLoad()"
-                            *ngIf="selectedReportScope==='Day'"></crashes-by-day>
-        </div>
+    <div class="col-12 analytics-main">
+        <crashes-by-year [query]="query" (loaded)="endLoad()"></crashes-by-year>
+        <crashes-by-month [years]="years" [query]="query" (loaded)="endLoad()"></crashes-by-month>
+        <crashes-by-day [years]="years" [query]="query" (loaded)="endLoad()"></crashes-by-day>
     </div>
 </div>
