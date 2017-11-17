@@ -1,14 +1,14 @@
-﻿import { Component, OnChanges, Input, Output, EventEmitter } from '@angular/core';
+﻿import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import * as Highstock from 'highcharts/highstock';
 import * as moment from 'moment';
-import { ReportingService, CrashesOverTimeQuery } from './shared';
+import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
 
 @Component({
     selector: 'crashes-by-day',
     template: '<div id="crashesByDay"></div>'
 })
-export class CrashesByDayComponent implements OnChanges {
+export class CrashesByDayComponent implements OnInit, OnChanges {
 
     @Input() reportYear: number;
     @Input() yearOnYear: boolean;
@@ -17,14 +17,11 @@ export class CrashesByDayComponent implements OnChanges {
     @Output() loaded = new EventEmitter<any>();
 
     private sub: Subscription;
+    private chart: Highstock.ChartObject;
 
     constructor(private reporting: ReportingService) { }
 
-    ngOnChanges() {
-        this.refresh();
-    }
-
-    refresh() {
+    ngOnInit() {
         let options: any = {
             title: {
                 text: 'Crashes over time by day'
@@ -62,15 +59,12 @@ export class CrashesByDayComponent implements OnChanges {
                 },
                 valueDecimals: 0,
                 shared: true
-            },
-            plotOptions: {
-                series: {
-                    pointStart: this.xAxisStartUtc(),
-                    pointInterval: 24 * 3600 * 1000 // one day
-                }
             }
         };
+        this.chart = Highstock.stockChart('crashesByDay', options);
+    }
 
+    ngOnChanges() {
         // cancel any prior request or the user may get unexpected results
         if (this.sub !== undefined && !this.sub.closed) {
             this.sub.unsubscribe();
@@ -78,17 +72,38 @@ export class CrashesByDayComponent implements OnChanges {
 
         this.sub = this.reporting
             .getCrashesOverTimeByDay(this.reportYear, this.alignByWeek, this.query)
-            .subscribe(report => {
-                let xAxisMaxDate = new Date(report.maxDate);
-                xAxisMaxDate.setDate(xAxisMaxDate.getDate() + 5);
-                // configure and create chart
-                options = {
-                    ...options,
-                    series: this.yearOnYear ? report.series : [report.series[1]]
-                };
-                Highstock.stockChart('crashesByDay', options);
-                this.loaded.emit();
-            });
+            .subscribe(report => this.drawReportData(report));
+    }
+
+    private drawReportData(report: ReportOverTime) {
+        // set x-axis labels
+        let options = {
+            xAxis: { categories: report.categories },
+            plotOptions: {
+                series: {
+                    pointStart: this.xAxisStartUtc(),
+                    pointInterval: 24 * 3600 * 1000 // one day
+                }
+            }
+        };
+        this.chart.update(options);
+
+        // remove old series
+        while (this.chart.series.length > 0) {
+            this.chart.series[0].remove(false);
+        }
+
+        // add new series
+        for (let i = 0; i < report.series.length; i++) {
+            if (this.yearOnYear || i === 1) { // i=0: prior year; i=1: selected year
+                let series = report.series[i];
+                this.chart.addSeries(series, false);
+            }
+        }
+
+        // redraw and emit loaded event
+        this.chart.redraw();
+        this.loaded.emit();
     }
 
     private xAxisStartUtc(): number {
