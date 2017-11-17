@@ -5,13 +5,16 @@ import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared
 
 @Component({
     selector: 'crashes-by-year',
-    template: `<card [hideFooter]="true">
+    template: `<card>
         <ng-container card-header>
-            Crashes by year
+            <div class="font-weight-bold">Crashes by year</div>
         </ng-container>
         <div class="m-3" card-block>
-            <div id="crashesByYear"></div>
+            <div id="crashesByYear" class="mr-3"></div>
         </div>
+        <ng-container card-footer>
+            Results shown for past 5 years only.
+        </ng-container>
     </card>`
 })
 export class CrashesByYearComponent implements OnInit, OnChanges {

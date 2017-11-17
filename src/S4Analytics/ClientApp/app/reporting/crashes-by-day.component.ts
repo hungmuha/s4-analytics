@@ -8,22 +8,27 @@ import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared
     selector: 'crashes-by-day',
     template: `<card>
         <ng-container card-header>
-            Crashes by day
+            <div class="font-weight-bold">Crashes by day</div>
         </ng-container>
         <div class="m-3" card-block>
             <div id="crashesByDay"></div>
         </div>
-        <div card-footer>
-            <label>
-                <input type="checkbox" [(ngModel)]="alignByWeek" [disabled]="!yearOnYear" />
-                Align by week
-            </label>
-            <label class="ml-2">
-                <input type="checkbox" [(ngModel)]="yearOnYear" />
-                Year-on-year
-            </label>
-            <button-group [items]="years" [(ngModel)]="reportYear"></button-group>
-        </div>
+        <ng-container card-footer>
+            <div class="mt-2">
+                Results shown through {{formattedMaxDate}}.
+            </div>
+            <div>
+                <label>
+                    <input type="checkbox" [(ngModel)]="alignByWeek" [disabled]="!yearOnYear" />
+                    Align by week
+                </label>
+                <label class="ml-2">
+                    <input type="checkbox" [(ngModel)]="yearOnYear" />
+                    Year-on-year
+                </label>
+                <button-group [items]="years" [(ngModel)]="reportYear"></button-group>
+            </div>
+        </ng-container>
     </card>`
 })
 export class CrashesByDayComponent implements OnInit, OnChanges {
@@ -61,8 +66,13 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
     private _reportYear: number;
 
     private sub: Subscription;
+    private maxDate: moment.Moment;
     private chart: Highstock.ChartObject;
     private initialized: boolean;
+
+    private get formattedMaxDate(): string {
+        return this.maxDate !== undefined ? this.maxDate.format('MMMM DD, YYYY') : '';
+    }
 
     constructor(private reporting: ReportingService) { }
 
@@ -130,7 +140,10 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
 
         this.sub = this.reporting
             .getCrashesOverTimeByDay(this.reportYear, this.alignByWeek, this.query)
-            .subscribe(report => this.drawData(report));
+            .subscribe(report => {
+                this.maxDate = moment(report.maxDate);
+                this.drawData(report);
+            });
     }
 
     private drawData(report: ReportOverTime) {

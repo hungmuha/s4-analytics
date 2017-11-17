@@ -71,8 +71,14 @@
         </div>
     </div>
     <div class="col-12 analytics-main">
-        <crashes-by-year [query]="query" (loaded)="endLoad()"></crashes-by-year>
-        <crashes-by-month [years]="years" [query]="query" (loaded)="endLoad()"></crashes-by-month>
+        <div class="row">
+            <div class="col-6">
+                <crashes-by-year [query]="query" (loaded)="endLoad()"></crashes-by-year>
+            </div>
+            <div class="col-6">
+                <crashes-by-month [years]="years" [query]="query" (loaded)="endLoad()"></crashes-by-month>
+            </div>
+        </div>
         <crashes-by-day [years]="years" [query]="query" (loaded)="endLoad()"></crashes-by-day>
     </div>
 </div>

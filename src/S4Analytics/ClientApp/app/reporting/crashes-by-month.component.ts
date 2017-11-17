@@ -1,23 +1,29 @@
 ﻿import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
+import * as moment from 'moment';
 import * as Highcharts from 'highcharts';
 import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
 
 @Component({
     selector: 'crashes-by-month',
-    template: `<card>
+    template: `<card [collapsible]="false">
         <ng-container card-header>
-            Crashes by month
+            <div class="font-weight-bold">Crashes by month</div>
+            <div class="d-inline">
+                <label>
+                    <input type="checkbox" [(ngModel)]="yearOnYear" />
+                    Year-on-year
+                </label>
+                <button-group [items]="years" [(ngModel)]="reportYear"></button-group>
+            </div>
         </ng-container>
         <div class="m-3" card-block>
-            <div id="crashesByMonth"></div>
+            <div id="crashesByMonth" class="mr-3"></div>
         </div>
-        <div card-footer>
-            <label>
-                <input type="checkbox" [(ngModel)]="yearOnYear" />
-                Year-on-year
-            </label>
-            <button-group [items]="years" [(ngModel)]="reportYear"></button-group>
+        <div class="row" card-footer>
+            <div class="col-12">
+                Results shown through {{formattedMaxDate}}.
+            </div>
         </div>
     </card>`
 })
@@ -47,8 +53,13 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
     private _reportYear: number;
 
     private sub: Subscription;
+    private maxDate: moment.Moment;
     private chart: Highcharts.ChartObject;
     private initialized: boolean;
+
+    private get formattedMaxDate(): string {
+        return this.maxDate !== undefined ? this.maxDate.format('MMMM YYYY') : '';
+    }
 
     constructor(private reporting: ReportingService) { }
 
@@ -98,7 +109,10 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
 
         this.sub = this.reporting
             .getCrashesOverTimeByMonth(this.reportYear, this.query)
-            .subscribe(report => this.drawData(report));
+            .subscribe(report => {
+                this.maxDate = moment(report.maxDate);
+                this.drawData(report);
+            });
     }
 
     private drawData(report: ReportOverTime) {
