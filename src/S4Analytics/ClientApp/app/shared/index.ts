@@ -8,6 +8,7 @@ export * from './app-state.service';
 export * from './checkbox-group.component';
 export * from './radio-button-group.component';
 export * from './button-group.component';
+export * from './card.component';
 
 import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
 import { OptionsResolveService } from './options-resolve.service';
