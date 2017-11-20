@@ -81,8 +81,8 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
                 }
             },
             tooltip: {
-                headerFormat: '<b>{point.x} {series.name}</b><br/>',
-                pointFormat: '{series.name}: {point.y}'
+                shared: true,
+                crosshairs: true
             },
             plotOptions: {
                 line: {

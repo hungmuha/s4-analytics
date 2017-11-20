@@ -183,19 +183,20 @@ namespace S4Analytics.Models
                 SELECT /*+ RESULT_CACHE */
                     crash_yr,
                     crash_mm,
+                    crash_mo,
                     COUNT(*) ct
                 FROM crash_evt
                 WHERE crash_yr IN (:year, :year - 1)
                 AND key_crash_dt < TRUNC(:maxDate + 1)
                 AND ( {preparedQuery.queryText} )
-                GROUP BY crash_yr, crash_mm
+                GROUP BY crash_yr, crash_mm, crash_mo
             )
             SELECT /*+ RESULT_CACHE */ -- sum previous counts, grouped by series and month
                 CAST(crash_yr AS VARCHAR2(4)) AS series,
-                CAST(crash_mm AS VARCHAR2(2)) AS category,
+                crash_mo AS category,
                 SUM(ct) AS ct
             FROM grouped_cts
-            GROUP BY crash_yr, crash_mm
+            GROUP BY crash_yr, crash_mm, crash_mo
             ORDER BY crash_yr, crash_mm";
 
             var dynamicParams = preparedQuery.DynamicParams;
