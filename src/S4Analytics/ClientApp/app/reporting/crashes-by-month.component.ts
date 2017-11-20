@@ -6,10 +6,18 @@ import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared
 
 @Component({
     selector: 'crashes-by-month',
-    template: `<card [collapsible]="false">
+    template: `<card>
         <ng-container card-header>
             <div class="font-weight-bold">Crashes by month</div>
-            <div class="d-inline">
+        </ng-container>
+        <div class="m-3" card-block>
+            <div id="crashesByMonth" class="mr-3"></div>
+        </div>
+        <ng-container card-footer>
+            <div class="mt-2">
+                Results shown through {{formattedMaxDate}}.
+            </div>
+            <div>
                 <label>
                     <input type="checkbox" [(ngModel)]="yearOnYear" />
                     Year-on-year
@@ -17,14 +25,6 @@ import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared
                 <button-group [items]="years" [(ngModel)]="reportYear"></button-group>
             </div>
         </ng-container>
-        <div class="m-3" card-block>
-            <div id="crashesByMonth" class="mr-3"></div>
-        </div>
-        <div class="row" card-footer>
-            <div class="col-12">
-                Results shown through {{formattedMaxDate}}.
-            </div>
-        </div>
     </card>`
 })
 export class CrashesByMonthComponent implements OnInit, OnChanges {
@@ -80,12 +80,16 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
                     text: 'Total'
                 }
             },
+            tooltip: {
+                headerFormat: '<b>{point.x} {series.name}</b><br/>',
+                pointFormat: '{series.name}: {point.y}'
+            },
             plotOptions: {
                 line: {
                     dataLabels: {
                         enabled: true
                     },
-                    enableMouseTracking: false
+                    enableMouseTracking: true
                 }
             }
         };

@@ -142,10 +142,6 @@ a.nav-link {
     padding-bottom: 0 !important;
 }
 
-.reporting .card-header div {
-    min-height: 2rem;
-}
-
 .form-login {
     max-width: 330px;
     padding: 15px;
