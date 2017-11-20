@@ -117,7 +117,7 @@ namespace S4Analytics.Models
                     crash_mm,
                     COUNT(*) ct
                 FROM crash_evt
-                WHERE key_crash_dt BETWEEN TRUNC(:minDate) AND TRUNC(:maxDate + 1)
+                WHERE key_crash_dt BETWEEN TRUNC(:minDate) AND TRUNC(:maxDate)
                 AND ( {preparedQuery.queryText} )
                 GROUP BY crash_yr, crash_mm
             )
