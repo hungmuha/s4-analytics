@@ -1,7 +1,7 @@
 ﻿import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import * as Highcharts from 'highcharts';
-import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
+import { CrashReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
 
 @Component({
     selector: 'crashes-by-year',
@@ -25,7 +25,7 @@ export class CrashesByYearComponent implements OnInit, OnChanges {
     private sub: Subscription;
     private chart: Highcharts.ChartObject;
 
-    constructor(private reporting: ReportingService) { }
+    constructor(private reporting: CrashReportingService) { }
 
     ngOnInit() {
         let options: Highcharts.Options = {

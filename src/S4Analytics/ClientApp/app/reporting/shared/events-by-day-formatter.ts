@@ -1,6 +1,6 @@
 ﻿import * as moment from 'moment';
 
-export class CrashesByDayFormatter {
+export class EventsByDayFormatter {
     /*  Note that you will never have an actual instance of this class. Instead the format methods
         below will be bound to a context object provided by Highcharts. The context object will have
         more fields than what are defined below, but we only need to define the ones we use
@@ -40,7 +40,7 @@ export class CrashesByDayFormatter {
         let formattedText = '';
         for (let i = 0; i < this.points.length; i++) {
             let point = this.points[i];
-            let formattedDate = mts[i].format("ddd, MMM D, YYYY");
+            let formattedDate = mts[i].format('ddd, MMM D, YYYY');
             formattedText += `<span style="color:${point.color}">\u25CF</span> ${formattedDate}: <b>${point.y}</b><br/>`;
         }
         return formattedText;
@@ -59,7 +59,7 @@ export class CrashesByDayFormatter {
         let formattedText = '';
         for (let i = 0; i < this.points.length; i++) {
             let point = this.points[i];
-            let formattedDate = mts[i].format("ddd, MMM D, YYYY");
+            let formattedDate = mts[i].format('ddd, MMM D, YYYY');
             formattedText += `<span style="color:${point.color}">\u25CF</span> ${formattedDate}: <b>${point.y}</b><br/>`;
         }
         return formattedText;

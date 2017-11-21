@@ -3,10 +3,10 @@ import { Subscription } from 'rxjs/Subscription';
 import * as Highstock from 'highcharts/highstock';
 import * as moment from 'moment';
 import {
-    ReportingService,
+    CrashReportingService,
     CrashesOverTimeQuery,
     ReportOverTime,
-    CrashesByDayFormatter
+    EventsByDayFormatter
 } from './shared';
 
 @Component({
@@ -79,7 +79,7 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
         return this.maxDate !== undefined ? this.maxDate.format('MMMM DD, YYYY') : '';
     }
 
-    constructor(private reporting: ReportingService) { }
+    constructor(private reporting: CrashReportingService) { }
 
     ngOnInit() {
         this.alignByWeek = true;
@@ -152,8 +152,8 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
             },
             tooltip: {
                 formatter: this.alignByWeek
-                    ? (new CrashesByDayFormatter()).formatAlignedByWeek // do not use arrow function because highcharts provides the context for the format method
-                    : (new CrashesByDayFormatter()).formatAlignedByDate
+                    ? (new EventsByDayFormatter()).formatAlignedByWeek // do not use arrow function because highcharts provides the context for the format method
+                    : (new EventsByDayFormatter()).formatAlignedByDate
             }
         };
         this.chart.update(options);

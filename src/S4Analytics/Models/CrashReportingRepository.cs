@@ -14,12 +14,12 @@ namespace S4Analytics.Models
         public string name;
     }
 
-    public class ReportRepository
+    public class CrashReportingRepository
     {
         private const int MIN_DAYS_BACK = 15;
         private readonly string _connStr;
 
-        public ReportRepository(
+        public CrashReportingRepository(
             IOptions<ServerOptions> serverOptions)
         {
             _connStr = serverOptions.Value.FlatConnStr;

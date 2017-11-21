@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import * as _ from 'lodash';
-import { CrashesOverTimeQuery, ReportingService } from './shared';
+import { CrashesOverTimeQuery, CrashReportingService } from './shared';
 
 class Lookup {
     key: number;
@@ -37,7 +37,7 @@ export class CrashesOverTimeComponent implements OnInit {
     selectedCodeable?: string = undefined;
     selectedFormType?: string = undefined;
 
-    constructor(private reporting: ReportingService) { }
+    constructor(private reporting: CrashReportingService) { }
 
     ngOnInit() {
         this.beginLoad();
