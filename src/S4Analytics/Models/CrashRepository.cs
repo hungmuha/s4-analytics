@@ -783,28 +783,11 @@ namespace S4Analytics.Models
                 return (null, null);
             }
 
-            var fhpTroopMap = new Dictionary<int, string>()
-            {
-                {2, "A"},
-                {3, "B"},
-                {4, "C"},
-                {5, "D"},
-                {6, "E"},
-                {7, "F"},
-                {8, "G"},
-                {9, "H"},
-                {12, "I"},
-                {13, "J"},
-                {10, "K"},
-                {11, "L"},
-                {14, "Q"}
-            };
             var agencyIds = reportingAgency
                 .Where(agencyId => agencyId == 1 || agencyId > 14)
                 .ToList();
             var fhpTroops = reportingAgency
                 .Where(agencyId => agencyId > 1 && agencyId <= 14)
-                .Select(agencyId => fhpTroopMap[agencyId])
                 .ToList();
 
             // define where clause
@@ -814,7 +797,7 @@ namespace S4Analytics.Models
             // define oracle parameters
             var parameters = new {
                 agencyIds = agencyIds.Any() ? agencyIds : _PSEUDO_EMPTY_INT_LIST,
-                fhpTroops = fhpTroops.Any() ? fhpTroops : _PSEUDO_EMPTY_STRING_LIST
+                fhpTroops = fhpTroops.Any() ? fhpTroops : _PSEUDO_EMPTY_INT_LIST
             };
 
             return (whereClause, parameters);

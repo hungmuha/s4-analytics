@@ -2,26 +2,42 @@
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { ReportOverTime } from './report-over-time';
+import { CrashesOverTimeQuery } from './crashes-over-time-query';
 
 @Injectable()
 export class ReportingService {
     constructor(private http: Http) { }
 
-    getCrashesOverTimeByYear(): Observable<ReportOverTime> {
+    getCrashesOverTimeByYear(query: CrashesOverTimeQuery): Observable<ReportOverTime> {
         return this.http
-            .get('api/report/crash/year')
-            .map(response => response.json() as ReportOverTime);
+            .post('api/report/crash/year', query)
+            .map(response => response.json() as ReportOverTime)
+            .map(report => new ReportOverTime(report));
     }
 
-    getCrashesOverTimeByMonth(): Observable<ReportOverTime> {
+    getCrashesOverTimeByMonth(year: number, query: CrashesOverTimeQuery): Observable<ReportOverTime> {
         return this.http
-            .get('api/report/crash/2017/month')
-            .map(response => response.json() as ReportOverTime);
+            .post(`api/report/crash/${year}/month`, query)
+            .map(response => response.json() as ReportOverTime)
+            .map(report => new ReportOverTime(report));
     }
 
-    getCrashesOverTimeByDay(): Observable<ReportOverTime> {
+    getCrashesOverTimeByDay(year: number, alignByWeek: boolean, query: CrashesOverTimeQuery): Observable<ReportOverTime> {
         return this.http
-            .get('api/report/crash/2017/day')
-            .map(response => response.json() as ReportOverTime);
+            .post(`api/report/crash/${year}/day?alignByWeek=${alignByWeek}`, query)
+            .map(response => response.json() as ReportOverTime)
+            .map(report => new ReportOverTime(report));
+    }
+
+    getGeographies(): Observable<{ key: number, name: string }[]> {
+        return this.http
+            .get('api/report/geographies')
+            .map(response => response.json());
+    }
+
+    getReportingAgencies(): Observable<{ key: number, name: string }[]> {
+        return this.http
+            .get('api/report/agencies')
+            .map(response => response.json());
     }
 }

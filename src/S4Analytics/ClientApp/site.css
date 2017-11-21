@@ -137,6 +137,11 @@ a.nav-link {
     display: none !important;
 }
 
+.card-header .btn {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
 .form-login {
     max-width: 330px;
     padding: 15px;

@@ -7,6 +7,7 @@ namespace S4Analytics.Models
 
     public class ReportSeries<T>
     {
+        public string Id { get { return name; } }
         public string name;
         public IEnumerable<T> data;
     }
@@ -15,5 +16,6 @@ namespace S4Analytics.Models
     {
         public IEnumerable<string> categories;
         public IEnumerable<ReportSeries<T>> series;
+        public DateTime maxDate;
     }
 }

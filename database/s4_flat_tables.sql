@@ -196,6 +196,7 @@ CREATE TABLE crash_evt (
     st_nm                         VARCHAR2(80),
     st_nbr                        VARCHAR2(20),
     veh_cnt                       NUMBER(*,0),
+    comm_veh_cnt                  NUMBER(*,0),
     moped_cnt                     NUMBER(*,0),
     motorcycle_cnt                NUMBER(*,0),
     nm_cnt                        NUMBER(*,0),
