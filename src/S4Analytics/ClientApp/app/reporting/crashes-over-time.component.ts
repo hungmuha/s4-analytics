@@ -16,9 +16,6 @@ class Lookup {
 })
 export class CrashesOverTimeComponent implements OnInit {
 
-    query = new CrashesOverTimeQuery();
-    loading: boolean;
-
     geographies: Lookup[];
     agencies: Lookup[];
     severities = ['Fatal', 'Injury', 'PDO'];
@@ -37,6 +34,15 @@ export class CrashesOverTimeComponent implements OnInit {
     selectedCodeable?: string = undefined;
     selectedFormType?: string = undefined;
 
+    query = new CrashesOverTimeQuery();
+    crashesByYearLoaded: boolean;
+    crashesByMonthLoaded: boolean;
+    crashesByDayLoaded: boolean;
+
+    get loading(): boolean {
+        return !(this.crashesByYearLoaded && this.crashesByMonthLoaded && this.crashesByDayLoaded);
+    }
+
     constructor(private reporting: CrashReportingService) { }
 
     ngOnInit() {
@@ -48,11 +54,7 @@ export class CrashesOverTimeComponent implements OnInit {
     }
 
     beginLoad() {
-        this.loading = true;
-    }
-
-    endLoad() {
-        this.loading = false;
+        this.crashesByYearLoaded = this.crashesByMonthLoaded = this.crashesByDayLoaded = false;
     }
 
     formatLookup(value: Lookup) {

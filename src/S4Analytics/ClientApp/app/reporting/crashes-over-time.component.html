@@ -71,8 +71,8 @@
         </div>
     </div>
     <div class="col-12 analytics-main">
-        <crashes-by-year [query]="query" (loaded)="endLoad()"></crashes-by-year>
-        <crashes-by-month [years]="years" [query]="query" (loaded)="endLoad()"></crashes-by-month>
-        <crashes-by-day [years]="years" [query]="query" (loaded)="endLoad()"></crashes-by-day>
+        <crashes-by-year [query]="query" (loaded)="crashesByYearLoaded=true"></crashes-by-year>
+        <crashes-by-month [years]="years" [query]="query" (loaded)="crashesByMonthLoaded=true"></crashes-by-month>
+        <crashes-by-day [years]="years" [query]="query" (loaded)="crashesByDayLoaded=true"></crashes-by-day>
     </div>
 </div>
