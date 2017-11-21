@@ -1,7 +1,14 @@
 ﻿import { Component, OnInit } from '@angular/core';
-import * as Highcharts from 'highcharts';
-import * as Highstock from 'highcharts/highstock';
-import { ReportingService } from './shared';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/distinctUntilChanged';
+import * as _ from 'lodash';
+import { CrashesOverTimeQuery, ReportingService } from './shared';
+
+class Lookup {
+    key: number;
+    name: string;
+}
 
 @Component({
     selector: 'crashes-over-time',
@@ -9,134 +16,109 @@ import { ReportingService } from './shared';
 })
 export class CrashesOverTimeComponent implements OnInit {
 
-    selected: 'year' | 'month' | 'day';
+    query = new CrashesOverTimeQuery();
+    loading: boolean;
+
+    geographies: Lookup[];
+    agencies: Lookup[];
+    severities = ['Fatal', 'Injury', 'PDO'];
+    impairments = ['Alcohol', 'Drugs'];
+    bikePedTypes = ['Bike', 'Ped'];
+    yesNo = ['Yes', 'No'];
+    formTypes = ['Long', 'Short'];
+    years: number[];
+
+    selectedGeography: Lookup | string;
+    selectedAgency: Lookup | string;
+    selectedSeverities: string[] = [];
+    selectedImpairments: string[] = [];
+    selectedBikePedTypes: string[] = [];
+    selectedCmvRelated?: string = undefined;
+    selectedCodeable?: string = undefined;
+    selectedFormType?: string = undefined;
 
     constructor(private reporting: ReportingService) { }
 
     ngOnInit() {
-        this.byDay();
+        this.beginLoad();
+        this.reporting.getReportingAgencies().subscribe(results => this.agencies = results);
+        this.reporting.getGeographies().subscribe(results => this.geographies = results);
+        let currentYear = (new Date()).getFullYear();
+        this.years = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3];
     }
 
-    byYear() {
-        this.selected = 'year';
-        let options: Highcharts.Options = {
-            chart: {
-                renderTo: 'crashesOverTime',
-                type: 'column'
-            },
-            title: {
-                text: 'Crashes over time by year'
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Total'
-                },
-                reversedStacks: false,
-                stackLabels: {
-                    enabled: true,
-                    style: {
-                        fontWeight: 'bold',
-                        color: 'gray'
-                    }
-                }
-            },
-            legend: {
-                align: 'right',
-                x: -30,
-                verticalAlign: 'top',
-                y: 25,
-                floating: true,
-                backgroundColor: 'white',
-                borderColor: '#CCC',
-                borderWidth: 1,
-                shadow: false
-            },
-            tooltip: {
-                headerFormat: '<b>{point.x}</b><br/>',
-                pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
-            },
-            plotOptions: {
-                column: {
-                    stacking: 'normal',
-                    dataLabels: {
-                        enabled: true,
-                        color: 'white'
-                    }
-                }
-            }
-        };
-        this.reporting.getCrashesOverTimeByYear().subscribe(report => {
-            options = { ...options, xAxis: { categories: report.categories }, series: report.series };
-            Highcharts.chart(options);
-        });
+    beginLoad() {
+        this.loading = true;
     }
 
-    byMonth() {
-        this.selected = 'month';
-        let options: Highcharts.Options = {
-            chart: {
-                renderTo: 'crashesOverTime',
-                type: 'line'
-            },
-            title: {
-                text: 'Crashes over time by month, 2016-2017'
-            },
-            yAxis: {
-                title: {
-                    text: 'Total'
-                }
-            },
-            plotOptions: {
-                line: {
-                    dataLabels: {
-                        enabled: true
-                    },
-                    enableMouseTracking: false
-                }
-            }
-        };
-        this.reporting.getCrashesOverTimeByMonth().subscribe(report => {
-            options = { ...options, xAxis: { categories: report.categories }, series: report.series };
-            Highcharts.chart(options);
-        });
+    endLoad() {
+        this.loading = false;
     }
 
-    byDay() {
-        this.selected = 'day';
+    formatLookup(value: Lookup) {
+        return value.name;
+    }
 
-        let options: any = {
-            rangeSelector: {
-                selected: 4
-            },
-            yAxis: {
-                top: '10%',
-                height: '90%',
-                plotLines: [{
-                    value: 0,
-                    width: 2,
-                    color: 'silver'
-                }]
-            },
-            tooltip: {
-                pointFormat: '<span style="color:{series.color}">{series.name}</span>: {Highcharts.dateFormat(" % A, %b % e, %Y", this.x)} <b>{point.y}</b><br/>',
-                valueDecimals: 2,
-                split: true
-            },
-            plotOptions: {
-                series: {
-                    pointStart: Date.UTC(2017, 0, 1),
-                    pointInterval: 24 * 3600 * 1000 // one day
-                }
-            }
+    searchGeographies = (text: Observable<string>) =>
+        text.debounceTime(200)
+            .distinctUntilChanged()
+            .map(term => term.length === 0
+                ? []
+                : _.filter(this.geographies, g => g.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
+
+    searchAgencies = (text: Observable<string>) =>
+        text.debounceTime(200)
+            .distinctUntilChanged()
+            .map(term => term.length === 0
+                ? []
+                : _.filter(this.agencies, g => g.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
+
+    refresh() {
+        this.beginLoad();
+
+        // clear geography & agency fields if a valid selection was not made
+        if (this.selectedGeography === undefined || !this.selectedGeography.hasOwnProperty('key')) {
+            this.selectedGeography = '';
+        }
+        if (this.selectedAgency === undefined || !this.selectedAgency.hasOwnProperty('key')) {
+            this.selectedAgency = '';
+        }
+
+        let query: CrashesOverTimeQuery = {
+            geographyId: this.selectedGeography !== ''
+                ? (this.selectedGeography as Lookup).key
+                : undefined,
+            reportingAgencyId: this.selectedAgency !== ''
+                ? (this.selectedAgency as Lookup).key
+                : undefined,
+            severity: this.selectedSeverities.length > 0
+                ? {
+                    fatality: _.includes(this.selectedSeverities, 'Fatal'),
+                    injury: _.includes(this.selectedSeverities, 'Injury'),
+                    propertyDamageOnly: _.includes(this.selectedSeverities, 'PDO')
+                } : undefined,
+            impairment: this.selectedImpairments.length > 0
+                ? {
+                    alcoholRelated: _.includes(this.selectedImpairments, 'Alcohol'),
+                    drugRelated: _.includes(this.selectedImpairments, 'Drugs')
+                } : undefined,
+            bikePedRelated: this.selectedBikePedTypes.length > 0
+                ? {
+                    bikeRelated: _.includes(this.selectedBikePedTypes, 'Bike'),
+                    pedRelated: _.includes(this.selectedBikePedTypes, 'Ped')
+                } : undefined,
+            cmvRelated: this.selectedCmvRelated !== undefined
+                ? this.selectedCmvRelated === 'Yes'
+                : undefined,
+            codeable: this.selectedCodeable !== undefined
+                ? this.selectedCodeable === 'Yes'
+                : undefined,
+            formType: this.selectedFormType !== undefined
+                ? {
+                    longForm: this.selectedFormType === 'Long',
+                    shortForm: this.selectedFormType === 'Short'
+                } : undefined
         };
-        this.reporting.getCrashesOverTimeByDay().subscribe(report => {
-            // configure and create chart
-            options = {
-                ...options,
-                series: report.series
-            };
-            Highstock.stockChart('crashesOverTime', options);
-        });
+        this.query = query;
     }
 }
