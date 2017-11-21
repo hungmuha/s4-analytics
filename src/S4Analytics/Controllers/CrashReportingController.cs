@@ -4,14 +4,14 @@ using S4Analytics.Models;
 
 namespace S4Analytics.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/reporting")]
     [Authorize]
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-    public class ReportController : Controller
+    public class CrashReportingController : Controller
     {
-        private ReportRepository _reportRepo;
+        private CrashReportingRepository _reportRepo;
 
-        public ReportController(ReportRepository repo)
+        public CrashReportingController(CrashReportingRepository repo)
         {
             _reportRepo = repo;
         }

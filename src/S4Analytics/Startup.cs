@@ -164,7 +164,7 @@ namespace S4Analytics
             services.AddSingleton<NewUserRequestRepository>();
             services.AddSingleton<CrashRepository>();
             services.AddSingleton<ViolationRepository>();
-            services.AddSingleton<ReportRepository>();
+            services.AddSingleton<CrashReportingRepository>();
             services.AddSingleton<Html5Conduit>();
         }
 

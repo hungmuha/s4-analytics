@@ -2,7 +2,7 @@
 import { Subscription } from 'rxjs/Subscription';
 import * as moment from 'moment';
 import * as Highcharts from 'highcharts';
-import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
+import { CrashReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
 
 @Component({
     selector: 'crashes-by-month',
@@ -61,7 +61,7 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
         return this.maxDate !== undefined ? this.maxDate.format('MMMM YYYY') : '';
     }
 
-    constructor(private reporting: ReportingService) { }
+    constructor(private reporting: CrashReportingService) { }
 
     ngOnInit() {
         this.yearOnYear = true;
