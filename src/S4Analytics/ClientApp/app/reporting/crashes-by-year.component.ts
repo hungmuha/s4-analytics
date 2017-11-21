@@ -74,15 +74,23 @@ export class CrashesByYearComponent implements OnInit, OnChanges {
                     }
                 }
             },
+            lang: {
+                loading: '',
+            },
             series: []
         };
         this.chart = Highcharts.chart(options);
+        this.chart.showLoading();
     }
 
     ngOnChanges() {
         // cancel any prior request or the user may get unexpected results
         if (this.sub !== undefined && !this.sub.closed) {
             this.sub.unsubscribe();
+        }
+
+        if (this.chart !== undefined) {
+            this.chart.showLoading();
         }
 
         this.sub = this.reporting
@@ -107,6 +115,7 @@ export class CrashesByYearComponent implements OnInit, OnChanges {
 
         // redraw and emit loaded event
         this.chart.redraw();
+        this.chart.hideLoading();
         this.loaded.emit();
     }
 }
