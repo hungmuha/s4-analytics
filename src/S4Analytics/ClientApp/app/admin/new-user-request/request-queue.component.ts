@@ -68,10 +68,17 @@ export class RequestQueueComponent {
 
         return request.requestStatus === NewUserRequestStatus.Completed
             || request.requestStatus === NewUserRequestStatus.Rejected
+
+
             || (currentUser.roles.indexOf('global admin') > -1 // global admin should only act on create agency tasks
-                && request.requestStatus !== NewUserRequestStatus.CreateAgency)
-            || (currentUser.roles.indexOf('hsmv admin') > -1 // hsmv admin should not act on create agency tasks
-                && request.requestStatus === NewUserRequestStatus.CreateAgency);
+                && (request.requestStatus !== NewUserRequestStatus.CreateAgency
+            && !(request.requestStatus === NewUserRequestStatus.NewUser && !request.agencyHasAdmin)) )
+
+            || ((currentUser.roles.indexOf('hsmv admin') > -1 // hsmv admin should not act on create agency tasks
+                && request.requestStatus === NewUserRequestStatus.CreateAgency))
+
+            || ((currentUser.roles.indexOf('fdot admin') > -1 // FDOT admin should not act on create agency tasks
+                && request.requestStatus === NewUserRequestStatus.CreateAgency));
     }
 
     totalRequestCount(): number {
