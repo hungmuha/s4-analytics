@@ -85,6 +85,8 @@ SELECT
     vbpct.crash_type_nm AS bike_ped_crash_type_nm,
     fce.crash_tm,
     CAST(TO_CHAR(fce.crash_tm, 'HH24MI') AS INTEGER) AS crash_hh24mi,
+    CAST(TO_CHAR(fce.crash_tm, 'HH24') AS INTEGER) AS crash_hh24,
+    TO_CHAR(crash_tm, 'fmHH AM') AS crash_hh_am,
     fce.intrsect_st_nm,
     DECODE(fce.is_alc_rel, '1', 'Y', '0', 'N', NULL) AS is_alc_rel,
     DECODE(fce.is_distracted, '1', 'Y', '0', 'N', NULL) AS is_distracted,

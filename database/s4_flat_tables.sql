@@ -175,6 +175,8 @@ CREATE TABLE crash_evt (
     bike_ped_crash_type_nm        VARCHAR2(100),
     crash_tm                      DATE,
     crash_hh24mi                  NUMBER(*,0),
+    crash_hh24                    NUMBER(*,0),
+    crash_hh_am                   VARCHAR2(5),
     intrsect_st_nm                VARCHAR2(80),
     is_alc_rel                    VARCHAR2(1),
     is_distracted                 VARCHAR2(1),
