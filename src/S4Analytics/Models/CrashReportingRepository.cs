@@ -248,8 +248,7 @@ namespace S4Analytics.Models
             dynamicParams.Add(new
             {
                 maxDate,
-                maxDate.Year,
-                isLeapYear = DateTime.IsLeapYear(maxDate.Year) ? 1 : 0
+                maxDate.Year
             });
 
             var report = new ReportOverTime<int?>() { maxDate = maxDate };
