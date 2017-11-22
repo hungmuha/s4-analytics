@@ -32,7 +32,7 @@ export class NewUserRequest {
     adminComment: string;
     accessBefore70Days: boolean = false;
     contractPdfNm: string;
-    hasAdmin: boolean;
+    agencyHasAdmin: boolean;
 
     constructor(data: NewUserRequest) {
         this.requestNbr = data.requestNbr;
@@ -66,6 +66,6 @@ export class NewUserRequest {
         this.adminComment = data.adminComment;
         this.accessBefore70Days = data.accessBefore70Days;
         this.contractPdfNm = data.contractPdfNm;
-        this.hasAdmin = data.hasAdmin;
+        this.agencyHasAdmin = data.agencyHasAdmin;
     }
 }

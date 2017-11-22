@@ -72,7 +72,7 @@ export class RequestQueueComponent {
 
             || (currentUser.roles.indexOf('global admin') > -1 // global admin should only act on create agency tasks
                 && (request.requestStatus !== NewUserRequestStatus.CreateAgency
-            && !(request.requestStatus === NewUserRequestStatus.NewUser && !request.hasAdmin)) )
+            && !(request.requestStatus === NewUserRequestStatus.NewUser && !request.agencyHasAdmin)) )
 
             || ((currentUser.roles.indexOf('hsmv admin') > -1 // hsmv admin should not act on create agency tasks
                 && request.requestStatus === NewUserRequestStatus.CreateAgency))
