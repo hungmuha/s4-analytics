@@ -1,7 +1,7 @@
 ﻿import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import * as Highcharts from 'highcharts';
-import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
+import { CrashReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
 
 @Component({
     selector: 'crashes-by-year',
@@ -25,7 +25,7 @@ export class CrashesByYearComponent implements OnInit, OnChanges {
     private sub: Subscription;
     private chart: Highcharts.ChartObject;
 
-    constructor(private reporting: ReportingService) { }
+    constructor(private reporting: CrashReportingService) { }
 
     ngOnInit() {
         let options: Highcharts.Options = {
@@ -74,15 +74,23 @@ export class CrashesByYearComponent implements OnInit, OnChanges {
                     }
                 }
             },
+            lang: {
+                loading: '',
+            },
             series: []
         };
         this.chart = Highcharts.chart(options);
+        this.chart.showLoading();
     }
 
     ngOnChanges() {
         // cancel any prior request or the user may get unexpected results
         if (this.sub !== undefined && !this.sub.closed) {
             this.sub.unsubscribe();
+        }
+
+        if (this.chart !== undefined) {
+            this.chart.showLoading();
         }
 
         this.sub = this.reporting
@@ -107,6 +115,7 @@ export class CrashesByYearComponent implements OnInit, OnChanges {
 
         // redraw and emit loaded event
         this.chart.redraw();
+        this.chart.hideLoading();
         this.loaded.emit();
     }
 }

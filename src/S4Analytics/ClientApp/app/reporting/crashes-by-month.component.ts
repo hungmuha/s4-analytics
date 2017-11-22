@@ -2,7 +2,7 @@
 import { Subscription } from 'rxjs/Subscription';
 import * as moment from 'moment';
 import * as Highcharts from 'highcharts';
-import { ReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
+import { CrashReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
 
 @Component({
     selector: 'crashes-by-month',
@@ -61,7 +61,7 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
         return this.maxDate !== undefined ? this.maxDate.format('MMMM YYYY') : '';
     }
 
-    constructor(private reporting: ReportingService) { }
+    constructor(private reporting: CrashReportingService) { }
 
     ngOnInit() {
         this.yearOnYear = true;
@@ -91,10 +91,13 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
                     },
                     enableMouseTracking: true
                 }
+            },
+            lang: {
+                loading: '',
             }
         };
         this.chart = Highcharts.chart(options);
-
+        this.chart.showLoading();
         this.initialized = true;
         this.retrieveData();
     }
@@ -109,6 +112,10 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
         // cancel any prior request or the user may get unexpected results
         if (this.sub !== undefined && !this.sub.closed) {
             this.sub.unsubscribe();
+        }
+
+        if (this.chart !== undefined) {
+            this.chart.showLoading();
         }
 
         this.sub = this.reporting
@@ -139,6 +146,7 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
 
         // redraw and emit loaded event
         this.chart.redraw();
+        this.chart.hideLoading();
         this.loaded.emit();
     }
 }

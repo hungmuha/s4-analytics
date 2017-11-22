@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import * as _ from 'lodash';
-import { CrashesOverTimeQuery, ReportingService } from './shared';
+import { CrashesOverTimeQuery, CrashReportingService } from './shared';
 
 class Lookup {
     key: number;
@@ -15,9 +15,6 @@ class Lookup {
     templateUrl: './crashes-over-time.component.html'
 })
 export class CrashesOverTimeComponent implements OnInit {
-
-    query = new CrashesOverTimeQuery();
-    loading: boolean;
 
     geographies: Lookup[];
     agencies: Lookup[];
@@ -37,7 +34,16 @@ export class CrashesOverTimeComponent implements OnInit {
     selectedCodeable?: string = undefined;
     selectedFormType?: string = undefined;
 
-    constructor(private reporting: ReportingService) { }
+    query = new CrashesOverTimeQuery();
+    crashesByYearLoaded: boolean;
+    crashesByMonthLoaded: boolean;
+    crashesByDayLoaded: boolean;
+
+    get loading(): boolean {
+        return !(this.crashesByYearLoaded && this.crashesByMonthLoaded && this.crashesByDayLoaded);
+    }
+
+    constructor(private reporting: CrashReportingService) { }
 
     ngOnInit() {
         this.beginLoad();
@@ -48,11 +54,7 @@ export class CrashesOverTimeComponent implements OnInit {
     }
 
     beginLoad() {
-        this.loading = true;
-    }
-
-    endLoad() {
-        this.loading = false;
+        this.crashesByYearLoaded = this.crashesByMonthLoaded = this.crashesByDayLoaded = false;
     }
 
     formatLookup(value: Lookup) {

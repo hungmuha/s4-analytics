@@ -5,39 +5,39 @@ import { ReportOverTime } from './report-over-time';
 import { CrashesOverTimeQuery } from './crashes-over-time-query';
 
 @Injectable()
-export class ReportingService {
+export class CrashReportingService {
     constructor(private http: Http) { }
 
     getCrashesOverTimeByYear(query: CrashesOverTimeQuery): Observable<ReportOverTime> {
         return this.http
-            .post('api/report/crash/year', query)
+            .post('api/reporting/crash/year', query)
             .map(response => response.json() as ReportOverTime)
             .map(report => new ReportOverTime(report));
     }
 
     getCrashesOverTimeByMonth(year: number, query: CrashesOverTimeQuery): Observable<ReportOverTime> {
         return this.http
-            .post(`api/report/crash/${year}/month`, query)
+            .post(`api/reporting/crash/${year}/month`, query)
             .map(response => response.json() as ReportOverTime)
             .map(report => new ReportOverTime(report));
     }
 
     getCrashesOverTimeByDay(year: number, alignByWeek: boolean, query: CrashesOverTimeQuery): Observable<ReportOverTime> {
         return this.http
-            .post(`api/report/crash/${year}/day?alignByWeek=${alignByWeek}`, query)
+            .post(`api/reporting/crash/${year}/day?alignByWeek=${alignByWeek}`, query)
             .map(response => response.json() as ReportOverTime)
             .map(report => new ReportOverTime(report));
     }
 
     getGeographies(): Observable<{ key: number, name: string }[]> {
         return this.http
-            .get('api/report/geographies')
+            .get('api/reporting/geographies')
             .map(response => response.json());
     }
 
     getReportingAgencies(): Observable<{ key: number, name: string }[]> {
         return this.http
-            .get('api/report/agencies')
+            .get('api/reporting/agencies')
             .map(response => response.json());
     }
 }

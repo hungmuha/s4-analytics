@@ -3,10 +3,10 @@ import { Subscription } from 'rxjs/Subscription';
 import * as Highstock from 'highcharts/highstock';
 import * as moment from 'moment';
 import {
-    ReportingService,
+    CrashReportingService,
     CrashesOverTimeQuery,
     ReportOverTime,
-    CrashesByDayFormatter
+    EventsByDayFormatter
 } from './shared';
 
 @Component({
@@ -79,7 +79,7 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
         return this.maxDate !== undefined ? this.maxDate.format('MMMM DD, YYYY') : '';
     }
 
-    constructor(private reporting: ReportingService) { }
+    constructor(private reporting: CrashReportingService) { }
 
     ngOnInit() {
         this.alignByWeek = true;
@@ -113,9 +113,12 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
                 shared: true,
                 crosshairs: true
             },
+            lang: {
+                loading: '',
+            }
         };
         this.chart = Highstock.stockChart('crashesByDay', options);
-
+        this.chart.showLoading();
         this.initialized = true;
         this.retrieveData();
     }
@@ -130,6 +133,10 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
         // cancel any prior request or the user may get unexpected results
         if (this.sub !== undefined && !this.sub.closed) {
             this.sub.unsubscribe();
+        }
+
+        if (this.chart !== undefined) {
+            this.chart.showLoading();
         }
 
         this.sub = this.reporting
@@ -152,8 +159,8 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
             },
             tooltip: {
                 formatter: this.alignByWeek
-                    ? (new CrashesByDayFormatter()).formatAlignedByWeek // do not use arrow function because highcharts provides the context for the format method
-                    : (new CrashesByDayFormatter()).formatAlignedByDate
+                    ? (new EventsByDayFormatter()).formatAlignedByWeek // do not use arrow function because highcharts provides the context for the format method
+                    : (new EventsByDayFormatter()).formatAlignedByDate
             }
         };
         this.chart.update(options);
@@ -173,6 +180,7 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
 
         // redraw and emit loaded event
         this.chart.redraw();
+        this.chart.hideLoading();
         this.loaded.emit();
     }
 

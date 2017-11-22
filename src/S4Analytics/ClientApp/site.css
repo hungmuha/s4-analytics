@@ -199,3 +199,24 @@ a.nav-link {
     text-align: center;
     vertical-align: middle !important;
 }
+
+.highcharts-loading {
+    background: silver;
+}
+
+.highcharts-loading-inner {
+    color: blue;
+    /* borrowed from fa & fa-spin classes */
+    animation: fa-spin 2s infinite linear;
+    display: inline-block;
+    font: normal normal normal 30px/1 FontAwesome;
+    font-size: 30px;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.highcharts-loading-inner::before {
+    /* borrowed from fa-spinner class*/
+    content: "\F110";
+}

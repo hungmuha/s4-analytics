@@ -9,7 +9,7 @@ import { CrashesOverTimeComponent } from './crashes-over-time.component';
 import { CrashesByYearComponent } from './crashes-by-year.component';
 import { CrashesByMonthComponent } from './crashes-by-month.component';
 import { CrashesByDayComponent } from './crashes-by-day.component';
-import { ReportingService } from './shared';
+import { CrashReportingService } from './shared';
 
 @NgModule({
     imports: [
@@ -28,7 +28,7 @@ import { ReportingService } from './shared';
         CrashesByDayComponent
     ],
     providers: [
-        ReportingService
+        CrashReportingService
     ]
 })
 export class ReportingModule { }
