@@ -1,0 +1,14 @@
+﻿<div class="row">
+    <div class="analytics-filters">
+        <div class="row">
+            <div class="col-12">
+                <h2>Citations over time report</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 analytics-main">
+        <citations-by-year [query]="query" ></citations-by-year>
+        <citations-by-month [years]="years" [query]="query"></citations-by-month>
+       <!-- <crashes-by-day [years]="years" [query]="query" (loaded)="crashesByDayLoaded=true"></crashes-by-day>-->
+    </div>
+</div>
