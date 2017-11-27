@@ -37,6 +37,18 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
+        [HttpGet("citation-geographies")]
+        public IActionResult GetGeographyLookups()
+        {
+            var results = _reportRepo.GetGeographyLookups();
+            return new ObjectResult(results);
+        }
 
+        [HttpGet("citation-agencies")]
+        public IActionResult GetAgencyLookups()
+        {
+            var results = _reportRepo.GetAgencyLookups();
+            return new ObjectResult(results);
+        }
     }
 }
