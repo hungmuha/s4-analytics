@@ -14,13 +14,31 @@ export class CitationsOverTimeComponent implements OnInit {
 
     years: number[];
     query = new CitationsOverTimeQuery();
+    citationsByYearLoaded: boolean;
+    citationsByMonthLoaded: boolean;
+    citationsByDayLoaded: boolean;
+
+    get loading(): boolean {
+        return !(this.citationsByYearLoaded && this.citationsByMonthLoaded && this.citationsByDayLoaded);
+    }
 
     constructor(private reporting: CitationReportingService) { }
 
     ngOnInit() {
+        this.beginLoad();
+
         let currentYear = (new Date()).getFullYear();
         this.years = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3];
     }
 
+    beginLoad() {
+        this.citationsByYearLoaded = this.citationsByMonthLoaded = this.citationsByDayLoaded = false;
+    }
 
+    refresh() {
+        this.beginLoad();
+
+        let query: CitationsOverTimeQuery = { };
+        this.query = query;
+    }
 }

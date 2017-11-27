@@ -4,11 +4,16 @@
             <div class="col-12">
                 <h2>Citations over time report</h2>
             </div>
+            <div class="col-12">
+                <button class="btn btn-sm btn-primary" [disabled]="loading" (click)="refresh()">
+                    Refresh <span class="fa fa-spin fa-spinner" [hidden]="!loading"></span>
+                </button>
+            </div>
         </div>
     </div>
     <div class="col-12 analytics-main">
-        <citations-by-year [query]="query" ></citations-by-year>
-        <citations-by-month [years]="years" [query]="query"></citations-by-month>
-       <!-- <crashes-by-day [years]="years" [query]="query" (loaded)="crashesByDayLoaded=true"></crashes-by-day>-->
+        <citations-by-year [query]="query" (loaded)="citationsByYearLoaded=true"></citations-by-year>
+        <citations-by-month [years]="years" [query]="query" (loaded)="citationsByMonthLoaded=true"></citations-by-month>
+        <citations-by-day [years]="years" [query]="query" (loaded)="citationsByDayLoaded=true"></citations-by-day>
     </div>
 </div>

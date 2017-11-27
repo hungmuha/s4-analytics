@@ -13,6 +13,7 @@ import { CrashReportingService } from './shared';
 import { CitationsOverTimeComponent } from './citations-over-time.component';
 import { CitationsByYearComponent } from './citations-by-year.component';
 import { CitationsByMonthComponent } from './citations-by-month.component';
+import { CitationsByDayComponent } from './citations-by-day.component';
 import { CitationReportingService } from './shared';
 
 @NgModule({
@@ -32,7 +33,8 @@ import { CitationReportingService } from './shared';
         CrashesByDayComponent,
         CitationsOverTimeComponent,
         CitationsByYearComponent,
-        CitationsByMonthComponent
+        CitationsByMonthComponent,
+        CitationsByDayComponent
     ],
     providers: [
         CrashReportingService,
@@ -40,3 +42,4 @@ import { CitationReportingService } from './shared';
     ]
 })
 export class ReportingModule { }
+

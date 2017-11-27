@@ -27,7 +27,7 @@ export const routes: Routes = [
                         path: 'reporting',
                         component: ReportingComponent,
                         children: [
-                           // { path: 'crashes-over-time', component: CrashesOverTimeComponent },
+                            { path: 'crashes-over-time', component: CrashesOverTimeComponent },
                             { path: 'citations-over-time', component: CitationsOverTimeComponent }
                         ]
                     },

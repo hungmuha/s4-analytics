@@ -240,7 +240,7 @@ namespace S4Analytics.Models
             citation_cts AS (
                 SELECT /*+ RESULT_CACHE */
                     key_citation_dt, COUNT(*) AS ct
-                FROM citation_evt ce
+                FROM citation ce
                 WHERE citation_yr BETWEEN :year - 1 AND :year
                 AND ( {preparedQuery.queryText} )
                 GROUP BY key_citation_dt
