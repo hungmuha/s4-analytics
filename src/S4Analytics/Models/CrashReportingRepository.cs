@@ -271,7 +271,34 @@ namespace S4Analytics.Models
             return report;
         }
 
-        private PreparedWhereClause PrepareWhereClause(CrashesOverTimeQuery query)
+        public ReportOverTime<int?> GetCrashCountsByAttribute(int year, CrashesOverTimeQuery query)
+        {
+            // find the date MIN_DAYS_BACK days ago
+            DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+
+            if (year < maxDate.Year)
+            {
+                maxDate = new DateTime(year, 12, 31);
+            }
+
+            var preparedWhereClause = PrepareWhereClause(query);
+
+            var queryText = @"SELECT
+                vr.crash_day,
+                COUNT(*)
+            FROM crash_evt ce
+            INNER JOIN v_rpt_crash_attr vr
+                ON vr.id = ce.id
+            WHERE ce.crash_yr = :year
+            AND ce.key_crash_dt < TRUNC(:maxDate + 1)
+            AND ( {preparedWhereClause.whereClauseText} )
+            GROUP BY vr.crash_day, vr.crash_day_sort
+            ORDER BY vr.crash_day_sort";
+
+
+        }
+
+        private PreparedQuery PrepareQuery(CrashesOverTimeQuery query)
         {
             // initialize where clause and query parameter collections
             var whereClauses = new List<string>();
