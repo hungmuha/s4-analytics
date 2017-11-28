@@ -16,6 +16,7 @@ namespace S4Analytics.Models
 
     public class CitationReportingRepository
     {
+        private const int MIN_DAYS_BACK = 30;
         private readonly string _connStr;
 
         public CitationReportingRepository(
@@ -82,7 +83,7 @@ namespace S4Analytics.Models
             string[] monthNames = new[] { "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
             // find the last day of the last full month that ended at least MIN_DAYS_BACK days ago
-            var nDaysAgo = DateTime.Now; //.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+            var nDaysAgo = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
             var maxDate = new DateTime(nDaysAgo.Year, nDaysAgo.Month, 1).Subtract(new TimeSpan(1, 0, 0, 0));
             var minDate = new DateTime(maxDate.Year - 4, 1, 1); // include 4 calendar years prior to maxDate
             bool isFullYear = maxDate.Month == 12;
@@ -167,7 +168,7 @@ namespace S4Analytics.Models
         public ReportOverTime<int> GetCitationCountsByMonth(int year, CitationsOverTimeQuery query)
         {
             // find the last day of the last full month that ended at least MIN_DAYS_BACK days ago
-            var nDaysAgo = DateTime.Now; //.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+            var nDaysAgo = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
             var maxDate = new DateTime(nDaysAgo.Year, nDaysAgo.Month, 1).Subtract(new TimeSpan(1, 0, 0, 0));
 
             if (year < maxDate.Year)
@@ -228,7 +229,7 @@ namespace S4Analytics.Models
         public ReportOverTime<int?> GetCitationCountsByDay(int year, bool alignByWeek, CitationsOverTimeQuery query)
         {
             // TODO: find the date MIN_DAYS_BACK days ago
-            DateTime maxDate = DateTime.Now;//.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+            DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
 
             if (year < maxDate.Year)
             {
