@@ -46,8 +46,14 @@ export class RequestActionComponent {
 
         return (!this.state.currentRequestActionResults.approved)
             ||
-            (((this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewConsultant) ||
-                (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewVendor)) &&
+            ((this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewConsultant)
+                &&
+                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewVendor))
+            ||
+            ((
+                (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewConsultant) ||
+                (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewVendor)
+            ) &&
                 !this.state.selectedRequest.accessBefore70Days);
     }
 
