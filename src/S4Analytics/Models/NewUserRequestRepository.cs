@@ -487,7 +487,7 @@ namespace S4Analytics.Models
 
         private string GetRequestSelectQuery()
         {
-            return @"SELECT
+            return $@"SELECT
                             u.req_nbr AS requestnbr,
                             u.req_status AS requeststatus,
                             u.initial_req_status AS initialrequeststatus,
@@ -518,7 +518,13 @@ namespace S4Analytics.Models
                             CASE WHEN u.warn_duplicate_email_cd = 'Y' THEN 1 ELSE 0 END as warnduplicateemailcd,
                             CASE WHEN u.user_manager_cd = 'Y' THEN 1 ELSE 0 END AS usermanagercd,
                             u.admin_comment AS admincomment,
-                            u.contract_pdf_nm AS contractPdfNm";
+                            u.contract_pdf_nm AS contractPdfNm,
+                            CASE WHEN (
+                                SELECT count(*) FROM s4_user s
+                                JOIN user_role r ON r.user_nm = s.user_nm AND r.role_nm = 'User Manager'
+                                JOIN s4_agncy g ON g.agncy_id = s.agncy_id 
+                                WHERE g.agncy_id = u.agncy_id) >  0 THEN 1 ELSE 0 END AS agencyhasadmin,
+                            CASE WHEN a.can_view = 1 THEN 1 ELSE 0 END AS accessbefore70days";
         }
 
         private S4UserProfile CreateS4UserProfile(NewUserRequest request)

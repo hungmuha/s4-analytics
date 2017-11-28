@@ -60,5 +60,6 @@ namespace S4Analytics.Models
         public string CreatedBy { get; set; }
         public bool UserManagerCd { get; set; }
         public string ContractPdfNm { get; set; }
+        public bool AgencyHasAdmin { get; set; }
     }
 }

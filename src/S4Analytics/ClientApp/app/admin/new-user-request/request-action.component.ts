@@ -43,14 +43,18 @@ export class RequestActionComponent {
     }
 
     hideReportAccessCb() {
-        return (!this.state.currentRequestActionResults.approved &&
-           ( (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewConsultant) ||
-            (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewVendor) ||
-                (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewAgency)))
+
+        return (!this.state.currentRequestActionResults.approved)
             ||
-            ((this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewConsultant) &&
-                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewVendor) &&
-                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewAgency));
+            ((this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewConsultant)
+                &&
+                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewVendor))
+            ||
+            ((
+                (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewConsultant) ||
+                (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewVendor)
+            ) &&
+                !this.state.selectedRequest.accessBefore70Days);
     }
 
     hideRejectButton(request: NewUserRequest) {
@@ -58,7 +62,6 @@ export class RequestActionComponent {
 
         return (this.state.selectedRequest.requestStatus === NewUserRequestStatus.CreateAgency)
             && (currentUser.roles.indexOf('global admin') > -1);
-
     }
 
     validDate(dateStr: string) {
