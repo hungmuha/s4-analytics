@@ -271,7 +271,7 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int?> GetCrashCountsByAttribute(int year, CrashesOverTimeQuery query)
+        public ReportOverTime<int> GetCrashCountsByAttribute(int year, string attrName, CrashesOverTimeQuery query)
         {
             // find the date MIN_DAYS_BACK days ago
             DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
@@ -283,19 +283,98 @@ namespace S4Analytics.Models
 
             var preparedWhereClause = PrepareWhereClause(query);
 
-            var queryText = @"SELECT
-                vr.crash_day,
-                COUNT(*)
-            FROM crash_evt ce
-            INNER JOIN v_rpt_crash_attr vr
-                ON vr.id = ce.id
-            WHERE ce.crash_yr = :year
-            AND ce.key_crash_dt < TRUNC(:maxDate + 1)
-            AND ( {preparedWhereClause.whereClauseText} )
-            GROUP BY vr.crash_day, vr.crash_day_sort
-            ORDER BY vr.crash_day_sort";
+            string queryText;
 
+            switch (attrName)
+            {
+                case "weather-condition":
+                    queryText = $@"WITH
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            nvl(weather_cond, 'Unknown') AS category, COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY nvl(weather_cond, 'Unknown')
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        nvl(vv.crash_attr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM v_crash_weather_cond vv
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = vv.crash_attr_tx
+                    ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, vv.crash_attr_cd";
+                    break;
+                case "light-condition":
+                    queryText = $@"WITH
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            nvl(light_cond, 'Unknown') AS category, COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY nvl(light_cond, 'Unknown')
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        nvl(vv.crash_attr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM v_crash_light_cond vv
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = vv.crash_attr_tx
+                    ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, vv.crash_attr_cd";
+                    break;
+                case "road-surface-condition":
+                    queryText = $@"WITH
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            nvl(rd_surf_cond, 'Unknown') AS category, COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY nvl(rd_surf_cond, 'Unknown')
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        nvl(vv.crash_attr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM v_crash_road_surf_cond vv
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = vv.crash_attr_tx
+                    ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, vv.crash_attr_cd";
+                    break;
+                case "day-of-week":
+                case "hour-of-day":
+                case "crash-type":
+                case "crash-severity":
+                case "first-harmful-event":
+                default:
+                    return null;
+            }
 
+            var dynamicParams = preparedWhereClause.DynamicParams;
+            dynamicParams.Add(new
+            {
+                maxDate,
+                maxDate.Year
+            });
+
+            var report = new ReportOverTime<int>() { maxDate = maxDate };
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var results = conn.Query(queryText, dynamicParams);
+                report.categories = results.DistinctBy(r => r.CATEGORY).Select(r => (string)(r.CATEGORY));
+                var seriesName = maxDate.Year.ToString();
+                var series = new List<ReportSeries<int>>();
+                series.Add(new ReportSeries<int>()
+                {
+                    name = seriesName,
+                    data = results.Select(r => (int)r.CT)
+                });
+                report.series = series;
+            }
+            return report;
         }
 
         private PreparedQuery PrepareQuery(CrashesOverTimeQuery query)
