@@ -31,13 +31,13 @@ export class CrashReportingService {
 
     getGeographies(): Observable<{ key: number, name: string }[]> {
         return this.http
-            .get('api/reporting/geographies')
+            .get('api/reporting/crash/geographies')
             .map(response => response.json());
     }
 
     getReportingAgencies(): Observable<{ key: number, name: string }[]> {
         return this.http
-            .get('api/reporting/agencies')
+            .get('api/reporting/crash/agencies')
             .map(response => response.json());
     }
 }

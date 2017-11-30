@@ -31,13 +31,13 @@ export class CitationReportingService {
 
     getGeographies(): Observable<{ key: number, name: string }[]> {
         return this.http
-            .get('api/reporting/citation-geographies')
+            .get('api/reporting/citation/geographies')
             .map(response => response.json());
     }
 
     getReportingAgencies(): Observable<{ key: number, name: string }[]> {
         return this.http
-            .get('api/reporting/citation-agencies')
+            .get('api/reporting/citation/agencies')
             .map(response => response.json());
     }
 }

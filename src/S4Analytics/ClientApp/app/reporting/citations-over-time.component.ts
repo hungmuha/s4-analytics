@@ -19,6 +19,8 @@ export class CitationsOverTimeComponent implements OnInit {
     geographies: Lookup[];
     agencies: Lookup[];
     years: number[];
+    yesNo = ['Yes', 'No'];
+    violationClassification = ['Bicyclist', 'Criminal', 'Moving', 'Non-Moving', 'Pedestrian', 'Unknown'];
 
     selectedGeography: Lookup | string;
     selectedAgency: Lookup | string;
@@ -27,6 +29,8 @@ export class CitationsOverTimeComponent implements OnInit {
     citationsByYearLoaded: boolean;
     citationsByMonthLoaded: boolean;
     citationsByDayLoaded: boolean;
+    selectedCrashInvolved?: string = undefined;
+    selectedClassification?: string = undefined;
 
     get loading(): boolean {
         return !(this.citationsByYearLoaded && this.citationsByMonthLoaded && this.citationsByDayLoaded);
@@ -81,6 +85,12 @@ export class CitationsOverTimeComponent implements OnInit {
                 : undefined,
             reportingAgencyId: this.selectedAgency !== ''
                 ? (this.selectedAgency as Lookup).key
+                : undefined,
+            crashInvolved: this.selectedCrashInvolved !== undefined
+                ? this.selectedCrashInvolved === 'Yes'
+                : undefined,
+            classification: this.selectedClassification != ''
+                ? this.selectedClassification
                 : undefined
         };
         this.query = query;
