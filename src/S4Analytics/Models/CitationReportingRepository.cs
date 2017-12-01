@@ -272,6 +272,122 @@ namespace S4Analytics.Models
             return report;
         }
 
+
+        public ReportOverTime<int> GetCitationCountsByAttribute(int year, string attrName, CitationsOverTimeQuery query)
+        {
+            // find the date MIN_DAYS_BACK days ago
+            DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+
+            if (year < maxDate.Year)
+            {
+                maxDate = new DateTime(year, 12, 31);
+            }
+
+            var preparedWhereClause = PrepareWhereClause(query);
+
+            string queryText;
+
+            switch (attrName)
+            {
+                case "violation-type":
+                    queryText = $@"WITH
+			            grouped_cts AS (
+				            SELECT /*+ RESULT_CACHE */
+					            nvl(violation_type, 'Unknown') AS category, COUNT(*) AS ct
+				            FROM citation
+				            WHERE citation_yr = :year
+				            AND key_citation_dt < TRUNC(:maxDate + 1)
+				            AND ( {preparedWhereClause.whereClauseText} )
+				            GROUP BY nvl(violation_type, 'Unknown')
+			            )
+			            SELECT /*+ RESULT_CACHE */
+				            nvl(vv.violation_type, cts.category) AS category,
+				            nvl(cts.ct, 0) AS ct
+			            FROM v_citation_violation_type vv
+			            FULL OUTER JOIN grouped_cts cts
+				            ON cts.category = vv.violation_type
+			            ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END";
+                    break;
+                case "violator-gender":
+                    queryText = $@"WITH
+                        grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            CASE WHEN driver_gender_cd = 'M' THEN 'Male' 
+                            ELSE 
+                            (CASE WHEN driver_gender_cd = 'F' THEN 'Female' 
+                                ELSE nvl(driver_gender_cd, 'Unknown') END) END AS CATEGORY, 
+                            COUNT(*) AS ct
+                        FROM citation
+                        WHERE citation_yr = :year
+				            AND key_citation_dt < TRUNC(:maxDate + 1)
+				            AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY CASE WHEN driver_gender_cd = 'M' THEN 'Male' 
+                            ELSE 
+                            (CASE WHEN driver_gender_cd = 'F' THEN 'Female' 
+                                ELSE nvl(driver_gender_cd, 'Unknown') END) END
+                        )
+                        SELECT /*+ RESULT_CACHE */
+                        nvl(vv.driver_attr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                        FROM v_driver_gender vv
+                        FULL OUTER JOIN grouped_cts cts
+                        ON cts.CATEGORY = vv.driver_attr_tx
+                        ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, vv.driver_attr_tx";
+                    break;
+                case "violator-age":
+                    queryText = $@"WITH
+                        grouped_cts AS (
+                            SELECT /*+ RESULT_CACHE */
+                                nvl(driver_age_rng, 'Unknown') AS CATEGORY, 
+                                COUNT(*) AS ct
+                            FROM citation
+    	                        WHERE
+                                citation_yr = :year AND
+			                        key_citation_dt < TRUNC(:maxDate + 1)
+				                AND ( {preparedWhereClause.whereClauseText} )
+                            GROUP BY nvl(driver_age_rng, 'Unknown')
+                            ),
+                            grouped_rngs as (
+                                SELECT /*+ RESULT_CACHE */
+                                    DISTINCT nvl(vv.driver_attr_tx, cts.category) AS category,
+                                    nvl(cts.ct, 0) AS ct
+                                FROM v_driver_age_rng vv
+                                FULL OUTER JOIN grouped_cts cts
+                                    ON cts.CATEGORY = vv.driver_attr_tx
+                                    )
+                                SELECT DISTINCT * FROM grouped_rngs g
+                                    ORDER BY CASE WHEN CATEGORY = 'Unknown' THEN 3 ELSE 
+                                    (CASE WHEN Category = 'Under 15' THEN 1 ELSE 2 END) END, category";
+                    break;
+                default:
+                    return null;
+            }
+
+            var dynamicParams = preparedWhereClause.DynamicParams;
+            dynamicParams.Add(new
+            {
+                maxDate,
+                maxDate.Year
+            });
+
+            var report = new ReportOverTime<int>() { maxDate = maxDate };
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var results = conn.Query(queryText, dynamicParams);
+                report.categories = results.DistinctBy(r => r.CATEGORY).Select(r => (string)(r.CATEGORY));
+                var seriesName = maxDate.Year.ToString();
+                var series = new List<ReportSeries<int>>();
+                series.Add(new ReportSeries<int>()
+                {
+                    name = seriesName,
+                    data = results.Select(r => (int)r.CT)
+                });
+                report.series = series;
+            }
+            return report;
+        }
+
+
         private PreparedWhereClause PrepareWhereClause(CitationsOverTimeQuery query)
         {
             // initialize where clause and query parameter collections
@@ -299,7 +415,7 @@ namespace S4Analytics.Models
         private (string whereClause, object parameters) GenerateClassification(string classification)
         {
             // test for valid filter
-            if (classification == null)
+            if (classification == null || classification == "Any")
             {
                 return (null, null);
             }
@@ -316,14 +432,13 @@ namespace S4Analytics.Models
         private (string whereClause, object parameters) GenerateCrashInvolvedPredicate(bool? crashInvolved)
         {
             // test for valid filter
-            if (crashInvolved == null || crashInvolved != true)
+            if (crashInvolved == null)
             {
                 return (null, null);
             }
 
             // define where clause
-            var whereClause = @"crash_cd = 'Y'";
-
+            var whereClause = (bool)crashInvolved ? @"crash_cd = 'Y'" : @"crash_cd = 'N'";
             // define oracle parameters
             var parameters = new { };
 

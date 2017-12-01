@@ -20,7 +20,7 @@ export class CitationsOverTimeComponent implements OnInit {
     agencies: Lookup[];
     years: number[];
     yesNo = ['Yes', 'No'];
-    violationClassification = ['Bicyclist', 'Criminal', 'Moving', 'Non-Moving', 'Pedestrian', 'Unknown'];
+    violationClassification = ['Any', 'Bicyclist', 'Criminal', 'Moving', 'Non-Moving', 'Pedestrian', 'Unknown'];
 
     selectedGeography: Lookup | string;
     selectedAgency: Lookup | string;
@@ -29,11 +29,12 @@ export class CitationsOverTimeComponent implements OnInit {
     citationsByYearLoaded: boolean;
     citationsByMonthLoaded: boolean;
     citationsByDayLoaded: boolean;
+    citationsByAttributeLoaded: boolean;
     selectedCrashInvolved?: string = undefined;
-    selectedClassification?: string = undefined;
+    selectedClassification?: string = 'Any';
 
     get loading(): boolean {
-        return !(this.citationsByYearLoaded && this.citationsByMonthLoaded && this.citationsByDayLoaded);
+        return !(this.citationsByYearLoaded && this.citationsByMonthLoaded && this.citationsByDayLoaded && this.citationsByAttributeLoaded);
     }
 
     constructor(private reporting: CitationReportingService) { }
@@ -47,7 +48,7 @@ export class CitationsOverTimeComponent implements OnInit {
     }
 
     beginLoad() {
-        this.citationsByYearLoaded = this.citationsByMonthLoaded = this.citationsByDayLoaded = false;
+        this.citationsByYearLoaded = this.citationsByMonthLoaded = this.citationsByDayLoaded = this.citationsByAttributeLoaded = false;
     }
 
     formatLookup(value: Lookup) {
@@ -86,10 +87,10 @@ export class CitationsOverTimeComponent implements OnInit {
             reportingAgencyId: this.selectedAgency !== ''
                 ? (this.selectedAgency as Lookup).key
                 : undefined,
-            crashInvolved: this.selectedCrashInvolved !== undefined
-                ? this.selectedCrashInvolved === 'Yes'
-                : undefined,
-            classification: this.selectedClassification != ''
+            crashInvolved: this.selectedCrashInvolved == undefined
+                ? undefined
+                : this.selectedCrashInvolved === 'Yes',
+            classification: this.selectedClassification !== ''
                 ? this.selectedClassification
                 : undefined
         };

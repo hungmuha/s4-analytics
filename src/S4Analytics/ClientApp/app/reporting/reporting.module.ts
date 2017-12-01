@@ -14,6 +14,7 @@ import { CitationsOverTimeComponent } from './citations-over-time.component';
 import { CitationsByYearComponent } from './citations-by-year.component';
 import { CitationsByMonthComponent } from './citations-by-month.component';
 import { CitationsByDayComponent } from './citations-by-day.component';
+import { CitationsByAttributeComponent } from './citations-by-attribute.component';
 import { CitationReportingService } from './shared';
 
 @NgModule({
@@ -34,7 +35,8 @@ import { CitationReportingService } from './shared';
         CitationsOverTimeComponent,
         CitationsByYearComponent,
         CitationsByMonthComponent,
-        CitationsByDayComponent
+        CitationsByDayComponent,
+        CitationsByAttributeComponent
     ],
     providers: [
         CrashReportingService,
