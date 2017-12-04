@@ -25,7 +25,7 @@ class EventsByAttributeFormatter {
     selector: 'citations-by-attribute',
     template: `<card>
         <ng-container card-header>
-            <div class="font-weight-bold">Crashes by attribute</div>
+            <div class="font-weight-bold">Citations by attribute</div>
         </ng-container>
         <div class="m-3" card-block>
             <div id="citationsByAttribute" class="mr-3"></div>

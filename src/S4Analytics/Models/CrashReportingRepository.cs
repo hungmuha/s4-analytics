@@ -352,7 +352,7 @@ namespace S4Analytics.Models
                         FROM crash_evt
                         WHERE crash_yr = :year
                         AND key_crash_dt < TRUNC(:maxDate + 1)
-                        AND ( {preparedQuery.queryText} )
+                        AND ( {preparedWhereClause.whereClauseText} )
                         GROUP BY crash_type
                     )
                     SELECT /*+ RESULT_CACHE */
@@ -372,7 +372,7 @@ namespace S4Analytics.Models
                         FROM crash_evt
                         WHERE crash_yr = :year
                         AND key_crash_dt < TRUNC(:maxDate + 1)
-                        AND ( {preparedQuery.queryText} )
+                        AND ( {preparedWhereClause.whereClauseText} )
                         GROUP BY crash_sev_dtl
                     )
                     SELECT /*+ RESULT_CACHE */
@@ -393,7 +393,7 @@ namespace S4Analytics.Models
                         FROM crash_evt
                         WHERE crash_yr = :year
                         AND key_crash_dt < TRUNC(:maxDate + 1)
-                        AND ( {preparedQuery.queryText} )
+                        AND ( {preparedWhereClause.whereClauseText} )
                         GROUP BY nvl(first_he, 'Unknown')
                     )
                     SELECT /*+ RESULT_CACHE */
@@ -419,7 +419,7 @@ namespace S4Analytics.Models
                         FROM crash_evt
                         WHERE crash_yr = :year
                         AND key_crash_dt < TRUNC(:maxDate + 1)
-                        AND ( {preparedQuery.queryText} )
+                        AND ( {preparedWhereClause.whereClauseText} )
                         GROUP BY nvl(crash_hh_am, 'Unknown')
                     )
                     SELECT /*+ RESULT_CACHE */
@@ -453,7 +453,7 @@ namespace S4Analytics.Models
                         FROM crash_evt
                         WHERE crash_yr = :year
                         AND key_crash_dt < TRUNC(:maxDate + 1)
-                        AND ( {preparedQuery.queryText} )
+                        AND ( {preparedWhereClause.whereClauseText} )
                         GROUP BY nvl(crash_day, 'Unknown')
                     )
                     SELECT /*+ RESULT_CACHE */
@@ -492,7 +492,7 @@ namespace S4Analytics.Models
             return report;
         }
 
-        private PreparedQuery PrepareQuery(CrashesOverTimeQuery query)
+        private PreparedWhereClause PrepareWhereClause(CrashesOverTimeQuery query)
         {
             // initialize where clause and query parameter collections
             var whereClauses = new List<string>();
