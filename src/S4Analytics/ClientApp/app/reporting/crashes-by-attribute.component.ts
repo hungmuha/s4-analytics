@@ -16,8 +16,9 @@ class EventsByAttributeFormatter {
     y: number;
 
     formatter(): string {
-        let perc = ((this.y / total) * 100).toFixed(1);
-        return `<b>${this.x}</b><br/>${this.y} (${perc}%)`;
+        let perc = (this.y / total) * 100;
+        let percFormatted = perc < 1 ? '< 1%' : perc.toFixed(1) + '%';
+        return `<b>${this.x}</b><br/>${this.y} (${percFormatted})`;
     }
 }
 
@@ -35,10 +36,12 @@ class EventsByAttributeFormatter {
                 Results shown through {{formattedMaxDate}}.
             </div>
             <div>
-                <select class="custom-select" (change)="selectedAttribute = $event.target.value">
-                    <option value="weather-condition" [selected]="selectedAttribute==='weather-condition'">Weather condition</option>
-                    <option value="light-condition" [selected]="selectedAttribute==='light-condition'">Light condition</option>
-                    <option value="road-surface-condition" [selected]="selectedAttribute==='road-surface-condition'">Road surface condition</option>
+                <select class="custom-select" (change)="selectedAttributeKey=$event.target.value">
+                    <option *ngFor="let attrKey of attributeKeys"
+                            [value]="attrKey"
+                            [selected]="selectedAttributeKey===attrKey">
+                        {{attributes[attrKey]}}
+                    </option>
                 </select>
                 <button-group [items]="years" [(ngModel)]="reportYear"></button-group>
             </div>
@@ -60,19 +63,24 @@ export class CrashesByAttributeComponent implements OnInit, OnChanges {
     }
 
     attributes: { [key: string]: string } = {
-        'day-of-week': 'Day of week',
         'hour-of-day': 'Hour of day',
+        'day-of-week': 'Day of week',
         'crash-type': 'Crash type',
         'crash-severity': 'Crash severity',
-        'first-harmful-event': 'First harmful event',
-        'weather-condition': 'Weather condition',
         'light-condition': 'Light condition',
-        'road-surface-condition': 'Road surface condition'
+        'road-surface-condition': 'Road surface condition',
+        'weather-condition': 'Weather condition',
+        'first-harmful-event': 'First harmful event'
     };
-    get selectedAttribute(): string {
+
+    get attributeKeys(): string[] {
+        return Object.keys(this.attributes);
+    }
+
+    get selectedAttributeKey(): string {
         return this._selectedAttribute;
     }
-    set selectedAttribute(value: string) {
+    set selectedAttributeKey(value: string) {
         this._selectedAttribute = value;
         this.ngOnChanges();
     }
@@ -92,7 +100,7 @@ export class CrashesByAttributeComponent implements OnInit, OnChanges {
 
     ngOnInit() {
         this.reportYear = this.years[0];
-        this.selectedAttribute = 'weather-condition';
+        this.selectedAttributeKey = this.attributeKeys[0];
 
         let options: Highcharts.Options = {
             chart: {
@@ -147,7 +155,7 @@ export class CrashesByAttributeComponent implements OnInit, OnChanges {
         }
 
         this.sub = this.reporting
-            .getCrashesOverTimeByAttribute(this.reportYear, this.selectedAttribute, this.query)
+            .getCrashesOverTimeByAttribute(this.reportYear, this.selectedAttributeKey, this.query)
             .subscribe(report => {
                 this.maxDate = moment(report.maxDate);
                 this.drawReportData(report);
@@ -155,7 +163,7 @@ export class CrashesByAttributeComponent implements OnInit, OnChanges {
     }
 
     private drawReportData(report: ReportOverTime) {
-        let attrName = this.attributes[this.selectedAttribute];
+        let attrName = this.attributes[this.selectedAttributeKey];
 
         let series = {
             id: attrName,
