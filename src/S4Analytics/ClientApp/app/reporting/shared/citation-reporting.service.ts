@@ -29,15 +29,22 @@ export class CitationReportingService {
             .map(report => new ReportOverTime(report));
     }
 
+    getCitationsOverTimeByAttribute(year: number, attrName: string, query: CitationsOverTimeQuery): Observable<ReportOverTime> {
+        return this.http
+            .post(`api/reporting/citation/${year}/${attrName}`, query)
+            .map(response => response.json() as ReportOverTime)
+            .map(report => new ReportOverTime(report));
+    }
+
     getGeographies(): Observable<{ key: number, name: string }[]> {
         return this.http
-            .get('api/reporting/citation-geographies')
+            .get('api/reporting/citation/geographies')
             .map(response => response.json());
     }
 
     getReportingAgencies(): Observable<{ key: number, name: string }[]> {
         return this.http
-            .get('api/reporting/citation-agencies')
+            .get('api/reporting/citation/agencies')
             .map(response => response.json());
     }
 }

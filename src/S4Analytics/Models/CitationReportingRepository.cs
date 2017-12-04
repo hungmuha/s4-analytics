@@ -8,74 +8,12 @@ using System.Linq;
 
 namespace S4Analytics.Models
 {
-    //public class LookupKeyAndName
-    //{
-    //    public int key;
-    //    public string name;
-    //}
-
-    public class CitationReportingRepository
+    public class CitationReportingRepository: ReportingRepository
     {
-        private const int MIN_DAYS_BACK = 30;
-        private readonly string _connStr;
+        private const int MIN_DAYS_BACK = 15;
 
-        public CitationReportingRepository(
-            IOptions<ServerOptions> serverOptions)
+        public CitationReportingRepository(IOptions<ServerOptions> serverOptions) : base(serverOptions)
         {
-            _connStr = serverOptions.Value.FlatConnStr;
-        }
-
-        public IEnumerable<LookupKeyAndName> GetGeographyLookups()
-        {
-            var queryText = @"SELECT id AS key, cnty_nm || ' County, FL' AS name
-                FROM dim_geography
-                WHERE city_cd = 0
-                AND cnty_cd <> 68
-                UNION ALL
-                SELECT id AS key, city_nm || ', FL' AS name
-                FROM dim_geography
-                WHERE city_cd <> 0
-                AND cnty_cd <> 68
-                ORDER BY name";
-            IEnumerable<LookupKeyAndName> results;
-            using (var conn = new OracleConnection(_connStr))
-            {
-                results = conn.Query<LookupKeyAndName>(queryText, new { });
-            }
-            return results;
-        }
-
-        public IEnumerable<LookupKeyAndName> GetAgencyLookups()
-        {
-            var queryText = @"SELECT id AS key, agncy_nm AS name
-                FROM dim_agncy
-                ORDER BY agncy_nm";
-            IEnumerable<LookupKeyAndName> results;
-            using (var conn = new OracleConnection(_connStr))
-            {
-                results = conn.Query<LookupKeyAndName>(queryText, new { });
-            }
-            return results;
-        }
-
-        private class PreparedQuery
-        {
-            public string queryText;
-            public Dictionary<string, object> queryParameters;
-            public DynamicParameters DynamicParams
-            {
-                get
-                {
-                    var dynamicParams = new DynamicParameters();
-                    dynamicParams.AddDict(queryParameters);
-                    return dynamicParams;
-                }
-            }
-            public PreparedQuery(string queryText, Dictionary<string, object> queryParameters)
-            {
-                this.queryText = queryText;
-                this.queryParameters = queryParameters;
-            }
         }
 
         public ReportOverTime<int> GetCitationCountsByYear(CitationsOverTimeQuery query)
@@ -108,7 +46,7 @@ namespace S4Analytics.Models
                 series2Label = string.Format(series2Format, monthNames[(int)series2StartMonth], monthNames[(int)series2EndMonth]);
             }
 
-            var preparedQuery = PrepareQuery(query);
+            var preparedWhereClause = PrepareWhereClause(query);
 
             var queryText = $@"WITH grouped_cts AS (
                 -- count matching citations, grouped by year and month
@@ -118,7 +56,7 @@ namespace S4Analytics.Models
                     COUNT(*) ct
                 FROM citation
                 WHERE key_citation_dt BETWEEN TRUNC(:minDate) AND TRUNC(:maxDate)
-                AND ( {preparedQuery.queryText} )
+                AND ( {preparedWhereClause.whereClauseText} )
                 GROUP BY citation_yr, citation_mm
             )
             SELECT /*+ RESULT_CACHE */  -- sum previous counts, grouped by series and year
@@ -135,7 +73,7 @@ namespace S4Analytics.Models
                 CASE WHEN citation_mm <= :series1EndMonth THEN 1 ELSE 2 END,
                 citation_yr";
 
-            var dynamicParams = preparedQuery.DynamicParams;
+            var dynamicParams = preparedWhereClause.DynamicParams;
             dynamicParams.Add(new
             {
                 series1EndMonth,
@@ -176,7 +114,7 @@ namespace S4Analytics.Models
                 maxDate = new DateTime(year, 12, 31);
             }
 
-            var preparedQuery = PrepareQuery(query);
+            var preparedWhereClause = PrepareWhereClause(query);
 
             var queryText = $@"WITH grouped_cts AS (
                 -- count matching citations, grouped by year and month
@@ -188,7 +126,7 @@ namespace S4Analytics.Models
                 FROM citation
                 WHERE citation_yr IN (:year, :year - 1)
                 AND key_citation_dt < TRUNC(:maxDate + 1)
-                AND ( {preparedQuery.queryText} )
+                AND ( {preparedWhereClause.whereClauseText} )
                 GROUP BY citation_yr, citation_mm, citation_mo
             )
             SELECT /*+ RESULT_CACHE */ -- sum previous counts, grouped by series and month
@@ -199,7 +137,7 @@ namespace S4Analytics.Models
             GROUP BY citation_yr, citation_mm, citation_mo
             ORDER BY citation_yr, citation_mm";
 
-            var dynamicParams = preparedQuery.DynamicParams;
+            var dynamicParams = preparedWhereClause.DynamicParams;
             dynamicParams.Add(new
             {
                 maxDate,
@@ -269,7 +207,7 @@ namespace S4Analytics.Models
                 ORDER BY dd1.evt_dt";
             }
 
-            var preparedQuery = PrepareQuery(query);
+            var preparedWhereClause = PrepareWhereClause(query);
 
             var queryText = $@"WITH
             aligned_dts AS (
@@ -282,7 +220,7 @@ namespace S4Analytics.Models
                     key_citation_dt, COUNT(*) AS ct
                 FROM citation ce
                 WHERE citation_yr BETWEEN :year - 1 AND :year
-                AND ( {preparedQuery.queryText} )
+                AND ( {preparedWhereClause.whereClauseText} )
                 GROUP BY key_citation_dt
             )
             SELECT /*+ RESULT_CACHE */
@@ -306,7 +244,7 @@ namespace S4Analytics.Models
             ) res
             ORDER BY yr, seq";
 
-            var dynamicParams = preparedQuery.DynamicParams;
+            var dynamicParams = preparedWhereClause.DynamicParams;
             dynamicParams.Add(new
             {
                 maxDate,
@@ -334,7 +272,123 @@ namespace S4Analytics.Models
             return report;
         }
 
-        private PreparedQuery PrepareQuery(CitationsOverTimeQuery query)
+
+        public ReportOverTime<int> GetCitationCountsByAttribute(int year, string attrName, CitationsOverTimeQuery query)
+        {
+            // find the date MIN_DAYS_BACK days ago
+            DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+
+            if (year < maxDate.Year)
+            {
+                maxDate = new DateTime(year, 12, 31);
+            }
+
+            var preparedWhereClause = PrepareWhereClause(query);
+
+            string queryText;
+
+            switch (attrName)
+            {
+                case "violation-type":
+                    queryText = $@"WITH
+			            grouped_cts AS (
+				            SELECT /*+ RESULT_CACHE */
+					            nvl(violation_type, 'Unknown') AS category, COUNT(*) AS ct
+				            FROM citation
+				            WHERE citation_yr = :year
+				            AND key_citation_dt < TRUNC(:maxDate + 1)
+				            AND ( {preparedWhereClause.whereClauseText} )
+				            GROUP BY nvl(violation_type, 'Unknown')
+			            )
+			            SELECT /*+ RESULT_CACHE */
+				            nvl(vv.violation_type, cts.category) AS category,
+				            nvl(cts.ct, 0) AS ct
+			            FROM v_citation_violation_type vv
+			            FULL OUTER JOIN grouped_cts cts
+				            ON cts.category = vv.violation_type
+			            ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END";
+                    break;
+                case "violator-gender":
+                    queryText = $@"WITH
+                        grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            CASE WHEN driver_gender_cd = 'M' THEN 'Male' 
+                            ELSE 
+                            (CASE WHEN driver_gender_cd = 'F' THEN 'Female' 
+                                ELSE nvl(driver_gender_cd, 'Unknown') END) END AS CATEGORY, 
+                            COUNT(*) AS ct
+                        FROM citation
+                        WHERE citation_yr = :year
+				            AND key_citation_dt < TRUNC(:maxDate + 1)
+				            AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY CASE WHEN driver_gender_cd = 'M' THEN 'Male' 
+                            ELSE 
+                            (CASE WHEN driver_gender_cd = 'F' THEN 'Female' 
+                                ELSE nvl(driver_gender_cd, 'Unknown') END) END
+                        )
+                        SELECT /*+ RESULT_CACHE */
+                        nvl(vv.driver_attr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                        FROM v_driver_gender vv
+                        FULL OUTER JOIN grouped_cts cts
+                        ON cts.CATEGORY = vv.driver_attr_tx
+                        ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, vv.driver_attr_tx";
+                    break;
+                case "violator-age":
+                    queryText = $@"WITH
+                        grouped_cts AS (
+                            SELECT /*+ RESULT_CACHE */
+                                nvl(driver_age_rng, 'Unknown') AS CATEGORY, 
+                                COUNT(*) AS ct
+                            FROM citation
+    	                        WHERE
+                                citation_yr = :year AND
+			                        key_citation_dt < TRUNC(:maxDate + 1)
+				                AND ( {preparedWhereClause.whereClauseText} )
+                            GROUP BY nvl(driver_age_rng, 'Unknown')
+                            ),
+                            grouped_rngs as (
+                                SELECT /*+ RESULT_CACHE */
+                                    DISTINCT nvl(vv.driver_attr_tx, cts.category) AS category,
+                                    nvl(cts.ct, 0) AS ct
+                                FROM v_driver_age_rng vv
+                                FULL OUTER JOIN grouped_cts cts
+                                    ON cts.CATEGORY = vv.driver_attr_tx
+                                    )
+                                SELECT DISTINCT * FROM grouped_rngs g
+                                    ORDER BY CASE WHEN CATEGORY = 'Unknown' THEN 3 ELSE 
+                                    (CASE WHEN Category = 'Under 15' THEN 1 ELSE 2 END) END, category";
+                    break;
+                default:
+                    return null;
+            }
+
+            var dynamicParams = preparedWhereClause.DynamicParams;
+            dynamicParams.Add(new
+            {
+                maxDate,
+                maxDate.Year
+            });
+
+            var report = new ReportOverTime<int>() { maxDate = maxDate };
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var results = conn.Query(queryText, dynamicParams);
+                report.categories = results.DistinctBy(r => r.CATEGORY).Select(r => (string)(r.CATEGORY));
+                var seriesName = maxDate.Year.ToString();
+                var series = new List<ReportSeries<int>>();
+                series.Add(new ReportSeries<int>()
+                {
+                    name = seriesName,
+                    data = results.Select(r => (int)r.CT)
+                });
+                report.series = series;
+            }
+            return report;
+        }
+
+
+        private PreparedWhereClause PrepareWhereClause(CitationsOverTimeQuery query)
         {
             // initialize where clause and query parameter collections
             var whereClauses = new List<string>();
@@ -342,79 +396,51 @@ namespace S4Analytics.Models
 
             // get predicate methods
             var predicateMethods = GetPredicateMethods(query);
-
-            // generate where clause and query parameters for each valid filter
-            predicateMethods.ForEach(generatePredicate => {
-                (var whereClause, var parameters) = generatePredicate.Invoke();
-                if (whereClause != null)
-                {
-                    whereClauses.Add(whereClause);
-                    if (parameters != null)
-                    {
-                        queryParameters.AddFields(parameters);
-                    }
-                }
-            });
-
-            // join where clauses
-            if (whereClauses.Count == 0)
-            {
-                // prevent the query from breaking if there are no where clauses
-                whereClauses.Add("1=1");
-            }
-            var queryText = "(" + string.Join(")\r\nAND (", whereClauses) + ")";
-
-            return new PreparedQuery(queryText, queryParameters);
+            return PrepareWhereClause(predicateMethods);
         }
+
 
         private List<Func<(string, object)>> GetPredicateMethods(CitationsOverTimeQuery query)
         {
             Func<(string, object)>[] predicateMethods =
             {
                 () => GenerateGeographyPredicate(query.geographyId),
-                () => GenerateReportingAgencyPredicate(query.reportingAgencyId)
+                () => GenerateReportingAgencyPredicate(query.reportingAgencyId),
+                () => GenerateCrashInvolvedPredicate(query.crashInvolved),
+                () => GenerateClassification(query.classification)
             };
             return predicateMethods.ToList();
         }
 
-        private (string whereClause, object parameters) GenerateGeographyPredicate(int? geographyId)
+        private (string whereClause, object parameters) GenerateClassification(string classification)
         {
             // test for valid filter
-            if (geographyId == null)
+            if (classification == null || classification == "Any")
             {
                 return (null, null);
             }
 
-            var isCounty = geographyId % 100 == 0;
-
             // define where clause
-            var whereClause = isCounty
-                ? @"cnty_cd = :geographyId / 100"
-                : @"key_geography = :geographyId";
+            var whereClause = classification == "Unknown" ? @"violation_class is null" : $@"violation_class = '{classification}'";
 
             // define oracle parameters
-            var parameters = new { geographyId };
+            var parameters = new { };
 
             return (whereClause, parameters);
         }
 
-        private (string whereClause, object parameters) GenerateReportingAgencyPredicate(int? reportingAgencyId)
+        private (string whereClause, object parameters) GenerateCrashInvolvedPredicate(bool? crashInvolved)
         {
             // test for valid filter
-            if (reportingAgencyId == null)
+            if (crashInvolved == null)
             {
                 return (null, null);
             }
 
             // define where clause
-            var whereClause = @"(key_agncy = :reportingAgencyId)";
-
+            var whereClause = (bool)crashInvolved ? @"crash_cd = 'Y'" : @"crash_cd = 'N'";
             // define oracle parameters
-            var parameters = new
-            {
-                isFhpTroop = reportingAgencyId > 1 && reportingAgencyId <= 14 ? 1 : 0,
-                reportingAgencyId
-            };
+            var parameters = new { };
 
             return (whereClause, parameters);
         }

@@ -19,6 +19,8 @@ export class CitationsOverTimeComponent implements OnInit {
     geographies: Lookup[];
     agencies: Lookup[];
     years: number[];
+    yesNo = ['Yes', 'No'];
+    violationClassification = ['Any', 'Bicyclist', 'Criminal', 'Moving', 'Non-Moving', 'Pedestrian', 'Unknown'];
 
     selectedGeography: Lookup | string;
     selectedAgency: Lookup | string;
@@ -27,9 +29,12 @@ export class CitationsOverTimeComponent implements OnInit {
     citationsByYearLoaded: boolean;
     citationsByMonthLoaded: boolean;
     citationsByDayLoaded: boolean;
+    citationsByAttributeLoaded: boolean;
+    selectedCrashInvolved?: string = undefined;
+    selectedClassification?: string = 'Any';
 
     get loading(): boolean {
-        return !(this.citationsByYearLoaded && this.citationsByMonthLoaded && this.citationsByDayLoaded);
+        return !(this.citationsByYearLoaded && this.citationsByMonthLoaded && this.citationsByDayLoaded && this.citationsByAttributeLoaded);
     }
 
     constructor(private reporting: CitationReportingService) { }
@@ -43,7 +48,7 @@ export class CitationsOverTimeComponent implements OnInit {
     }
 
     beginLoad() {
-        this.citationsByYearLoaded = this.citationsByMonthLoaded = this.citationsByDayLoaded = false;
+        this.citationsByYearLoaded = this.citationsByMonthLoaded = this.citationsByDayLoaded = this.citationsByAttributeLoaded = false;
     }
 
     formatLookup(value: Lookup) {
@@ -81,6 +86,12 @@ export class CitationsOverTimeComponent implements OnInit {
                 : undefined,
             reportingAgencyId: this.selectedAgency !== ''
                 ? (this.selectedAgency as Lookup).key
+                : undefined,
+            crashInvolved: this.selectedCrashInvolved == undefined
+                ? undefined
+                : this.selectedCrashInvolved === 'Yes',
+            classification: this.selectedClassification !== ''
+                ? this.selectedClassification
                 : undefined
         };
         this.query = query;

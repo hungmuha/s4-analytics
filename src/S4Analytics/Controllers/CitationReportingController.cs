@@ -37,14 +37,26 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
-        [HttpGet("citation-geographies")]
+        [HttpPost("citation/{year}/{attrName}")]
+        public IActionResult GetCitationCountsByAttribute(int year, string attrName, [FromBody] CitationsOverTimeQuery query)
+        {
+            /* attrName can be one of the following:
+               violation-type,
+               violator-age,
+               violator-gender*/
+            var results = _reportRepo.GetCitationCountsByAttribute(year, attrName, query);
+            return new ObjectResult(results);
+        }
+
+
+        [HttpGet("citation/geographies")]
         public IActionResult GetGeographyLookups()
         {
             var results = _reportRepo.GetGeographyLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("citation-agencies")]
+        [HttpGet("citation/agencies")]
         public IActionResult GetAgencyLookups()
         {
             var results = _reportRepo.GetAgencyLookups();
