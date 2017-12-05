@@ -312,19 +312,22 @@ namespace S4Analytics.Models
                     queryText = $@"WITH
                         grouped_cts AS (
                         SELECT /*+ RESULT_CACHE */
-                            CASE WHEN driver_gender_cd = 'M' THEN 'Male' 
-                            ELSE 
-                            (CASE WHEN driver_gender_cd = 'F' THEN 'Female' 
-                                ELSE nvl(driver_gender_cd, 'Unknown') END) END AS CATEGORY, 
+                             CASE
+                                WHEN driver_gender_cd = 'M' THEN 'Male'
+                                WHEN driver_gender_cd = 'F' THEN 'Female'
+                                ELSE 'Unknown'
+                              END      AS CATEGORY,
                             COUNT(*) AS ct
                         FROM citation
                         WHERE citation_yr = :year
 				            AND key_citation_dt < TRUNC(:maxDate + 1)
 				            AND ( {preparedWhereClause.whereClauseText} )
-                        GROUP BY CASE WHEN driver_gender_cd = 'M' THEN 'Male' 
-                            ELSE 
-                            (CASE WHEN driver_gender_cd = 'F' THEN 'Female' 
-                                ELSE nvl(driver_gender_cd, 'Unknown') END) END
+                        GROUP BY 
+                            CASE
+                                WHEN driver_gender_cd = 'M' THEN 'Male' 
+                                WHEN driver_gender_cd = 'F' THEN 'Female'
+                                ELSE 'Unknown'
+                              END
                         )
                         SELECT /*+ RESULT_CACHE */
                         nvl(vv.driver_attr_tx, cts.category) AS category,
@@ -355,9 +358,11 @@ namespace S4Analytics.Models
                                 FULL OUTER JOIN grouped_cts cts
                                     ON cts.CATEGORY = vv.driver_attr_tx
                                     )
-                                SELECT DISTINCT * FROM grouped_rngs g
-                                    ORDER BY CASE WHEN CATEGORY = 'Unknown' THEN 3 ELSE 
-                                    (CASE WHEN Category = 'Under 15' THEN 1 ELSE 2 END) END, category";
+                                SELECT * FROM grouped_rngs g
+                                    ORDER BY 
+                                        CASE WHEN CATEGORY = 'Unknown' THEN 3  
+                                             WHEN Category = 'Under 15' THEN 1 
+                                             ELSE 2 END, category";
                     break;
                 default:
                     return null;
@@ -401,21 +406,21 @@ namespace S4Analytics.Models
                 () => GenerateGeographyPredicate(query.geographyId),
                 () => GenerateReportingAgencyPredicate(query.reportingAgencyId),
                 () => GenerateCrashInvolvedPredicate(query.crashInvolved),
-                () => GenerateClassification(query.classification)
+                () => GenerateClassificationPredicate(query.classification)
             };
             return predicateMethods.ToList();
         }
 
-        private (string whereClause, object parameters) GenerateClassification(string classification)
+        private (string whereClause, object parameters) GenerateClassificationPredicate(string classification)
         {
             // test for valid filter
-            if (classification == null || classification == "Any")
+            if (classification == null)
             {
                 return (null, null);
             }
 
             // define where clause
-            var whereClause = classification == "Unknown" ? @"violation_class is null" : $@"violation_class = '{classification}'";
+            var whereClause = $@"violation_class = '{classification}'";
 
             // define oracle parameters
             var parameters = new { };

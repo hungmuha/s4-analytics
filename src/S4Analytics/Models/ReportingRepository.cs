@@ -128,25 +128,6 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
-        public (string whereClause, object parameters) GenerateReportingAgencyPredicate(int? reportingAgencyId)
-        {
-            // test for valid filter
-            if (reportingAgencyId == null)
-            {
-                return (null, null);
-            }
-
-            // define where clause
-            var whereClause = @"(key_agncy = :reportingAgencyId)";
-
-            // define oracle parameters
-            var parameters = new
-            {
-                isFhpTroop = reportingAgencyId > 1 && reportingAgencyId <= 14 ? 1 : 0,
-                reportingAgencyId
-            };
-
-            return (whereClause, parameters);
-        }
+      
     }
 }

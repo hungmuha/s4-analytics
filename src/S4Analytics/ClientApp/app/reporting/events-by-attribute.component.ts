@@ -72,10 +72,12 @@ export class EventsByAttributeComponent implements OnInit, OnChanges {
     get selectedAttributeKey(): string {
         return this._selectedAttribute;
     }
+
     set selectedAttributeKey(value: string) {
         this._selectedAttribute = value;
         this.ngOnChanges();
     }
+
     private _selectedAttribute: string;
 
     private _reportYear: number;

@@ -105,7 +105,7 @@ export class CitationsOverTimeComponent implements OnInit {
             crashInvolved: this.selectedCrashInvolved == undefined
                 ? undefined
                 : this.selectedCrashInvolved === 'Yes',
-            classification: this.selectedClassification !== ''
+            classification: this.selectedClassification !== undefined
                 ? this.selectedClassification
                 : undefined
         };
