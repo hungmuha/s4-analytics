@@ -74,6 +74,11 @@
         <crashes-by-year [query]="query" (loaded)="crashesByYearLoaded=true"></crashes-by-year>
         <crashes-by-month [years]="years" [query]="query" (loaded)="crashesByMonthLoaded=true"></crashes-by-month>
         <crashes-by-day [years]="years" [query]="query" (loaded)="crashesByDayLoaded=true"></crashes-by-day>
-        <crashes-by-attribute [years]="years" [query]="query" (loaded)="crashesByAttributeLoaded=true"></crashes-by-attribute>
+        <events-by-attribute [header]="crashesByAttributeHeader"
+                             [query]="query"
+                             [attributes]="crashAttributes"
+                             [years]="years"
+                             [getEvents]="getCrashesByAttribute"
+                             (loaded)="crashesByAttributeLoaded=true"></events-by-attribute>
     </div>
 </div>

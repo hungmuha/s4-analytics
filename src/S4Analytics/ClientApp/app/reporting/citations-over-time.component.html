@@ -50,5 +50,11 @@
         <citations-by-month [years]="years" [query]="query" (loaded)="citationsByMonthLoaded=true"></citations-by-month>
         <citations-by-day [years]="years" [query]="query" (loaded)="citationsByDayLoaded=true"></citations-by-day>
         <citations-by-attribute [years]="years" [query]="query" (loaded)="citationsByAttributeLoaded=true"></citations-by-attribute>
+        <events-by-attribute [header]="citationsByAttributeHeader"
+                             [query]="query"
+                             [attributes]="citationAttributes"
+                             [years]="years"
+                             [getEvents]="getCitationsByAttribute"
+                             (loaded)="citationsByAttributeLoaded=true"></events-by-attribute>
     </div>
 </div>

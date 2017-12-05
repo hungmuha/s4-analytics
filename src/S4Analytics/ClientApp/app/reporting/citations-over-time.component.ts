@@ -33,6 +33,14 @@ export class CitationsOverTimeComponent implements OnInit {
     selectedCrashInvolved?: string = undefined;
     selectedClassification?: string = 'Any';
 
+    citationsByAttributeHeader: string = 'Citations by attribute';
+    citationAttributes: { [key: string]: string } = {
+        'violation-type': 'Violation Type',
+        'violator-age': 'Violator Age',
+        'violator-gender': 'Violator Gender'
+    };
+    getCitationsByAttribute = (year: number, attrName: string, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByAttribute(year, attrName, query);
+
     get loading(): boolean {
         return !(this.citationsByYearLoaded && this.citationsByMonthLoaded && this.citationsByDayLoaded && this.citationsByAttributeLoaded);
     }

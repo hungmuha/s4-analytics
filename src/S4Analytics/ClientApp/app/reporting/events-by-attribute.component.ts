@@ -1,8 +1,9 @@
 ﻿import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
+import { Observable } from 'rxjs/Observable';
 import * as Highcharts from 'highcharts';
 import * as moment from 'moment';
-import { CitationReportingService, CitationsOverTimeQuery, ReportOverTime } from './shared';
+import { ReportOverTime } from './shared';
 
 let total = 0;
 
@@ -16,39 +17,44 @@ class EventsByAttributeFormatter {
     y: number;
 
     formatter(): string {
-        let perc = ((this.y / total) * 100).toFixed(1);
-        return `<b>${this.x}</b><br/>${this.y} (${perc}%)`;
+        let perc = (this.y / total) * 100;
+        let percFormatted = perc < 1 ? '< 1%' : perc.toFixed(1) + '%';
+        return `<b>${this.x}</b><br/>${this.y} (${percFormatted})`;
     }
 }
 
 @Component({
-    selector: 'citations-by-attribute',
+    selector: 'events-by-attribute',
     template: `<card>
         <ng-container card-header>
-            <div class="font-weight-bold">Citations by attribute</div>
+            <div class="font-weight-bold">{{header}}</div>
         </ng-container>
         <div class="m-3" card-block>
-            <div id="citationsByAttribute" class="mr-3"></div>
+            <div id="eventsByAttribute" class="mr-3"></div>
         </div>
         <ng-container card-footer>
             <div class="mt-2">
                 Results shown through {{formattedMaxDate}}.
             </div>
             <div>
-                <select class="custom-select" (change)="selectedAttribute = $event.target.value">
-                    <option value="violation-type" [selected]="selectedAttribute==='violation-type'">Violation Type</option>
-                    //<option value="violator-age" [selected]="selectedAttribute==='violator-age'">Violator Age</option>
-                    //<option value="violator-gender" [selected]="selectedAttribute==='violator-gender'">Violator Gender</option>
+                <select class="custom-select" (change)="selectedAttributeKey=$event.target.value">
+                    <option *ngFor="let attrKey of attributeKeys"
+                            [value]="attrKey"
+                            [selected]="selectedAttributeKey===attrKey">
+                        {{attributes[attrKey]}}
+                    </option>
                 </select>
                 <button-group [items]="years" [(ngModel)]="reportYear"></button-group>
             </div>
         </ng-container>
     </card>`
 })
-export class CitationsByAttributeComponent implements OnInit, OnChanges {
-
-    @Input() query: CitationsOverTimeQuery;
+export class EventsByAttributeComponent implements OnInit, OnChanges {
+    @Input() query: any;
     @Input() years: number[];
+    @Input() header: string;
+    @Input() attributes: { [key: string]: string };
+    @Input() getEvents: (year: number, attrName: string, query: any) => Observable<ReportOverTime>;
     @Output() loaded = new EventEmitter<any>();
 
     get reportYear(): number {
@@ -59,15 +65,14 @@ export class CitationsByAttributeComponent implements OnInit, OnChanges {
         this.ngOnChanges();
     }
 
-    attributes: { [key: string]: string } = {
-        'violation-type': 'Violation Type',
-        'violator-age': 'Violator Age',
-        'violator-gender': 'Violator Gender'
-    };
-    get selectedAttribute(): string {
+    get attributeKeys(): string[] {
+        return Object.keys(this.attributes);
+    }
+
+    get selectedAttributeKey(): string {
         return this._selectedAttribute;
     }
-    set selectedAttribute(value: string) {
+    set selectedAttributeKey(value: string) {
         this._selectedAttribute = value;
         this.ngOnChanges();
     }
@@ -83,15 +88,13 @@ export class CitationsByAttributeComponent implements OnInit, OnChanges {
         return this.maxDate !== undefined ? this.maxDate.format('MMMM DD, YYYY') : '';
     }
 
-    constructor(private reporting: CitationReportingService) { }
-
     ngOnInit() {
         this.reportYear = this.years[0];
-        this.selectedAttribute = 'violation-type';
+        this.selectedAttributeKey = this.attributeKeys[0];
 
         let options: Highcharts.Options = {
             chart: {
-                renderTo: 'citationsByAttribute',
+                renderTo: 'eventsByAttribute',
                 type: 'column'
             },
             title: {
@@ -131,7 +134,6 @@ export class CitationsByAttributeComponent implements OnInit, OnChanges {
         this.chart.showLoading();
     }
 
-
     ngOnChanges() {
         // cancel any prior request or the user may get unexpected results
         if (this.sub !== undefined && !this.sub.closed) {
@@ -142,8 +144,7 @@ export class CitationsByAttributeComponent implements OnInit, OnChanges {
             this.chart.showLoading();
         }
 
-        this.sub = this.reporting
-            .getCitationsOverTimeByAttribute(this.reportYear, this.selectedAttribute, this.query)
+        this.sub = this.getEvents(this.reportYear, this.selectedAttributeKey, this.query)
             .subscribe(report => {
                 this.maxDate = moment(report.maxDate);
                 this.drawReportData(report);
@@ -151,7 +152,7 @@ export class CitationsByAttributeComponent implements OnInit, OnChanges {
     }
 
     private drawReportData(report: ReportOverTime) {
-        let attrName = this.attributes[this.selectedAttribute];
+        let attrName = this.attributes[this.selectedAttributeKey];
 
         let series = {
             id: attrName,

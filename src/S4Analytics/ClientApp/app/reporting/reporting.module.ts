@@ -9,13 +9,12 @@ import { CrashesOverTimeComponent } from './crashes-over-time.component';
 import { CrashesByYearComponent } from './crashes-by-year.component';
 import { CrashesByMonthComponent } from './crashes-by-month.component';
 import { CrashesByDayComponent } from './crashes-by-day.component';
-import { CrashesByAttributeComponent } from './crashes-by-attribute.component';
+import { EventsByAttributeComponent } from './events-by-attribute.component';
 import { CrashReportingService } from './shared';
 import { CitationsOverTimeComponent } from './citations-over-time.component';
 import { CitationsByYearComponent } from './citations-by-year.component';
 import { CitationsByMonthComponent } from './citations-by-month.component';
 import { CitationsByDayComponent } from './citations-by-day.component';
-import { CitationsByAttributeComponent } from './citations-by-attribute.component';
 import { CitationReportingService } from './shared';
 
 @NgModule({
@@ -33,12 +32,11 @@ import { CitationReportingService } from './shared';
         CrashesByYearComponent,
         CrashesByMonthComponent,
         CrashesByDayComponent,
-        CrashesByAttributeComponent,
+        EventsByAttributeComponent,
         CitationsOverTimeComponent,
         CitationsByYearComponent,
         CitationsByMonthComponent,
-        CitationsByDayComponent,
-        CitationsByAttributeComponent
+        CitationsByDayComponent
     ],
     providers: [
         CrashReportingService,

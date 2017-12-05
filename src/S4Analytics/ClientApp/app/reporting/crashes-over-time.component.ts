@@ -40,6 +40,19 @@ export class CrashesOverTimeComponent implements OnInit {
     crashesByDayLoaded: boolean;
     crashesByAttributeLoaded: boolean;
 
+    crashesByAttributeHeader: string = 'Crashes by attribute';
+    crashAttributes: { [key: string]: string } = {
+        'hour-of-day': 'Hour of day',
+        'day-of-week': 'Day of week',
+        'crash-type': 'Crash type',
+        'crash-severity': 'Crash severity',
+        'light-condition': 'Light condition',
+        'road-surface-condition': 'Road surface condition',
+        'weather-condition': 'Weather condition',
+        'first-harmful-event': 'First harmful event'
+    };
+    getCrashesByAttribute = (year: number, attrName: string, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByAttribute(year, attrName, query);
+
     get loading(): boolean {
         return !(this.crashesByYearLoaded && this.crashesByMonthLoaded && this.crashesByDayLoaded && this.crashesByAttributeLoaded);
     }
