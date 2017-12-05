@@ -40,8 +40,7 @@ export class CrashesOverTimeComponent implements OnInit {
     crashesByDayLoaded: boolean;
     crashesByAttributeLoaded: boolean;
 
-    crashesByAttributeHeader: string = 'Crashes by attribute';
-    crashAttributes: { [key: string]: string } = {
+    reportAttributes: { [key: string]: string } = {
         'hour-of-day': 'Hour of day',
         'day-of-week': 'Day of week',
         'crash-type': 'Crash type',
@@ -51,13 +50,21 @@ export class CrashesOverTimeComponent implements OnInit {
         'weather-condition': 'Weather condition',
         'first-harmful-event': 'First harmful event'
     };
-    getCrashesByAttribute = (year: number, attrName: string, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByAttribute(year, attrName, query);
 
     get loading(): boolean {
         return !(this.crashesByYearLoaded && this.crashesByMonthLoaded && this.crashesByDayLoaded && this.crashesByAttributeLoaded);
     }
 
     constructor(private reporting: CrashReportingService) { }
+
+    getCrashesByYear =
+        (query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByYear(query);
+    getCrashesByMonth =
+        (year: number, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByMonth(year, query);
+    getCrashesByDay =
+        (year: number, alignByWeek: boolean, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByDay(year, alignByWeek, query);
+    getCrashesByAttribute =
+        (year: number, attrName: string, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByAttribute(year, attrName, query);
 
     ngOnInit() {
         this.beginLoad();

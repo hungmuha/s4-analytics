@@ -33,19 +33,26 @@ export class CitationsOverTimeComponent implements OnInit {
     selectedCrashInvolved?: string = undefined;
     selectedClassification?: string = 'Any';
 
-    citationsByAttributeHeader: string = 'Citations by attribute';
-    citationAttributes: { [key: string]: string } = {
+    reportAttributes: { [key: string]: string } = {
         'violation-type': 'Violation Type',
         'violator-age': 'Violator Age',
         'violator-gender': 'Violator Gender'
     };
-    getCitationsByAttribute = (year: number, attrName: string, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByAttribute(year, attrName, query);
 
     get loading(): boolean {
         return !(this.citationsByYearLoaded && this.citationsByMonthLoaded && this.citationsByDayLoaded && this.citationsByAttributeLoaded);
     }
 
     constructor(private reporting: CitationReportingService) { }
+
+    getCitationsByYear =
+        (query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByYear(query);
+    getCitationsByMonth =
+        (year: number, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByMonth(year, query);
+    getCitationsByDay =
+        (year: number, alignByWeek: boolean, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByDay(year, alignByWeek, query);
+    getCitationsByAttribute =
+        (year: number, attrName: string, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByAttribute(year, attrName, query);
 
     ngOnInit() {
         this.beginLoad();

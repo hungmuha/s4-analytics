@@ -46,13 +46,23 @@
         </div>
     </div>
     <div class="col-12 analytics-main">
-        <citations-by-year [query]="query" (loaded)="citationsByYearLoaded=true"></citations-by-year>
-        <citations-by-month [years]="years" [query]="query" (loaded)="citationsByMonthLoaded=true"></citations-by-month>
-        <citations-by-day [years]="years" [query]="query" (loaded)="citationsByDayLoaded=true"></citations-by-day>
-        <citations-by-attribute [years]="years" [query]="query" (loaded)="citationsByAttributeLoaded=true"></citations-by-attribute>
-        <events-by-attribute [header]="citationsByAttributeHeader"
+        <events-by-year header="Citations by year"
+                        [query]="query"
+                        [getEvents]="getCitationsByYear"
+                        (loaded)="citationsByYearLoaded=true"></events-by-year>
+        <events-by-month header="Citations by month"
+                         [years]="years"
+                         [query]="query"
+                         [getEvents]="getCitationsByMonth"
+                         (loaded)="citationsByMonthLoaded=true"></events-by-month>
+        <events-by-day header="Citations by day"
+                       [years]="years"
+                       [query]="query"
+                       [getEvents]="getCitationsByDay"
+                       (loaded)="citationsByDayLoaded=true"></events-by-day>
+        <events-by-attribute header="Citations by attribute"
                              [query]="query"
-                             [attributes]="citationAttributes"
+                             [attributes]="reportAttributes"
                              [years]="years"
                              [getEvents]="getCitationsByAttribute"
                              (loaded)="citationsByAttributeLoaded=true"></events-by-attribute>

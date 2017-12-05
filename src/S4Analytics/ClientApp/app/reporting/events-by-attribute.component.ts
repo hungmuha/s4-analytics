@@ -8,7 +8,7 @@ import { ReportOverTime } from './shared';
 let total = 0;
 
 class EventsByAttributeFormatter {
-    /*  Note that you will never have an actual instance of this class. Instead the format methods
+    /*  Note that you will never have an actual instance of this class. Instead the format method
         below will be bound to a context object provided by Highcharts. The context object will have
         more fields than what are defined below, but we only need to define the ones we use.
         See https://api.highcharts.com/highcharts/tooltip.formatter for info on available context data. */
@@ -16,7 +16,7 @@ class EventsByAttributeFormatter {
     x: number;
     y: number;
 
-    formatter(): string {
+    format(): string {
         let perc = (this.y / total) * 100;
         let percFormatted = perc < 1 ? '< 1%' : perc.toFixed(1) + '%';
         return `<b>${this.x}</b><br/>${this.y} (${percFormatted})`;
@@ -115,7 +115,7 @@ export class EventsByAttributeComponent implements OnInit, OnChanges {
                 shadow: false
             },
             tooltip: {
-                formatter: (new EventsByAttributeFormatter()).formatter
+                formatter: (new EventsByAttributeFormatter()).format
             },
             plotOptions: {
                 column: {
@@ -144,14 +144,15 @@ export class EventsByAttributeComponent implements OnInit, OnChanges {
             this.chart.showLoading();
         }
 
-        this.sub = this.getEvents(this.reportYear, this.selectedAttributeKey, this.query)
+        this.sub = this
+            .getEvents(this.reportYear, this.selectedAttributeKey, this.query)
             .subscribe(report => {
                 this.maxDate = moment(report.maxDate);
-                this.drawReportData(report);
+                this.drawData(report);
             });
     }
 
-    private drawReportData(report: ReportOverTime) {
+    private drawData(report: ReportOverTime) {
         let attrName = this.attributes[this.selectedAttributeKey];
 
         let series = {
