@@ -1020,6 +1020,7 @@ CREATE TABLE dim_agncy (
     obsolete_cd          VARCHAR2(1),
     vendor_nm            VARCHAR2(40),
     ori_nbr              VARCHAR2(9),
+    trooper_unit_tx      VARCHAR2(1),
     PRIMARY KEY ( "ID" )
         USING INDEX enable
 );
