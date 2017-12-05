@@ -54,7 +54,8 @@ BEGIN
         extent_max_y,
         obsolete_cd,
         vendor_nm,
-        ori_nbr
+        ori_nbr,
+        trooper_unit_tx
     )
     SELECT
         "ID",
@@ -72,7 +73,8 @@ BEGIN
         extent_max_y,
         obsolete_cd,
         vendor_nm,
-        ori_nbr
+        ori_nbr,
+        CASE WHEN parent_agncy_id = 1 THEN REPLACE(agncy_short_nm, 'FHP Troop ', '') ELSE NULL END AS trooper_unit_tx
     FROM dim_agncy@s4_warehouse;
 
     INSERT INTO dim_crash_attrs (
