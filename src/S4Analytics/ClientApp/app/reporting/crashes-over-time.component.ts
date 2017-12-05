@@ -38,9 +38,10 @@ export class CrashesOverTimeComponent implements OnInit {
     crashesByYearLoaded: boolean;
     crashesByMonthLoaded: boolean;
     crashesByDayLoaded: boolean;
+    crashesByAttributeLoaded: boolean;
 
     get loading(): boolean {
-        return !(this.crashesByYearLoaded && this.crashesByMonthLoaded && this.crashesByDayLoaded);
+        return !(this.crashesByYearLoaded && this.crashesByMonthLoaded && this.crashesByDayLoaded && this.crashesByAttributeLoaded);
     }
 
     constructor(private reporting: CrashReportingService) { }
@@ -54,7 +55,7 @@ export class CrashesOverTimeComponent implements OnInit {
     }
 
     beginLoad() {
-        this.crashesByYearLoaded = this.crashesByMonthLoaded = this.crashesByDayLoaded = false;
+        this.crashesByYearLoaded = this.crashesByMonthLoaded = this.crashesByDayLoaded = this.crashesByAttributeLoaded = false;
     }
 
     formatLookup(value: Lookup) {

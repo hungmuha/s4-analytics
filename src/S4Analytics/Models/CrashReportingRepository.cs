@@ -248,8 +248,7 @@ namespace S4Analytics.Models
             dynamicParams.Add(new
             {
                 maxDate,
-                maxDate.Year,
-                isLeapYear = DateTime.IsLeapYear(maxDate.Year) ? 1 : 0
+                maxDate.Year
             });
 
             var report = new ReportOverTime<int?>() { maxDate = maxDate };
@@ -267,6 +266,227 @@ namespace S4Analytics.Models
                         data = seriesData.Select(r => (int?)r.CT)
                     });
                 }
+                report.series = series;
+            }
+            return report;
+        }
+
+        public ReportOverTime<int> GetCrashCountsByAttribute(int year, string attrName, CrashesOverTimeQuery query)
+        {
+            // find the date MIN_DAYS_BACK days ago
+            DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+
+            if (year < maxDate.Year)
+            {
+                maxDate = new DateTime(year, 12, 31);
+            }
+
+            var preparedWhereClause = PrepareWhereClause(query);
+
+            string queryText;
+
+            switch (attrName)
+            {
+                case "weather-condition":
+                    queryText = $@"WITH
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            nvl(weather_cond, 'Unknown') AS category, COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY nvl(weather_cond, 'Unknown')
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        nvl(vv.crash_attr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM v_crash_weather_cond vv
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = vv.crash_attr_tx
+                    ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, vv.crash_attr_cd";
+                    break;
+                case "light-condition":
+                    queryText = $@"WITH
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            nvl(light_cond, 'Unknown') AS category, COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY nvl(light_cond, 'Unknown')
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        nvl(vv.crash_attr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM v_crash_light_cond vv
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = vv.crash_attr_tx
+                    ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, vv.crash_attr_cd";
+                    break;
+                case "road-surface-condition":
+                    queryText = $@"WITH
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            nvl(rd_surf_cond, 'Unknown') AS category, COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY nvl(rd_surf_cond, 'Unknown')
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        nvl(vv.crash_attr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM v_crash_road_surf_cond vv
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = vv.crash_attr_tx
+                    ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, vv.crash_attr_cd";
+                    break;
+                case "crash-type":
+                    queryText = $@"WITH
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            crash_type AS category, COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY crash_type
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        nvl(vv.crash_attr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM v_crash_type vv
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = vv.crash_attr_tx
+                    ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, vv.crash_attr_cd";
+                    break;
+                case "crash-severity":
+                    queryText = $@"WITH
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            crash_sev_dtl AS category,
+                            COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY crash_sev_dtl
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        nvl(vv.crash_attr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM v_crash_sev_dtl vv
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = vv.crash_attr_tx
+                    WHERE vv.crash_attr_cd <> 0
+                    ORDER BY vv.crash_attr_cd";
+                    break;
+                case "first-harmful-event":
+                    queryText = $@"WITH
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            nvl(first_he, 'Unknown') AS category,
+                            COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY nvl(first_he, 'Unknown')
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        nvl(he.harmful_evt_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM dim_harmful_evt he
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = he.harmful_evt_tx
+                    ORDER BY CASE WHEN category = 'Unknown' THEN 2 ELSE 1 END, he.harmful_evt_cd";
+                    break;
+                case "hour-of-day":
+                    queryText = $@"WITH
+                    hrs AS (
+                        SELECT /*+ RESULT_CACHE */
+                            COLUMN_VALUE hr,
+                            to_char(TO_DATE(COLUMN_VALUE, 'hh24'), 'fmHH AM') hr_tx
+                        FROM TABLE(SYS.odcinumberlist(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23))
+                    ),
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            nvl(crash_hh_am, 'Unknown') AS category,
+                            COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY nvl(crash_hh_am, 'Unknown')
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        nvl(hrs.hr_tx, cts.category) AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM hrs
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = hrs.hr_tx
+                    ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, hrs.hr";
+                    break;
+                case "day-of-week":
+                    queryText = $@"WITH
+                    days_of_week AS (
+                        SELECT /*+ RESULT_CACHE */
+                            COLUMN_VALUE day_val,
+                            CASE COLUMN_VALUE
+                                WHEN 1 THEN 'Sunday'
+                                WHEN 2 THEN 'Monday'
+                                WHEN 3 THEN 'Tuesday'
+                                WHEN 4 THEN 'Wednesday'
+                                WHEN 5 THEN 'Thursday'
+                                WHEN 6 THEN 'Friday'
+                                WHEN 7 THEN 'Saturday'
+                            END AS day_tx
+                        FROM TABLE(SYS.odcinumberlist(1,2,3,4,5,6,7))
+                    ),
+                    grouped_cts AS (
+                        SELECT /*+ RESULT_CACHE */
+                            nvl(crash_day, 'Unknown') AS category,
+                            COUNT(*) AS ct
+                        FROM crash_evt
+                        WHERE crash_yr = :year
+                        AND key_crash_dt < TRUNC(:maxDate + 1)
+                        AND ( {preparedWhereClause.whereClauseText} )
+                        GROUP BY nvl(crash_day, 'Unknown')
+                    )
+                    SELECT /*+ RESULT_CACHE */
+                        ds.day_tx AS category,
+                        nvl(cts.ct, 0) AS ct
+                    FROM days_of_week ds
+                    FULL OUTER JOIN grouped_cts cts
+                        ON cts.category = ds.day_tx
+                    ORDER BY ds.day_val";
+                    break;
+                default:
+                    return null;
+            }
+
+            var dynamicParams = preparedWhereClause.DynamicParams;
+            dynamicParams.Add(new
+            {
+                maxDate,
+                maxDate.Year
+            });
+
+            var report = new ReportOverTime<int>() { maxDate = maxDate };
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var results = conn.Query(queryText, dynamicParams);
+                report.categories = results.DistinctBy(r => r.CATEGORY).Select(r => (string)(r.CATEGORY));
+                var seriesName = maxDate.Year.ToString();
+                var series = new List<ReportSeries<int>>();
+                series.Add(new ReportSeries<int>()
+                {
+                    name = seriesName,
+                    data = results.Select(r => (int)r.CT)
+                });
                 report.series = series;
             }
             return report;

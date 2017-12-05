@@ -37,6 +37,22 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
+        [HttpPost("crash/{year}/{attrName}")]
+        public IActionResult GetCrashCountsByAttribute(int year, string attrName, [FromBody] CrashesOverTimeQuery query)
+        {
+            /* attrName can be one of the following:
+               day-of-week,
+               hour-of-day,
+               weather-condition,
+               light-condition,
+               crash-type,
+               crash-severity,
+               road-surface-condition,
+               first-harmful-event */
+            var results = _reportRepo.GetCrashCountsByAttribute(year, attrName, query);
+            return new ObjectResult(results);
+        }
+
         [HttpGet("crash/geographies")]
         public IActionResult GetGeographyLookups()
         {

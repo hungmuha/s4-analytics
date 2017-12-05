@@ -9,6 +9,7 @@ import { CrashesOverTimeComponent } from './crashes-over-time.component';
 import { CrashesByYearComponent } from './crashes-by-year.component';
 import { CrashesByMonthComponent } from './crashes-by-month.component';
 import { CrashesByDayComponent } from './crashes-by-day.component';
+import { CrashesByAttributeComponent } from './crashes-by-attribute.component';
 import { CrashReportingService } from './shared';
 import { CitationsOverTimeComponent } from './citations-over-time.component';
 import { CitationsByYearComponent } from './citations-by-year.component';
@@ -32,6 +33,7 @@ import { CitationReportingService } from './shared';
         CrashesByYearComponent,
         CrashesByMonthComponent,
         CrashesByDayComponent,
+        CrashesByAttributeComponent,
         CitationsOverTimeComponent,
         CitationsByYearComponent,
         CitationsByMonthComponent,
@@ -44,4 +46,3 @@ import { CitationReportingService } from './shared';
     ]
 })
 export class ReportingModule { }
-

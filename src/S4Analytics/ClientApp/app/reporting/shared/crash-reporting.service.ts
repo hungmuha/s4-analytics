@@ -29,6 +29,13 @@ export class CrashReportingService {
             .map(report => new ReportOverTime(report));
     }
 
+    getCrashesOverTimeByAttribute(year: number, attrName: string, query: CrashesOverTimeQuery): Observable<ReportOverTime> {
+        return this.http
+            .post(`api/reporting/crash/${year}/${attrName}`, query)
+            .map(response => response.json() as ReportOverTime)
+            .map(report => new ReportOverTime(report));
+    }
+
     getGeographies(): Observable<{ key: number, name: string }[]> {
         return this.http
             .get('api/reporting/crash/geographies')
