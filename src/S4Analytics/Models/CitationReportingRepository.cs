@@ -387,18 +387,12 @@ namespace S4Analytics.Models
             return report;
         }
 
-
         private PreparedWhereClause PrepareWhereClause(CitationsOverTimeQuery query)
         {
-            // initialize where clause and query parameter collections
-            var whereClauses = new List<string>();
-            var queryParameters = new Dictionary<string, object>();
-
             // get predicate methods
             var predicateMethods = GetPredicateMethods(query);
             return PrepareWhereClause(predicateMethods);
         }
-
 
         private List<Func<(string, object)>> GetPredicateMethods(CitationsOverTimeQuery query)
         {

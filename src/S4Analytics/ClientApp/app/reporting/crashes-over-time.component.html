@@ -71,9 +71,25 @@
         </div>
     </div>
     <div class="col-12 analytics-main">
-        <crashes-by-year [query]="query" (loaded)="crashesByYearLoaded=true"></crashes-by-year>
-        <crashes-by-month [years]="years" [query]="query" (loaded)="crashesByMonthLoaded=true"></crashes-by-month>
-        <crashes-by-day [years]="years" [query]="query" (loaded)="crashesByDayLoaded=true"></crashes-by-day>
-        <crashes-by-attribute [years]="years" [query]="query" (loaded)="crashesByAttributeLoaded=true"></crashes-by-attribute>
+        <events-by-year header="Crashes by year"
+                        [query]="query"
+                        [getEvents]="getCrashesByYear"
+                        (loaded)="crashesByYearLoaded=true"></events-by-year>
+        <events-by-month header="Crashes by month"
+                         [years]="years"
+                         [query]="query"
+                         [getEvents]="getCrashesByMonth"
+                         (loaded)="crashesByMonthLoaded=true"></events-by-month>
+        <events-by-day header="Crashes by day"
+                       [years]="years"
+                       [query]="query"
+                       [getEvents]="getCrashesByDay"
+                       (loaded)="crashesByDayLoaded=true"></events-by-day>
+        <events-by-attribute header="Crashes by attribute"
+                             [query]="query"
+                             [attributes]="reportAttributes"
+                             [years]="years"
+                             [getEvents]="getCrashesByAttribute"
+                             (loaded)="crashesByAttributeLoaded=true"></events-by-attribute>
     </div>
 </div>

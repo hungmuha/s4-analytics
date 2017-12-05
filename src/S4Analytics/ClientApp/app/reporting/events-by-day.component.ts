@@ -1,22 +1,18 @@
 ﻿import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
+import { Observable } from 'rxjs/Observable';
 import * as Highstock from 'highcharts/highstock';
 import * as moment from 'moment';
-import {
-    CrashReportingService,
-    CrashesOverTimeQuery,
-    ReportOverTime,
-    EventsByDayFormatter
-} from './shared';
+import { ReportOverTime, EventsByDayFormatter } from './shared';
 
 @Component({
-    selector: 'crashes-by-day',
+    selector: 'events-by-day',
     template: `<card>
         <ng-container card-header>
-            <div class="font-weight-bold">Crashes by day</div>
+            <div class="font-weight-bold">{{header}}</div>
         </ng-container>
         <div class="m-3" card-block>
-            <div id="crashesByDay"></div>
+            <div id="eventsByDay"></div>
         </div>
         <ng-container card-footer>
             <div class="mt-2">
@@ -36,11 +32,13 @@ import {
         </ng-container>
     </card>`
 })
-export class CrashesByDayComponent implements OnInit, OnChanges {
+export class EventsByDayComponent implements OnInit, OnChanges {
 
-    @Input() query: CrashesOverTimeQuery;
-    @Output() loaded = new EventEmitter<any>();
+    @Input() query: any;
+    @Input() header: string;
     @Input() years: number[];
+    @Input() getEvents: (year: number, alignByWeek: boolean, query: any) => Observable<ReportOverTime>;
+    @Output() loaded = new EventEmitter<any>();
 
     get alignByWeek(): boolean {
         return this._alignByWeek;
@@ -79,8 +77,6 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
         return this.maxDate !== undefined ? this.maxDate.format('MMMM DD, YYYY') : '';
     }
 
-    constructor(private reporting: CrashReportingService) { }
-
     ngOnInit() {
         this.alignByWeek = true;
         this.yearOnYear = true;
@@ -117,7 +113,7 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
                 loading: '',
             }
         };
-        this.chart = Highstock.stockChart('crashesByDay', options);
+        this.chart = Highstock.stockChart('eventsByDay', options);
         this.chart.showLoading();
         this.initialized = true;
         this.retrieveData();
@@ -139,8 +135,8 @@ export class CrashesByDayComponent implements OnInit, OnChanges {
             this.chart.showLoading();
         }
 
-        this.sub = this.reporting
-            .getCrashesOverTimeByDay(this.reportYear, this.alignByWeek, this.query)
+        this.sub = this
+            .getEvents(this.reportYear, this.alignByWeek, this.query)
             .subscribe(report => {
                 this.maxDate = moment(report.maxDate);
                 this.drawData(report);

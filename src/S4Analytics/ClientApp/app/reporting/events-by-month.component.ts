@@ -1,17 +1,18 @@
 ﻿import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
+import { Observable } from 'rxjs/Observable';
 import * as moment from 'moment';
 import * as Highcharts from 'highcharts';
-import { CrashReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
+import { ReportOverTime } from './shared';
 
 @Component({
-    selector: 'crashes-by-month',
+    selector: 'events-by-month',
     template: `<card>
         <ng-container card-header>
-            <div class="font-weight-bold">Crashes by month</div>
+            <div class="font-weight-bold">{{header}}</div>
         </ng-container>
         <div class="m-3" card-block>
-            <div id="crashesByMonth" class="mr-3"></div>
+            <div id="eventsByMonth" class="mr-3"></div>
         </div>
         <ng-container card-footer>
             <div class="mt-2">
@@ -27,11 +28,13 @@ import { CrashReportingService, CrashesOverTimeQuery, ReportOverTime } from './s
         </ng-container>
     </card>`
 })
-export class CrashesByMonthComponent implements OnInit, OnChanges {
+export class EventsByMonthComponent implements OnInit, OnChanges {
 
-    @Input() query: CrashesOverTimeQuery;
-    @Output() loaded = new EventEmitter<any>();
+    @Input() query: any;
+    @Input() header: string;
     @Input() years: number[];
+    @Input() getEvents: (year: number, query: any) => Observable<ReportOverTime>;
+    @Output() loaded = new EventEmitter<any>();
 
     get yearOnYear(): boolean {
         return this._yearOnYear;
@@ -61,15 +64,13 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
         return this.maxDate !== undefined ? this.maxDate.format('MMMM YYYY') : '';
     }
 
-    constructor(private reporting: CrashReportingService) { }
-
     ngOnInit() {
         this.yearOnYear = true;
         this.reportYear = this.years[0];
 
         let options: Highcharts.Options = {
             chart: {
-                renderTo: 'crashesByMonth',
+                renderTo: 'eventsByMonth',
                 type: 'line'
             },
             title: {
@@ -118,8 +119,8 @@ export class CrashesByMonthComponent implements OnInit, OnChanges {
             this.chart.showLoading();
         }
 
-        this.sub = this.reporting
-            .getCrashesOverTimeByMonth(this.reportYear, this.query)
+        this.sub = this
+            .getEvents(this.reportYear, this.query)
             .subscribe(report => {
                 this.maxDate = moment(report.maxDate);
                 this.drawData(report);

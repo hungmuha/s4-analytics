@@ -1,36 +1,37 @@
 ﻿import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
+import { Observable } from 'rxjs/Observable';
 import * as Highcharts from 'highcharts';
-import { CrashReportingService, CrashesOverTimeQuery, ReportOverTime } from './shared';
+import { ReportOverTime } from './shared';
 
 @Component({
-    selector: 'crashes-by-year',
+    selector: 'events-by-year',
     template: `<card>
         <ng-container card-header>
-            <div class="font-weight-bold">Crashes by year</div>
+            <div class="font-weight-bold">{{header}}</div>
         </ng-container>
         <div class="m-3" card-block>
-            <div id="crashesByYear" class="mr-3"></div>
+            <div id="eventsByYear" class="mr-3"></div>
         </div>
         <ng-container card-footer>
             Results shown for past 5 years only.
         </ng-container>
     </card>`
 })
-export class CrashesByYearComponent implements OnInit, OnChanges {
+export class EventsByYearComponent implements OnInit, OnChanges {
 
-    @Input() query: CrashesOverTimeQuery;
+    @Input() query: any;
+    @Input() header: string;
+    @Input() getEvents: (query: any) => Observable<ReportOverTime>;
     @Output() loaded = new EventEmitter<any>();
 
     private sub: Subscription;
     private chart: Highcharts.ChartObject;
 
-    constructor(private reporting: CrashReportingService) { }
-
     ngOnInit() {
         let options: Highcharts.Options = {
             chart: {
-                renderTo: 'crashesByYear',
+                renderTo: 'eventsByYear',
                 type: 'column'
             },
             title: {
@@ -93,12 +94,12 @@ export class CrashesByYearComponent implements OnInit, OnChanges {
             this.chart.showLoading();
         }
 
-        this.sub = this.reporting
-            .getCrashesOverTimeByYear(this.query)
-            .subscribe(report => this.drawReportData(report));
+        this.sub = this
+            .getEvents(this.query)
+            .subscribe(report => this.drawData(report));
     }
 
-    private drawReportData(report: ReportOverTime) {
+    private drawData(report: ReportOverTime) {
         // set x-axis labels
         let options = { xAxis: { categories: report.categories } };
         this.chart.update(options);

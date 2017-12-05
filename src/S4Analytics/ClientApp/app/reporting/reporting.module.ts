@@ -6,17 +6,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonGroupComponent, CardComponent } from '../shared';
 import { ReportingComponent } from './reporting.component';
 import { CrashesOverTimeComponent } from './crashes-over-time.component';
-import { CrashesByYearComponent } from './crashes-by-year.component';
-import { CrashesByMonthComponent } from './crashes-by-month.component';
-import { CrashesByDayComponent } from './crashes-by-day.component';
-import { CrashesByAttributeComponent } from './crashes-by-attribute.component';
-import { CrashReportingService } from './shared';
 import { CitationsOverTimeComponent } from './citations-over-time.component';
-import { CitationsByYearComponent } from './citations-by-year.component';
-import { CitationsByMonthComponent } from './citations-by-month.component';
-import { CitationsByDayComponent } from './citations-by-day.component';
-import { CitationsByAttributeComponent } from './citations-by-attribute.component';
-import { CitationReportingService } from './shared';
+import { EventsByYearComponent } from './events-by-year.component';
+import { EventsByMonthComponent } from './events-by-month.component';
+import { EventsByDayComponent } from './events-by-day.component';
+import { EventsByAttributeComponent } from './events-by-attribute.component';
+import { CrashReportingService, CitationReportingService } from './shared';
 
 @NgModule({
     imports: [
@@ -30,15 +25,11 @@ import { CitationReportingService } from './shared';
         CardComponent,
         ReportingComponent,
         CrashesOverTimeComponent,
-        CrashesByYearComponent,
-        CrashesByMonthComponent,
-        CrashesByDayComponent,
-        CrashesByAttributeComponent,
         CitationsOverTimeComponent,
-        CitationsByYearComponent,
-        CitationsByMonthComponent,
-        CitationsByDayComponent,
-        CitationsByAttributeComponent
+        EventsByYearComponent,
+        EventsByMonthComponent,
+        EventsByDayComponent,
+        EventsByAttributeComponent
     ],
     providers: [
         CrashReportingService,
