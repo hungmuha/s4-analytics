@@ -46,13 +46,13 @@ export class CitationsOverTimeComponent implements OnInit {
     constructor(private reporting: CitationReportingService) { }
 
     getCitationsByYear =
-        (query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByYear(query);
+        (query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByYear(query)
     getCitationsByMonth =
-        (year: number, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByMonth(year, query);
+        (year: number, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByMonth(year, query)
     getCitationsByDay =
-        (year: number, alignByWeek: boolean, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByDay(year, alignByWeek, query);
+        (year: number, alignByWeek: boolean, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByDay(year, alignByWeek, query)
     getCitationsByAttribute =
-        (year: number, attrName: string, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByAttribute(year, attrName, query);
+        (year: number, attrName: string, query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByAttribute(year, attrName, query)
 
     ngOnInit() {
         this.beginLoad();

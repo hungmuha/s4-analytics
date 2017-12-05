@@ -58,13 +58,13 @@ export class CrashesOverTimeComponent implements OnInit {
     constructor(private reporting: CrashReportingService) { }
 
     getCrashesByYear =
-        (query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByYear(query);
+        (query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByYear(query)
     getCrashesByMonth =
-        (year: number, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByMonth(year, query);
+        (year: number, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByMonth(year, query)
     getCrashesByDay =
-        (year: number, alignByWeek: boolean, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByDay(year, alignByWeek, query);
+        (year: number, alignByWeek: boolean, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByDay(year, alignByWeek, query)
     getCrashesByAttribute =
-        (year: number, attrName: string, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByAttribute(year, attrName, query);
+        (year: number, attrName: string, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByAttribute(year, attrName, query)
 
     ngOnInit() {
         this.beginLoad();
