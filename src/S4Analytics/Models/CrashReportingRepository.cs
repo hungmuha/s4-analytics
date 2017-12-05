@@ -494,10 +494,6 @@ namespace S4Analytics.Models
 
         private PreparedWhereClause PrepareWhereClause(CrashesOverTimeQuery query)
         {
-            // initialize where clause and query parameter collections
-            var whereClauses = new List<string>();
-            var queryParameters = new Dictionary<string, object>();
-
             // get predicate methods
             var predicateMethods = GetPredicateMethods(query);
             return PrepareWhereClause(predicateMethods);
@@ -518,8 +514,6 @@ namespace S4Analytics.Models
             };
             return predicateMethods.ToList();
         }
-
-
 
         private (string whereClause, object parameters) GenerateSeverityPredicate(CrashesOverTimeSeverity severity)
         {
