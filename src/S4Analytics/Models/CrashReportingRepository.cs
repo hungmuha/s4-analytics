@@ -606,16 +606,19 @@ namespace S4Analytics.Models
         private (string whereClause, object parameters) GenerateCmvPredicate(bool? cmvRelated)
         {
             // test for valid filter
-            if (cmvRelated == null || cmvRelated != true)
+            if (cmvRelated == null)
             {
                 return (null, null);
             }
 
             // define where clause
-            var whereClause = @"comm_veh_cnt > 0";
+            var whereClause = @"(:cmvRelated = 1 AND comm_veh_cnt > 0)
+                OR (:cmvRelated = 0 AND comm_veh_cnt = 0)";
 
             // define oracle parameters
-            var parameters = new { };
+            var parameters = new {
+                cmvRelated = cmvRelated == true ? 1 : 0
+            };
 
             return (whereClause, parameters);
         }
@@ -623,16 +626,18 @@ namespace S4Analytics.Models
         private (string whereClause, object parameters) GenerateCodeablePredicate(bool? codeable)
         {
             // test for valid filter
-            if (codeable == null || codeable != true)
+            if (codeable == null)
             {
                 return (null, null);
             }
 
             // define where clause
-            var whereClause = @"codeable = 'Y'";
+            var whereClause = @"codeable = :codeable";
 
             // define oracle parameters
-            var parameters = new { };
+            var parameters = new {
+                codeable = codeable == true ? "Y" : "N"
+            };
 
             return (whereClause, parameters);
         }
