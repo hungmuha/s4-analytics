@@ -44,6 +44,8 @@ body {
     overflow-x: hidden;
     overflow-y: auto;
     z-index: 1020; /* ensure that filter panel doesn't hide dropdown menus */
+    top: 4rem;
+    bottom: 0;
 }
 
 /* give filter cards a prominent border */
