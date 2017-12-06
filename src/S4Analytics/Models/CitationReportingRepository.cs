@@ -411,6 +411,30 @@ namespace S4Analytics.Models
             return predicateMethods.ToList();
         }
 
+        private (string whereClause, object parameters) GenerateReportingAgencyPredicate(int? reportingAgencyId)
+        {
+            // test for valid filter
+            if (reportingAgencyId == null)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"(:isFhpTroop = 0 AND key_agncy = :reportingAgencyId)
+                    OR (:isFhpTroop = 1 AND key_agncy = 1 
+                    AND trooper_unit_tx = (SELECT trooper_unit_tx FROM dim_agncy WHERE id = :reportingAgencyId))";
+
+            // define oracle parameters
+            var parameters = new
+            {
+                isFhpTroop = reportingAgencyId > 1 && reportingAgencyId <= 14 ? 1 : 0,
+                reportingAgencyId
+            };
+
+            return (whereClause, parameters);
+        }
+
+
         private (string whereClause, object parameters) GenerateClassificationPredicate(string classification)
         {
             // test for valid filter
@@ -437,9 +461,11 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = (bool)crashInvolved ? @"crash_cd = 'Y'" : @"crash_cd = 'N'";
+            var whereClause = @"crash_cd = :crashInvolvedCd";
             // define oracle parameters
-            var parameters = new { };
+            var parameters = new {
+                crashInvolvedCd = (bool)crashInvolved ? "Y" : "N"
+            };
 
             return (whereClause, parameters);
         }

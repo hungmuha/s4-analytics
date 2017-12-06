@@ -515,6 +515,29 @@ namespace S4Analytics.Models
             return predicateMethods.ToList();
         }
 
+        private (string whereClause, object parameters) GenerateReportingAgencyPredicate(int? reportingAgencyId)
+        {
+            // test for valid filter
+            if (reportingAgencyId == null)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"(:isFhpTroop = 0 AND key_rptg_agncy = :reportingAgencyId)
+		        OR (:isFhpTroop = 1 AND key_rptg_agncy = 1 AND key_rptg_unit = :reportingAgencyId)";
+
+            // define oracle parameters
+            var parameters = new
+            {
+                isFhpTroop = reportingAgencyId > 1 && reportingAgencyId <= 14 ? 1 : 0,
+                reportingAgencyId
+            };
+
+            return (whereClause, parameters);
+        }
+
+
         private (string whereClause, object parameters) GenerateSeverityPredicate(CrashesOverTimeSeverity severity)
         {
             // test for valid filter

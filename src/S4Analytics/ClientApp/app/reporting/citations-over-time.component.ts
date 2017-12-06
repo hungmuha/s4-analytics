@@ -20,7 +20,7 @@ export class CitationsOverTimeComponent implements OnInit {
     agencies: Lookup[];
     years: number[];
     yesNo = ['Yes', 'No'];
-    violationClassification = ['Any', 'Bicyclist', 'Criminal', 'Moving', 'Non-Moving', 'Pedestrian', 'Unknown'];
+    violationClassification = ['Any', 'Bicyclist', 'Criminal', 'Moving', 'Non-Moving', 'Pedestrian'];
 
     selectedGeography: Lookup | string;
     selectedAgency: Lookup | string;
@@ -105,7 +105,7 @@ export class CitationsOverTimeComponent implements OnInit {
             crashInvolved: this.selectedCrashInvolved == undefined
                 ? undefined
                 : this.selectedCrashInvolved === 'Yes',
-            classification: this.selectedClassification !== undefined
+            classification: this.selectedClassification !== 'Any'
                 ? this.selectedClassification
                 : undefined
         };
