@@ -201,6 +201,8 @@ BEGIN
         gc_cnty_nm,
         gc_city_cd,
         gc_city_nm,
+        hsmv_orig_load_dt,
+        hsmv_orig_load_dt_diff,
         gps_pt_4326,
         geocode_pt_3087,
         geocode_pt_3857
@@ -371,6 +373,8 @@ BEGIN
         gc_cnty_nm,
         gc_city_cd,
         gc_city_nm,
+        hsmv_orig_load_dt,
+        hsmv_orig_load_dt_diff,
         gps_pt_4326,
         geocode_pt_3087,
         sdo_cs.transform(geocode_pt_3087, 3857) AS geocode_pt_3857

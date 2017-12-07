@@ -492,6 +492,81 @@ namespace S4Analytics.Models
             return report;
         }
 
+        public ReportOverTime<int> GetTimelinessCrashCountsByDay(int year, CrashesOverTimeQuery query)
+        {
+            var maxDate = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
+
+            if (year < maxDate.Year)
+            {
+                maxDate = new DateTime(year, 12, 31);
+            }
+
+            var preparedWhereClause = PrepareWhereClause(query);
+
+            var queryText = $@"SELECT /*+ RESULT_CACHE */
+                CASE
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 7 THEN '0-7 days'
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 8 AND 14 THEN '8-14 days'
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 15 AND 30 THEN '15-30 days'
+                    WHEN hsmv_orig_load_dt_diff > 30 THEN '31+ days'
+                END AS series,
+                CASE
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 7 THEN 0
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 8 AND 14 THEN 1
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 15 AND 30 THEN 2
+                    WHEN hsmv_orig_load_dt_diff > 30 THEN 3
+                END AS series_sort,
+                TO_CHAR(TRUNC(hsmv_orig_load_dt), 'Mon DD') AS category,
+                TRUNC(hsmv_orig_load_dt) AS category_sort,
+                COUNT(*) AS ct
+            FROM crash_evt
+                WHERE crash_yr = :year
+                AND key_crash_dt < TRUNC(:maxDate + 1)
+                AND ( {preparedWhereClause.whereClauseText} )
+                AND hsmv_orig_load_dt_diff IS NOT NULL
+            GROUP BY
+                CASE
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 7 THEN '0-7 days'
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 8 AND 14 THEN '8-14 days'
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 15 AND 30 THEN '15-30 days'
+                    WHEN hsmv_orig_load_dt_diff > 30 THEN '31+ days'
+                END,
+                CASE
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 7 THEN 0
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 8 AND 14 THEN 1
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 15 AND 30 THEN 2
+                    WHEN hsmv_orig_load_dt_diff > 30 THEN 3
+                END,
+                TRUNC(hsmv_orig_load_dt)
+            ORDER BY series_sort, category_sort";
+
+            var dynamicParams = preparedWhereClause.DynamicParams;
+            dynamicParams.Add(new
+            {
+                maxDate,
+                maxDate.Year
+            });
+
+            var report = new ReportOverTime<int>() { maxDate = maxDate };
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var results = conn.Query(queryText, dynamicParams);
+                report.categories = results.DistinctBy(r => r.CATEGORY).Select(r => (string)(r.CATEGORY));
+                var seriesNames = results.DistinctBy(r => r.SERIES).Select(r => (string)(r.SERIES));
+                var series = new List<ReportSeries<int>>();
+                foreach (var seriesName in seriesNames)
+                {
+                    series.Add(new ReportSeries<int>()
+                    {
+                        name = seriesName,
+                        data = results.Where(r => r.SERIES == seriesName).Select(r => (int)r.CT)
+                    });
+                }
+                report.series = series;
+            }
+            return report;
+        }
+
         private PreparedWhereClause PrepareWhereClause(CrashesOverTimeQuery query)
         {
             // get predicate methods

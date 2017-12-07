@@ -182,7 +182,12 @@ SELECT
         WHEN fce.last_updt_dt IS NULL THEN gcr.last_updt_dt
         WHEN gcr.last_updt_dt IS NULL THEN fce.last_updt_dt
         ELSE greatest(fce.last_updt_dt, gcr.last_updt_dt)
-    END AS last_updt_dt -- see https://community.oracle.com/thread/958617
+    END AS last_updt_dt, -- see https://community.oracle.com/thread/958617
+    fce.hsmv_orig_load_dt,
+    CASE
+        WHEN fce.hsmv_orig_load_dt IS NOT NULL THEN TRUNC(fce.hsmv_orig_load_dt) - TRUNC(key_crash_dt)
+        ELSE NULL
+    END AS hsmv_orig_load_dt_diff
 FROM fact_crash_evt fce
 LEFT JOIN navteq_2015q1.geocode_result gcr ON gcr.hsmv_rpt_nbr = fce.hsmv_rpt_nbr
 LEFT JOIN dim_date dd ON fce.key_crash_dt = dd.crash_dt

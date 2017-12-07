@@ -91,5 +91,10 @@
                              [years]="years"
                              [getEvents]="getCrashesByAttribute"
                              (loaded)="crashesByAttributeLoaded=true"></events-by-attribute>
+        <data-timeliness header="Data timeliness"
+                         [years]="years"
+                         [query]="query"
+                         [getEvents]="getDataTimeliness"
+                         (loaded)="dataTimelinessLoaded=true"></data-timeliness>
     </div>
 </div>

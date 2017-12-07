@@ -53,6 +53,13 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
+        [HttpPost("crash/{year}/timeliness")]
+        public IActionResult GetTimelinessCrashCountsByDay(int year, [FromBody] CrashesOverTimeQuery query)
+        {
+            var results = _reportRepo.GetTimelinessCrashCountsByDay(year, query);
+            return new ObjectResult(results);
+        }
+
         [HttpGet("crash/geographies")]
         public IActionResult GetGeographyLookups()
         {
