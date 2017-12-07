@@ -2,10 +2,10 @@
     <div class="analytics-filters">
         <div class="row">
             <div class="col-12">
-                <h2>Crashes over time report</h2>
+                <h2>Crash reporting</h2>
             </div>
             <div class="col-12">
-                Geographic area (city or county)
+                City or county
                 <input type="text"
                        class="form-control"
                        placeholder="Search"
@@ -25,43 +25,59 @@
                        [resultFormatter]="formatLookup" />
             </div>
             <div class="col-12">
-                Severity
-                <button-group anyOrAllText="All"
-                              [multipleSelect]="true"
-                              [items]="severities"
-                              [(ngModel)]="selectedSeverities"></button-group>
-            </div>
-            <div class="col-12">
-                Impairment
-                <button-group anyOrAllText="All"
-                              [multipleSelect]="true"
-                              [items]="impairments"
-                              [(ngModel)]="selectedImpairments"></button-group>
-            </div>
-            <div class="col-12">
-                Bike/Ped
-                <button-group anyOrAllText="Any"
-                              [multipleSelect]="true"
-                              [items]="bikePedTypes"
-                              [(ngModel)]="selectedBikePedTypes"></button-group>
-            </div>
-            <div class="col-12">
-                CMV-related
-                <button-group anyOrAllText="Any"
-                              [items]="yesNo"
-                              [(ngModel)]="selectedCmvRelated"></button-group>
-            </div>
-            <div class="col-12">
-                Codeable
-                <button-group anyOrAllText="Any"
-                              [items]="yesNo"
-                              [(ngModel)]="selectedCodeable"></button-group>
-            </div>
-            <div class="col-12">
-                Form type
-                <button-group anyOrAllText="Any"
-                              [items]="formTypes"
-                              [(ngModel)]="selectedFormType"></button-group>
+                <table>
+                    <tr>
+                        <td>Severity</td>
+                        <td>
+                            <button-group anyOrAllText="All"
+                                          [multipleSelect]="true"
+                                          [items]="severities"
+                                          [(ngModel)]="selectedSeverities"></button-group>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Impairment</td>
+                        <td>
+                            <button-group anyOrAllText="Any"
+                                          [multipleSelect]="true"
+                                          [items]="impairments"
+                                          [(ngModel)]="selectedImpairments"></button-group>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Bike/Ped</td>
+                        <td>
+                            <button-group anyOrAllText="Any"
+                                          [multipleSelect]="true"
+                                          [items]="bikePedTypes"
+                                          [(ngModel)]="selectedBikePedTypes"></button-group>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>CMV-related</td>
+                        <td>
+                            <button-group anyOrAllText="Any"
+                                          [items]="yesNo"
+                                          [(ngModel)]="selectedCmvRelated"></button-group>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Codeable</td>
+                        <td>
+                            <button-group anyOrAllText="Any"
+                                          [items]="yesNo"
+                                          [(ngModel)]="selectedCodeable"></button-group>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Form type</td>
+                        <td>
+                            <button-group anyOrAllText="Any"
+                                          [items]="formTypes"
+                                          [(ngModel)]="selectedFormType"></button-group>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <div class="col-12">
                 <button class="btn btn-sm btn-primary" [disabled]="loading" (click)="refresh()">
