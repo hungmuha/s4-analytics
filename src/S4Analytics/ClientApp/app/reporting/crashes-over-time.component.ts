@@ -39,6 +39,7 @@ export class CrashesOverTimeComponent implements OnInit {
     crashesByMonthLoaded: boolean;
     crashesByDayLoaded: boolean;
     crashesByAttributeLoaded: boolean;
+    dataTimelinessLoaded: boolean;
 
     reportAttributes: { [key: string]: string } = {
         'hour-of-day': 'Hour of day',
@@ -52,7 +53,13 @@ export class CrashesOverTimeComponent implements OnInit {
     };
 
     get loading(): boolean {
-        return !(this.crashesByYearLoaded && this.crashesByMonthLoaded && this.crashesByDayLoaded && this.crashesByAttributeLoaded);
+        let allLoaded =
+            this.crashesByYearLoaded &&
+            this.crashesByMonthLoaded &&
+            this.crashesByDayLoaded &&
+            this.crashesByAttributeLoaded &&
+            this.dataTimelinessLoaded;
+        return !allLoaded;
     }
 
     constructor(private reporting: CrashReportingService) { }
@@ -65,6 +72,8 @@ export class CrashesOverTimeComponent implements OnInit {
         (year: number, alignByWeek: boolean, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByDay(year, alignByWeek, query)
     getCrashesByAttribute =
         (year: number, attrName: string, query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByAttribute(year, attrName, query)
+    getDataTimeliness =
+        (year: number, query: CrashesOverTimeQuery) => this.reporting.getDataTimeliness(year, query)
 
     ngOnInit() {
         this.beginLoad();
@@ -75,7 +84,11 @@ export class CrashesOverTimeComponent implements OnInit {
     }
 
     beginLoad() {
-        this.crashesByYearLoaded = this.crashesByMonthLoaded = this.crashesByDayLoaded = this.crashesByAttributeLoaded = false;
+        this.crashesByYearLoaded =
+            this.crashesByMonthLoaded =
+            this.crashesByDayLoaded =
+            this.crashesByAttributeLoaded =
+            this.dataTimelinessLoaded = false;
     }
 
     formatLookup(value: Lookup) {

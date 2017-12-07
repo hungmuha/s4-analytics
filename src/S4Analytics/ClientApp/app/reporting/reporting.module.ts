@@ -11,6 +11,7 @@ import { EventsByYearComponent } from './events-by-year.component';
 import { EventsByMonthComponent } from './events-by-month.component';
 import { EventsByDayComponent } from './events-by-day.component';
 import { EventsByAttributeComponent } from './events-by-attribute.component';
+import { DataTimelinessComponent } from './data-timeliness.component';
 import { CrashReportingService, CitationReportingService } from './shared';
 
 @NgModule({
@@ -29,7 +30,8 @@ import { CrashReportingService, CitationReportingService } from './shared';
         EventsByYearComponent,
         EventsByMonthComponent,
         EventsByDayComponent,
-        EventsByAttributeComponent
+        EventsByAttributeComponent,
+        DataTimelinessComponent
     ],
     providers: [
         CrashReportingService,
