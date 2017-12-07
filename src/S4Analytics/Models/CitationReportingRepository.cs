@@ -306,7 +306,7 @@ namespace S4Analytics.Models
 			            FROM v_citation_violation_type vv
 			            FULL OUTER JOIN grouped_cts cts
 				            ON cts.category = vv.violation_type
-			            ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END";
+			            ORDER BY CASE WHEN cts.category = 'Unknown' THEN 2 ELSE 1 END, cts.category";
                     break;
                 case "violator-gender":
                     queryText = $@"WITH
