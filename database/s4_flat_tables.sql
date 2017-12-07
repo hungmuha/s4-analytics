@@ -263,6 +263,8 @@ CREATE TABLE crash_evt (
     gc_cnty_nm                    VARCHAR2(15),
     gc_city_cd                    NUMBER(*,0),
     gc_city_nm                    VARCHAR2(35),
+    hsmv_orig_load_dt             DATE,
+    hsmv_orig_load_dt_diff        NUMBER(*,0),
     gps_pt_4326                   SDO_GEOMETRY,
     geocode_pt_3087               SDO_GEOMETRY,
     geocode_pt_3857               SDO_GEOMETRY,
