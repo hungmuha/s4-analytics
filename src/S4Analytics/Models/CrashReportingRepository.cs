@@ -505,16 +505,14 @@ namespace S4Analytics.Models
 
             var queryText = $@"SELECT /*+ RESULT_CACHE */
                 CASE
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 7 THEN '0-7 days'
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 8 AND 14 THEN '8-14 days'
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 15 AND 30 THEN '15-30 days'
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 10 THEN '0-10 days'
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 11 AND 30 THEN '11-30 days'
                     WHEN hsmv_orig_load_dt_diff > 30 THEN '31+ days'
                 END AS series,
                 CASE
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 7 THEN 0
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 8 AND 14 THEN 1
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 15 AND 30 THEN 2
-                    WHEN hsmv_orig_load_dt_diff > 30 THEN 3
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 10 THEN 0
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 11 AND 30 THEN 1
+                    WHEN hsmv_orig_load_dt_diff > 30 THEN 2
                 END AS series_sort,
                 TO_CHAR(TRUNC(hsmv_orig_load_dt), 'Mon DD') AS category,
                 TRUNC(hsmv_orig_load_dt) AS category_sort,
@@ -526,16 +524,14 @@ namespace S4Analytics.Models
                 AND hsmv_orig_load_dt_diff IS NOT NULL
             GROUP BY
                 CASE
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 7 THEN '0-7 days'
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 8 AND 14 THEN '8-14 days'
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 15 AND 30 THEN '15-30 days'
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 10 THEN '0-10 days'
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 11 AND 30 THEN '11-30 days'
                     WHEN hsmv_orig_load_dt_diff > 30 THEN '31+ days'
                 END,
                 CASE
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 7 THEN 0
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 8 AND 14 THEN 1
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 15 AND 30 THEN 2
-                    WHEN hsmv_orig_load_dt_diff > 30 THEN 3
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 10 THEN 0
+                    WHEN hsmv_orig_load_dt_diff BETWEEN 11 AND 30 THEN 1
+                    WHEN hsmv_orig_load_dt_diff > 30 THEN 2
                 END,
                 TRUNC(hsmv_orig_load_dt)
             ORDER BY series_sort, category_sort";
