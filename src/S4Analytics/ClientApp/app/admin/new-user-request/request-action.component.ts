@@ -48,7 +48,8 @@ export class RequestActionComponent {
             ||
             ((this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewConsultant)
                 &&
-                (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewVendor))
+            (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewVendor)
+            && (this.state.selectedRequest.requestStatus !== NewUserRequestStatus.NewAgency))
             ||
             ((
                 (this.state.selectedRequest.requestStatus === NewUserRequestStatus.NewConsultant) ||
