@@ -64,7 +64,6 @@ namespace S4Analytics.Models
                 SELECT
                   uc.CNTY_CD AS CountyCode,
                   s4_cnty.cnty_nm AS CountyName,
-                  uc.CAN_VIEW AS CrashReportAccess,
                   CASE uc.CAN_EDIT WHEN 'Y' THEN 1 ELSE 0 END AS CanEdit,
                   uc.CREATED_BY AS CreatedBy,
                   uc.CREATED_DT AS CreatedDate,
@@ -326,7 +325,6 @@ namespace S4Analytics.Models
                     :appName AS application_nm,
                     :userName AS user_nm,
                     :countyCode AS cnty_cd,
-                    :canView AS can_view,
                     :canEdit AS can_edit
                   FROM dual
                 ) x
@@ -334,13 +332,11 @@ namespace S4Analytics.Models
                 AND x.user_nm = uc.user_nm
                 AND x.cnty_cd = uc.cnty_cd)
                 WHEN MATCHED THEN UPDATE SET
-                  uc.can_view = x.can_view,
-                  uc.can_edit = x.can_edit,
                   uc.modified_by = :currentUserName,
                   uc.modified_dt = :currentTime
                 WHEN NOT MATCHED THEN INSERT
-                  (uc.application_nm, uc.user_nm, uc.cnty_cd, uc.can_view, uc.can_edit, uc.created_by, uc.created_dt)
-                  VALUES (x.application_nm, x.user_nm, x.cnty_cd, x.can_view, x.can_edit, :currentUserName, :currentTime)";
+                  (uc.application_nm, uc.user_nm, uc.cnty_cd, uc.can_edit, uc.created_by, uc.created_dt)
+                  VALUES (x.application_nm, x.user_nm, x.cnty_cd, x.can_edit, :currentUserName, :currentTime)";
             _connection.Execute(cmdText, new
             {
                 appName = _applicationName,
