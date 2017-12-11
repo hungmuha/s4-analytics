@@ -410,14 +410,12 @@ namespace S4Analytics.Tests.Properties
             profile.ViewableCounties.Add(new UserCounty()
             {
                 CountyCode = 11, // Alachua
-                CanEdit = true,
-                CrashReportAccess = CrashReportAccess.Within60Days
+                CanEdit = true
             });
             profile.ViewableCounties.Add(new UserCounty()
             {
                 CountyCode = 14, // Marion
-                CanEdit = false,
-                CrashReportAccess = CrashReportAccess.After60Days
+                CanEdit = false
             });
             await CreateBasicUser(userName, "secret", profile);
 
@@ -427,9 +425,7 @@ namespace S4Analytics.Tests.Properties
             var alachua = user.Profile.ViewableCounties.First(c => c.CountyName == "Alachua");
             var marion = user.Profile.ViewableCounties.First(c => c.CountyName == "Marion");
             Assert.Equal(true, alachua.CanEdit);
-            Assert.Equal(CrashReportAccess.Within60Days, alachua.CrashReportAccess);
             Assert.Equal(false, marion.CanEdit);
-            Assert.Equal(CrashReportAccess.After60Days, marion.CrashReportAccess);
             Assert.True(user.Profile.EditableCounties.Any(c => c.CountyName == "Alachua"));
         }
 
@@ -447,8 +443,7 @@ namespace S4Analytics.Tests.Properties
             profile.ViewableCounties.Add(new UserCounty()
             {
                 CountyCode = 14, // Marion
-                CanEdit = false,
-                CrashReportAccess = CrashReportAccess.After60Days
+                CanEdit = false
             });
             await CreateBasicUser(userName, "secret", profile);
 
@@ -456,8 +451,7 @@ namespace S4Analytics.Tests.Properties
             user.Profile.ViewableCounties.Add(new UserCounty()
             {
                 CountyCode = 11, // Alachua
-                CanEdit = true,
-                CrashReportAccess = CrashReportAccess.Within60Days
+                CanEdit = true
             });
             await _userManager.UpdateAsync(user);
 
@@ -467,9 +461,7 @@ namespace S4Analytics.Tests.Properties
             var alachua = user.Profile.ViewableCounties.First(c => c.CountyName == "Alachua");
             var marion = user.Profile.ViewableCounties.First(c => c.CountyName == "Marion");
             Assert.Equal(true, alachua.CanEdit);
-            Assert.Equal(CrashReportAccess.Within60Days, alachua.CrashReportAccess);
             Assert.Equal(false, marion.CanEdit);
-            Assert.Equal(CrashReportAccess.After60Days, marion.CrashReportAccess);
             Assert.True(user.Profile.EditableCounties.Any(c => c.CountyName == "Alachua"));
         }
 
@@ -487,14 +479,12 @@ namespace S4Analytics.Tests.Properties
             profile.ViewableCounties.Add(new UserCounty()
             {
                 CountyCode = 11, // Alachua
-                CanEdit = true,
-                CrashReportAccess = CrashReportAccess.Within60Days
+                CanEdit = true
             });
             profile.ViewableCounties.Add(new UserCounty()
             {
                 CountyCode = 14, // Marion
-                CanEdit = false,
-                CrashReportAccess = CrashReportAccess.After60Days
+                CanEdit = false
             });
             await CreateBasicUser(userName, "secret", profile);
 
