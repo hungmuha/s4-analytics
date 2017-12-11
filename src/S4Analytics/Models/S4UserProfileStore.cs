@@ -342,7 +342,6 @@ namespace S4Analytics.Models
                 appName = _applicationName,
                 userName,
                 county.CountyCode,
-                canView = county.CrashReportAccess,
                 canEdit = county.CanEdit ? "Y" : "N",
                 currentUserName = currentUserName,
                 currentTime = DateTime.Now
