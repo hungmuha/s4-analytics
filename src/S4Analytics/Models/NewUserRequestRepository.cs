@@ -99,19 +99,9 @@ namespace S4Analytics.Models
                 {
                     // Agency User Managers can view New User requests from their agency, or
                     // if a parent agency, requests from its child agencies
-                    if (adminAgency.ParentAgencyId == 0)
-                    {
-                        whereClauses.Add($@"u.contract_start_dt IS NULL
-                        AND u.agncy_id = {adminAgency.AgencyId}");
-                    }
-                    else
-                    {
-                        whereClauses.Add($@"u.contract_start_dt IS NULL
-                        AND u.agncy_id IN (
-                          {adminAgency.AgencyId},
-                          {adminAgency.ParentAgencyId}
-                        )");
-                    }
+                    whereClauses.Add($@"u.contract_start_dt IS NULL
+                            AND ( U.AGNCY_ID  = {adminAgency.AgencyId} 
+                            OR U.AGNCY_ID IN (SELECT G.AGNCY_ID FROM S4_AGNCY G WHERE G.PARENT_AGNCY_ID =  {adminAgency.AgencyId}))");
                 }
 
                 cmdTxt += " WHERE (" + string.Join(") OR (", whereClauses.ToArray()) + ")";
@@ -520,10 +510,14 @@ namespace S4Analytics.Models
                             u.admin_comment AS admincomment,
                             u.contract_pdf_nm AS contractPdfNm,
                             CASE WHEN (
-                                SELECT count(*) FROM s4_user s
-                                JOIN user_role r ON r.user_nm = s.user_nm AND r.role_nm = 'User Manager'
-                                JOIN s4_agncy g ON g.agncy_id = s.agncy_id 
-                                WHERE g.agncy_id = u.agncy_id) >  0 THEN 1 ELSE 0 END AS agencyhasadmin,
+                                SELECT
+                                    (SELECT COUNT(*) FROM s4_user s
+                                      JOIN user_role r ON r.user_nm  = s.user_nm AND r.role_nm = 'User Manager'
+                                      JOIN s4_agncy g ON G.AGNCY_ID    = S.AGNCY_ID
+                                      WHERE G.AGNCY_ID = 332)
+                                    +
+                                    (SELECT COUNT(GG.PARENT_AGNCY_ID) FROM S4_AGNCY GG WHERE GG.AGNCY_ID = 332) from dual) >  0 
+                                    THEN 1 ELSE 0 END AS agencyhasadmin,
                             CASE WHEN a.can_view = 1 THEN 1 ELSE 0 END AS accessbefore70days";
         }
 
