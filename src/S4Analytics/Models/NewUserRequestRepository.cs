@@ -514,9 +514,9 @@ namespace S4Analytics.Models
                                     (SELECT COUNT(*) FROM s4_user s
                                       JOIN user_role r ON r.user_nm  = s.user_nm AND r.role_nm = 'User Manager'
                                       JOIN s4_agncy g ON G.AGNCY_ID    = S.AGNCY_ID
-                                      WHERE G.AGNCY_ID = 332)
+                                      WHERE G.AGNCY_ID = u.agncy_id)
                                     +
-                                    (SELECT COUNT(GG.PARENT_AGNCY_ID) FROM S4_AGNCY GG WHERE GG.AGNCY_ID = 332) from dual) >  0 
+                                    (SELECT COUNT(GG.PARENT_AGNCY_ID) FROM S4_AGNCY GG WHERE GG.AGNCY_ID = u.agncy_id) from dual) >  0 
                                     THEN 1 ELSE 0 END AS agencyhasadmin,
                             CASE WHEN a.can_view = 1 THEN 1 ELSE 0 END AS accessbefore70days";
         }
