@@ -57,7 +57,7 @@ namespace S4Analytics.Models
         public bool WarnDuplicateEmailCd { get; set; }
         public string AdminComment { get; set; }
         public bool AccessBefore70Days { get; set; }
-        public string CreatedBy { get; set; }
+        public string HandledBy { get; set; }
         public bool UserManagerCd { get; set; }
         public string ContractPdfNm { get; set; }
         public bool AgencyHasAdmin { get; set; }

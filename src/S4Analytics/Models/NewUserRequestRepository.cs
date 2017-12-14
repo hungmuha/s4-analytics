@@ -148,7 +148,7 @@ namespace S4Analytics.Models
 
             var user = new S4IdentityUser<S4UserProfile>(userName);
 
-            request.CreatedBy = approval.AdminUserName;
+            request.HandledBy = approval.AdminUserName;
             user.Profile = CreateS4UserProfile(request);
 
             var passwordText = GenerateRandomPassword(8, 0);
@@ -217,7 +217,7 @@ namespace S4Analytics.Models
 
             var user = new S4IdentityUser<S4UserProfile>(userName);
 
-            request.CreatedBy = approval.AdminUserName;
+            request.HandledBy = approval.AdminUserName;
             request.ContractEndDt = approval.ContractEndDt;
             user.Profile = CreateS4UserProfile(request);
             user.Profile.CrashReportAccess = before70days ? CrashReportAccess.Within60Days : CrashReportAccess.After60Days;
@@ -316,7 +316,7 @@ namespace S4Analytics.Models
             request.RequestStatus = newStatus;
             request.AccessBefore70Days = before70days;
             request.UserCreatedDt = DateTime.Now;
-            request.CreatedBy = approval.AdminUserName;
+            request.HandledBy = approval.AdminUserName;
             UpdateApprovedNewUserRequest(request);
             return request;
         }
@@ -358,7 +358,7 @@ namespace S4Analytics.Models
         {
             var newStatus = approval.NewStatus;
             var request = approval.Request;
-            request.CreatedBy = approval.AdminUserName;
+            request.HandledBy = approval.AdminUserName;
 
             //Create new Vendor in CONTRACTOR
             var vendor = CreateNewVendor(request);
@@ -394,6 +394,8 @@ namespace S4Analytics.Models
             var newStatus = rejection.NewStatus;
             var request = rejection.Request;
             var rejectionReason = rejection.RejectionReason;
+
+            request.HandledBy = rejection.AdminUserName;
 
             // Send the rejection the email here.
             var subject = "Your request for a Signal Four Analytics individual account has been rejected";
@@ -436,7 +438,8 @@ namespace S4Analytics.Models
                                 CONTRACTOR_ID = :vendorId,
                                 USER_CREATED_DT = :userCreatedDt,
                                 USER_ID = :userId,
-                                CONTRACT_END_DT = :contractEndDt
+                                CONTRACT_END_DT = :contractEndDt,
+                                HANDLED_BY = :handledBy
                             WHERE REQ_NBR = :requestNbr";
 
             // Do not write 0 when it should be null
@@ -451,6 +454,7 @@ namespace S4Analytics.Models
                 request.UserCreatedDt,
                 request.UserId,
                 request.ContractEndDt,
+                request.HandledBy,
                 request.RequestNbr
             });
 
@@ -462,13 +466,15 @@ namespace S4Analytics.Models
             var updateTxt = @"UPDATE NEW_USER_REQ
                             SET
                                 REQ_STATUS = :requestStatus,
-                                ADMIN_COMMENT = :adminComment
+                                ADMIN_COMMENT = :adminComment,
+                                HANDLED_BY = :handledBy
                             WHERE REQ_NBR = :requestNbr";
 
             var rowsUpdated = _conn.Execute(updateTxt, new
             {
                 request.RequestStatus,
                 request.AdminComment,
+                request.HandledBy,
                 request.RequestNbr
             });
 
@@ -509,6 +515,7 @@ namespace S4Analytics.Models
                             CASE WHEN u.user_manager_cd = 'Y' THEN 1 ELSE 0 END AS usermanagercd,
                             u.admin_comment AS admincomment,
                             u.contract_pdf_nm AS contractPdfNm,
+                            u.handled_by as handledby,
                             CASE WHEN (
                                 SELECT
                                     (SELECT COUNT(*) FROM s4_user s
@@ -537,7 +544,7 @@ namespace S4Analytics.Models
                     return null;
             }
 
-            profile.CreatedBy = request.CreatedBy;
+            profile.CreatedBy = request.HandledBy;
             profile.CreatedDate = DateTime.Now;
 
             return profile;
@@ -648,7 +655,7 @@ namespace S4Analytics.Models
         {
             var vendor = new Vendor(request.VendorName, GetNextVendorId())
             {
-                CreatedBy = request.CreatedBy,
+                CreatedBy = request.HandledBy,
                 CreatedDate = DateTime.Now,
                 EmailDomain = request.VendorEmailDomain,
                 IsActive = true
