@@ -65,6 +65,11 @@
                             Account <span class="text-nowrap">Created <span [ngClass]="caretClass('userCreatedDt')"></span></span>
                         </a>
                     </th>
+                    <th>
+                        <a href="javascript:void(0)" (click)="sortColumn('handledBy')">
+                             Handled <span class="text-nowrap">By <span [ngClass]="caretClass('handledBy')"></span></span>
+                        </a>
+                    </th>
                     <th>Action</th>
                     <th>
                         <a class="text-nowrap" href="javascript:void(0)" (click)="sortColumn('adminComment')">
@@ -83,6 +88,7 @@
                     <td>{{newUserReq.agncyNm}}</td>
                     <td>{{newUserReq.requestStatus | requestStatus }}</td>
                     <td>{{newUserReq.userCreatedDt | date:"MM/dd/yy"}}</td>
+                    <td>{{newUserReq.handledBy}}</td>
                     <td class="align-middle">
                         <button *ngIf="isRequestLocked(newUserReq); else processRequestButton"
                                 class="btn btn-sm btn-secondary"
