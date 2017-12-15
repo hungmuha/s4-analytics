@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Dapper;
+﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using S4Analytics.Models;
 using Oracle.ManagedDataAccess.Client;
+using S4Analytics.Models;
 
 namespace S4Analytics.Controllers
 {
     [Route("api/[controller]")]
+    [AllowAnonymous]
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class HealthController
     {
