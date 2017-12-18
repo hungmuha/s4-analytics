@@ -1,7 +1,7 @@
 BEGIN
 	-- configure email server (see https://docs.oracle.com/cd/E18283_01/server.112/e17120/schedadmin001.htm)
-    DBMS_SCHEDULER.set_scheduler_attribute('email_server', 'mail.geoplan.ufl.edu:25');
-    DBMS_SCHEDULER.set_scheduler_attribute('email_server_encryption', 'SSL_TLS');
+    DBMS_SCHEDULER.set_scheduler_attribute('email_server', 'localhost:25');
+    DBMS_SCHEDULER.set_scheduler_attribute('email_server_encryption', 'STARTTLS');
     DBMS_SCHEDULER.set_scheduler_attribute('email_sender', 'nw@ufl.edu');
 END;
 /
@@ -55,8 +55,8 @@ Job class: %job_class_name%
 Run count: %run_count%
 Failure count: %failure_count%
 Retry count: %retry_count%
-Error code: %error_code
-%Error message: %error_message%',
+Error code: %error_code%
+Error message: %error_message%',
              events => 'job_broken, job_chain_stalled, job_failed, job_over_max_dur, job_sch_lim_reached, job_succeeded',
              	filter_condition => NULL 
              );
