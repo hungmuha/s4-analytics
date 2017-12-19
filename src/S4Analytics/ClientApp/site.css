@@ -23,12 +23,6 @@ body {
     padding: 1rem;
 }
 
-/* prevent user menu from taking up all the space in the top menu */
-/*.navbar-collapse {
-    width: auto !important;
-    flex-basis: unset !important;
-}*/
-
 /* ensure that the top menu doesn't get covered by anything else */
 .navbar-s4 {
     z-index: 1030;

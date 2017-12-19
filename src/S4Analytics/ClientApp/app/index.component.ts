@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
+import * as _ from 'lodash';
 import { IdentityService, AppStateService, Options } from './shared';
 
 @Component({
@@ -44,7 +45,10 @@ export class IndexComponent implements OnInit, OnDestroy {
         this.identity.logOut().subscribe();
     }
 
-    gotoRequestQueue(): void {
-        this.router.navigate(['admin/request-queue']);
+    get isAdmin(): boolean {
+        let adminRoles = ['global admin', 'user manager', 'hsmv admin', 'fdot admin'];
+        return this.identity.currentUser
+            ? _.intersection(adminRoles, this.identity.currentUser.roles).length > 0
+            : false;
     }
 }
