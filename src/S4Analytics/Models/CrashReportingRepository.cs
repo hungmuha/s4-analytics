@@ -572,6 +572,11 @@ namespace S4Analytics.Models
 
         private List<Func<(string, object)>> GetPredicateMethods(CrashesOverTimeQuery query)
         {
+            if (query == null)
+            {
+                return new List<Func<(string, object)>>();
+            }
+
             Func<(string, object)>[] predicateMethods =
             {
                 () => GenerateGeographyPredicate(query.geographyId),
