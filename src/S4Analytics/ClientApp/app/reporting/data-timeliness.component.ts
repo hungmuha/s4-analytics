@@ -17,6 +17,7 @@ import { ReportOverTime } from './shared';
         <ng-container card-footer>
             <div class="mt-2">
                 Results shown through {{formattedMaxDate}}.
+                <br /><i>Month and year shown reflect HSMV load date.</i>
             </div>
             <div>
                 <button-group [items]="years" [(ngModel)]="reportYear"></button-group>

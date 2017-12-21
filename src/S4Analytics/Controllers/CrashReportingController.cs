@@ -54,9 +54,9 @@ namespace S4Analytics.Controllers
         }
 
         [HttpPost("crash/{year}/timeliness")]
-        public IActionResult GetTimelinessCrashCountsByDay(int year, [FromBody] CrashesOverTimeQuery query)
+        public IActionResult GetTimelinessCrashCountsByMonth(int year, [FromBody] CrashesOverTimeQuery query)
         {
-            var results = _reportRepo.GetTimelinessCrashCountsByDay(year, query);
+            var results = _reportRepo.GetTimelinessCrashCountsByMonth(year, query);
             return new ObjectResult(results);
         }
 
