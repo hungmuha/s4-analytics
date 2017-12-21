@@ -1,91 +1,66 @@
 ﻿<nav class="navbar navbar-s4 navbar-expand-md navbar-dark bg-dark justify-content-between sticky-top">
 
     <div class="flex-row flex-nowrap d-flex align-items-center">
-        <a class="navbar-brand" href="javascript:void(0)">
+        <a class="navbar-brand" routerLink="/">
             Signal Four Analytics
-        </a>
-
-        <div class="navbar-text text-nowrap" *ngIf="showResponsiveCues">
             <!-- responsive cues -->
-            <!--<div class="hidden-lg-down">xl <span class="fa fa-rocket"></span></div>
-            <div class="hidden-md-down hidden-xl-up">lg <span class="fa fa-plane"></span></div>
-            <div class="hidden-sm-down hidden-lg-up">md <span class="fa fa-train"></span></div>
-            <div class="hidden-xs-down hidden-md-up">sm <span class="fa fa-bus"></span></div>
-            <div class="hidden-sm-up">xs <span class="fa fa-taxi"></span></div>-->
-        </div>
+            <ng-container *ngIf="showResponsiveCues">
+                -
+                <span class="d-none d-xl-inline">xl <span class="fa fa-rocket"></span></span>
+                <span class="d-none d-lg-inline d-xl-none">lg <span class="fa fa-plane"></span></span>
+                <span class="d-none d-md-inline d-lg-none">md <span class="fa fa-train"></span></span>
+                <span class="d-none d-sm-inline d-md-none">sm <span class="fa fa-bus"></span></span>
+                <span class="d-sm-none">xs <span class="fa fa-taxi"></span></span>
+            </ng-container>
+        </a>
     </div>
 
-    <!--<div ngbDropdown class="dropdown hidden-sm-down">
+    <!-- mode selector (if authenticated) -->
+    <div ngbDropdown class="nav-item dropdown" *ngIf="identity.isAuthenticated">
         <button class="btn btn-sm btn-light dropdown-toggle" id="modeDropdownMenu" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
-            Event Analysis
+            Reporting
         </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="#">Event Analysis</a>
-            <a class="dropdown-item" href="#">Network Analysis</a>
-            <a class="dropdown-item" href="#">Trends</a>
-            <a class="dropdown-item" href="#">Reports</a>
+        <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="modeDropdownMenu">
+            <!--<a class="dropdown-item" routerLink="/event">Event Analysis</a>
+            <a class="dropdown-item" routerLink="/network">Network Screening</a>-->
+            <a class="dropdown-item" routerLink="/reporting/crashes-over-time">Reporting</a>
+            <ng-container *ngIf="isAdmin">
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" routerLink="/admin/request-queue">Administration</a>
+            </ng-container>
         </div>
-    </div>-->
-
-    <button class="navbar-toggler" type="button" (click)="toggleCollapsed()">
-        <!--<a href="javascript:void(0)">
-            <span class="badge badge-pill badge-danger">2</span>
-        </a>-->
-        <span class="fa fa-bars"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" [ngbCollapse]="isCollapsed">
-        <ul class="navbar-nav">
-            <!--<li class="nav-item hidden-md-up">
-                <a class="nav-link" href="javascript:void(0)">Event Analysis</a>
-            </li>
-            <li class="nav-item hidden-md-up">
-                <a class="nav-link" href="javascript:void(0)">Network Analysis</a>
-            </li>
-            <li class="nav-item hidden-md-up">
-                <a class="nav-link" href="javascript:void(0)">Trends</a>
-            </li>
-            <li class="nav-item hidden-md-up">
-                <a class="nav-link" href="javascript:void(0)">Reports</a>
-            </li>
-            <li class="dropdown-divider hidden-md-up"></li> -->
-            <li class="nav-item" [hidden]="identity.isAuthenticated">
-                <a class="nav-link" (click)="logIn()" href="javascript:void(0)">Log in</a>
-            </li>
-            <!--<li class="nav-item hidden-sm-down">
-                <a class="nav-link" href="javascript:void(0)">
-                    <span class="badge badge-pill badge-danger">2</span>
-                </a>
-            </li>
-            <li ngbDropdown class="nav-item dropdown hidden-sm-down" *ngIf="identity.isAuthenticated">
-                <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="navbarDropdownMenuLink" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
-                    {{identity.currentUser.userName}}
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="javascript:void(0)">Notifications <span class="badge badge-pill badge-danger">2</span></a>
-                    <a class="dropdown-item" href="javascript:void(0)">Change password</a>
-                    <a class="dropdown-item" (click)="logOut()" href="javascript:void(0)">Log out</a>
-                </div>
-            </li>
-            <li class="nav-item hidden-md-up">
-                <a class="nav-link" href="javascript:void(0)">
-                    Notifications
-                    <span class="badge badge-pill badge-danger">2</span>
-                </a>
-            </li>
-            <li class="nav-item hidden-md-up">
-                <a class="nav-link" href="javascript:void(0)">Change password</a>
-            </li>-->
-
-            <li class="nav-item hidden-md-up" [hidden]="!identity.isAuthenticated">
-                <a class="nav-link" (click)="gotoRequestQueue()" href="javascript:void(0)">Request Queue</a>
-            </li>
-
-            <li class="nav-item hidden-md-up" [hidden]="!identity.isAuthenticated">
-                <a class="nav-link" (click)="logOut()" href="javascript:void(0)">Log out</a>
-            </li>
-        </ul>
     </div>
+
+    <!-- login link (if not authenticated) -->
+    <ul class="navbar-nav" *ngIf="!identity.isAuthenticated">
+        <li class="nav-item">
+            <a class="nav-link" routerLink="/login">Log in</a>
+        </li>
+    </ul>
+
+    <!-- complete menu (if authenticated) -->
+    <ng-container *ngIf="identity.isAuthenticated">
+        <button class="navbar-toggler" type="button" (click)="toggleCollapsed()">
+            <span class="fa fa-bars"></span>
+        </button>
+        <div class="collapse navbar-collapse" [ngbCollapse]="isCollapsed">
+            <ul class="navbar-nav ml-md-auto">
+                <!-- show menu items as collapsible navbar at xs/sm only -->
+                <li class="nav-item d-md-none">
+                    <a class="nav-link" href="javascript:void(0)" (click)="logOut()">Log out</a>
+                </li>
+                <!-- show menu items as dropdown at md+ -->
+                <li ngbDropdown placement="bottom-right" class="nav-item dropdown d-none d-md-block">
+                    <a ngbDropdownToggle class="nav-link dropdown-toggle" href="javascript:void(0)" id="navbarDropdownMenuLink">
+                        {{identity.currentUser.userName}}
+                    </a>
+                    <div ngbDropdownMenu class="dropdown-menu">
+                        <a class="dropdown-item" href="javascript:void(0)" (click)="logOut()">Log out</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </ng-container>
 </nav>
 
 <router-outlet></router-outlet>
