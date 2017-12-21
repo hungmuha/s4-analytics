@@ -39,7 +39,7 @@ export class CrashesOverTimeComponent implements OnInit {
     crashesByMonthLoaded: boolean;
     crashesByDayLoaded: boolean;
     crashesByAttributeLoaded: boolean;
-    //dataTimelinessLoaded: boolean;
+    // dataTimelinessLoaded: boolean;
 
     reportAttributes: { [key: string]: string } = {
         'hour-of-day': 'Hour of day',
@@ -58,7 +58,7 @@ export class CrashesOverTimeComponent implements OnInit {
             this.crashesByMonthLoaded &&
             this.crashesByDayLoaded &&
             this.crashesByAttributeLoaded; // &&
-            //this.dataTimelinessLoaded;
+            // this.dataTimelinessLoaded;
         return !allLoaded;
     }
 
