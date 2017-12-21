@@ -33,6 +33,16 @@ export class IndexComponent implements OnInit, OnDestroy {
         return this.state.options ? this.state.options.isDevelopment : false;
     }
 
+    get currentMode(): string {
+        if (this.router.url.startsWith('/admin')) {
+            return 'Administration';
+        }
+        else if (this.router.url.startsWith('/reporting')) {
+            return 'Reporting';
+        }
+        return '';
+    }
+
     toggleCollapsed(): void {
         this.isCollapsed = !this.isCollapsed;
     }

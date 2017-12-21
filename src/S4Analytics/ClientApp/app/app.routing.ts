@@ -21,12 +21,14 @@ export const routes: Routes = [
                 path: '',
                 canActivate: [AuthGuard],
                 children: [
+                    { path: '', redirectTo: 'reporting/crashes-over-time', pathMatch: 'full' },
                     { path: 'event', component: EventAnalysisComponent },
                     { path: 'network', component: NetworkAnalysisComponent },
                     {
                         path: 'reporting',
                         component: ReportingComponent,
                         children: [
+                            { path: '', redirectTo: 'crashes-over-time', pathMatch: 'full' },
                             { path: 'crashes-over-time', component: CrashesOverTimeComponent },
                             { path: 'citations-over-time', component: CitationsOverTimeComponent }
                         ]
@@ -39,10 +41,8 @@ export const routes: Routes = [
                     component: AdminComponent,
                 canActivate: [AnyAdminGuard],
                 children: [
-                    {
-                        path: 'request-queue',
-                        component: RequestQueueComponent
-                    }
+                    { path: '', redirectTo: 'request-queue', pathMatch: 'full' },
+                    { path: 'request-queue', component: RequestQueueComponent }
                 ]
             },
             { path: 'html5-conduit', resolve: { Html5ConduitResolve }, component: Html5ConduitComponent },
