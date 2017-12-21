@@ -18,15 +18,15 @@
     <!-- mode selector (if authenticated) -->
     <div ngbDropdown class="nav-item dropdown" *ngIf="identity.isAuthenticated">
         <button class="btn btn-sm btn-light dropdown-toggle" id="modeDropdownMenu" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
-            Reporting
+            {{this.currentMode}}
         </button>
         <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="modeDropdownMenu">
             <!--<a class="dropdown-item" routerLink="/event">Event Analysis</a>
             <a class="dropdown-item" routerLink="/network">Network Screening</a>-->
-            <a class="dropdown-item" routerLink="/reporting/crashes-over-time">Reporting</a>
+            <a class="dropdown-item" routerLink="/reporting">Reporting</a>
             <ng-container *ngIf="isAdmin">
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" routerLink="/admin/request-queue">Administration</a>
+                <a class="dropdown-item" routerLink="/admin">Administration</a>
             </ng-container>
         </div>
     </div>
