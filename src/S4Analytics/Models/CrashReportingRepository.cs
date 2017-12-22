@@ -492,14 +492,9 @@ namespace S4Analytics.Models
             return report;
         }
 
-        public ReportOverTime<int> GetTimelinessCrashCountsByDay(int year, CrashesOverTimeQuery query)
+        public ReportOverTime<int> GetTimelinessCrashCountsByMonth(int year, CrashesOverTimeQuery query)
         {
             var maxDate = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
-
-            if (year < maxDate.Year)
-            {
-                maxDate = new DateTime(year, 12, 31);
-            }
 
             var preparedWhereClause = PrepareWhereClause(query);
 
@@ -509,17 +504,11 @@ namespace S4Analytics.Models
                     WHEN hsmv_orig_load_dt_diff BETWEEN 11 AND 30 THEN '11-30 days'
                     WHEN hsmv_orig_load_dt_diff > 30 THEN '31+ days'
                 END AS series,
-                CASE
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 10 THEN 0
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 11 AND 30 THEN 1
-                    WHEN hsmv_orig_load_dt_diff > 30 THEN 2
-                END AS series_sort,
-                TO_CHAR(TRUNC(hsmv_orig_load_dt), 'Mon DD') AS category,
-                TRUNC(hsmv_orig_load_dt) AS category_sort,
+                TO_CHAR(hsmv_orig_load_dt, 'Mon YYYY') AS category,
+                TO_CHAR(hsmv_orig_load_dt, 'MM') AS category_sort,
                 COUNT(*) AS ct
             FROM crash_evt
-                WHERE crash_yr = :year
-                AND key_crash_dt < TRUNC(:maxDate + 1)
+                WHERE hsmv_orig_load_dt BETWEEN TO_DATE(:year||'/01/01', 'YYYY/MM/DD') AND TO_DATE(:year||'/12/31', 'YYYY/MM/DD')
                 AND ( {preparedWhereClause.whereClauseText} )
                 AND hsmv_orig_load_dt_diff IS NOT NULL
             GROUP BY
@@ -528,19 +517,14 @@ namespace S4Analytics.Models
                     WHEN hsmv_orig_load_dt_diff BETWEEN 11 AND 30 THEN '11-30 days'
                     WHEN hsmv_orig_load_dt_diff > 30 THEN '31+ days'
                 END,
-                CASE
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 0 AND 10 THEN 0
-                    WHEN hsmv_orig_load_dt_diff BETWEEN 11 AND 30 THEN 1
-                    WHEN hsmv_orig_load_dt_diff > 30 THEN 2
-                END,
-                TRUNC(hsmv_orig_load_dt)
-            ORDER BY series_sort, category_sort";
+                TO_CHAR(hsmv_orig_load_dt, 'Mon YYYY'),
+                TO_CHAR(hsmv_orig_load_dt, 'MM')
+            ORDER BY series, category_sort";
 
             var dynamicParams = preparedWhereClause.DynamicParams;
             dynamicParams.Add(new
             {
-                maxDate,
-                maxDate.Year
+                year
             });
 
             var report = new ReportOverTime<int>() { maxDate = maxDate };
@@ -612,7 +596,6 @@ namespace S4Analytics.Models
 
             return (whereClause, parameters);
         }
-
 
         private (string whereClause, object parameters) GenerateSeverityPredicate(CrashesOverTimeSeverity severity)
         {

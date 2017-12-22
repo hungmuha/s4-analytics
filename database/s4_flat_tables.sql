@@ -279,6 +279,19 @@ CREATE INDEX crash_evt_yr_mm ON crash_evt (crash_yr, crash_mm);
 CREATE INDEX crash_evt_yr_mm_dd ON crash_evt (crash_yr, crash_mm, crash_dd);
 CREATE INDEX crash_evt_dt ON crash_evt (key_crash_dt);
 
+CREATE BITMAP INDEX crash_evt_cnty_cd ON crash_evt (cnty_cd);
+CREATE INDEX crash_evt_geography ON crash_evt (key_geography);
+CREATE INDEX crash_evt_rptg_agncy ON crash_evt (key_rptg_agncy);
+CREATE BITMAP INDEX crash_evt_crash_sev ON crash_evt (key_crash_sev);
+CREATE BITMAP INDEX crash_evt_drug_rel ON crash_evt (is_drug_rel);
+CREATE BITMAP INDEX crash_evt_alc_rel ON crash_evt (is_alc_rel);
+CREATE BITMAP INDEX crash_evt_bike_cnt ON crash_evt (bike_cnt);
+CREATE BITMAP INDEX crash_evt_ped_cnt ON crash_evt (ped_cnt);
+CREATE BITMAP INDEX crash_evt_first_he ON crash_evt (key_first_he);
+CREATE BITMAP INDEX crash_evt_comm_veh_cnt ON crash_evt (comm_veh_cnt);
+CREATE BITMAP INDEX crash_evt_codeable ON crash_evt (codeable);
+CREATE BITMAP INDEX crash_evt_form_type_cd ON crash_evt (form_type_cd);
+
 CALL s4_register_sdo_geom('crash_evt','gps_pt_4326',4326);
 CALL s4_register_sdo_geom('crash_evt','geocode_pt_3087',3087);
 CALL s4_register_sdo_geom('crash_evt','geocode_pt_3857',3857);
