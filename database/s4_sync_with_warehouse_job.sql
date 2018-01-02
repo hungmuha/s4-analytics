@@ -24,7 +24,7 @@ BEGIN
             job_action => 'S4_FLAT.S4_SYNC_WITH_WAREHOUSE',
             number_of_arguments => 1,
             start_date => NULL,
-            repeat_interval => 'FREQ=DAILY;BYTIME=060000',
+            repeat_interval => 'FREQ=DAILY;BYTIME=063000',
             end_date => NULL,
             enabled => FALSE,
             auto_drop => FALSE,
