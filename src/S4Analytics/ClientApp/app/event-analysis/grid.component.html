@@ -1,0 +1,28 @@
+﻿<section class="mg">
+    <div class="mg-header">header</div>
+    <div class="mg-menu">menu</div>
+    <div class="mg-buttons-left">bl</div>
+    <div class="mg-layers">layers</div>
+    <div class="mg-scope">scope</div>
+    <!--<div class="mg-map"></div>-->
+    <event-map mapId="eventMap"></event-map>
+    <kendo-grid [data]="gridData" [class]="['mg-attributes']">
+        <kendo-grid-column field="ProductID" title="ID" width="40">
+        </kendo-grid-column>
+        <kendo-grid-column field="ProductName" title="Name" width="250">
+        </kendo-grid-column>
+        <kendo-grid-column field="Category.CategoryName" title="Category">
+        </kendo-grid-column>
+        <kendo-grid-column field="UnitPrice" title="Price" width="80">
+        </kendo-grid-column>
+        <kendo-grid-column field="UnitsInStock" title="In stock" width="80">
+        </kendo-grid-column>
+        <kendo-grid-column field="Discontinued" title="Discontinued" width="120">
+            <ng-template kendoGridCellTemplate let-dataItem>
+                <input type="checkbox" [checked]="dataItem.Discontinued" disabled />
+            </ng-template>
+        </kendo-grid-column>
+    </kendo-grid>
+    <div class="mg-filters">filters</div>
+    <div class="mg-buttons-right">br</div>
+</section>

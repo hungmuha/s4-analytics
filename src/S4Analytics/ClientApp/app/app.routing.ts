@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { IndexComponent } from './index.component';
 import { LoginComponent } from './login.component';
-import { EventAnalysisComponent } from './event-analysis';
+import { EventAnalysisComponent, GridComponent } from './event-analysis';
 import { NetworkAnalysisComponent } from './network-analysis';
 import { ReportingComponent, CrashesOverTimeComponent, CitationsOverTimeComponent } from './reporting';
 import { TrendAnalysisComponent } from './trend-analysis';
@@ -23,6 +23,7 @@ export const routes: Routes = [
                 children: [
                     { path: '', redirectTo: 'reporting/crashes-over-time', pathMatch: 'full' },
                     { path: 'event', component: EventAnalysisComponent },
+                    { path: 'grid', component: GridComponent },
                     { path: 'network', component: NetworkAnalysisComponent },
                     {
                         path: 'reporting',
@@ -38,7 +39,7 @@ export const routes: Routes = [
             },
             {
                 path: 'admin',
-                    component: AdminComponent,
+                component: AdminComponent,
                 canActivate: [AnyAdminGuard],
                 children: [
                     { path: '', redirectTo: 'request-queue', pathMatch: 'full' },

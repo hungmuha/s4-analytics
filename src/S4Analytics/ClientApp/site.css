@@ -13,6 +13,75 @@
 @custom-media --md-down (width < 992px);
 @custom-media --lg-down (width < 1200px);
 
+/* begin grid test styles */
+
+.mg {
+    color: white;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 30px 200px auto 200px 30px;
+    grid-template-rows: 40px 40px 80px auto 250px;
+    grid-template-areas:
+        "header       header header     header  header"
+        "menu         menu   menu       menu    menu"
+        "buttons-left layers scope      filters buttons-right"
+        "buttons-left layers map        filters buttons-right"
+        "buttons-left layers attributes filters buttons-right"
+}
+
+.mg-header {
+    grid-area: header;
+    background-color: blueviolet;
+}
+
+.mg-menu {
+    grid-area: menu;
+    background-color: aqua;
+}
+
+.mg-buttons-left {
+    grid-area: buttons-left;
+    background-color: chocolate;
+}
+
+.mg-layers {
+    grid-area: layers;
+    background-color: forestgreen
+}
+
+.mg-scope {
+    grid-area: scope;
+    background-color: darkseagreen;
+}
+
+.mg-map,
+#eventMap {
+    grid-area: map;
+    /*background-color: indianred;*/
+    min-height: 0;
+    overflow: hidden;
+}
+
+.mg-attributes {
+    grid-area: attributes;
+    /*background-color: mediumvioletred;*/
+}
+
+.mg-filters {
+    grid-area: filters;
+    background-color: lightsteelblue;
+}
+
+.mg-buttons-right {
+    grid-area: buttons-right;
+    background-color: hotpink;
+}
+
+/* end grid test styles */
+
 body {
     background-color: var(--mainColor);
 }
@@ -63,7 +132,7 @@ body {
 }
 
 /* set openlayers map height at various breakpoints */
-.ol-viewport > canvas {
+/* .ol-viewport > canvas {
     height: 250px !important;
 }
 @media (--sm) {
@@ -80,7 +149,7 @@ body {
     .ol-viewport > canvas {
         height: 500px !important;
     }
-}
+} */
 
 /* override default link color (usually blue) for nav links */
 a.nav-link {

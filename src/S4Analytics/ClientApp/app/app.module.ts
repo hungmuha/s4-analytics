@@ -4,7 +4,6 @@ import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { GridModule } from '@progress/kendo-angular-grid';
 import { routes } from './app.routing';
 import { AdminModule } from './admin';
 import { EventAnalysisModule } from './event-analysis';
@@ -24,7 +23,6 @@ import { PROVIDERS } from './shared';
         BrowserModule,
         FormsModule,
         NgbModule.forRoot(),
-        GridModule,
         AdminModule,
         EventAnalysisModule,
         NetworkAnalysisModule,

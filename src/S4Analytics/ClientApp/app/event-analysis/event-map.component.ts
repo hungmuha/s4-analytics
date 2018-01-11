@@ -21,13 +21,34 @@ export class EventMapComponent implements OnInit {
 
     ngOnInit() {
 
-        let query: CrashQuery = {
-            dateRange: { startDate: new Date('2017-06-15'), endDate: new Date('2017-06-18') }
-        };
+        //let query: CrashQuery = {
+        //    dateRange: { startDate: new Date('2017-06-15'), endDate: new Date('2017-06-18') }
+        //};
 
         let coordSys = this.appState.options.coordinateSystems['WebMercator'];
         this.olExtent = [coordSys.mapExtent.minX, coordSys.mapExtent.minY, coordSys.mapExtent.maxX, coordSys.mapExtent.maxY];
-        this.crashService.getCrashFeatures(query, this.olExtent).subscribe(eventResultSet => {
+        let raster = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+
+        this.olView = new ol.View({
+            center: [0, 0],
+            zoom: 2,
+            extent: this.olExtent
+        });
+
+        this.olMap = new ol.Map({
+            interactions: ol.interaction.defaults({ mouseWheelZoom: false }),
+            layers: [raster],
+            target: this.element.nativeElement.firstElementChild,
+            view: this.olView
+        });
+
+        this.olMap.updateSize();
+
+        // zoom to extent
+        this.olView.fit(this.olExtent);
+        /* this.crashService.getCrashFeatures(query, this.olExtent).subscribe(eventResultSet => {
             let clusterSource = new ol.source.Cluster({
                 distance: 100,
                 source: new ol.source.Vector({
@@ -87,6 +108,6 @@ export class EventMapComponent implements OnInit {
 
             // zoom to extent
             this.olView.fit(this.olExtent);
-        });
+        }); */
     }
 }
