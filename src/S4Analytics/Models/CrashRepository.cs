@@ -325,45 +325,161 @@ namespace S4Analytics.Models
         {
             Func<(string, object)>[] predicateMethods =
             {
+                // mvp
                 () => GenerateDateRangePredicate(query.dateRange),
                 () => GenerateDayOfWeekPredicate(query.dayOfWeek),
                 () => GenerateTimeRangePredicate(query.timeRange),
-                () => GenerateDotDistrictPredicate(query.dotDistrict),
-                () => GenerateMpoTpoPredicate(query.mpoTpo),
                 () => GenerateCountyPredicate(query.county),
                 () => GenerateCityPredicate(query.city),
+                () => GenerateReportingAgencyPredicate(query.reportingAgency),
+                () => GenerateFormTypePredicate(query.formType),
+                () => GenerateCodeableOnlyPredicate(query.codeableOnly),
+                () => GenerateHsmvReportNumberPredicate(query.hsmvReportNumbers),
+                () => GenerateCmvInvolvedPredicate(query.cmvInvolved),
+                () => GenerateBikePedInvolvedPredicate(query.bikePedInvolved),
+                () => GenerateCrashSeverityPredicate(query.crashSeverity),
+                () => GenerateCrashTypeSimplePredicate(query.crashTypeSimple),
+                () => GenerateCrashTypeDetailedPredicate(query.crashTypeDetailed),
+                () => GenerateRoadSystemIdentifierPredicate(query.roadSystemIdentifier),
+                () => GenerateIntersectionRelatedPredicate(query.intersectionRelated),
+                () => GenerateBehavioralFactorPredicate(query.behavioralFactors),
+                () => GenerateLaneDeparturePredicate(query.laneDepartures),
+                () => GenerateWeatherConditionPredicate(query.weatherCondition),
+
+                // post-mvp
+                () => GenerateDotDistrictPredicate(query.dotDistrict),
+                () => GenerateMpoTpoPredicate(query.mpoTpo),
                 () => GenerateCustomAreaPredicate(query.customArea),
                 () => GenerateCustomExtentPredicate(query.customExtent),
                 () => GenerateIntersectionPredicate(query.intersection),
                 () => GenerateStreetPredicate(query.street),
                 () => GenerateCustomNetworkPredicate(query.customNetwork),
                 () => GeneratePublicRoadOnlyPredicate(query.publicRoadOnly),
-                () => GenerateFormTypePredicate(query.formType),
-                () => GenerateCodeableOnlyPredicate(query.codeableOnly),
-                () => GenerateReportingAgencyPredicate(query.reportingAgency),
                 () => GenerateDriverGenderPredicate(query.driverGender),
                 () => GenerateDriverAgePredicate(query.driverAgeRange),
                 () => GeneratePedestrianAgePredicate(query.pedestrianAgeRange),
                 () => GenerateCyclistAgePredicate(query.cyclistAgeRange),
                 () => GenerateNonAutoModeOfTravelPredicate(query.nonAutoModesOfTravel),
                 () => GenerateSourceOfTransportPredicate(query.sourcesOfTransport),
-                () => GenerateBehavioralFactorPredicate(query.behavioralFactors),
                 () => GenerateCommonViolationPredicate(query.commonViolations),
                 () => GenerateVehicleTypePredicate(query.vehicleType),
-                () => GenerateCrashTypeSimplePredicate(query.crashTypeSimple),
-                () => GenerateCrashTypeDetailedPredicate(query.crashTypeDetailed),
                 () => GenerateBikePedCrashTypePredicate(query.bikePedCrashType),
                 () => GenerateCmvConfigurationPredicate(query.cmvConfiguration),
                 () => GenerateEnvironmentalCircumstancePredicate(query.environmentalCircumstance),
                 () => GenerateRoadCircumstancePredicate(query.roadCircumstance),
                 () => GenerateFirstHarmfulEventPredicate(query.firstHarmfulEvent),
                 () => GenerateLightConditionPredicate(query.lightCondition),
-                () => GenerateRoadSystemIdentifierPredicate(query.roadSystemIdentifier),
-                () => GenerateWeatherConditionPredicate(query.weatherCondition),
-                () => GenerateLaneDeparturePredicate(query.laneDepartures),
                 () => GenerateOtherCircumstancePredicate(query.otherCircumstances)
             };
             return predicateMethods.ToList();
+        }
+
+        /*
+        PREDICATE TEMPLATE:
+
+        private (string whereClause, object parameters) GenerateXPredicate(IList<int> filter)
+        {
+            // test for valid filter
+            if (filter == null || filter.Count == 0)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"1=1";
+
+            // define oracle parameters
+            var parameters = new { };
+
+            return (whereClause, parameters);
+        }
+        */
+
+        // TODO: implement where clause when data becomes available
+        private (string whereClause, object parameters) GenerateCmvInvolvedPredicate(bool? cmvInvolved)
+        {
+            // test for valid filter
+            if (cmvInvolved == null)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"1=1";
+
+            // define oracle parameters
+            var parameters = new {
+                cmvInvolved = cmvInvolved == true ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        // TODO: implement where clause when data becomes available
+        private (string whereClause, object parameters) GenerateBikePedInvolvedPredicate(BikePedInvolved bikePedInvolved)
+        {
+            // test for valid filter
+            if (bikePedInvolved == null)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"1=1";
+
+            // define oracle parameters
+            var parameters = new {
+                bikeInvolved = bikePedInvolved.bikeInvolved == true ? 1 : 0,
+                pedInvolved = bikePedInvolved.pedInvolved == true ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        // TODO: implement where clause when data becomes available
+        private (string whereClause, object parameters) GenerateIntersectionRelatedPredicate(bool? intersectionRelated)
+        {
+            // test for valid filter
+            if (intersectionRelated == null)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"1=1";
+
+            // define oracle parameters
+            var parameters = new {
+                intersectionRelated = intersectionRelated == true ? 1 : 0
+            };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateHsmvReportNumberPredicate(IList<int> hsmvReportNumbers)
+        {
+            // test for valid filter
+            if (hsmvReportNumbers == null || hsmvReportNumbers.Count == 0)
+            {
+                return (null, null);
+            }
+
+            // use oracle tuples to work around the 1000 value limit for IN statements;
+            // use string concatenation because dapper doesn't seem to support tuple params
+            var oraTuples = new List<string>();
+            foreach (int nbr in hsmvReportNumbers)
+            {
+                oraTuples.Add($"(1, {nbr})");
+            }
+            var oraTupleStr = string.Join(",", oraTuples);
+
+            // define where clause
+            var whereClause = $"(1, hsmv_rpt_nbr) IN ( {oraTupleStr} )";
+
+            // define oracle parameters
+            var parameters = new { };
+
+            return (whereClause, parameters);
         }
 
         private (string whereClause, object parameters) GenerateDateRangePredicate(DateRange dateRange)
@@ -1076,6 +1192,26 @@ namespace S4Analytics.Models
             return (whereClause, parameters);
         }
 
+        private (string whereClause, object parameters) GenerateCrashSeverityPredicate(IList<int> crashSeverity)
+        {
+            // test for valid filter
+            if (crashSeverity == null || crashSeverity.Count == 0)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = @"key_crash_sev_dtl IN :crashSeverity";
+
+            // define oracle parameters
+            var parameters = new
+            {
+                crashSeverity
+            };
+
+            return (whereClause, parameters);
+        }
+
         private (string whereClause, object parameters) GenerateCrashTypeSimplePredicate(IList<string> crashTypeSimple)
         {
             // test for valid filter
@@ -1085,7 +1221,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "crash_type_simplified = :crashTypeSimple";
+            var whereClause = "crash_type_simplified IN :crashTypeSimple";
 
             // define oracle parameters
             var parameters = new {
@@ -1104,7 +1240,7 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = "key_crash_type = :crashTypeDetailed";
+            var whereClause = "key_crash_type IN :crashTypeDetailed";
 
             // define oracle parameters
             var parameters = new { crashTypeDetailed };
@@ -1368,26 +1504,5 @@ namespace S4Analytics.Models
 
             return (whereClause, parameters);
         }
-
-        /*
-        TEMPLATE:
-
-        private (string whereClause, object parameters) GenerateXPredicate(IList<int> filter)
-        {
-            // test for valid filter
-            if (filter == null || filter.Count == 0)
-            {
-                return (null, null);
-            }
-
-            // define where clause
-            var whereClause = @"";
-
-            // define oracle parameters
-            var parameters = new { };
-
-            return (whereClause, parameters);
-        }
-        */
     }
 }
