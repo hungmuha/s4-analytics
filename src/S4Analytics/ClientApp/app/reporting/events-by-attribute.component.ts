@@ -37,7 +37,7 @@ class EventsByAttributeFormatter {
                 Results shown through {{formattedMaxDate}}.
             </div>
             <div>
-                <select class="custom-select" (change)="selectedAttributeKey=$event.target.value">
+                <select class="custom-select" style="width: unset" (change)="selectedAttributeKey=$event.target.value">
                     <option *ngFor="let attrKey of attributeKeys"
                             [value]="attrKey"
                             [selected]="selectedAttributeKey===attrKey">
