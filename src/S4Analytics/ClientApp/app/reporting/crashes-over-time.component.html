@@ -92,25 +92,25 @@
                         [getEvents]="getCrashesByYear"
                         (loaded)="crashesByYearLoaded=true"></events-by-year>
         <events-by-month header="Crashes by month"
-                         [years]="years"
+                         [maxYear]="maxEventYear"
                          [query]="query"
                          [getEvents]="getCrashesByMonth"
                          (loaded)="crashesByMonthLoaded=true"></events-by-month>
         <events-by-day header="Crashes by day"
-                       [years]="years"
+                       [maxYear]="maxEventYear"
                        [query]="query"
                        [getEvents]="getCrashesByDay"
                        (loaded)="crashesByDayLoaded=true"></events-by-day>
         <events-by-attribute header="Crashes by attribute"
                              [query]="query"
                              [attributes]="reportAttributes"
-                             [years]="years"
+                             [maxYear]="maxEventYear"
                              [getEvents]="getCrashesByAttribute"
                              (loaded)="crashesByAttributeLoaded=true"></events-by-attribute>
-        <!--<data-timeliness header="Data timeliness"
-                         [years]="years"
+        <data-timeliness header="Data timeliness"
+                         [maxYear]="maxLoadYear"
                          [query]="query"
                          [getEvents]="getDataTimeliness"
-                         (loaded)="dataTimelinessLoaded=true"></data-timeliness>-->
+                         (loaded)="dataTimelinessLoaded=true"></data-timeliness>
     </div>
 </div>

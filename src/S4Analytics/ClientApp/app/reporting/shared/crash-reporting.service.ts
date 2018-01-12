@@ -8,6 +8,18 @@ import { CrashesOverTimeQuery } from './crashes-over-time-query';
 export class CrashReportingService {
     constructor(private http: Http) { }
 
+    getMaxEventYear(): Observable<number> {
+        return this.http
+            .get('api/reporting/crash/max-event-year')
+            .map(response => response.json() as number);
+    }
+
+    getMaxLoadYear(): Observable<number> {
+        return this.http
+            .get('api/reporting/crash/max-load-year')
+            .map(response => response.json() as number);
+    }
+
     getCrashesOverTimeByYear(query: CrashesOverTimeQuery): Observable<ReportOverTime> {
         return this.http
             .post('api/reporting/crash/year', query)

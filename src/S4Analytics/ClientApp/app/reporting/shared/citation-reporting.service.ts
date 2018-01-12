@@ -8,6 +8,18 @@ import { CitationsOverTimeQuery } from './citations-over-time-query';
 export class CitationReportingService {
     constructor(private http: Http) { }
 
+    getMaxEventYear(): Observable<number> {
+        return this.http
+            .get('api/reporting/citation/max-event-year')
+            .map(response => response.json() as number);
+    }
+
+    getMaxLoadYear(): Observable<number> {
+        return this.http
+            .get('api/reporting/citation/max-load-year')
+            .map(response => response.json() as number);
+    }
+
     getCitationsOverTimeByYear(query: CitationsOverTimeQuery): Observable<ReportOverTime> {
         return this.http
             .post('api/reporting/citation/year', query)

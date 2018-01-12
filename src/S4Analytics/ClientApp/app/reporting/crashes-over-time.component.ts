@@ -23,7 +23,8 @@ export class CrashesOverTimeComponent implements OnInit {
     bikePedTypes = ['Bike', 'Ped'];
     yesNo = ['Yes', 'No'];
     formTypes = ['Long', 'Short'];
-    years: number[];
+    maxEventYear: Observable<number>;
+    maxLoadYear: Observable<number>;
 
     selectedGeography: Lookup | string;
     selectedAgency: Lookup | string;
@@ -39,7 +40,7 @@ export class CrashesOverTimeComponent implements OnInit {
     crashesByMonthLoaded: boolean;
     crashesByDayLoaded: boolean;
     crashesByAttributeLoaded: boolean;
-    // dataTimelinessLoaded: boolean;
+    dataTimelinessLoaded: boolean;
 
     reportAttributes: { [key: string]: string } = {
         'hour-of-day': 'Hour of day',
@@ -57,8 +58,8 @@ export class CrashesOverTimeComponent implements OnInit {
             this.crashesByYearLoaded &&
             this.crashesByMonthLoaded &&
             this.crashesByDayLoaded &&
-            this.crashesByAttributeLoaded; // &&
-            // this.dataTimelinessLoaded;
+            this.crashesByAttributeLoaded &&
+            this.dataTimelinessLoaded;
         return !allLoaded;
     }
 
@@ -79,16 +80,16 @@ export class CrashesOverTimeComponent implements OnInit {
         this.beginLoad();
         this.reporting.getReportingAgencies().subscribe(results => this.agencies = results);
         this.reporting.getGeographies().subscribe(results => this.geographies = results);
-        let currentYear = (new Date()).getFullYear();
-        this.years = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3];
+        this.maxEventYear = this.reporting.getMaxEventYear();
+        this.maxLoadYear = this.reporting.getMaxLoadYear();
     }
 
     beginLoad() {
         this.crashesByYearLoaded =
             this.crashesByMonthLoaded =
             this.crashesByDayLoaded =
-            this.crashesByAttributeLoaded = false;
-            // this.dataTimelinessLoaded = false;
+            this.crashesByAttributeLoaded =
+            this.dataTimelinessLoaded = false;
     }
 
     formatLookup(value: Lookup) {

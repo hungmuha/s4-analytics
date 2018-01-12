@@ -51,19 +51,19 @@
                         [getEvents]="getCitationsByYear"
                         (loaded)="citationsByYearLoaded=true"></events-by-year>
         <events-by-month header="Citations by month"
-                         [years]="years"
+                         [maxYear]="maxEventYear"
                          [query]="query"
                          [getEvents]="getCitationsByMonth"
                          (loaded)="citationsByMonthLoaded=true"></events-by-month>
         <events-by-day header="Citations by day"
-                       [years]="years"
+                       [maxYear]="maxEventYear"
                        [query]="query"
                        [getEvents]="getCitationsByDay"
                        (loaded)="citationsByDayLoaded=true"></events-by-day>
         <events-by-attribute header="Citations by attribute"
+                             [maxYear]="maxEventYear"
                              [query]="query"
                              [attributes]="reportAttributes"
-                             [years]="years"
                              [getEvents]="getCitationsByAttribute"
                              (loaded)="citationsByAttributeLoaded=true"></events-by-attribute>
     </div>

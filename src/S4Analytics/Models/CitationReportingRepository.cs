@@ -16,6 +16,20 @@ namespace S4Analytics.Models
         {
         }
 
+        public int GetMaxEventYear()
+        {
+            DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(MIN_DAYS_BACK, 0, 0, 0));
+            var maxYear = maxDate.Year;
+            return maxYear;
+        }
+
+        public int GetMaxLoadYear()
+        {
+            DateTime maxDate = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
+            var maxYear = maxDate.Year;
+            return maxYear;
+        }
+
         public ReportOverTime<int> GetCitationCountsByYear(CitationsOverTimeQuery query)
         {
             string[] monthNames = new[] { "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
