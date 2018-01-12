@@ -16,6 +16,20 @@ namespace S4Analytics.Controllers
             _reportRepo = repo;
         }
 
+        [HttpGet("citation/max-event-year")]
+        public IActionResult GetMaxEventYear()
+        {
+            var maxEventYear = _reportRepo.GetMaxEventYear();
+            return new ObjectResult(maxEventYear);
+        }
+
+        [HttpGet("citation/max-load-year")]
+        public IActionResult GetMaxLoadYear()
+        {
+            var maxLoadYear = _reportRepo.GetMaxLoadYear();
+            return new ObjectResult(maxLoadYear);
+        }
+
         [HttpPost("citation/year")]
         public IActionResult GetCitationCountsByYear([FromBody] CitationsOverTimeQuery query)
         {

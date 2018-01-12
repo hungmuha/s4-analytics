@@ -29,9 +29,11 @@ export class DataTimelinessComponent implements OnInit, OnChanges {
 
     @Input() query: any;
     @Input() header: string;
-    @Input() years: number[];
+    @Input() maxYear: Observable<number>;
     @Input() getEvents: (year: number, query: any) => Observable<ReportOverTime>;
     @Output() loaded = new EventEmitter<any>();
+
+    years: number[];
 
     get reportYear(): number {
         return this._reportYear;
@@ -53,8 +55,6 @@ export class DataTimelinessComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-        this.reportYear = this.years[0];
-
         let options: Highcharts.Options = {
             chart: {
                 renderTo: 'dataTimeliness',
@@ -108,8 +108,13 @@ export class DataTimelinessComponent implements OnInit, OnChanges {
         };
         this.chart = Highcharts.chart(options);
         this.chart.showLoading();
-        this.initialized = true;
-        this.retrieveData();
+
+        this.maxYear.subscribe((year: number) => {
+            this.initialized = true;
+            this.years = [year, year - 1, year - 2, year - 3];
+            this.reportYear = year;
+            this.retrieveData();
+        });
     }
 
     ngOnChanges() {

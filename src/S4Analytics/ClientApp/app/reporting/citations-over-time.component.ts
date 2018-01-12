@@ -18,9 +18,10 @@ export class CitationsOverTimeComponent implements OnInit {
 
     geographies: Lookup[];
     agencies: Lookup[];
-    years: number[];
     yesNo = ['Yes', 'No'];
     violationClassification = ['Any', 'Bicyclist', 'Criminal', 'Moving', 'Non-Moving', 'Pedestrian'];
+    maxEventYear: Observable<number>;
+    maxLoadYear: Observable<number>;
 
     selectedGeography: Lookup | string;
     selectedAgency: Lookup | string;
@@ -58,8 +59,8 @@ export class CitationsOverTimeComponent implements OnInit {
         this.beginLoad();
         this.reporting.getReportingAgencies().subscribe(results => this.agencies = results);
         this.reporting.getGeographies().subscribe(results => this.geographies = results);
-        let currentYear = (new Date()).getFullYear();
-        this.years = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3];
+        this.maxEventYear = this.reporting.getMaxEventYear();
+        this.maxLoadYear = this.reporting.getMaxLoadYear();
     }
 
     beginLoad() {

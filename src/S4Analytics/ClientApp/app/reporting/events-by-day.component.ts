@@ -36,9 +36,11 @@ export class EventsByDayComponent implements OnInit, OnChanges {
 
     @Input() query: any;
     @Input() header: string;
-    @Input() years: number[];
+    @Input() maxYear: Observable<number>;
     @Input() getEvents: (year: number, alignByWeek: boolean, query: any) => Observable<ReportOverTime>;
     @Output() loaded = new EventEmitter<any>();
+
+    years: number[];
 
     get alignByWeek(): boolean {
         return this._alignByWeek;
@@ -80,7 +82,6 @@ export class EventsByDayComponent implements OnInit, OnChanges {
     ngOnInit() {
         this.alignByWeek = true;
         this.yearOnYear = true;
-        this.reportYear = this.years[0];
 
         let options: Highstock.Options = {
             title: {
@@ -115,8 +116,13 @@ export class EventsByDayComponent implements OnInit, OnChanges {
         };
         this.chart = Highstock.stockChart('eventsByDay', options);
         this.chart.showLoading();
-        this.initialized = true;
-        this.retrieveData();
+
+        this.maxYear.subscribe((year: number) => {
+            this.initialized = true;
+            this.years = [year, year - 1, year - 2, year - 3];
+            this.reportYear = year;
+            this.retrieveData();
+        });
     }
 
     ngOnChanges() {

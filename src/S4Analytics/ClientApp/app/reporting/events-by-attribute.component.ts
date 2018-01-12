@@ -51,11 +51,13 @@ class EventsByAttributeFormatter {
 })
 export class EventsByAttributeComponent implements OnInit, OnChanges {
     @Input() query: any;
-    @Input() years: number[];
+    @Input() maxYear: Observable<number>;
     @Input() header: string;
     @Input() attributes: { [key: string]: string };
     @Input() getEvents: (year: number, attrName: string, query: any) => Observable<ReportOverTime>;
     @Output() loaded = new EventEmitter<any>();
+
+    years: number[];
 
     get reportYear(): number {
         return this._reportYear;
@@ -85,13 +87,13 @@ export class EventsByAttributeComponent implements OnInit, OnChanges {
     private sub: Subscription;
     private maxDate: moment.Moment;
     private chart: Highcharts.ChartObject;
+    private initialized: boolean;
 
     private get formattedMaxDate(): string {
         return this.maxDate !== undefined ? this.maxDate.format('MMMM DD, YYYY') : '';
     }
 
     ngOnInit() {
-        this.reportYear = this.years[0];
         this.selectedAttributeKey = this.attributeKeys[0];
 
         let options: Highcharts.Options = {
@@ -134,9 +136,22 @@ export class EventsByAttributeComponent implements OnInit, OnChanges {
         };
         this.chart = Highcharts.chart(options);
         this.chart.showLoading();
+
+        this.maxYear.subscribe((year: number) => {
+            this.initialized = true;
+            this.years = [year, year - 1, year - 2, year - 3];
+            this.reportYear = year;
+            this.retrieveData();
+        });
     }
 
     ngOnChanges() {
+        this.retrieveData();
+    }
+
+    private retrieveData() {
+        if (!this.initialized) { return; }
+
         // cancel any prior request or the user may get unexpected results
         if (this.sub !== undefined && !this.sub.closed) {
             this.sub.unsubscribe();
