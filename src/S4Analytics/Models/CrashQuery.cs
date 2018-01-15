@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 namespace S4Analytics.Models
 {
+    public class CrashQueryRef
+    {
+        public string queryToken;
+        public Extent extent;
+        public int mappedCount;
+        public int unmappedCount;
+        public int totalCount;
+    }
+
     public class DateRange
     {
         public DateTime startDate;
@@ -40,6 +49,14 @@ namespace S4Analytics.Models
             this.minY = minY;
             this.maxX = maxX;
             this.maxY = maxY;
+        }
+
+        public Extent(decimal minX, decimal minY, decimal maxX, decimal maxY)
+        {
+            this.minX = Convert.ToDouble(minX);
+            this.minY = Convert.ToDouble(minY);
+            this.maxX = Convert.ToDouble(maxX);
+            this.maxY = Convert.ToDouble(maxY);
         }
 
         public bool IsValid {
@@ -142,6 +159,15 @@ namespace S4Analytics.Models
         public bool? includeUntyped;
     }
 
+    public class BikePedInvolved
+    {
+        /// <summary>If true, match crashes involving a bicyclist (per participant detail and/or first harmful event).</summary>
+        public bool? bikeInvolved;
+
+        /// <summary>If true, match crashes involving a pedestrian (per participant detail and/or first harmful event).</summary>
+        public bool? pedInvolved;
+    }
+
     public class LaneDepartures
     {
         /// <summary>If true, match all off-road crashes (per crash type).</summary>
@@ -194,6 +220,9 @@ namespace S4Analytics.Models
 
         /// <summary>Time range filter parameters.</summary>
         public TimeRange timeRange;
+
+        /// <summary>HSMV report number filter, given as HSMV report numbers.</summary>
+        public IList<int> hsmvReportNumbers;
 
         /// <summary>DOT district filter, given as DOT district codes.</summary>
         public IList<int> dotDistrict;
@@ -258,8 +287,14 @@ namespace S4Analytics.Models
         /// <summary>Collection of common violation sub-filters.</summary>
         public CommonViolations commonViolations;
 
+        /// <summary>CMV involved filter.</summary>
+        public bool? cmvInvolved;
+
         /// <summary>Vehicle type filter, given as a list of vehicle type IDs.</summary>
         public IList<int> vehicleType;
+
+        /// <summary>Crash severity filter, given as a list of crash severity IDs.</summary>
+        public IList<int> crashSeverity;
 
         /// <summary>Simple crash type filter, given as a list of simplified crash type descriptions.</summary>
         public IList<string> crashTypeSimple;
@@ -267,11 +302,17 @@ namespace S4Analytics.Models
         /// <summary>Detailed crash type filter, given as a list of detailed crash type IDs.</summary>
         public IList<int> crashTypeDetailed;
 
+        /// <summary>Bike/ped involved filter parameters.</summary>
+        public BikePedInvolved bikePedInvolved;
+
         /// <summary>Bike/ped crash type filter parameters.</summary>
         public BikePedCrashType bikePedCrashType;
 
         /// <summary>CMV configuration filter, given as a list of CMV configuration IDs.</summary>
         public IList<int> cmvConfiguration;
+
+        /// <summary>Intersection-related filter.</summary>
+        public bool? intersectionRelated;
 
         /// <summary>Environmental circumstance filter, given as a list of environmental circumstance IDs.</summary>
         public IList<int> environmentalCircumstance;
