@@ -26,8 +26,8 @@ namespace S4Analytics.Controllers
         [HttpPost("query")]
         public IActionResult CreateQuery([FromBody] CrashQuery query)
         {
-            var queryToken = _crashRepo.CreateQuery(query);
-            return CreatedAtRoute("GetCrashes", new { queryToken }, query);
+            var crashQueryRef = _crashRepo.CreateQuery(query);
+            return CreatedAtRoute("GetCrashes", new { crashQueryRef.queryToken }, crashQueryRef);
         }
 
         [HttpGet("{queryToken}", Name = "GetCrashes")]

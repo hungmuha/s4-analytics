@@ -51,12 +51,47 @@ namespace S4Analytics.Models
             return (preparedQuery.queryText, preparedQuery.queryParameters);
         }
 
-        public string CreateQuery(CrashQuery query) {
+        public CrashQueryRef CreateQuery(CrashQuery query) {
+
+            // create new token and save prepared query to session
             var queryToken = Guid.NewGuid().ToString();
             var preparedQuery = PrepareCrashQuery(query);
             _httpContextAccessor.HttpContext.Session.Set(queryToken, preparedQuery);
-            _httpContextAccessor.HttpContext.Session.Set("latest", preparedQuery); // TODO: remove after testing
-            return queryToken;
+
+            // retrieve counts and extent for matching records
+            var queryText = $@"SELECT
+                total_ct,
+                mapped_ct,
+                total_ct - mapped_ct AS unmapped_ct,
+                sdo_geom.sdo_min_mbr_ordinate(mbr, 1) AS min_x,
+                sdo_geom.sdo_min_mbr_ordinate(mbr, 2) AS min_y,
+                sdo_geom.sdo_max_mbr_ordinate(mbr, 1) AS max_x,
+                sdo_geom.sdo_max_mbr_ordinate(mbr, 2) AS max_y
+            FROM (
+                SELECT
+                    COUNT(*) AS total_ct,
+                    COUNT(CASE WHEN geocode_pt_3857 IS NOT NULL THEN 1 END) AS mapped_ct,
+                    sdo_aggr_mbr(geocode_pt_3857) AS mbr
+                FROM crash_evt ce
+                INNER JOIN ({preparedQuery.queryText}) pq
+                    ON pq.hsmv_rpt_nbr = ce.hsmv_rpt_nbr
+            )";
+
+            CrashQueryRef r;
+            using (var conn = new OracleConnection(_connStr))
+            {
+                var result = conn.QuerySingleOrDefault(queryText, preparedQuery.DynamicParams);
+                r = new CrashQueryRef()
+                {
+                    queryToken = queryToken,
+                    totalCount = Convert.ToInt32(result.TOTAL_CT),
+                    mappedCount = Convert.ToInt32(result.MAPPED_CT),
+                    unmappedCount = Convert.ToInt32(result.UNMAPPED_CT),
+                    extent = new Extent(result.MIN_X, result.MIN_Y, result.MAX_X, result.MAX_Y)
+                };
+            }
+
+            return r;
         }
 
         public bool QueryExists(string queryToken)

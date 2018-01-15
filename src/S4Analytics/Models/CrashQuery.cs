@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 namespace S4Analytics.Models
 {
+    public class CrashQueryRef
+    {
+        public string queryToken;
+        public Extent extent;
+        public int mappedCount;
+        public int unmappedCount;
+        public int totalCount;
+    }
+
     public class DateRange
     {
         public DateTime startDate;
@@ -40,6 +49,14 @@ namespace S4Analytics.Models
             this.minY = minY;
             this.maxX = maxX;
             this.maxY = maxY;
+        }
+
+        public Extent(decimal minX, decimal minY, decimal maxX, decimal maxY)
+        {
+            this.minX = Convert.ToDouble(minX);
+            this.minY = Convert.ToDouble(minY);
+            this.maxX = Convert.ToDouble(maxX);
+            this.maxY = Convert.ToDouble(maxY);
         }
 
         public bool IsValid {
