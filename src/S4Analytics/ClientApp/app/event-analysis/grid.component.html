@@ -4,8 +4,9 @@
     <div class="mg-buttons-left">bl</div>
     <div class="mg-layers">layers</div>
     <div class="mg-scope">scope</div>
-    <!--<div class="mg-map"></div>-->
-    <event-map mapId="eventMap"></event-map>
+    <div class="mg-map" id="mapArea">
+        <event-map mapId="eventMap"></event-map>
+    </div>
     <kendo-grid [data]="gridData" [class]="['mg-attributes']">
         <kendo-grid-column field="ProductID" title="ID" width="40">
         </kendo-grid-column>

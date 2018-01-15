@@ -1,4 +1,4 @@
-﻿import { Component, ElementRef, Input, OnInit } from '@angular/core';
+﻿import { Component, ElementRef, Input, OnInit, HostListener } from '@angular/core';
 import * as ol from 'openlayers';
 import { CrashService, CrashQuery } from './shared';
 import { AppStateService } from '../shared';
@@ -44,7 +44,7 @@ export class EventMapComponent implements OnInit {
             view: this.olView
         });
 
-        this.olMap.updateSize();
+        this.updateSize();
 
         // zoom to extent
         this.olView.fit(this.olExtent);
@@ -109,5 +109,23 @@ export class EventMapComponent implements OnInit {
             // zoom to extent
             this.olView.fit(this.olExtent);
         }); */
+    }
+
+    @HostListener('window:resize', [])
+    updateSize() {
+        // get references to elements
+        var target = this.element.nativeElement.firstElementChild as HTMLElement; // target element (DIV)
+        var component = target.parentElement as HTMLElement; // component element (EVENT-MAP)
+        var container = component.parentElement as HTMLElement; // container element to conform to (probably DIV)
+        // get container size
+        var width = window.getComputedStyle(container).getPropertyValue('width');
+        var height = window.getComputedStyle(container).getPropertyValue('height');
+        var widthPx = Number(width.replace('px', ''));
+        var heightPx = Number(height.replace('px', ''));
+        // set size of target element
+        target.style.width = width;
+        target.style.height = height;
+        // set size of openlayers map
+        this.olMap.setSize([widthPx, heightPx]);
     }
 }

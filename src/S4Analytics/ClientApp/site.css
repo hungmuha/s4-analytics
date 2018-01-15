@@ -57,17 +57,15 @@
     background-color: darkseagreen;
 }
 
-.mg-map,
-#eventMap {
+.mg-map {
     grid-area: map;
-    /*background-color: indianred;*/
-    min-height: 0;
+    background-color: indianred;
     overflow: hidden;
 }
 
 .mg-attributes {
     grid-area: attributes;
-    /*background-color: mediumvioletred;*/
+    background-color: mediumvioletred;
 }
 
 .mg-filters {
