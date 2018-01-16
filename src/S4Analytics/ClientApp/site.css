@@ -15,7 +15,7 @@
 
 /* begin grid styles */
 
-.mg {
+.event-analysis-grid {
     top: 0;
     bottom: 0;
     height: calc(100vh - 56px); /* 56px is the height of the s4 menu */
@@ -31,42 +31,42 @@
         "filter-controls attribute-controls"
 }
 
-.mg-filters {
+.event-analysis-grid > .filters {
     grid-area: filters;
     border-bottom: solid 2px #eee;
     border-right: solid 2px #eee;
     padding: 5px;
 }
 
-.mg-filter-controls {
+.event-analysis-grid > .filter-controls {
     grid-area: filter-controls;
     border-right: solid 2px #eee;
 }
 
-.mg-scope {
+.event-analysis-grid > .scope {
     grid-area: scope;
     border-bottom: solid 2px #eee;
 }
 
-.mg-map {
+.event-analysis-grid > .map {
     grid-area: map;
     overflow: hidden;
     border-bottom: solid 2px #eee;
 }
 
-.mg-map-controls {
+.event-analysis-grid > .map-controls {
     grid-area: map-controls;
     border-bottom: solid 2px #eee;
 }
 
-.mg-attributes {
+.event-analysis-grid > .attributes {
     grid-area: attributes;
     border-width: unset;
     border-style: unset;
     border-bottom: solid 2px #eee;
 }
 
-.mg-attribute-controls {
+.event-analysis-grid > .attribute-controls {
     grid-area: attribute-controls;
 }
 
