@@ -13,72 +13,64 @@
 @custom-media --md-down (width < 992px);
 @custom-media --lg-down (width < 1200px);
 
-/* begin grid test styles */
+/* begin grid styles */
 
 .mg {
-    color: white;
     top: 0;
     bottom: 0;
-    height: 100vh;
+    height: calc(100vh - 56px); /* 56px is the height of the s4 menu */
     min-height: 0;
     display: grid;
-    grid-template-columns: 30px 200px auto 200px 30px;
-    grid-template-rows: 40px 40px 80px auto 250px;
+    grid-template-columns: 400px auto;
+    grid-template-rows: 40px auto 40px 250px 40px;
     grid-template-areas:
-        "header       header header     header  header"
-        "menu         menu   menu       menu    menu"
-        "buttons-left layers scope      filters buttons-right"
-        "buttons-left layers map        filters buttons-right"
-        "buttons-left layers attributes filters buttons-right"
-}
-
-.mg-header {
-    grid-area: header;
-    background-color: blueviolet;
-}
-
-.mg-menu {
-    grid-area: menu;
-    background-color: aqua;
-}
-
-.mg-buttons-left {
-    grid-area: buttons-left;
-    background-color: chocolate;
-}
-
-.mg-layers {
-    grid-area: layers;
-    background-color: forestgreen
-}
-
-.mg-scope {
-    grid-area: scope;
-    background-color: darkseagreen;
-}
-
-.mg-map {
-    grid-area: map;
-    background-color: indianred;
-    overflow: hidden;
-}
-
-.mg-attributes {
-    grid-area: attributes;
-    background-color: mediumvioletred;
+        "filters         scope"
+        "filters         map"
+        "filters         map-controls"
+        "filters         attributes"
+        "filter-controls attribute-controls"
 }
 
 .mg-filters {
     grid-area: filters;
-    background-color: lightsteelblue;
+    border-bottom: solid 2px #eee;
+    border-right: solid 2px #eee;
+    padding: 5px;
 }
 
-.mg-buttons-right {
-    grid-area: buttons-right;
-    background-color: hotpink;
+.mg-filter-controls {
+    grid-area: filter-controls;
+    border-right: solid 2px #eee;
 }
 
-/* end grid test styles */
+.mg-scope {
+    grid-area: scope;
+    border-bottom: solid 2px #eee;
+}
+
+.mg-map {
+    grid-area: map;
+    overflow: hidden;
+    border-bottom: solid 2px #eee;
+}
+
+.mg-map-controls {
+    grid-area: map-controls;
+    border-bottom: solid 2px #eee;
+}
+
+.mg-attributes {
+    grid-area: attributes;
+    border-width: unset;
+    border-style: unset;
+    border-bottom: solid 2px #eee;
+}
+
+.mg-attribute-controls {
+    grid-area: attribute-controls;
+}
+
+/* end grid styles */
 
 body {
     background-color: var(--mainColor);
@@ -128,26 +120,6 @@ body {
         display: block;
     }
 }
-
-/* set openlayers map height at various breakpoints */
-/* .ol-viewport > canvas {
-    height: 250px !important;
-}
-@media (--sm) {
-    .ol-viewport > canvas {
-        height: 300px !important;
-    }
-}
-@media (--md) {
-    .ol-viewport > canvas {
-        height: 400px !important;
-    }
-}
-@media (--lg) {
-    .ol-viewport > canvas {
-        height: 500px !important;
-    }
-} */
 
 /* override default link color (usually blue) for nav links */
 a.nav-link {
