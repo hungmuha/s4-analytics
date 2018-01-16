@@ -1,5 +1,4 @@
 ﻿import { Component } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { CrashQuery, CrashQueryRef, CrashResult, CrashService } from './shared';
 
@@ -37,7 +36,7 @@ export class EventAnalysisComponent {
     private loadCrashes() {
         this.crashService
             .getCrashData(this.queryRef.queryToken, this.skip, this.skip + this.pageSize)
-            .subscribe(results => this.gridView = {
+            .subscribe((results: CrashResult[]) => this.gridView = {
                 data: results,
                 total: this.queryRef.totalCount
             });

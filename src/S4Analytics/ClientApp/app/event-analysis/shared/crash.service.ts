@@ -1,7 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import * as _ from 'lodash';
 import * as ol from 'openlayers';
 import { EventFeatureSet } from './event-feature-set';
 import { CrashQuery, CrashQueryRef } from './crash-query';
