@@ -76,49 +76,9 @@ body {
     background-color: var(--mainColor);
 }
 
-.footer {
-    text-align: center;
-    font-size: 0.8rem;
-    padding: 1rem;
-}
-
 /* ensure that the top menu doesn't get covered by anything else */
 .navbar-s4 {
     z-index: 1030;
-}
-
-.analytics-filters {
-    display: none; /* don't show at smaller breakpoints */
-    position: absolute;
-    width: 400px; /* use fixed width because responsive width is poor ux */
-    margin-top: -1rem;
-    margin-bottom: -1rem;
-    padding: 1rem 0 1rem 1rem;
-    overflow-x: hidden;
-    overflow-y: auto;
-    z-index: 1020; /* ensure that filter panel doesn't hide dropdown menus */
-    top: 4rem;
-    bottom: 0;
-}
-
-/* give filter cards a prominent border */
-.analytics-filters > .card .card {
-    border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-/* space out the filter cards from each other */
-.analytics-filters > .card .card:not(:last-of-type) {
-    margin-bottom: 1rem;
-}
-
-/* at large breakpoint and above, display filter panel and move main panel over */
-@media (--lg) {
-    .analytics-main {
-        padding-left: 415px;  /* 400 + 15 */
-    }
-    .analytics-filters {
-        display: block;
-    }
 }
 
 /* override default link color (usually blue) for nav links */
@@ -141,11 +101,6 @@ a.nav-link {
 .dropdown-toggle > .badge,
 .btn.active > .badge {
     background-color: var(--buttonDefaultColor);
-}
-
-/* don't pad openlayers map within card */
-.card-map > .card-block {
-    padding: 0 !important;
 }
 
 /* show "hand" cursor on collapsible card header so user realizes it can be clicked */

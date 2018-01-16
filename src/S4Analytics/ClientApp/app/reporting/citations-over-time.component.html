@@ -1,5 +1,5 @@
 ﻿<div class="row">
-    <div class="analytics-filters">
+    <div class="col-12 col-md-4 col-xl-3">
         <div class="row">
             <div class="col-12">
                 <h2>Citation reporting</h2>
@@ -27,7 +27,7 @@
 
             <div class="col-12 mt-2">
                 Violation Classification
-                <select class="custom-select" [(ngModel)]="selectedClassification" >
+                <select class="custom-select" [(ngModel)]="selectedClassification">
                     <option *ngFor="let item of violationClassification">{{item}}</option>
                 </select>
             </div>
@@ -35,17 +35,17 @@
             <div class="col-12">
                 Crash Involved
                 <button-group anyOrAllText="Any"
-                                [items]="yesNo"
-                                [(ngModel)]="selectedCrashInvolved"></button-group>
+                              [items]="yesNo"
+                              [(ngModel)]="selectedCrashInvolved"></button-group>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-3">
                 <button class="btn btn-sm btn-primary" [disabled]="loading" (click)="refresh()">
                     Refresh <span class="fa fa-spin fa-spinner" [hidden]="!loading"></span>
                 </button>
             </div>
         </div>
     </div>
-    <div class="col-12 analytics-main">
+    <div class="col-12 col-md-8 col-xl-9">
         <events-by-year header="Citations by year"
                         [query]="query"
                         [getEvents]="getCitationsByYear"
