@@ -1,5 +1,5 @@
 ﻿<div class="row">
-    <div class="analytics-filters">
+    <div class="col-12 col-md-4 col-xl-3">
         <div class="row">
             <div class="col-12">
                 <h2>Crash reporting</h2>
@@ -79,14 +79,14 @@
                     </tr>
                 </table>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-3">
                 <button class="btn btn-sm btn-primary" [disabled]="loading" (click)="refresh()">
                     Refresh <span class="fa fa-spin fa-spinner" [hidden]="!loading"></span>
                 </button>
             </div>
         </div>
     </div>
-    <div class="col-12 analytics-main">
+    <div class="col-12 col-md-8 col-xl-9">
         <events-by-year header="Crashes by year"
                         [query]="query"
                         [getEvents]="getCrashesByYear"

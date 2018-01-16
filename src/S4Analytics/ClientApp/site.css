@@ -13,73 +13,72 @@
 @custom-media --md-down (width < 992px);
 @custom-media --lg-down (width < 1200px);
 
-body {
-    background-color: var(--mainColor);
+/* begin grid styles */
+
+.event-analysis-grid {
+    top: 0;
+    bottom: 0;
+    height: calc(100vh - 56px); /* 56px is the height of the s4 menu */
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 400px auto;
+    grid-template-rows: 40px auto 40px 250px 40px;
+    grid-template-areas:
+        "filters         scope"
+        "filters         map"
+        "filters         map-controls"
+        "filters         attributes"
+        "filter-controls attribute-controls";
 }
 
-.footer {
-    text-align: center;
-    font-size: 0.8rem;
-    padding: 1rem;
+.event-analysis-grid > .filters {
+    grid-area: filters;
+    border-bottom: solid 2px #eee;
+    border-right: solid 2px #eee;
+    padding: 5px;
+}
+
+.event-analysis-grid > .filter-controls {
+    grid-area: filter-controls;
+    border-right: solid 2px #eee;
+}
+
+.event-analysis-grid > .scope {
+    grid-area: scope;
+    border-bottom: solid 2px #eee;
+}
+
+.event-analysis-grid > .map {
+    grid-area: map;
+    overflow: hidden;
+    border-bottom: solid 2px #eee;
+}
+
+.event-analysis-grid > .map-controls {
+    grid-area: map-controls;
+    border-bottom: solid 2px #eee;
+}
+
+.event-analysis-grid > .attributes {
+    grid-area: attributes;
+    border-width: unset;
+    border-style: unset;
+    border-bottom: solid 2px #eee;
+}
+
+.event-analysis-grid > .attribute-controls {
+    grid-area: attribute-controls;
+}
+
+/* end grid styles */
+
+body {
+    background-color: var(--mainColor);
 }
 
 /* ensure that the top menu doesn't get covered by anything else */
 .navbar-s4 {
     z-index: 1030;
-}
-
-.analytics-filters {
-    display: none; /* don't show at smaller breakpoints */
-    position: absolute;
-    width: 400px; /* use fixed width because responsive width is poor ux */
-    margin-top: -1rem;
-    margin-bottom: -1rem;
-    padding: 1rem 0 1rem 1rem;
-    overflow-x: hidden;
-    overflow-y: auto;
-    z-index: 1020; /* ensure that filter panel doesn't hide dropdown menus */
-    top: 4rem;
-    bottom: 0;
-}
-
-/* give filter cards a prominent border */
-.analytics-filters > .card .card {
-    border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-/* space out the filter cards from each other */
-.analytics-filters > .card .card:not(:last-of-type) {
-    margin-bottom: 1rem;
-}
-
-/* at large breakpoint and above, display filter panel and move main panel over */
-@media (--lg) {
-    .analytics-main {
-        padding-left: 415px;  /* 400 + 15 */
-    }
-    .analytics-filters {
-        display: block;
-    }
-}
-
-/* set openlayers map height at various breakpoints */
-.ol-viewport > canvas {
-    height: 250px !important;
-}
-@media (--sm) {
-    .ol-viewport > canvas {
-        height: 300px !important;
-    }
-}
-@media (--md) {
-    .ol-viewport > canvas {
-        height: 400px !important;
-    }
-}
-@media (--lg) {
-    .ol-viewport > canvas {
-        height: 500px !important;
-    }
 }
 
 /* override default link color (usually blue) for nav links */
@@ -102,11 +101,6 @@ a.nav-link {
 .dropdown-toggle > .badge,
 .btn.active > .badge {
     background-color: var(--buttonDefaultColor);
-}
-
-/* don't pad openlayers map within card */
-.card-map > .card-block {
-    padding: 0 !important;
 }
 
 /* show "hand" cursor on collapsible card header so user realizes it can be clicked */

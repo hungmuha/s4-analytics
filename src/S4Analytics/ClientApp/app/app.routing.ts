@@ -38,7 +38,7 @@ export const routes: Routes = [
             },
             {
                 path: 'admin',
-                    component: AdminComponent,
+                component: AdminComponent,
                 canActivate: [AnyAdminGuard],
                 children: [
                     { path: '', redirectTo: 'request-queue', pathMatch: 'full' },

@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgbModule, NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
+import { GridModule } from '@progress/kendo-angular-grid';
 import { CrashService } from './shared';
 import { EventAnalysisComponent } from './event-analysis.component';
 import { EventMapComponent } from './event-map.component';
@@ -10,7 +11,8 @@ import { EventMapComponent } from './event-map.component';
     imports: [
         RouterModule,
         CommonModule,
-        NgbModule
+        NgbModule,
+        GridModule
     ],
     declarations: [
         EventAnalysisComponent,

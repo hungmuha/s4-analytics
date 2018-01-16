@@ -1,6 +1,6 @@
-﻿import { Component, ElementRef, Input, OnInit } from '@angular/core';
+﻿import { Component, ElementRef, Input, OnInit, HostListener } from '@angular/core';
 import * as ol from 'openlayers';
-import { CrashService, CrashQuery } from './shared';
+// import { CrashService, CrashQuery } from './shared';
 import { AppStateService } from '../shared';
 
 @Component({
@@ -16,18 +16,39 @@ export class EventMapComponent implements OnInit {
 
     constructor(
         private element: ElementRef,
-        private crashService: CrashService,
+        // private crashService: CrashService,
         private appState: AppStateService) { }
 
     ngOnInit() {
 
-        let query: CrashQuery = {
-            dateRange: { startDate: new Date('2017-06-15'), endDate: new Date('2017-06-18') }
-        };
+        // let query: CrashQuery = {
+        //    dateRange: { startDate: new Date('2017-06-15'), endDate: new Date('2017-06-18') }
+        // };
 
         let coordSys = this.appState.options.coordinateSystems['WebMercator'];
         this.olExtent = [coordSys.mapExtent.minX, coordSys.mapExtent.minY, coordSys.mapExtent.maxX, coordSys.mapExtent.maxY];
-        this.crashService.getCrashFeatures(query, this.olExtent).subscribe(eventResultSet => {
+        let raster = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+
+        this.olView = new ol.View({
+            center: [0, 0],
+            zoom: 2,
+            extent: this.olExtent
+        });
+
+        this.olMap = new ol.Map({
+            interactions: ol.interaction.defaults({ mouseWheelZoom: false }),
+            layers: [raster],
+            target: this.element.nativeElement.firstElementChild,
+            view: this.olView
+        });
+
+        this.updateSize();
+
+        // zoom to extent
+        this.olView.fit(this.olExtent);
+        /* this.crashService.getCrashFeatures(query, this.olExtent).subscribe(eventResultSet => {
             let clusterSource = new ol.source.Cluster({
                 distance: 100,
                 source: new ol.source.Vector({
@@ -87,6 +108,24 @@ export class EventMapComponent implements OnInit {
 
             // zoom to extent
             this.olView.fit(this.olExtent);
-        });
+        }); */
+    }
+
+    @HostListener('window:resize', [])
+    updateSize() {
+        // get references to elements
+        let target = this.element.nativeElement.firstElementChild as HTMLElement; // target element (DIV)
+        let component = target.parentElement as HTMLElement; // component element (EVENT-MAP)
+        let container = component.parentElement as HTMLElement; // container element to conform to (probably DIV)
+        // get container size
+        let width = window.getComputedStyle(container).getPropertyValue('width');
+        let height = window.getComputedStyle(container).getPropertyValue('height');
+        let widthPx = Number(width.replace('px', ''));
+        let heightPx = Number(height.replace('px', ''));
+        // set size of target element
+        target.style.width = width;
+        target.style.height = height;
+        // set size of openlayers map
+        this.olMap.setSize([widthPx, heightPx]);
     }
 }
