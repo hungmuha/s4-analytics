@@ -6,7 +6,6 @@ import { GridModule } from '@progress/kendo-angular-grid';
 import { CrashService } from './shared';
 import { EventAnalysisComponent } from './event-analysis.component';
 import { EventMapComponent } from './event-map.component';
-import { GridComponent } from './grid.component';
 
 @NgModule({
     imports: [
@@ -17,8 +16,7 @@ import { GridComponent } from './grid.component';
     ],
     declarations: [
         EventAnalysisComponent,
-        EventMapComponent,
-        GridComponent
+        EventMapComponent
     ],
     providers: [
         CrashService,
