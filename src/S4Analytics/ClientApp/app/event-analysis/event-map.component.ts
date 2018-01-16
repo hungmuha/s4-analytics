@@ -1,6 +1,6 @@
 ﻿import { Component, ElementRef, Input, OnInit, HostListener } from '@angular/core';
 import * as ol from 'openlayers';
-import { CrashService, CrashQuery } from './shared';
+// import { CrashService, CrashQuery } from './shared';
 import { AppStateService } from '../shared';
 
 @Component({
@@ -16,14 +16,14 @@ export class EventMapComponent implements OnInit {
 
     constructor(
         private element: ElementRef,
-        private crashService: CrashService,
+        // private crashService: CrashService,
         private appState: AppStateService) { }
 
     ngOnInit() {
 
-        //let query: CrashQuery = {
+        // let query: CrashQuery = {
         //    dateRange: { startDate: new Date('2017-06-15'), endDate: new Date('2017-06-18') }
-        //};
+        // };
 
         let coordSys = this.appState.options.coordinateSystems['WebMercator'];
         this.olExtent = [coordSys.mapExtent.minX, coordSys.mapExtent.minY, coordSys.mapExtent.maxX, coordSys.mapExtent.maxY];
@@ -114,14 +114,14 @@ export class EventMapComponent implements OnInit {
     @HostListener('window:resize', [])
     updateSize() {
         // get references to elements
-        var target = this.element.nativeElement.firstElementChild as HTMLElement; // target element (DIV)
-        var component = target.parentElement as HTMLElement; // component element (EVENT-MAP)
-        var container = component.parentElement as HTMLElement; // container element to conform to (probably DIV)
+        let target = this.element.nativeElement.firstElementChild as HTMLElement; // target element (DIV)
+        let component = target.parentElement as HTMLElement; // component element (EVENT-MAP)
+        let container = component.parentElement as HTMLElement; // container element to conform to (probably DIV)
         // get container size
-        var width = window.getComputedStyle(container).getPropertyValue('width');
-        var height = window.getComputedStyle(container).getPropertyValue('height');
-        var widthPx = Number(width.replace('px', ''));
-        var heightPx = Number(height.replace('px', ''));
+        let width = window.getComputedStyle(container).getPropertyValue('width');
+        let height = window.getComputedStyle(container).getPropertyValue('height');
+        let widthPx = Number(width.replace('px', ''));
+        let heightPx = Number(height.replace('px', ''));
         // set size of target element
         target.style.width = width;
         target.style.height = height;
