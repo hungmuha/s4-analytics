@@ -187,7 +187,11 @@ SELECT
     CASE
         WHEN fce.hsmv_orig_load_dt IS NOT NULL THEN TRUNC(fce.hsmv_orig_load_dt) - TRUNC(key_crash_dt)
         ELSE NULL
-    END AS hsmv_orig_load_dt_diff
+    END AS hsmv_orig_load_dt_diff,
+    fce.is_cmv_involved,
+    fce.is_intrsect_related,
+    fce.is_lane_departure,
+    fce.day_or_night
 FROM fact_crash_evt fce
 LEFT JOIN navteq_2015q1.geocode_result gcr ON gcr.hsmv_rpt_nbr = fce.hsmv_rpt_nbr
 LEFT JOIN dim_date dd ON fce.key_crash_dt = dd.crash_dt
