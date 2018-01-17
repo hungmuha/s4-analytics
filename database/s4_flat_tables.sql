@@ -264,6 +264,8 @@ CREATE TABLE crash_evt (
     gc_city_cd                    NUMBER(*,0),
     gc_city_nm                    VARCHAR2(35),
     is_cmv_involved               CHAR(1),
+    is_bike_involved              CHAR(1),
+    is_ped_involved               CHAR(1),
     is_intrsect_related           CHAR(1),
     is_lane_departure             CHAR(1),
     day_or_night                  VARCHAR2(20),
