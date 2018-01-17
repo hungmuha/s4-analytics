@@ -40,6 +40,9 @@ export class IndexComponent implements OnInit, OnDestroy {
         else if (this.router.url.startsWith('/reporting')) {
             return 'Reporting';
         }
+        else if (this.router.url.startsWith('/event')) {
+            return 'Event Analysis';
+        }
         return '';
     }
 

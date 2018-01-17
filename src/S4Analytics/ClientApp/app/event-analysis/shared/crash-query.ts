@@ -1,4 +1,17 @@
-﻿export class CrashQuery {
+﻿export class CrashQueryRef {
+    queryToken: string;
+    extent: {
+        minX: number,
+        minY: number,
+        maxX: number,
+        maxY: number
+    };
+    mappedCount: number;
+    unmappedCount: number;
+    totalCount: number;
+}
+
+export class CrashQuery {
     // mvp
     dateRange: {
         startDate: Date,
