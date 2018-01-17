@@ -189,6 +189,8 @@ SELECT
         ELSE NULL
     END AS hsmv_orig_load_dt_diff,
     fce.is_cmv_involved,
+    fce.is_bike_involved,
+    fce.is_ped_involved,
     fce.is_intrsect_related,
     fce.is_lane_departure,
     fce.day_or_night
