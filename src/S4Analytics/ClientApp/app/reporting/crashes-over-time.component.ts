@@ -3,6 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import * as _ from 'lodash';
+import { LookupService } from '../shared';
 import { CrashesOverTimeQuery, CrashReportingService } from './shared';
 
 class Lookup {
@@ -63,7 +64,9 @@ export class CrashesOverTimeComponent implements OnInit {
         return !allLoaded;
     }
 
-    constructor(private reporting: CrashReportingService) { }
+    constructor(
+        private reporting: CrashReportingService,
+        private lookup: LookupService) { }
 
     getCrashesByYear =
         (query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByYear(query)
@@ -78,8 +81,8 @@ export class CrashesOverTimeComponent implements OnInit {
 
     ngOnInit() {
         this.beginLoad();
-        this.reporting.getReportingAgencies().subscribe(results => this.agencies = results);
-        this.reporting.getGeographies().subscribe(results => this.geographies = results);
+        this.lookup.getReportingAgencies().subscribe(results => this.agencies = results);
+        this.lookup.getGeographies().subscribe(results => this.geographies = results);
         this.maxEventYear = this.reporting.getMaxEventYear();
         this.maxLoadYear = this.reporting.getMaxLoadYear();
     }

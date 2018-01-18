@@ -3,6 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import * as _ from 'lodash';
+import { LookupService } from '../shared';
 import { CitationsOverTimeQuery, CitationReportingService } from './shared';
 
 class Lookup {
@@ -44,7 +45,9 @@ export class CitationsOverTimeComponent implements OnInit {
         return !(this.citationsByYearLoaded && this.citationsByMonthLoaded && this.citationsByDayLoaded && this.citationsByAttributeLoaded);
     }
 
-    constructor(private reporting: CitationReportingService) { }
+    constructor(
+        private reporting: CitationReportingService,
+        private lookup: LookupService) { }
 
     getCitationsByYear =
         (query: CitationsOverTimeQuery) => this.reporting.getCitationsOverTimeByYear(query)
@@ -57,8 +60,8 @@ export class CitationsOverTimeComponent implements OnInit {
 
     ngOnInit() {
         this.beginLoad();
-        this.reporting.getReportingAgencies().subscribe(results => this.agencies = results);
-        this.reporting.getGeographies().subscribe(results => this.geographies = results);
+        this.lookup.getReportingAgencies().subscribe(results => this.agencies = results);
+        this.lookup.getGeographies().subscribe(results => this.geographies = results);
         this.maxEventYear = this.reporting.getMaxEventYear();
         this.maxLoadYear = this.reporting.getMaxLoadYear();
     }

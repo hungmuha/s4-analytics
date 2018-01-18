@@ -11,6 +11,7 @@ export * from './button-group.component';
 export * from './card.component';
 export * from './server-time-resolve.service';
 export * from './server-date-resolve.service';
+export * from './lookup.service';
 
 import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
 import { OptionsResolveService } from './options-resolve.service';
@@ -24,6 +25,7 @@ import { CheckboxGroupComponent } from './checkbox-group.component';
 import { RadioButtonGroupComponent } from './radio-button-group.component';
 import { ButtonGroupComponent } from './button-group.component';
 import { CardComponent } from './card.component';
+import { LookupService } from './lookup.service';
 
 export const PROVIDERS: any[] = [
     KeepSilverlightAliveService,
@@ -35,7 +37,8 @@ export const PROVIDERS: any[] = [
     Html5ConduitResolve,
     AppStateService,
     ServerTimeResolveService,
-    ServerDateResolveService
+    ServerDateResolveService,
+    LookupService
 ];
 
 export const COMPONENTS: any[] = [
