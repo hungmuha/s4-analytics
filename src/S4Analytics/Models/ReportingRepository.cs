@@ -1,19 +1,10 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Options;
-using MoreLinq;
-using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace S4Analytics.Models
 {
-    public class LookupKeyAndName
-    {
-        public int key;
-        public string name;
-    }
-
     public class PreparedWhereClause
     {
         public string whereClauseText;
@@ -73,7 +64,6 @@ namespace S4Analytics.Models
             return new PreparedWhereClause(queryText, queryParameters);
         }
 
-
         public (string whereClause, object parameters) GenerateGeographyPredicate(int? geographyId)
         {
             // test for valid filter
@@ -94,7 +84,5 @@ namespace S4Analytics.Models
 
             return (whereClause, parameters);
         }
-
-
     }
 }

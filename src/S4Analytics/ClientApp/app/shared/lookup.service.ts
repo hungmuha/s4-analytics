@@ -2,20 +2,37 @@
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 
+export class LookupKeyAndName {
+    key: number;
+    name: string;
+}
+
 @Injectable()
 export class LookupService {
 
     constructor(private http: Http) { }
 
-    getGeographies(): Observable<{ key: number, name: string }[]> {
+    getCounties(): Observable<LookupKeyAndName[]> {
         return this.http
-            .get('api/lookup/geographies')
-            .map(response => response.json());
+            .get('api/lookup/county')
+            .map(response => response.json() as LookupKeyAndName[]);
     }
 
-    getReportingAgencies(): Observable<{ key: number, name: string }[]> {
+    getCities(): Observable<LookupKeyAndName[]> {
         return this.http
-            .get('api/lookup/agencies')
-            .map(response => response.json());
+            .get('api/lookup/city')
+            .map(response => response.json() as LookupKeyAndName[]);
+    }
+
+    getGeographies(): Observable<LookupKeyAndName[]> {
+        return this.http
+            .get('api/lookup/geography')
+            .map(response => response.json() as LookupKeyAndName[]);
+    }
+
+    getReportingAgencies(): Observable<LookupKeyAndName[]> {
+        return this.http
+            .get('api/lookup/agency')
+            .map(response => response.json() as LookupKeyAndName[]);
     }
 }

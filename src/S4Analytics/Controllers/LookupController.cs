@@ -15,14 +15,28 @@ namespace S4Analytics.Controllers
             _lookupRepo = lookupRepo;
         }
 
-        [HttpGet("geographies")]
+        [HttpGet("county")]
+        public IActionResult GetCountyLookups()
+        {
+            var results = _lookupRepo.GetCountyLookups();
+            return new ObjectResult(results);
+        }
+
+        [HttpGet("city")]
+        public IActionResult GetCityLookups()
+        {
+            var results = _lookupRepo.GetCityLookups();
+            return new ObjectResult(results);
+        }
+
+        [HttpGet("geography")]
         public IActionResult GetGeographyLookups()
         {
             var results = _lookupRepo.GetGeographyLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("agencies")]
+        [HttpGet("agency")]
         public IActionResult GetAgencyLookups()
         {
             var results = _lookupRepo.GetAgencyLookups();
