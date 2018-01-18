@@ -1,5 +1,5 @@
 ﻿import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -23,6 +23,7 @@ import { COMPONENTS, PROVIDERS } from './shared';
         HttpModule,
         RouterModule,
         FormsModule,
+        DatePipe,
         NgbModule,
         GridModule,
         DatePickerModule,

@@ -1,8 +1,5 @@
-﻿import { NgModule  } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+﻿import { NgModule } from '@angular/core';
+import { S4CommonModule } from '../../s4-common.module';
 import { RequestQueueComponent } from './request-queue.component';
 import { RequestActionComponent } from './request-action.component';
 import { NewEmployeeComponent } from './new-employee.component';
@@ -17,9 +14,7 @@ import {
 
 @NgModule({
     imports: [
-        CommonModule,
-        FormsModule,
-        NgbModule
+        S4CommonModule,
     ],
     declarations: [
         RequestQueueComponent,
@@ -37,8 +32,7 @@ import {
     ],
     providers: [
         NewUserRequestService,
-        NewUserRequestStateService,
-        DatePipe
+        NewUserRequestStateService
     ]
 })
 export class RequestQueueModule { }
