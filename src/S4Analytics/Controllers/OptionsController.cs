@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System;
 using S4Analytics.Models;
 
 namespace S4Analytics.Controllers
@@ -20,6 +21,20 @@ namespace S4Analytics.Controllers
         public IActionResult GetOptions()
         {
             return new ObjectResult(_clientOptions.Value);
+        }
+
+        [HttpGet("date")]
+        public IActionResult GetCurrentDate()
+        {
+            var response = new { date = DateTime.Now.Date };
+            return new ObjectResult(response);
+        }
+
+        [HttpGet("time")]
+        public IActionResult GetCurrentTime()
+        {
+            var response = new { time = DateTime.Now };
+            return new ObjectResult(response);
         }
     }
 }

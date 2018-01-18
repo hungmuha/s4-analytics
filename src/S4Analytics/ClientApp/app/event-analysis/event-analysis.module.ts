@@ -1,18 +1,12 @@
 ﻿import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { NgbModule, NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
-import { GridModule } from '@progress/kendo-angular-grid';
-import { CrashService } from './shared';
+import { S4CommonModule } from '../s4-common.module';
+import { CrashService, EventAnalysisStateService } from './shared';
 import { EventAnalysisComponent } from './event-analysis.component';
 import { EventMapComponent } from './event-map.component';
 
 @NgModule({
     imports: [
-        RouterModule,
-        CommonModule,
-        NgbModule,
-        GridModule
+        S4CommonModule
     ],
     declarations: [
         EventAnalysisComponent,
@@ -20,7 +14,7 @@ import { EventMapComponent } from './event-map.component';
     ],
     providers: [
         CrashService,
-        NgbDropdown
+        EventAnalysisStateService
     ]
 })
 export class EventAnalysisModule { }
