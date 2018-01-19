@@ -73,6 +73,20 @@
         <button-group [multipleSelect]="false"
                       [items]="['Statewide','County','City']"
                       [(ngModel)]="geoExtent"></button-group>
+        <kendo-multiselect *ngIf="geoExtent==='County'"
+                           [filterable]="true"
+                           [data]="filteredCounties"
+                           textField="name"
+                           valueField="key"
+                           (filterChange)="filterCounties($event)"
+                           [(ngModel)]="counties"></kendo-multiselect>
+        <kendo-multiselect *ngIf="geoExtent==='City'"
+                           [filterable]="true"
+                           [data]="filteredCities"
+                           textField="name"
+                           valueField="key"
+                           (filterChange)="filterCities($event)"
+                           [(ngModel)]="cities"></kendo-multiselect>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-outline-dark" (click)="c()">Apply</button>

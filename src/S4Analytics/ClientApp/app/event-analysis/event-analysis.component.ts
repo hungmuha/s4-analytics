@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import { PageChangeEvent } from '@progress/kendo-angular-grid';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { LookupService, LookupKeyAndName } from '../shared';
 import { CrashQuery, CrashQueryRef, CrashResult, CrashService, EventAnalysisStateService } from './shared';
 
 @Component({
@@ -10,13 +11,42 @@ import { CrashQuery, CrashQueryRef, CrashResult, CrashService, EventAnalysisStat
 })
 export class EventAnalysisComponent {
 
-    geoExtent: 'Statewide' | 'County' | 'City' = 'Statewide';
+    geoExtent: 'Statewide' | 'County' | 'City';
+    counties: LookupKeyAndName[];
+    cities: LookupKeyAndName[];
+    allCounties: LookupKeyAndName[];
+    filteredCounties: LookupKeyAndName[];
+    allCities: LookupKeyAndName[];
+    filteredCities: LookupKeyAndName[];
+
+    public filterCounties(filter: string): void {
+        this.filteredCounties = filter.length > 0
+            ? this.allCounties.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
+            : [];
+    }
+
+    public filterCities(filter: string): void {
+        this.filteredCities = filter.length > 0
+            ? this.allCities.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
+            : [];
+    }
 
     constructor(
         private route: ActivatedRoute,
         private modalService: NgbModal,
         private crashService: CrashService,
-        private state: EventAnalysisStateService) { }
+        private state: EventAnalysisStateService,
+        private lookup: LookupService) {
+        this.geoExtent = 'Statewide';
+        this.lookup.getCounties().subscribe(results => {
+            this.allCounties = results;
+            this.filteredCounties = [];
+        });
+        this.lookup.getCities().subscribe(results => {
+            this.allCities = results;
+            this.filteredCities = [];
+        });
+    }
 
     get totalCount(): number {
         return this.state.crashQueryRef !== undefined

@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { DatePickerModule } from '@progress/kendo-angular-dateinputs';
+import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { COMPONENTS, PROVIDERS } from './shared';
 
@@ -28,6 +29,7 @@ import { COMPONENTS, PROVIDERS } from './shared';
         GridModule,
         DatePickerModule,
         BrowserAnimationsModule,
+        DropDownsModule,
         ...COMPONENTS
     ]
 })
