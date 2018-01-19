@@ -1,19 +1,10 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Options;
-using MoreLinq;
-using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace S4Analytics.Models
 {
-    public class LookupKeyAndName
-    {
-        public int key;
-        public string name;
-    }
-
     public class PreparedWhereClause
     {
         public string whereClauseText;
@@ -41,39 +32,6 @@ namespace S4Analytics.Models
         public ReportingRepository(IOptions<ServerOptions> serverOptions)
         {
             _connStr = serverOptions.Value.FlatConnStr;
-        }
-
-        public IEnumerable<LookupKeyAndName> GetGeographyLookups()
-        {
-            var queryText = @"SELECT id AS key, cnty_nm || ' County, FL' AS name
-                FROM dim_geography
-                WHERE city_cd = 0
-                AND cnty_cd <> 68
-                UNION ALL
-                SELECT id AS key, city_nm || ', FL' AS name
-                FROM dim_geography
-                WHERE city_cd <> 0
-                AND cnty_cd <> 68
-                ORDER BY name";
-            IEnumerable<LookupKeyAndName> results;
-            using (var conn = new OracleConnection(_connStr))
-            {
-                results = conn.Query<LookupKeyAndName>(queryText, new { });
-            }
-            return results;
-        }
-
-        public IEnumerable<LookupKeyAndName> GetAgencyLookups()
-        {
-            var queryText = @"SELECT id AS key, agncy_nm AS name
-                FROM dim_agncy
-                ORDER BY agncy_nm";
-            IEnumerable<LookupKeyAndName> results;
-            using (var conn = new OracleConnection(_connStr))
-            {
-                results = conn.Query<LookupKeyAndName>(queryText, new { });
-            }
-            return results;
         }
 
         public PreparedWhereClause PrepareWhereClause(List<Func<(string, object)>> predicateMethods)
@@ -106,7 +64,6 @@ namespace S4Analytics.Models
             return new PreparedWhereClause(queryText, queryParameters);
         }
 
-
         public (string whereClause, object parameters) GenerateGeographyPredicate(int? geographyId)
         {
             // test for valid filter
@@ -127,7 +84,5 @@ namespace S4Analytics.Models
 
             return (whereClause, parameters);
         }
-
-      
     }
 }

@@ -3,12 +3,8 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import * as _ from 'lodash';
+import { LookupService, LookupKeyAndName } from '../shared';
 import { CrashesOverTimeQuery, CrashReportingService } from './shared';
-
-class Lookup {
-    key: number;
-    name: string;
-}
 
 @Component({
     selector: 'crashes-over-time',
@@ -16,8 +12,8 @@ class Lookup {
 })
 export class CrashesOverTimeComponent implements OnInit {
 
-    geographies: Lookup[];
-    agencies: Lookup[];
+    geographies: LookupKeyAndName[];
+    agencies: LookupKeyAndName[];
     severities = ['Fatal', 'Injury', 'PDO'];
     impairments = ['Alcohol', 'Drugs'];
     bikePedTypes = ['Bike', 'Ped'];
@@ -26,8 +22,8 @@ export class CrashesOverTimeComponent implements OnInit {
     maxEventYear: Observable<number>;
     maxLoadYear: Observable<number>;
 
-    selectedGeography: Lookup | string;
-    selectedAgency: Lookup | string;
+    selectedGeography: LookupKeyAndName | string;
+    selectedAgency: LookupKeyAndName | string;
     selectedSeverities: string[] = [];
     selectedImpairments: string[] = [];
     selectedBikePedTypes: string[] = [];
@@ -63,7 +59,9 @@ export class CrashesOverTimeComponent implements OnInit {
         return !allLoaded;
     }
 
-    constructor(private reporting: CrashReportingService) { }
+    constructor(
+        private reporting: CrashReportingService,
+        private lookup: LookupService) { }
 
     getCrashesByYear =
         (query: CrashesOverTimeQuery) => this.reporting.getCrashesOverTimeByYear(query)
@@ -78,8 +76,8 @@ export class CrashesOverTimeComponent implements OnInit {
 
     ngOnInit() {
         this.beginLoad();
-        this.reporting.getReportingAgencies().subscribe(results => this.agencies = results);
-        this.reporting.getGeographies().subscribe(results => this.geographies = results);
+        this.lookup.getReportingAgencies().subscribe(results => this.agencies = results);
+        this.lookup.getGeographies().subscribe(results => this.geographies = results);
         this.maxEventYear = this.reporting.getMaxEventYear();
         this.maxLoadYear = this.reporting.getMaxLoadYear();
     }
@@ -92,7 +90,7 @@ export class CrashesOverTimeComponent implements OnInit {
             this.dataTimelinessLoaded = false;
     }
 
-    formatLookup(value: Lookup) {
+    formatLookup(value: LookupKeyAndName) {
         return value.name;
     }
 
@@ -123,10 +121,10 @@ export class CrashesOverTimeComponent implements OnInit {
 
         let query: CrashesOverTimeQuery = {
             geographyId: this.selectedGeography !== ''
-                ? (this.selectedGeography as Lookup).key
+                ? (this.selectedGeography as LookupKeyAndName).key
                 : undefined,
             reportingAgencyId: this.selectedAgency !== ''
-                ? (this.selectedAgency as Lookup).key
+                ? (this.selectedAgency as LookupKeyAndName).key
                 : undefined,
             severity: this.selectedSeverities.length > 0
                 ? {

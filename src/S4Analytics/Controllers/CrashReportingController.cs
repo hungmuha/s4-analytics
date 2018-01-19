@@ -4,7 +4,7 @@ using S4Analytics.Models;
 
 namespace S4Analytics.Controllers
 {
-    [Route("api/reporting")]
+    [Route("api/reporting/crash")]
     [Authorize]
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class CrashReportingController : Controller
@@ -16,42 +16,42 @@ namespace S4Analytics.Controllers
             _reportRepo = repo;
         }
 
-        [HttpGet("crash/max-event-year")]
+        [HttpGet("max-event-year")]
         public IActionResult GetMaxEventYear()
         {
             var maxEventYear = _reportRepo.GetMaxEventYear();
             return new ObjectResult(maxEventYear);
         }
 
-        [HttpGet("crash/max-load-year")]
+        [HttpGet("max-load-year")]
         public IActionResult GetMaxLoadYear()
         {
             var maxLoadYear = _reportRepo.GetMaxLoadYear();
             return new ObjectResult(maxLoadYear);
         }
 
-        [HttpPost("crash/year")]
+        [HttpPost("year")]
         public IActionResult GetCrashCountsByYear([FromBody] CrashesOverTimeQuery query)
         {
             var results = _reportRepo.GetCrashCountsByYear(query);
             return new ObjectResult(results);
         }
 
-        [HttpPost("crash/{year}/month")]
+        [HttpPost("{year}/month")]
         public IActionResult GetCrashCountsByMonth(int year, [FromBody] CrashesOverTimeQuery query)
         {
             var results = _reportRepo.GetCrashCountsByMonth(year, query);
             return new ObjectResult(results);
         }
 
-        [HttpPost("crash/{year}/day")]
+        [HttpPost("{year}/day")]
         public IActionResult GetCrashCountsByDay(int year, bool alignByWeek, [FromBody] CrashesOverTimeQuery query)
         {
             var results = _reportRepo.GetCrashCountsByDay(year, alignByWeek, query);
             return new ObjectResult(results);
         }
 
-        [HttpPost("crash/{year}/{attrName}")]
+        [HttpPost("{year}/{attrName}")]
         public IActionResult GetCrashCountsByAttribute(int year, string attrName, [FromBody] CrashesOverTimeQuery query)
         {
             /* attrName can be one of the following:
@@ -67,24 +67,10 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
-        [HttpPost("crash/{year}/timeliness")]
+        [HttpPost("{year}/timeliness")]
         public IActionResult GetTimelinessCrashCountsByMonth(int year, [FromBody] CrashesOverTimeQuery query)
         {
             var results = _reportRepo.GetTimelinessCrashCountsByMonth(year, query);
-            return new ObjectResult(results);
-        }
-
-        [HttpGet("crash/geographies")]
-        public IActionResult GetGeographyLookups()
-        {
-            var results = _reportRepo.GetGeographyLookups();
-            return new ObjectResult(results);
-        }
-
-        [HttpGet("crash/agencies")]
-        public IActionResult GetAgencyLookups()
-        {
-            var results = _reportRepo.GetAgencyLookups();
             return new ObjectResult(results);
         }
     }
