@@ -11,13 +11,15 @@ import { CrashQuery, CrashQueryRef, CrashResult, CrashService, EventAnalysisStat
 })
 export class EventAnalysisComponent {
 
-    geoExtent: 'Statewide' | 'County' | 'City';
-    counties: LookupKeyAndName[];
-    cities: LookupKeyAndName[];
-    allCounties: LookupKeyAndName[];
-    filteredCounties: LookupKeyAndName[];
-    allCities: LookupKeyAndName[];
-    filteredCities: LookupKeyAndName[];
+    // modals store temporary values in these variables;
+    // once applied the values are copied into the state
+    _startDate: Date;
+    _endDate: Date;
+    _geoExtent: 'Statewide' | 'County' | 'City';
+    _filteredCounties: LookupKeyAndName[];
+    _filteredCities: LookupKeyAndName[];
+    _selectedCounties: LookupKeyAndName[];
+    _selectedCities: LookupKeyAndName[];
 
     constructor(
         private route: ActivatedRoute,
@@ -25,14 +27,14 @@ export class EventAnalysisComponent {
         private crashService: CrashService,
         private state: EventAnalysisStateService,
         private lookup: LookupService) {
-        this.geoExtent = 'Statewide';
+        this.state.geoExtent = 'Statewide';
         this.lookup.getCounties().subscribe(results => {
-            this.allCounties = results;
-            this.filteredCounties = [];
+            this.state.allCounties = results;
+            this._filteredCounties = [];
         });
         this.lookup.getCities().subscribe(results => {
-            this.allCities = results;
-            this.filteredCities = [];
+            this.state.allCities = results;
+            this._filteredCities = [];
         });
     }
 
@@ -55,22 +57,58 @@ export class EventAnalysisComponent {
     }
 
     get dateTimeLabel(): string {
+        /*
+        Examples:
+        (same month)                 Jan 1 - 7, 2018
+        (same year, different month) Jan 1 - Feb 28, 2018
+        (different year)             Dec 1, 2017 - Jan 31, 2018
+        */
+
         let s = moment(this.state.startDate);
         let e = moment(this.state.endDate);
-        if (s.year() === e.year()) {
-            if (s.month() === e.month()) {
-                // same year, same month
-                return `${s.format('MMM D')} - ${e.format('D, YYYY')}`;
-            }
-            else {
-                // same year, different month
-                return `${s.format('MMM D')} - ${e.format('MMM D, YYYY')}`;
-            }
+        let sameYear = s.year() === e.year();
+        let sameMonth = sameYear && s.month() === e.month();
+        let label: string;
+
+        if (sameMonth) {
+            label = `${s.format('MMM D')} - ${e.format('D, YYYY')}`;
+        }
+        else if (sameYear) {
+            label = `${s.format('MMM D')} - ${e.format('MMM D, YYYY')}`;
         }
         else {
-            // different year
-            return `${s.format('MMM D, YYYY')} - ${e.format('MMM D, YYYY')}`;
+            label = `${s.format('MMM D, YYYY')} - ${e.format('MMM D, YYYY')}`;
         }
+        return label;
+    }
+
+    get placeLabel(): string {
+        /*
+        Examples:
+        (statewide)    Statewide
+        (<=3 counties) County: Alachua, Marion
+        (> 3 cities)   City: Gainesville, Alachua, High Springs, +2
+        */
+
+        let label: string = this.state.geoExtent;
+        let items: string[] = [];
+        switch (this.state.geoExtent) {
+            case 'County':
+                items = this.state.selectedCounties.map((item: LookupKeyAndName) => item.name);
+                break;
+            case 'City':
+                items = this.state.selectedCities.map((item: LookupKeyAndName) => item.name);
+                break;
+            default:
+                break;
+        }
+        if (items.length > 0) {
+            label = `${label}: ${items.slice(0, 3).join(', ')}`;
+            if (items.length > 3) {
+                label = `${label}, +${items.length - 3}`;
+            }
+        }
+        return label;
     }
 
     ngOnInit() {
@@ -83,48 +121,79 @@ export class EventAnalysisComponent {
     }
 
     public filterCounties(filter: string): void {
-        this.filteredCounties = filter.length > 0
-            ? this.allCounties.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
+        this._filteredCounties = filter.length > 0
+            ? this.state.allCounties.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
             : [];
     }
 
     public filterCities(filter: string): void {
-        this.filteredCities = filter.length > 0
-            ? this.allCities.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
+        this._filteredCities = filter.length > 0
+            ? this.state.allCities.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
             : [];
     }
 
-    public openModal(content: any) {
+    public openDateTimeModal(content: any) {
+        // set temp vars from state vars
+        this._startDate = this.state.startDate;
+        this._endDate = this.state.endDate;
+
         this.modalService.open(content).result.then((result) => {
-            // closed
+            // set state vars from temp vars
+            this.state.startDate = this._startDate;
+            this.state.endDate = this._endDate;
             this.createCrashQuery();
-        }, (reason) => {
-            // dismissed
+        });
+    }
+
+    public openPlaceModal(content: any) {
+        // set temp vars from state vars
+        this._geoExtent = this.state.geoExtent;
+        this._selectedCounties = this.state.selectedCounties.slice();
+        this._selectedCities = this.state.selectedCities.slice();
+
+        this.modalService.open(content).result.then((result) => {
+            // set state vars from temp vars
+            this.state.geoExtent = this._geoExtent;
+            this.state.selectedCounties = this._geoExtent === 'County'
+                ? this._selectedCounties.slice()
+                : [];
+            this.state.selectedCities = this._geoExtent === 'City'
+                ? this._selectedCities.slice()
+                : [];
+            this.createCrashQuery();
         });
     }
 
     public pageChange(event: PageChangeEvent) {
         this.state.crashGridSkip = event.skip;
-        this.loadCrashes();
+        this.loadCrashAttributes();
     }
 
     private createCrashQuery() {
-        this.state.crashQuery = {
-            dateRange: {
-                startDate: this.state.startDate,
-                endDate: this.state.endDate
-            }
-        } as CrashQuery;
+        let q = new CrashQuery();
+        q.dateRange = {
+            startDate: this.state.startDate,
+            endDate: this.state.endDate
+        };
+        if (this.state.geoExtent === 'County') {
+            q.county = this.state.selectedCounties.map(c => c.key);
+        }
+        else if (this.state.geoExtent === 'City') {
+            q.city = this.state.selectedCities.map(c => c.key);
+        }
+
+        this.state.crashQuery = q;
         this.crashService
             .createCrashQuery(this.state.crashQuery)
             .subscribe((queryRef: CrashQueryRef) => {
                 this.state.crashQueryRef = queryRef;
                 this.state.crashGridSkip = 0;
-                this.loadCrashes();
+                this.loadCrashAttributes();
+                this.loadCrashPoints();
             });
     }
 
-    private loadCrashes() {
+    private loadCrashAttributes() {
         let token = this.state.crashQueryRef.queryToken;
         let fromIndex = this.state.crashGridSkip;
         let toIndex = this.state.crashGridSkip + this.state.gridPageSize;
@@ -135,5 +204,9 @@ export class EventAnalysisComponent {
                 data: results,
                 total: totalCount
             });
+    }
+
+    private loadCrashPoints() {
+        // todo
     }
 }

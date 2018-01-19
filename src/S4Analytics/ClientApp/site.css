@@ -132,6 +132,10 @@ a.nav-link {
     padding-bottom: 0 !important;
 }
 
+.geo-extent-btn-group div.btn {
+    padding: unset;
+}
+
 .form-login {
     max-width: 330px;
     padding: 15px;
