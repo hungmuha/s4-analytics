@@ -19,18 +19,6 @@ export class EventAnalysisComponent {
     allCities: LookupKeyAndName[];
     filteredCities: LookupKeyAndName[];
 
-    public filterCounties(filter: string): void {
-        this.filteredCounties = filter.length > 0
-            ? this.allCounties.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
-            : [];
-    }
-
-    public filterCities(filter: string): void {
-        this.filteredCities = filter.length > 0
-            ? this.allCities.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
-            : [];
-    }
-
     constructor(
         private route: ActivatedRoute,
         private modalService: NgbModal,
@@ -92,6 +80,18 @@ export class EventAnalysisComponent {
                 this.state.startDate = moment(data.serverDate).subtract(6, 'days').toDate();
                 this.createCrashQuery();
             });
+    }
+
+    public filterCounties(filter: string): void {
+        this.filteredCounties = filter.length > 0
+            ? this.allCounties.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
+            : [];
+    }
+
+    public filterCities(filter: string): void {
+        this.filteredCities = filter.length > 0
+            ? this.allCities.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
+            : [];
     }
 
     public openModal(content: any) {
