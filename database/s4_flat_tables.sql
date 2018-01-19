@@ -198,7 +198,6 @@ CREATE TABLE crash_evt (
     st_nm                         VARCHAR2(80),
     st_nbr                        VARCHAR2(20),
     veh_cnt                       NUMBER(*,0),
-    comm_veh_cnt                  NUMBER(*,0),
     moped_cnt                     NUMBER(*,0),
     motorcycle_cnt                NUMBER(*,0),
     nm_cnt                        NUMBER(*,0),
@@ -298,6 +297,7 @@ CREATE BITMAP INDEX crash_evt_first_he ON crash_evt (key_first_he);
 CREATE BITMAP INDEX crash_evt_comm_veh_cnt ON crash_evt (comm_veh_cnt);
 CREATE BITMAP INDEX crash_evt_codeable ON crash_evt (codeable);
 CREATE BITMAP INDEX crash_evt_form_type_cd ON crash_evt (form_type_cd);
+CREATE BITMAP INDEX crash_evt_cmv_inv ON crash_evt (is_cmv_involved);
 
 CALL s4_register_sdo_geom('crash_evt','gps_pt_4326',4326);
 CALL s4_register_sdo_geom('crash_evt','geocode_pt_3087',3087);
