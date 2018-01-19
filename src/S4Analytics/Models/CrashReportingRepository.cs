@@ -685,8 +685,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"(:cmvRelated = 1 AND comm_veh_cnt > 0)
-                OR (:cmvRelated = 0 AND comm_veh_cnt = 0)";
+            var whereClause = @"(:cmvRelated = 1 AND is_cmv_involved = 'Y')
+                OR (:cmvRelated = 0 AND is_cmv_involved = 'N')";
 
             // define oracle parameters
             var parameters = new {

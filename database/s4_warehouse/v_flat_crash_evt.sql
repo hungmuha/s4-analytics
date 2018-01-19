@@ -105,7 +105,6 @@ SELECT
     fce.st_nm,
     fce.st_nbr,
     fce.veh_cnt,
-    (SELECT COUNT(*) FROM fact_comm_veh fcv WHERE fcv.hsmv_rpt_nbr = fce.hsmv_rpt_nbr) AS comm_veh_cnt,
     fce.moped_cnt,
     fce.motorcycle_cnt,
     fce.nm_cnt,
