@@ -5,6 +5,12 @@ import { AbstractValueAccessor, makeProvider } from './abstract-value-accessor';
 
 //import { S4FilterParams } from "app/ s4filter-params";
 
+class Lookup {
+    id: number;
+    text: string;
+}
+
+
 @Component({
     selector: `filter`,
     providers: [makeProvider(FilterComponent)],
@@ -18,7 +24,7 @@ import { AbstractValueAccessor, makeProvider } from './abstract-value-accessor';
         </div>
 
        <div class="card-block">
-        <kendo-treeview [nodes]= "nodes"
+        <kendo-treeview   [nodes]= "nodes"
                           textField="text"
                           kendoTreeViewExpandable
                           kendoTreeViewFlatDataBinding
@@ -35,26 +41,30 @@ import { AbstractValueAccessor, makeProvider } from './abstract-value-accessor';
 
 })
 export class FilterComponent extends AbstractValueAccessor{
-    @Input() filterName: string =  'TESTING';
-    @Input() nodes: any[] = [{ id: 0, text: 'All' }, { id: 1, text: "A" },{ id: 11, parentId: 1, text: "Alachua" }];
+    @Input() filterName: string;
     @Input() checkParents: boolean;
     @Input() checkChildren: boolean;
     @Input() checkMode: any;
-    @Input() isMultilevel: boolean = this.isMultilevel ? this.isMultilevel : false;
+    @Input() isMultilevel: boolean = this.isMultilevel ? this.isMultilevel : true;  // default = false
     @Input() anyAllNone?: any[];
     @Input() initialSelection: any[] = this.initialSelection ? this.initialSelection : [];
     @Input() defaultSelection: any[] = this.defaultSelection ? this.defaultSelection : [];  // if no initial selection, use this.  when filter cleared, use this
-    @Input() sort: boolean;
+    @Input() sort: boolean = true;  // default = true
+    @Input() nodes: any[] = this.getFormattedNodes();
 
     // if multilevel = true, must be sort = true
 
     defaultCheckChildren: boolean = false;
     defaultCheckParents: boolean = false;
-    defaultCheckMode: any = 'single';
+    defaultCheckMode: any = 'multiple'; // default = single
     collapseFilter1: boolean = false;
 
     checkedIndices: string[] = [];
     headerIndices: string[] = [];
+
+    public get formattedNodes(): any[] {
+        return this.getFormattedNodes();
+    }
 
     public checkedKeys: any[] = this.initialSelection ? this.initialSelection : this.defaultSelection;
 
@@ -105,38 +115,55 @@ export class FilterComponent extends AbstractValueAccessor{
         // this.checkedIndices.push(selectedIndex);
     }
 
-    //formattedNodes(): any[] {
-    //    if (!this.sort) { return this.nodes; }
+    getFormattedNodes(): any[] {
 
-    //    // Sort alphabetical
-    //    let alphabeticalNodes = _.sortBy(this.nodes, [function (node) { return node.text; }]);
+        let data: Lookup[] = [
+            { id: 11, text: "Alachua" },
+            { id: 23, text: "Bay" },
+            { id: 45, text: "Bradford" },
+            { id: 19, text: "Brevard" },
+            { id: 10, text: "Broward" },
+            { id: 58, text: "Calhoun" },
+            { id: 53, text: "Charlotte" },
+            { id: 47, text: "Citrus" },
+            { id: 48, text: "Clay" },
+            { id: 64, text: "Collier" },
+            { id: 29, text: "Columbia" }];
 
-    //    if (!this.isMultilevel) { return alphabeticalNodes; }
+        console.log('formattedNodes');
+        if (!this.sort) { return data; }
+        // Sort alphabetical
+        let alphabeticalNodes = _.sortBy(data, [function (node:Lookup) { return node.text; }]);
+        if (!this.isMultilevel) { return alphabeticalNodes; }
+        let headerIndex = this.anyAllNone ? 1 : 0;
 
-    //    let headerIndex = this.anyAllNone ? 1 : 0;
-    //    let currentHeaderValue = alphabeticalNodes[0].charAt(0);
+        console.log('len = ' + alphabeticalNodes.length);
+        console.log('text = ' + alphabeticalNodes[0].text);
 
-    //    let formattedNodes: any[] = [];  // add in first header row
-    //    let header: string;
+        let currentHeaderValue = alphabeticalNodes[0].text.charAt(0);
 
-    //    for (let node of alphabeticalNodes) {
-    //        let headerValue = node.text[0].charAt(0);
-    //        if (headerValue !== currentHeaderValue) {
-    //            // add in new header row to formatedNodes (headerIndex, headerValue)
+        let formattedNodes: any[] = [];  // add in first header row
+        let header: string;
+        for (let node of alphabeticalNodes) {
+            let headerValue = node.text[0].charAt(0);
+            if (headerValue !== currentHeaderValue) {
+                // add in new header row to formatedNodes (headerIndex, headerValue)
+                formattedNodes.push([{ id: headerIndex, text: headerValue }]);
 
-    //            currentHeaderValue = headerValue;
-    //            headerIndex++;
-    //            // add string of headerIndex to end of headerIndices
-    //        }
-    //        // add in new node row
-    //    }
+                currentHeaderValue = headerValue;
+                headerIndex++;
+                // todo: add string of headerIndex to end of headerIndices
+            }
+            // add in new node row
+            formattedNodes.push([{ id: node.id, text: node.text }]);
+        }
+        if (this.anyAllNone) {
+            // add top 'Any' 'All' row
 
-    //    if (this.anyAllNone) {
-    //        // add top 'Any' 'All' row
+        }
 
-    //    }
+        console.log('formattedNodes- done');
+        return formattedNodes;
 
-    //    return formattedNodes;
-
-    //}
+    }
 }
