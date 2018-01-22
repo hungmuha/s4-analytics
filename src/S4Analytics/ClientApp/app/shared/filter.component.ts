@@ -2,14 +2,9 @@
 import {  CheckableSettings, TreeItemLookup } from '@progress/kendo-angular-treeview';
 import * as _ from 'lodash';
 import { AbstractValueAccessor, makeProvider } from './abstract-value-accessor';
+import { Observable } from "rxjs/Observable";
 
 //import { S4FilterParams } from "app/ s4filter-params";
-
-class Lookup {
-    id: number;
-    text: string;
-}
-
 
 @Component({
     selector: `filter`,
@@ -24,18 +19,20 @@ class Lookup {
         </div>
 
        <div class="card-block">
-        <kendo-treeview   [nodes]= "nodes"
-                          textField="text"
-                          kendoTreeViewExpandable
-                          kendoTreeViewFlatDataBinding
-                          [(checkedKeys)]="checkedKeys"
-                          [checkBy]="'text'"
-                          [isChecked]="isItemChecked"
-                          (checkedChange)="handleChecking($event)"
-                          [kendoTreeViewCheckable]="checkableSettings"
-                          idField="id"
-                          parentIdField="parentId">
-          </kendo-treeview>
+        <kendo-treeview
+            [nodes]= "formattedData"
+            textField="text"
+            kendoTreeViewExpandable
+            kendoTreeViewFlatDataBinding
+            [(checkedKeys)]="checkedKeys"
+            [checkBy]="'text'"
+            [isChecked]="isItemChecked"
+            (checkedChange)="handleChecking($event)"
+            [kendoTreeViewCheckable]="checkableSettings"
+            idField="id"
+            parentIdField="parent"
+            >
+         </kendo-treeview>
         </div>
       </div>`
 
@@ -50,23 +47,20 @@ export class FilterComponent extends AbstractValueAccessor{
     @Input() initialSelection: any[] = this.initialSelection ? this.initialSelection : [];
     @Input() defaultSelection: any[] = this.defaultSelection ? this.defaultSelection : [];  // if no initial selection, use this.  when filter cleared, use this
     @Input() sort: boolean = true;  // default = true
-    @Input() nodes: any[] = this.getFormattedNodes();
+    @Input() nodes: any[];
 
     // if multilevel = true, must be sort = true
-
     defaultCheckChildren: boolean = false;
     defaultCheckParents: boolean = false;
     defaultCheckMode: any = 'multiple'; // default = single
     collapseFilter1: boolean = false;
 
-    checkedIndices: string[] = [];
+    checkedIndices: string[] = ['0'];
     headerIndices: string[] = [];
 
-    public get formattedNodes(): any[] {
-        return this.getFormattedNodes();
-    }
-
     public checkedKeys: any[] = this.initialSelection ? this.initialSelection : this.defaultSelection;
+
+    public formattedData: any[];
 
     public get checkableSettings(): CheckableSettings {
         return {
@@ -74,6 +68,10 @@ export class FilterComponent extends AbstractValueAccessor{
             checkParents: this.checkParents ? this.checkParents : this.checkParents,
             mode: this.checkMode ? this.checkMode : this.defaultCheckMode
         };
+    }
+
+    public ngOnInit(): void {
+        this.formattedData = this.getFormattedNodes();
     }
 
     public isItemChecked = (_: any, index: string) => {
@@ -86,6 +84,7 @@ export class FilterComponent extends AbstractValueAccessor{
 
     //WIP
     public handleChecking(itemLookup: TreeItemLookup): void {
+        console.log('handle checking');
         let selectedIndex = itemLookup.item.index;
 
         if (this.checkedIndices.indexOf(selectedIndex) > -1) {
@@ -116,54 +115,31 @@ export class FilterComponent extends AbstractValueAccessor{
     }
 
     getFormattedNodes(): any[] {
-
-        let data: Lookup[] = [
-            { id: 11, text: "Alachua" },
-            { id: 23, text: "Bay" },
-            { id: 45, text: "Bradford" },
-            { id: 19, text: "Brevard" },
-            { id: 10, text: "Broward" },
-            { id: 58, text: "Calhoun" },
-            { id: 53, text: "Charlotte" },
-            { id: 47, text: "Citrus" },
-            { id: 48, text: "Clay" },
-            { id: 64, text: "Collier" },
-            { id: 29, text: "Columbia" }];
-
-        console.log('formattedNodes');
-        if (!this.sort) { return data; }
+        if (!this.sort) { return this.nodes; }
         // Sort alphabetical
-        let alphabeticalNodes = _.sortBy(data, [function (node:Lookup) { return node.text; }]);
+        let alphabeticalNodes = _.sortBy(this.nodes, [function (node: any) { return <string>node.text; }]);
         if (!this.isMultilevel) { return alphabeticalNodes; }
-        let headerIndex = this.anyAllNone ? 1 : 0;
 
-        console.log('len = ' + alphabeticalNodes.length);
-        console.log('text = ' + alphabeticalNodes[0].text);
+        let parentId = 0;
+        let formattedNodes: any[] = [];
 
-        let currentHeaderValue = alphabeticalNodes[0].text.charAt(0);
-
-        let formattedNodes: any[] = [];  // add in first header row
-        let header: string;
         for (let node of alphabeticalNodes) {
-            let headerValue = node.text[0].charAt(0);
-            if (headerValue !== currentHeaderValue) {
-                // add in new header row to formatedNodes (headerIndex, headerValue)
-                formattedNodes.push([{ id: headerIndex, text: headerValue }]);
+            let firstLetter = <string>node.text[0].charAt(0);
 
-                currentHeaderValue = headerValue;
-                headerIndex++;
-                // todo: add string of headerIndex to end of headerIndices
+            let parentIndex = _.find(formattedNodes, function (node) { return node.text == firstLetter; });
+            if (parentIndex == undefined) {
+                parentId++;
+                formattedNodes.push({ id: parentId, text: firstLetter });
             }
-            // add in new node row
-            formattedNodes.push([{ id: node.id, text: node.text }]);
+            formattedNodes.push({ id: node.id, parent: parentId, text: node.text });
         }
+
         if (this.anyAllNone) {
             // add top 'Any' 'All' row
 
         }
 
-        console.log('formattedNodes- done');
         return formattedNodes;
-
     }
+
 }
