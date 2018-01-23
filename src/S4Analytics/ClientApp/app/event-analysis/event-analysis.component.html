@@ -10,7 +10,7 @@
             </span>
         </a>
         Place
-        <a href="javascript:void(0)" (click)="openPlaceModal(placeScope)">
+        <a href="javascript:void(0)" (click)="placeModal.open()">
             <span class="badge badge-secondary">
                 {{placeLabel}}
                 <span class="fa fa-caret-down"></span>
@@ -44,58 +44,6 @@
                  [scope]="state.dateTimeScope"
                  (apply)="applyDateTimeScope($event)"></date-time-modal>
 
-<ng-template #placeScope let-c="close" let-d="dismiss">
-    <div class="modal-header">
-        <h4 class="modal-title">Place</h4>
-        <button type="button" class="close" aria-label="Close" (click)="d()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <div class="row">
-            <div class="col-12 mb-1">
-                Geographic extent
-            </div>
-            <div class="col-12 geo-extent-btn-group">
-                <button-group [multipleSelect]="false"
-                              [items]="['Statewide','County','City']"
-                              [(ngModel)]="_geoExtent"></button-group>
-            </div>
-        </div>
-        <ng-container *ngIf="_geoExtent==='County'">
-            <div class="row">
-                <div class="col-12 mb-1">
-                    County
-                </div>
-                <div class="col-12">
-                    <kendo-multiselect [filterable]="true"
-                                       [data]="_filteredCounties"
-                                       textField="name"
-                                       valueField="key"
-                                       placeholder="Search counties"
-                                       (filterChange)="filterCounties($event)"
-                                       [(ngModel)]="_selectedCounties"></kendo-multiselect>
-                </div>
-            </div>
-        </ng-container>
-        <ng-container *ngIf="_geoExtent==='City'">
-            <div class="row">
-                <div class="col-12 mb-1">
-                    City
-                </div>
-                <div class="col-12">
-                    <kendo-multiselect [filterable]="true"
-                                       [data]="_filteredCities"
-                                       textField="name"
-                                       valueField="key"
-                                       placeholder="Search cities"
-                                       (filterChange)="filterCities($event)"
-                                       [(ngModel)]="_selectedCities"></kendo-multiselect>
-                </div>
-            </div>
-        </ng-container>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-outline-dark" (click)="c()">Apply</button>
-    </div>
-</ng-template>
+<place-modal #placeModal
+                 [scope]="state.placeScope"
+                 (apply)="applyPlaceScope($event)"></place-modal>

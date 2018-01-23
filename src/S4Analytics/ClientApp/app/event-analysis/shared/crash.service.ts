@@ -16,8 +16,10 @@ export class CrashService {
         query: CrashQuery
     ): Observable<QueryRef> {
         let url = 'api/crash/query';
+        let scopeAndQuery = { ...dateTimeScope, ...placeScope, ...query };
+        console.log(scopeAndQuery);
         return this.http
-            .post(url, { ...dateTimeScope, ...placeScope, ...query })
+            .post(url, scopeAndQuery)
             .map(response => response.json() as QueryRef);
     }
 

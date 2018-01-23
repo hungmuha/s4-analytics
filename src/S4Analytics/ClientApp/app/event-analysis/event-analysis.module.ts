@@ -4,6 +4,7 @@ import { CrashService, EventAnalysisStateService } from './shared';
 import { EventAnalysisComponent } from './event-analysis.component';
 import { EventMapComponent } from './event-map.component';
 import { DateTimeModalComponent } from './date-time-modal.component';
+import { PlaceModalComponent } from './place-modal.component';
 
 @NgModule({
     imports: [
@@ -12,7 +13,8 @@ import { DateTimeModalComponent } from './date-time-modal.component';
     declarations: [
         EventAnalysisComponent,
         EventMapComponent,
-        DateTimeModalComponent
+        DateTimeModalComponent,
+        PlaceModalComponent
     ],
     providers: [
         CrashService,
