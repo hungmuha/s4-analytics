@@ -1,7 +1,10 @@
 ﻿<section class="event-analysis-grid">
     <div class="filters">filters
-        <filter filterName="S4 Filter" [nodes]="data" checkMode="multiple"></filter>
-
+        <simple-filter filterName="Form Type"
+                [nodes]="formType"
+                checkMode="multiple"
+                anyAllNone="All"
+                ></simple-filter>
 
     </div>
     <div class="filter-controls">filter controls</div>

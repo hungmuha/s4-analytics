@@ -9,7 +9,7 @@ export * from './checkbox-group.component';
 export * from './radio-button-group.component';
 export * from './button-group.component';
 export * from './card.component';
-export * from './filter.component';
+export * from './simple-filter.component';
 export * from './server-time-resolve.service';
 export * from './server-date-resolve.service';
 export * from './lookup.service';
@@ -27,7 +27,7 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
 import { ButtonGroupComponent } from './button-group.component';
 import { CardComponent } from './card.component';
 import { LookupService } from './lookup.service';
-import { FilterComponent } from './filter.component';
+import { SimpleFilterComponent } from './simple-filter.component';
 
 export const PROVIDERS: any[] = [
     KeepSilverlightAliveService,
@@ -48,5 +48,5 @@ export const COMPONENTS: any[] = [
     RadioButtonGroupComponent,
     ButtonGroupComponent,
     CardComponent,
-    FilterComponent
+    SimpleFilterComponent
 ];

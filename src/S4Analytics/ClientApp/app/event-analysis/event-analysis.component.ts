@@ -27,43 +27,9 @@ export class EventAnalysisComponent {
         { id: 72, text: "Altamonte Springs" },
         { id: 44, text: "Dunellon" }];
 
+    initialSelection: any[] = ['Alachua', 'Broward'];
 
-    //data: any[] = [
-    //    {
-    //        id: 1, text: 'A', items: [
-    //            { id: 11, text: "Alachua" }]
-    //    },
-    //    {
-    //        id: 2, text: 'B', items: [
-    //            { id: 23, text: "Bay" },
-    //            { id: 45, text: "Bradford" },
-    //            { id: 19, text: "Brevard" },
-    //            { id: 10, text: "Broward" }]
-    //    },
-    //    {
-    //        id: 3, text: 'C', items: [
-    //            { id: 58, text: "Calhoun" },
-    //            { id: 53, text: "Charlotte" },
-    //            { id: 47, text: "Citrus" },
-    //            { id: 48, text: "Clay" },
-    //            { id: 64, text: "Collier" },
-    //            { id: 29, text: "Columbia" }]
-    //    }];
-
-    //data = [
-    //    { id: 1,text: "Item 1" },
-    //    { id: 2, text: "Item 2" },
-    //    { id: 3,text: "Item 3" },
-    //    { id: 4, text: "Item 4" },
-    //    { id: 5, parent: 1, text: "Item 1.1" },
-    //    { id: 6, parent: 1, text: "Item 1.2" },
-    //    { id: 7, parent: 1, text: "Item 1.3" },
-    //    { id: 8, parent: 3, text: "Item 3.1" },
-    //    { id: 9, parent: 3, text: "Item 3.2" },
-    //    { id: 10, parent: 5, text: "Item 1.1.1" },
-    //    { id: 11, parent: 5, text: "Item 1.1.2" },
-    //    { id: 12, parent: 5, text: "Item 1.1.3" }
-    //];
+    formType: any[] = [{ id: 1, text: 'Long' }, { id: 2, text: 'Short' }];
 
     constructor(
         private route: ActivatedRoute,
