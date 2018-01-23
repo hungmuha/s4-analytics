@@ -3,6 +3,7 @@ import { S4CommonModule } from '../s4-common.module';
 import { CrashService, EventAnalysisStateService } from './shared';
 import { EventAnalysisComponent } from './event-analysis.component';
 import { EventMapComponent } from './event-map.component';
+import { DateTimeModalComponent } from './date-time-modal.component';
 
 @NgModule({
     imports: [
@@ -10,7 +11,8 @@ import { EventMapComponent } from './event-map.component';
     ],
     declarations: [
         EventAnalysisComponent,
-        EventMapComponent
+        EventMapComponent,
+        DateTimeModalComponent
     ],
     providers: [
         CrashService,

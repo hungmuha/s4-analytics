@@ -1,4 +1,4 @@
-﻿export class CrashQueryRef {
+﻿export class QueryRef {
     queryToken: string;
     extent: {
         minX: number,
@@ -11,8 +11,7 @@
     totalCount: number;
 }
 
-export class CrashQuery {
-    // mvp
+export class DateTimeScope {
     dateRange: {
         startDate: Date,
         endDate: Date
@@ -22,8 +21,15 @@ export class CrashQuery {
         startTime: Date,
         endTime: Date
     };
+}
+
+export class PlaceScope {
     county?: number[];
     city?: number[];
+}
+
+export class CrashQuery {
+    // mvp
     reportingAgency?: number[];
     formType?: string[];
     codeableOnly?: boolean;
