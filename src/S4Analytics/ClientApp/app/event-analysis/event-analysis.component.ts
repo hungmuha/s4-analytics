@@ -1,42 +1,21 @@
 ﻿import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
+import * as _ from 'lodash';
 import { PageChangeEvent } from '@progress/kendo-angular-grid';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { LookupService, LookupKeyAndName } from '../shared';
-import { CrashQuery, CrashQueryRef, CrashResult, CrashService, EventAnalysisStateService } from './shared';
+import { LookupService } from '../shared';
+import { DateTimeScope, PlaceScope, QueryRef, CrashResult, CrashService, EventAnalysisStateService } from './shared';
 
 @Component({
     templateUrl: './event-analysis.component.html'
 })
 export class EventAnalysisComponent {
 
-    // modals store temporary values in these variables;
-    // once applied the values are copied into the state
-    _startDate: Date;
-    _endDate: Date;
-    _geoExtent: 'Statewide' | 'County' | 'City';
-    _filteredCounties: LookupKeyAndName[];
-    _filteredCities: LookupKeyAndName[];
-    _selectedCounties: LookupKeyAndName[];
-    _selectedCities: LookupKeyAndName[];
-
     constructor(
         private route: ActivatedRoute,
-        private modalService: NgbModal,
         private crashService: CrashService,
         private state: EventAnalysisStateService,
-        private lookup: LookupService) {
-        this.state.geoExtent = 'Statewide';
-        this.lookup.getCounties().subscribe(results => {
-            this.state.allCounties = results;
-            this._filteredCounties = [];
-        });
-        this.lookup.getCities().subscribe(results => {
-            this.state.allCities = results;
-            this._filteredCities = [];
-        });
-    }
+        private lookup: LookupService) { }
 
     get totalCount(): number {
         return this.state.crashQueryRef !== undefined
@@ -56,6 +35,16 @@ export class EventAnalysisComponent {
             : 0;
     }
 
+    applyDateTimeScope(value: DateTimeScope) {
+        this.state.dateTimeScope = value;
+        this.issueCrashQuery();
+    }
+
+    applyPlaceScope(value: PlaceScope) {
+        this.state.placeScope = value;
+        this.issueCrashQuery();
+    }
+
     get dateTimeLabel(): string {
         /*
         Examples:
@@ -64,8 +53,8 @@ export class EventAnalysisComponent {
         (different year)             Dec 1, 2017 - Jan 31, 2018
         */
 
-        let s = moment(this.state.startDate);
-        let e = moment(this.state.endDate);
+        let s = moment(this.state.dateTimeScope.dateRange.startDate);
+        let e = moment(this.state.dateTimeScope.dateRange.endDate);
         let sameYear = s.year() === e.year();
         let sameMonth = sameYear && s.month() === e.month();
         let label: string;
@@ -90,77 +79,44 @@ export class EventAnalysisComponent {
         (> 3 cities)   City: Gainesville, Alachua, High Springs, +2
         */
 
-        let label: string = this.state.geoExtent;
+        let label: string;
         let items: string[] = [];
-        switch (this.state.geoExtent) {
-            case 'County':
-                items = this.state.selectedCounties.map((item: LookupKeyAndName) => item.name);
-                break;
-            case 'City':
-                items = this.state.selectedCities.map((item: LookupKeyAndName) => item.name);
-                break;
-            default:
-                break;
+
+        if (this.state.placeScope.county !== undefined && this.state.placeScope.county.length > 0) {
+            label = 'County';
+            items = _.filter(this.state.allCounties, kn => _.includes(this.state.placeScope.county, kn.key)).map(kn => kn.name);
         }
+        else if (this.state.placeScope.city !== undefined && this.state.placeScope.city.length > 0) {
+            label = 'City';
+            items = _.filter(this.state.allCities, kn => _.includes(this.state.placeScope.city, kn.key)).map(kn => kn.name);
+        }
+        else {
+            label = 'Statewide';
+        }
+
         if (items.length > 0) {
             label = `${label}: ${items.slice(0, 3).join(', ')}`;
             if (items.length > 3) {
                 label = `${label}, +${items.length - 3}`;
             }
         }
+
         return label;
     }
 
     ngOnInit() {
         this.route.data
             .subscribe((data: { serverDate: Date }) => {
-                this.state.endDate = data.serverDate;
-                this.state.startDate = moment(data.serverDate).subtract(6, 'days').toDate();
-                this.createCrashQuery();
+                // set initial date range; issue query
+                this.setInitialDateRange(data.serverDate);
+                this.setInitialPlace();
+                this.issueCrashQuery();
             });
-    }
-
-    public filterCounties(filter: string): void {
-        this._filteredCounties = filter.length > 0
-            ? this.state.allCounties.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
-            : [];
-    }
-
-    public filterCities(filter: string): void {
-        this._filteredCities = filter.length > 0
-            ? this.state.allCities.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1).slice(0, 10)
-            : [];
-    }
-
-    public openDateTimeModal(content: any) {
-        // set temp vars from state vars
-        this._startDate = this.state.startDate;
-        this._endDate = this.state.endDate;
-
-        this.modalService.open(content).result.then((result) => {
-            // set state vars from temp vars
-            this.state.startDate = this._startDate;
-            this.state.endDate = this._endDate;
-            this.createCrashQuery();
+        this.lookup.getCounties().subscribe(results => {
+            this.state.allCounties = results;
         });
-    }
-
-    public openPlaceModal(content: any) {
-        // set temp vars from state vars
-        this._geoExtent = this.state.geoExtent;
-        this._selectedCounties = this.state.selectedCounties.slice();
-        this._selectedCities = this.state.selectedCities.slice();
-
-        this.modalService.open(content).result.then((result) => {
-            // set state vars from temp vars
-            this.state.geoExtent = this._geoExtent;
-            this.state.selectedCounties = this._geoExtent === 'County'
-                ? this._selectedCounties.slice()
-                : [];
-            this.state.selectedCities = this._geoExtent === 'City'
-                ? this._selectedCities.slice()
-                : [];
-            this.createCrashQuery();
+        this.lookup.getCities().subscribe(results => {
+            this.state.allCities = results;
         });
     }
 
@@ -169,23 +125,21 @@ export class EventAnalysisComponent {
         this.loadCrashAttributes();
     }
 
-    private createCrashQuery() {
-        let q = new CrashQuery();
-        q.dateRange = {
-            startDate: this.state.startDate,
-            endDate: this.state.endDate
+    private setInitialDateRange(serverDate: Date) {
+        this.state.dateTimeScope.dateRange = {
+            endDate: serverDate,
+            startDate: moment(serverDate).subtract(6, 'days').toDate()
         };
-        if (this.state.geoExtent === 'County') {
-            q.county = this.state.selectedCounties.map(c => c.key);
-        }
-        else if (this.state.geoExtent === 'City') {
-            q.city = this.state.selectedCities.map(c => c.key);
-        }
+    }
 
-        this.state.crashQuery = q;
+    private setInitialPlace() {
+        // todo
+    }
+
+    private issueCrashQuery() {
         this.crashService
-            .createCrashQuery(this.state.crashQuery)
-            .subscribe((queryRef: CrashQueryRef) => {
+            .createCrashQuery(this.state.dateTimeScope, this.state.placeScope, this.state.crashQuery)
+            .subscribe((queryRef: QueryRef) => {
                 this.state.crashQueryRef = queryRef;
                 this.state.crashGridSkip = 0;
                 this.loadCrashAttributes();
