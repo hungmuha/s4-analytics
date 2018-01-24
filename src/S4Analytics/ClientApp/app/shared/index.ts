@@ -10,6 +10,7 @@ export * from './radio-button-group.component';
 export * from './button-group.component';
 export * from './card.component';
 export * from './simple-filter.component';
+export * from './filter-params';
 export * from './server-time-resolve.service';
 export * from './server-date-resolve.service';
 export * from './lookup.service';

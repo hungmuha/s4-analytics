@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import { PageChangeEvent } from '@progress/kendo-angular-grid';
-import { LookupService } from '../shared';
+import { LookupService, FilterParams } from '../shared';
 import { DateTimeScope, PlaceScope, QueryRef, CrashResult, CrashService, EventAnalysisStateService } from './shared';
 
 @Component({
@@ -12,24 +12,15 @@ import { DateTimeScope, PlaceScope, QueryRef, CrashResult, CrashService, EventAn
 export class EventAnalysisComponent {
 
 
-    data: any[] = [
-        { id: 11, text: "Alachua" },
-        { id: 23, text: "Bay" },
-        { id: 45, text: "Bradford" },
-        { id: 19, text: "Brevard" },
-        { id: 10, text: "Broward" },
-        { id: 58, text: "Calhoun" },
-        { id: 53, text: "Charlotte" },
-        { id: 47, text: "Citrus" },
-        { id: 48, text: "Clay" },
-        { id: 64, text: "Collier" },
-        { id: 29, text: "Columbia" },
-        { id: 72, text: "Altamonte Springs" },
-        { id: 44, text: "Dunellon" }];
 
-    initialSelection: any[] = ['Alachua', 'Broward'];
 
-    formType: any[] = [{ id: 1, text: 'Long' }, { id: 2, text: 'Short' }];
+    filterParams: FilterParams = {
+        filterName: 'Form Type',
+        anyOrAll: 'All',
+        checkMode: 'multiple',
+        nodes: [{ id: 'L', text: 'Long' }, { id: 'S', text: 'Short' }],
+        initialSelection:['All']
+    };
 
     constructor(
         private route: ActivatedRoute,
@@ -123,6 +114,10 @@ export class EventAnalysisComponent {
 
         return label;
     }
+
+
+
+
 
     ngOnInit() {
         this.route.data
