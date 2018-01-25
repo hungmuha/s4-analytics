@@ -1,6 +1,6 @@
-CREATE OR REPLACE PROCEDURE s4_sync_crash_evt (p_days_back INT DEFAULT NULL)
+CREATE OR REPLACE PROCEDURE s4_sync_crash_evt (p_sync_id INT DEFAULT NULL)
 AS
-    v_start_dt DATE;
+    v_ct INT;
     v_rebuild_indexes BOOLEAN;
     CURSOR index_cur IS
         SELECT index_name
@@ -10,9 +10,11 @@ AS
         AND index_name NOT LIKE '%_ID_IDX'
         AND table_name = 'CRASH_EVT';
 BEGIN
-    v_start_dt := CASE WHEN p_days_back IS NOT NULL THEN TRUNC(SYSDATE - p_days_back) ELSE NULL END;
-    v_rebuild_indexes := p_days_back IS NULL OR p_days_back > 30;
-    dbms_output.put_line('rebuild indexes: ' || case when v_rebuild_indexes then 'yes' else 'no' end);
+    SELECT COUNT(*) INTO v_ct
+    FROM warehouse_sync
+    WHERE sync_id = p_sync_id;
+
+    v_rebuild_indexes := p_sync_id IS NULL OR v_ct > 5000;
 
     IF v_rebuild_indexes THEN
         -- disable indexes
@@ -23,15 +25,15 @@ BEGIN
         EXECUTE IMMEDIATE 'ALTER SESSION SET skip_unusable_indexes=TRUE';
     END IF;
 
-    IF v_start_dt IS NULL THEN
+    IF p_sync_id IS NULL THEN
         EXECUTE IMMEDIATE 'TRUNCATE TABLE crash_evt';
     ELSE
         DELETE FROM crash_evt evt
         WHERE EXISTS (
             SELECT 1
-            FROM v_flat_crash_evt@s4_warehouse vce
-            WHERE vce.last_updt_dt >= v_start_dt
-            AND vce.hsmv_rpt_nbr = evt.hsmv_rpt_nbr
+            FROM warehouse_sync ws
+            WHERE ws.hsmv_rpt_nbr = evt.hsmv_rpt_nbr
+            AND ws.sync_id = p_sync_id
         );
     END IF;
 
@@ -391,8 +393,13 @@ BEGIN
         geocode_pt_3087,
         sdo_cs.transform(geocode_pt_3087, 3857) AS geocode_pt_3857
     FROM v_flat_crash_evt@s4_warehouse vce
-    WHERE v_start_dt IS NULL
-    OR vce.last_updt_dt >= v_start_dt;
+    WHERE p_sync_id IS NULL
+    OR EXISTS (
+        SELECT 1
+        FROM warehouse_sync ws
+        WHERE ws.hsmv_rpt_nbr = vce.hsmv_rpt_nbr
+        AND ws.sync_id = p_sync_id
+    );
 
     COMMIT;
 

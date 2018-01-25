@@ -1,6 +1,6 @@
-CREATE OR REPLACE PROCEDURE s4_sync_driver (p_days_back INT DEFAULT NULL)
+CREATE OR REPLACE PROCEDURE s4_sync_driver (p_sync_id INT DEFAULT NULL)
 AS
-    v_start_dt DATE;
+    v_ct INT;
     v_rebuild_indexes BOOLEAN;
     CURSOR index_cur IS
         SELECT index_name
@@ -10,8 +10,11 @@ AS
         AND index_name NOT LIKE '%_ID_IDX'
         AND table_name = 'DRIVER';
 BEGIN
-    v_start_dt := CASE WHEN p_days_back IS NOT NULL THEN TRUNC(SYSDATE - p_days_back) ELSE NULL END;
-    v_rebuild_indexes := p_days_back IS NULL OR p_days_back > 30;
+    SELECT COUNT(*) INTO v_ct
+    FROM warehouse_sync
+    WHERE sync_id = p_sync_id;
+
+    v_rebuild_indexes := p_sync_id IS NULL OR v_ct > 10000;
 
     IF v_rebuild_indexes THEN
         -- disable indexes
@@ -28,9 +31,9 @@ BEGIN
         DELETE FROM driver dr
         WHERE EXISTS (
             SELECT 1
-            FROM v_flat_driver@s4_warehouse vd
-            WHERE vd.last_updt_dt >= v_start_dt
-            AND vd.hsmv_rpt_nbr = dr.hsmv_rpt_nbr
+            FROM warehouse_sync ws
+            WHERE ws.hsmv_rpt_nbr = dr.hsmv_rpt_nbr
+            AND ws.sync_id = p_sync_id
         );
     END IF;
 
@@ -226,8 +229,13 @@ BEGIN
         inj_incapacitating_cnt,
         batch_nbr
     FROM v_flat_driver@s4_warehouse vd
-    WHERE v_start_dt IS NULL
-    OR vd.last_updt_dt >= v_start_dt;
+    WHERE p_sync_id IS NULL
+    OR EXISTS (
+        SELECT 1
+        FROM warehouse_sync ws
+        WHERE ws.hsmv_rpt_nbr = vd.hsmv_rpt_nbr
+        AND ws.sync_id = p_sync_id
+    );
 
     COMMIT;
 

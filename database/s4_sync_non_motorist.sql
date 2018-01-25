@@ -1,6 +1,6 @@
 CREATE OR REPLACE PROCEDURE s4_sync_non_motorist (p_days_back INT DEFAULT NULL)
 AS
-    v_start_dt DATE;
+    v_ct INT;
     v_rebuild_indexes BOOLEAN;
     CURSOR index_cur IS
         SELECT index_name
@@ -10,8 +10,11 @@ AS
         AND index_name NOT LIKE '%_ID_IDX'
         AND table_name = 'NON_MOTORIST';
 BEGIN
-    v_start_dt := CASE WHEN p_days_back IS NOT NULL THEN TRUNC(SYSDATE - p_days_back) ELSE NULL END;
-    v_rebuild_indexes := p_days_back IS NULL OR p_days_back > 30;
+    SELECT COUNT(*) INTO v_ct
+    FROM warehouse_sync
+    WHERE sync_id = p_sync_id;
+
+    v_rebuild_indexes := p_sync_id IS NULL OR v_ct > 25000;
 
     IF v_rebuild_indexes THEN
         -- disable indexes
@@ -28,9 +31,9 @@ BEGIN
         DELETE FROM non_motorist nm
         WHERE EXISTS (
             SELECT 1
-            FROM v_flat_non_motorist@s4_warehouse vnm
-            WHERE vnm.last_updt_dt >= v_start_dt
-            AND vnm.hsmv_rpt_nbr = nm.hsmv_rpt_nbr
+            FROM warehouse_sync ws
+            WHERE ws.hsmv_rpt_nbr = nm.hsmv_rpt_nbr
+            AND ws.sync_id = p_sync_id
         );
     END IF;
 
