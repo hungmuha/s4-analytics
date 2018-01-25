@@ -16,7 +16,11 @@ END;
 /
 */
 
+DECLARE
+    v_start_dt DATE;
 BEGIN
+    v_start_dt := TRUNC(SYSDATE - 2);
+    
 	-- create and configure sync job
     DBMS_SCHEDULER.CREATE_JOB (
             job_name => '"S4_FLAT"."S4_SYNC_WITH_WAREHOUSE_JOB"',
@@ -33,7 +37,7 @@ BEGIN
     DBMS_SCHEDULER.SET_JOB_ARGUMENT_VALUE( 
              job_name => '"S4_FLAT"."S4_SYNC_WITH_WAREHOUSE_JOB"', 
              argument_position => 1, 
-             argument_value => '2');
+             argument_value => v_start_dt);
 
     DBMS_SCHEDULER.SET_ATTRIBUTE( 
              name => '"S4_FLAT"."S4_SYNC_WITH_WAREHOUSE_JOB"', 

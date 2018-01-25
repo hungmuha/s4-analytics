@@ -25,7 +25,10 @@ DROP TABLE pass;
 DROP TABLE veh;
 DROP TABLE violation;
 DROP TABLE citation;
-DROP TABLE warehouse_sync;
+DROP TABLE sync_crash;
+DROP SEQUENCE sync_crash_seq;
+DROP TABLE sync_citation;
+DROP SEQUENCE sync_citation_seq;
 DROP PROCEDURE s4_register_sdo_geom;
 DROP PROCEDURE s4_unregister_sdo_geom;
 DELETE FROM user_sdo_geom_metadata;
@@ -1165,11 +1168,20 @@ CREATE TABLE bike_ped_crash_type (
         USING INDEX enable
 );
 
-CREATE TABLE warehouse_sync (
+CREATE TABLE sync_crash (
     sync_id         NUMBER,
     hsmv_rpt_nbr    NUMBER,
     PRIMARY KEY ( sync_id, hsmv_rpt_nbr )
         USING INDEX enable
 );
 
-CREATE SEQUENCE warehouse_sync_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+CREATE SEQUENCE sync_crash_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+CREATE TABLE sync_citation (
+    sync_id         NUMBER,
+    citation_nbr    VARCHAR2(20),
+    PRIMARY KEY ( sync_id, citation_nbr )
+        USING INDEX enable
+);
+
+CREATE SEQUENCE sync_citation_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;

@@ -63,10 +63,8 @@ SELECT
     fp.prop_dmg_cnt,
     fp.batch_nbr,
     fp.inj_incapacitating_cnt,
-    fp.prop_dmg_amt,
-    fce.last_updt_dt
+    fp.prop_dmg_amt
 FROM fact_pass fp
-INNER JOIN fact_crash_evt fce ON fce.hsmv_rpt_nbr = fp.hsmv_rpt_nbr
 LEFT JOIN dim_date dd ON fp.key_crash_dt = dd.crash_dt
 LEFT JOIN dim_geography dg ON fp.key_geography = dg.ID
 LEFT JOIN dim_agncy da ON fp.key_rptg_agncy = da.ID
