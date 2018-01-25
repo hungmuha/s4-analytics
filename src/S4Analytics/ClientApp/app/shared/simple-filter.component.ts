@@ -18,46 +18,54 @@ import { AbstractValueAccessor, makeProvider } from './abstract-value-accessor';
 
        <div class="card-block">
         <kendo-treeview
-            [nodes]= "formattedNodes"
+            *ngIf="hasAnyOrAll"
+            [nodes]="[{id: 'All', text: 'All'}]"
+            textField="text"
+            [kendoTreeViewCheckable]="checkableSettings"
+            [isChecked]="isAllItemChecked"
+            (checkedChange)="onAllValueChanged($event)"
+        >
+        </kendo-treeview>
+        <kendo-treeview
+            [nodes]= "nodes"
             textField="text"
             kendoTreeViewExpandable
-            [(checkedKeys)]="checkedKeys"
-            [kendoTreeViewCheckable]="checkableSettings"
-            [checkBy]="'text'"
+
+            [kendoTreeViewCheckable]="{ mode: checkMode }"
+
             [isChecked]="isItemChecked"
             (checkedChange)="onValueChanged($event)"
-
          >
          </kendo-treeview>
         </div>
       </div>`
 
 })
+
+    //          [checkBy]="'text'"
 export class SimpleFilterComponent extends AbstractValueAccessor {
     @Input() filterName: string;
     @Input() checkMode: 'multiple'|'single';
     @Input() nodes: any[];
     @Input() anyOrAllText?: string;
-    @Input() valueMember?: string;
 
-    public checkedText: string[] = [];
-    checkedKeys = [];
+    public checkedText: string[] = []; //should be able to use checkedKeys??
+    public checkedKeys:any[] = [];
     defaultCheckMode: 'multiple' | 'single' = 'single';
     collapseFilter1: boolean = false;
 
-    public get formattedNodes(): any[] {
-        let alphabeticalNodes = _.sortBy(this.nodes, [function (node: any) { return node.text as string; }]);
-
-        let formattedNodes = [];
-
-        // add top node if needed
-        if (this.anyOrAllText) {
-            formattedNodes.push({ id: this.anyOrAllText, text: this.anyOrAllText });
-        }
-
-        formattedNodes = formattedNodes.concat(alphabeticalNodes);
-        return formattedNodes;
+    public isItemChecked = (_: any, item: string) => {
+        return this.multipleSelect
+            ? _.includes(this.selectedItemValue, item) ? 'checked' : 'none'
+            : this.selectedItemValue === item ? 'checked' : 'none';
     }
+
+    public isAllItemChecked = (_: any, item: string) => {
+        return this.multipleSelect
+            ? _.includes(this.selectedItemValue, item) ? 'checked' : 'none'
+            : this.selectedItemValue === item ? 'checked' : 'none';
+    }
+
 
     public get checkableSettings(): CheckableSettings {
         return {
@@ -91,47 +99,52 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
         this.value = value;
     }
 
+    public onAllValueChanged(itemLookup: TreeItemLookup): void {
+        // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
+        if (this.multipleSelect && this.value === undefined) {
+            this.value = [];
+        }
+
+         this.toggleAnyOrAll(itemLookup.item.dataItem.id);
+    }
+
     public onValueChanged(itemLookup: TreeItemLookup): void {
         // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
         if (this.multipleSelect && this.value === undefined) {
             this.value = [];
         }
+
+        this.checkedKeys = [itemLookup.item.index];
         this.toggle(itemLookup.item.dataItem.id);
     }
 
-    // todo
-    toggleAnyOrAll() {
+    // todo need to clear checkboxes
+    toggleAnyOrAll(itemLookup: TreeItemLookup) {
         if (!this.isAnyOrAllChecked) {
             this.selectedItemValue = this.multipleSelect ? [] : undefined;
+            // clear check boxes
+
         }
     }
 
+    // todo: need to uncheck ALL
     toggle(item: any) {
-        let itemValue = this.getItemValue(item);
         if (this.multipleSelect) {
             let newItemValues = [...this.selectedItemValue]; // create a copy
-            let isChecked = _.includes(newItemValues, itemValue);
+            let isChecked = _.includes(newItemValues, item);
             if (isChecked) {
-                _.remove(newItemValues, v => v === itemValue);
+                _.remove(newItemValues, v => v === item);
             }
             else {
-                newItemValues.push(itemValue);
+                newItemValues.push(item);
             }
             // to allow change detection to work as expected, we must overwrite
             // selectedItemValues rather than remove or insert an item directly
             this.selectedItemValue = newItemValues;
         }
         else {
-            this.selectedItemValue = itemValue;
+            this.selectedItemValue = item;
         }
-    }
-
-    public isItemChecked = (item: string) => {
-        console.log('is item checked');
-        let itemValue = this.getItemValue(item);
-        return this.multipleSelect
-            ? _.includes(this.selectedItemValue, itemValue)
-            : this.selectedItemValue === itemValue;
     }
 
     toggleMoreFilterOptions() {
@@ -139,7 +152,7 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
 
         if (!this.collapseFilter1) {
             this.checkedText = [];
-            if (this.value.length > 0) {
+            if (this.value && this.value.length > 0) {
                 for (let key of this.value) {
                     let item = _.find(this.nodes, function (o) { return o.id === key; });
                     this.checkedText.push(item.text);
@@ -148,10 +161,4 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
         }
     }
 
-    private getItemValue(item: any): any {
-        let value = this.valueMember !== undefined
-            ? item[this.valueMember]
-            : item;
-        return value;
-    }
 }
