@@ -1,8 +1,20 @@
 ﻿<section class="event-analysis-grid">
     <div class="filters">filters
+        <!--<kendo-treeview [nodes]="[{ id: 'L', text: 'Long' }, { id: 'S', text: 'Short' }]"
+                        textField="text"
+                        kendoTreeViewExpandable
+                        kendoTreeViewCheckable
+                        kendoTreeViewHierarchyBinding
+                        [checkBy]="'text'"
 
+                       >
+        </kendo-treeview>-->
 
-        <simple-filter [filterParams]="filterParams"
+        <simple-filter filterName="Form Type"
+                       [nodes]="[{ id: 'L', text: 'Long' }, { id: 'S', text: 'Short' }]"
+                       checkMode="multiple"
+                       anyOrAllText="All"
+                       [(ngModel)]="this.state.crashQuery.formType"
                 ></simple-filter>
 
     </div>

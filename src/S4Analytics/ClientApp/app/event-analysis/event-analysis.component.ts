@@ -3,25 +3,13 @@ import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import { PageChangeEvent } from '@progress/kendo-angular-grid';
-import { LookupService, FilterParams } from '../shared';
+import { LookupService } from '../shared';
 import { DateTimeScope, PlaceScope, QueryRef, CrashResult, CrashService, EventAnalysisStateService } from './shared';
 
 @Component({
     templateUrl: './event-analysis.component.html'
 })
 export class EventAnalysisComponent {
-
-
-
-
-    filterParams: FilterParams = {
-        filterName: 'Form Type',
-        anyOrAll: 'All',
-        checkMode: 'multiple',
-        nodes: [{ id: 'L', text: 'Long' }, { id: 'S', text: 'Short' }],
-        initialSelection:['All']
-    };
-
     constructor(
         private route: ActivatedRoute,
         private crashService: CrashService,
