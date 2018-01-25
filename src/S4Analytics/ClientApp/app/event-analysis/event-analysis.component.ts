@@ -10,6 +10,8 @@ import { DateTimeScope, PlaceScope, QueryRef, CrashResult, CrashService, EventAn
     templateUrl: './event-analysis.component.html'
 })
 export class EventAnalysisComponent {
+    gridPageSize = 10;
+    crashGridSkip = 0;
 
     constructor(
         private route: ActivatedRoute,
@@ -121,7 +123,7 @@ export class EventAnalysisComponent {
     }
 
     public pageChange(event: PageChangeEvent) {
-        this.state.crashGridSkip = event.skip;
+        this.crashGridSkip = event.skip;
         this.loadCrashAttributes();
     }
 
@@ -141,7 +143,7 @@ export class EventAnalysisComponent {
             .createCrashQuery(this.state.dateTimeScope, this.state.placeScope, this.state.crashQuery)
             .subscribe((queryRef: QueryRef) => {
                 this.state.crashQueryRef = queryRef;
-                this.state.crashGridSkip = 0;
+                this.crashGridSkip = 0;
                 this.loadCrashAttributes();
                 this.loadCrashPoints();
             });
@@ -149,8 +151,8 @@ export class EventAnalysisComponent {
 
     private loadCrashAttributes() {
         let token = this.state.crashQueryRef.queryToken;
-        let fromIndex = this.state.crashGridSkip;
-        let toIndex = this.state.crashGridSkip + this.state.gridPageSize;
+        let fromIndex = this.crashGridSkip;
+        let toIndex = this.crashGridSkip + this.gridPageSize;
         let totalCount = this.state.crashQueryRef.totalCount;
         this.crashService
             .getCrashData(token, fromIndex, toIndex)

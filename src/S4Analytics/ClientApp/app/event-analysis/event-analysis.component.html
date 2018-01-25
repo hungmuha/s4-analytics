@@ -25,9 +25,9 @@
     </div>
     <kendo-grid [class]="['attributes']"
                 [data]="state.crashGridData"
-                [pageSize]="state.gridPageSize"
+                [pageSize]="gridPageSize"
                 [scrollable]="'virtual'"
-                [skip]="state.crashGridSkip"
+                [skip]="crashGridSkip"
                 [pageable]="true"
                 [rowHeight]="35"
                 (pageChange)="pageChange($event)">
