@@ -147,5 +147,12 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
+        [HttpGet("database")]
+        public IActionResult GetDatabaseLookups()
+        {
+            var results = _lookupRepo.GetDatabaseLookups();
+            return new ObjectResult(results);
+        }
+
     }
 }
