@@ -156,6 +156,7 @@ namespace S4Analytics.Models
     public class LookupRepository
     {
         protected readonly string _connStr;
+        protected static readonly string[] _behavioralFactors = { "Aggressive Driving", "Distracted Driving", "Alcohol Involved", "Drugs Involved" };
         protected static readonly string[] _dayOrNight = { "Day", "Night" };
         protected static readonly string[] _formTypes = { "Long", "Short" };
         protected static readonly string[] _noYes = { "No", "Yes" };
@@ -163,6 +164,11 @@ namespace S4Analytics.Models
         public LookupRepository(IOptions<ServerOptions> serverOptions)
         {
             _connStr = serverOptions.Value.FlatConnStr;
+        }
+
+        public IEnumerable<LookupName> GetBehavioralFactorsLookups()
+        {
+            return GetLookupNames(_behavioralFactors);
         }
 
         public IEnumerable<LookupKeyAndName> GetCountyLookups()
