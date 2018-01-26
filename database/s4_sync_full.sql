@@ -15,14 +15,14 @@ BEGIN
     FROM v_flat_citation@s4_warehouse vci;
     COMMIT;
 
-    -- s4_sync_crash_evt(v_sync_crash_id);
+    s4_sync_crash_evt(v_sync_crash_id);
     s4_sync_driver(v_sync_crash_id);
     s4_sync_non_motorist(v_sync_crash_id);
     s4_sync_pass(v_sync_crash_id);
     s4_sync_veh(v_sync_crash_id);
     s4_sync_violation(v_sync_crash_id);
-    -- s4_sync_citation(v_sync_citation_id);
-    -- s4_sync_ref_tables();
+    s4_sync_citation(v_sync_citation_id);
+    s4_sync_ref_tables();
 
     DELETE FROM sync_crash
     WHERE sync_id = v_sync_crash_id;
@@ -32,9 +32,9 @@ BEGIN
     WHERE sync_id = v_sync_citation_id;
     COMMIT;
 
-    /* s4_sync_st();
+    s4_sync_st();
     s4_sync_zlevel();
     s4_sync_intrsect();
-    s4_sync_intrsect_node(); */
+    s4_sync_intrsect_node();
 END;
 /
