@@ -156,8 +156,6 @@ namespace S4Analytics.Models
     public class LookupRepository
     {
         protected readonly string _connStr;
-        protected static readonly string[] _behavioralFactors = { "Aggressive Driving", "Distracted Driving", "Alcohol Involved", "Drugs Involved" };
-        protected static readonly string[] _databases = { "All Crashes", "Crashes on Public Roads", "Long Forms on Public Roads" };
         protected static readonly string[] _dayOrNight = { "Day", "Night" };
         protected static readonly string[] _formTypes = { "Long", "Short" };
         protected static readonly string[] _noYes = { "No", "Yes" };
@@ -215,11 +213,6 @@ namespace S4Analytics.Models
                 results = conn.Query<LookupKeyAndName>(queryText, new { });
             }
             return results;
-        }
-
-        public IEnumerable<LookupName> GetDatabaseLookups()
-        {
-            return GetLookupNames(_databases);
         }
 
         public IEnumerable<LookupKeyAndName> GetAgencyLookups()
@@ -310,11 +303,6 @@ namespace S4Analytics.Models
             return GetLookupNames(_dayOrNight);
         }
 
-        public IEnumerable<LookupName> GetBehavioralFactorsLookups()
-        {
-            return GetLookupNames(_behavioralFactors);
-        }
-
         public IEnumerable<LookupName> GetLaneDepartureLookups()
         {
             return GetLookupNames(_noYes);
@@ -346,31 +334,31 @@ namespace S4Analytics.Models
             return results;
         }
 
-        public IEnumerable<LookupName> GetMpoTpoLookups()
-        {
-            var queryText = @"SELECT DISTINCT mpo_nm AS name
-                FROM dim_geography
-                ORDER BY mpo_nm";
-            IEnumerable<LookupName> results;
-            using (var conn = new OracleConnection(_connStr))
-            {
-                results = conn.Query<LookupName>(queryText, new { });
-            }
-            return results;
-        }
+        //public IEnumerable<LookupName> GetMpoTpoLookups()
+        //{
+        //    var queryText = @"SELECT DISTINCT mpo_nm AS name
+        //        FROM dim_geography
+        //        ORDER BY mpo_nm";
+        //    IEnumerable<LookupName> results;
+        //    using (var conn = new OracleConnection(_connStr))
+        //    {
+        //        results = conn.Query<LookupName>(queryText, new { });
+        //    }
+        //    return results;
+        //}
 
-        public IEnumerable<LookupKeyCodeAndName> GetDriverGenderLookups()
-        {
-            var queryText = @"SELECT id AS key, driver_attr_cd AS code, driver_attr_tx AS name
-                FROM v_driver_gender
-                ORDER BY id";
-            IEnumerable<LookupKeyCodeAndName> results;
-            using (var conn = new OracleConnection(_connStr))
-            {
-                results = conn.Query<LookupKeyCodeAndName>(queryText, new { });
-            }
-            return results;
-        }
+        //public IEnumerable<LookupKeyCodeAndName> GetDriverGenderLookups()
+        //{
+        //    var queryText = @"SELECT id AS key, driver_attr_cd AS code, driver_attr_tx AS name
+        //        FROM v_driver_gender
+        //        ORDER BY id";
+        //    IEnumerable<LookupKeyCodeAndName> results;
+        //    using (var conn = new OracleConnection(_connStr))
+        //    {
+        //        results = conn.Query<LookupKeyCodeAndName>(queryText, new { });
+        //    }
+        //    return results;
+        //}
 
         public IEnumerable<LookupName> GetDriverAgeRangeLookups()
         {
@@ -385,55 +373,60 @@ namespace S4Analytics.Models
             return DistinctLookupNames(results);
         }
 
-        public IEnumerable<LookupName> GetNonMotoristAgeRangeLookups()
-        {
-            var queryText = @"SELECT id AS key, nm_attr_cd AS code, nm_attr_tx AS name
-                FROM v_nm_age_rng
-                ORDER BY nm_attr_cd";
-            IEnumerable<LookupKeyCodeAndName> results;
-            using (var conn = new OracleConnection(_connStr))
-            {
-                results = conn.Query<LookupKeyCodeAndName>(queryText, new { });
-            }
-            return DistinctLookupNames(results);
-        }
+        //public IEnumerable<LookupName> GetNonMotoristAgeRangeLookups()
+        //{
+        //    var queryText = @"SELECT id AS key, nm_attr_cd AS code, nm_attr_tx AS name
+        //        FROM v_nm_age_rng
+        //        ORDER BY nm_attr_cd";
+        //    IEnumerable<LookupKeyCodeAndName> results;
+        //    using (var conn = new OracleConnection(_connStr))
+        //    {
+        //        results = conn.Query<LookupKeyCodeAndName>(queryText, new { });
+        //    }
+        //    return DistinctLookupNames(results);
+        //}
 
-        public IEnumerable<LookupName> GetCyclistAgeRangeLookups()
-        {
-            return GetNonMotoristAgeRangeLookups();
-        }
+        //public IEnumerable<LookupName> GetCyclistAgeRangeLookups()
+        //{
+        //    return GetNonMotoristAgeRangeLookups();
+        //}
 
-        public IEnumerable<LookupName> GetPedestrianAgeRangeLookups()
-        {
-            return GetNonMotoristAgeRangeLookups();
-        }
+        //public IEnumerable<LookupName> GetPedestrianAgeRangeLookups()
+        //{
+        //    return GetNonMotoristAgeRangeLookups();
+        //}
 
-        public IEnumerable<LookupName> GetCrashTypeSimplified()
-        {
-            var queryText = @"SELECT DISTINCT crash_attr_tx AS name
-                FROM v_crash_type_simplified
-                ORDER BY crash_attr_tx";
-            IEnumerable<LookupName> results;
-            using (var conn = new OracleConnection(_connStr))
-            {
-                results = conn.Query<LookupName>(queryText, new { });
-            }
-            return results;
-        }
+        //public IEnumerable<LookupName> GetCrashTypeSimplified()
+        //{
+        //    var queryText = @"SELECT DISTINCT crash_attr_tx AS name
+        //        FROM v_crash_type_simplified
+        //        ORDER BY crash_attr_tx";
+        //    IEnumerable<LookupName> results;
+        //    using (var conn = new OracleConnection(_connStr))
+        //    {
+        //        results = conn.Query<LookupName>(queryText, new { });
+        //    }
+        //    return results;
+        //}
 
-        public IEnumerable<LookupName> GetCrashTypeDetailed()
-        {
-            var queryText = @"SELECT DISTINCT crash_attr_tx AS name
-                FROM v_crash_type
-                ORDER BY crash_attr_tx";
-            IEnumerable<LookupName> results;
-            using (var conn = new OracleConnection(_connStr))
-            {
-                results = conn.Query<LookupName>(queryText, new { });
-            }
-            return results;
-        }
+        //public IEnumerable<LookupName> GetCrashTypeDetailed()
+        //{
+        //    var queryText = @"SELECT DISTINCT crash_attr_tx AS name
+        //        FROM v_crash_type
+        //        ORDER BY crash_attr_tx";
+        //    IEnumerable<LookupName> results;
+        //    using (var conn = new OracleConnection(_connStr))
+        //    {
+        //        results = conn.Query<LookupName>(queryText, new { });
+        //    }
+        //    return results;
+        //}
 
+        /// <summary>
+        /// Utility method to convert an array of strings into an IEnumerable of LookupName.
+        /// </summary>
+        /// <param name="names">An array of strings.</param>
+        /// <returns>An IEnumerable of LookupName.</returns>
         private IEnumerable<LookupName> GetLookupNames(string[] names)
         {
             var arr = new LookupName[names.Length];
@@ -444,6 +437,12 @@ namespace S4Analytics.Models
             return arr;
         }
 
+        /// <summary>
+        /// Utility method to extract an IEnumerable of distinct LookupName from an
+        /// IEnumerable of LookupKeyAndName.
+        /// </summary>
+        /// <param name="origList">An IEnumerable of LookupKeyAndName.</param>
+        /// <returns>An IEnumerable of distinct LookupName.</returns>
         private IEnumerable<LookupName> DistinctLookupNames(IEnumerable<LookupKeyAndName> origList)
         {
             var distinctList = new List<LookupName>();
@@ -455,6 +454,12 @@ namespace S4Analytics.Models
             return distinctList;
         }
 
+        /// <summary>
+        /// Utility method to extract an IEnumerable of distinct LookupName from an
+        /// IEnumerable of LookupKeyCodeAndName.
+        /// </summary>
+        /// <param name="origList">An IEnumerable of LookupKeyCodeAndName.</param>
+        /// <returns>An IEnumerable of distinct LookupName.</returns>
         private IEnumerable<LookupName> DistinctLookupNames(IEnumerable<LookupKeyCodeAndName> origList)
         {
             var distinctList = new List<LookupName>();

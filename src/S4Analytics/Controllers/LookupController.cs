@@ -36,13 +36,6 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
-        [HttpGet("database")]
-        public IActionResult GetDatabaseLookups()
-        {
-            var results = _lookupRepo.GetDatabaseLookups();
-            return new ObjectResult(results);
-        }
-
         [HttpGet("agency")]
         public IActionResult GetAgencyLookups()
         {
@@ -50,7 +43,7 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
-        [HttpGet("formType")]
+        [HttpGet("form-type")]
         public IActionResult GetFormTypeLookups()
         {
             var results = _lookupRepo.GetFormTypeLookups();
@@ -64,90 +57,83 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
-        [HttpGet("cmvInvolved")]
+        [HttpGet("cmv-involved")]
         public IActionResult GetCmvInvolvedLookups()
         {
             var results = _lookupRepo.GetCmvInvolvedLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("bikeInvolved")]
+        [HttpGet("bike-involved")]
         public IActionResult GetBikeInvolvedLookups()
         {
             var results = _lookupRepo.GetBikeInvolvedLookups();
             return new ObjectResult(results);
         }
-        [HttpGet("pedInvolved")]
+        [HttpGet("ped-involved")]
         public IActionResult GetPedInvolvedLookups()
         {
             var results = _lookupRepo.GetPedInvolvedLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("crashSeverity")]
+        [HttpGet("crash-severity")]
         public IActionResult GetCrashSeverityLookups()
         {
             var results = _lookupRepo.GetCrashSeverityLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("crashType")]
+        [HttpGet("crash-type")]
         public IActionResult GetCrashTypeLookups()
         {
             var results = _lookupRepo.GetCrashTypeLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("roadSysId")]
+        [HttpGet("road-sys-id")]
         public IActionResult GetRoadSysIdLookups()
         {
             var results = _lookupRepo.GetRoadSysIdLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("intersectionRelated")]
+        [HttpGet("intersection-related")]
         public IActionResult GetIntersectionRelatedLookups()
         {
             var results = _lookupRepo.GetIntersectionRelatedLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("dayOrNight")]
+        [HttpGet("day-or-night")]
         public IActionResult GetDayOrNightLookups()
         {
             var results = _lookupRepo.GetDayOrNightLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("behavioralFactors")]
-        public IActionResult GetBehavioralFactorsLookups()
-        {
-            var results = _lookupRepo.GetBehavioralFactorsLookups();
-            return new ObjectResult(results);
-        }
-
-        [HttpGet("laneDeparture")]
+        [HttpGet("lane-departure")]
         public IActionResult GetLaneDepartureLookups()
         {
             var results = _lookupRepo.GetLaneDepartureLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("weatherCondition")]
+        [HttpGet("weather-condition")]
         public IActionResult GetWeatherConditionLookups()
         {
             var results = _lookupRepo.GetWeatherConditionLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("dotDistrict")]
+        [HttpGet("dot-district")]
         public IActionResult GetDotDistrictLookups()
         {
             var results = _lookupRepo.GetDotDistrictLookups();
             return new ObjectResult(results);
         }
 
-        [HttpGet("driverAgeRange")]
+        [HttpGet("driver-age-range")]
         public IActionResult GetDriverAgeRangeLookups()
         {
             var results = _lookupRepo.GetDriverAgeRangeLookups();
