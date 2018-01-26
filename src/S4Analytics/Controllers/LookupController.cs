@@ -140,5 +140,12 @@ namespace S4Analytics.Controllers
             return new ObjectResult(results);
         }
 
+        [HttpGet("behavioral-factors")]
+        public IActionResult GetBehavioralFactorsLookups()
+        {
+            var results = _lookupRepo.GetBehavioralFactorsLookups();
+            return new ObjectResult(results);
+        }
+
     }
 }
