@@ -86,12 +86,17 @@
                         checkMode="multiple"
                         anyOrAllText="All"
                         [(ngModel)]="this.state.crashQuery.weatherCondition"></simple-filter>
-        <!-- Behavioral Factors -->
-        <!--<simple-filter filterName="Behavioral Factors"
-                        [nodes]="[  ]"
+        <!-- Behavioral Factors need to map ngModel -->
+        <simple-filter filterName="Behavioral Factors"
+                        [nodes]="[
+                           {text: 'Aggresssive Driving'},
+                           {text: 'Distracted Driving'},
+                           {text: 'Alcohol Involved'},
+                           {text: 'Drugs Involved'}
+                        ]"
                         checkMode="multiple"
                         anyOrAllText="All"
-                        [(ngModel)]="this.state.crashQuery.behavioralFactors"></simple-filter>-->
+                        ></simple-filter>
 
 
 

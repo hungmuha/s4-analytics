@@ -9,6 +9,7 @@ export * from './checkbox-group.component';
 export * from './radio-button-group.component';
 export * from './button-group.component';
 export * from './card.component';
+export * from './filter-card.component';
 export * from './simple-filter.component';
 export * from './server-time-resolve.service';
 export * from './server-date-resolve.service';
@@ -26,6 +27,7 @@ import { CheckboxGroupComponent } from './checkbox-group.component';
 import { RadioButtonGroupComponent } from './radio-button-group.component';
 import { ButtonGroupComponent } from './button-group.component';
 import { CardComponent } from './card.component';
+import { FilterCardComponent } from './filter-card.component';
 import { LookupService } from './lookup.service';
 import { SimpleFilterComponent } from './simple-filter.component';
 
@@ -48,5 +50,6 @@ export const COMPONENTS: any[] = [
     RadioButtonGroupComponent,
     ButtonGroupComponent,
     CardComponent,
+    FilterCardComponent,
     SimpleFilterComponent
 ];

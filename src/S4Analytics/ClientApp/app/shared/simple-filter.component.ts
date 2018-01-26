@@ -7,38 +7,27 @@ import { AbstractValueAccessor, makeProvider } from './abstract-value-accessor';
     selector: `simple-filter`,
     providers: [makeProvider(SimpleFilterComponent)],
     template:
-    `<div class="card card-inverse bg-inverse collapsible" [class.collapsed]="!collapseFilter1">
-        <div class="card-header" (click)="toggleMoreFilterOptions()">
-           {{filterName}}</div>
-        <div *ngIf="!collapseFilter1">
-          <ul *ngFor="let selection of checkedText">
-            <li>{{selection}}</li>
-          </ul>
+    `<filter-card [selectedText]="selectedText">
+        <ng-container card-header>{{filterName}}</ng-container>
+        <div card-block>
+            <kendo-treeview
+                *ngIf="hasAnyOrAll"
+                [nodes]="[{id: 'All', text: 'All'}]"
+                textField="text"
+                [kendoTreeViewCheckable]="checkableSettings"
+                [isChecked]="isAllItemChecked"
+                (checkedChange)="onAllValueChanged($event)">
+            </kendo-treeview>
+            <kendo-treeview
+                [nodes]= "nodes"
+                textField="text"
+                kendoTreeViewExpandable
+                [kendoTreeViewCheckable]="{ mode: checkMode }"
+                [isChecked]="isItemChecked"
+                (checkedChange)="onValueChanged($event)">
+             </kendo-treeview>
         </div>
-
-       <div class="card-block">
-        <kendo-treeview
-            *ngIf="hasAnyOrAll"
-            [nodes]="[{id: 'All', text: 'All'}]"
-            textField="text"
-            [kendoTreeViewCheckable]="checkableSettings"
-            [isChecked]="isAllItemChecked"
-            (checkedChange)="onAllValueChanged($event)"
-        >
-        </kendo-treeview>
-        <kendo-treeview
-            [nodes]= "nodes"
-            textField="text"
-            kendoTreeViewExpandable
-
-            [kendoTreeViewCheckable]="{ mode: checkMode }"
-
-            [isChecked]="isItemChecked"
-            (checkedChange)="onValueChanged($event)"
-         >
-         </kendo-treeview>
-        </div>
-      </div>`
+      </filter-card>`
 
 })
 
@@ -49,7 +38,7 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
     @Input() nodes: any[];
     @Input() anyOrAllText?: string;
 
-    public checkedText: string[] = []; //should be able to use checkedKeys??
+    public selectedText: string[] = [];
     public checkedKeys:any[] = [];
     defaultCheckMode: 'multiple' | 'single' = 'single';
     collapseFilter1: boolean = false;
@@ -122,7 +111,7 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
     toggleAnyOrAll(itemLookup: TreeItemLookup) {
         if (!this.isAnyOrAllChecked) {
             this.selectedItemValue = this.multipleSelect ? [] : undefined;
-            // clear check boxes
+            // clear other check boxes
 
         }
     }
@@ -145,17 +134,30 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
         else {
             this.selectedItemValue = item;
         }
+
+        this.selectedText = [];
+        for (let key of this.value) {
+            let item = _.find(this.nodes, function (o) { return o.id === key; });
+            this.selectedText.push(item.text);
+        }
+    }
+
+    updateSelectedText() {
+        for (let key of this.value) {
+            let item = _.find(this.nodes, function (o) { return o.id === key; });
+            this.selectedText.push(item.text);
+        }
     }
 
     toggleMoreFilterOptions() {
         this.collapseFilter1 = !this.collapseFilter1;
 
         if (!this.collapseFilter1) {
-            this.checkedText = [];
+            this.selectedText = [];
             if (this.value && this.value.length > 0) {
                 for (let key of this.value) {
                     let item = _.find(this.nodes, function (o) { return o.id === key; });
-                    this.checkedText.push(item.text);
+                    this.selectedText.push(item.text);
                 }
             }
         }
