@@ -74,10 +74,8 @@ SELECT
     nm.prop_dmg_cnt,
     nm.prop_dmg_amt,
     nm.inj_incapacitating_cnt,
-    nm.batch_nbr,
-    fce.last_updt_dt
+    nm.batch_nbr
 FROM fact_non_motorist nm
-INNER JOIN fact_crash_evt fce ON fce.hsmv_rpt_nbr = nm.hsmv_rpt_nbr
 LEFT JOIN dim_date dd ON nm.key_crash_dt = dd.crash_dt
 LEFT JOIN dim_geography dg ON nm.key_geography = dg.ID
 LEFT JOIN dim_agncy da ON nm.key_rptg_agncy = da.ID

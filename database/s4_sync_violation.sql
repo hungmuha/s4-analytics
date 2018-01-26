@@ -1,7 +1,8 @@
-CREATE OR REPLACE PROCEDURE s4_sync_violation (p_days_back INT DEFAULT NULL)
+CREATE OR REPLACE PROCEDURE s4_sync_violation (p_sync_id INT)
 AS
-    v_start_dt DATE;
+    v_ct INT;
     v_rebuild_indexes BOOLEAN;
+    v_i INT := 0;
     CURSOR index_cur IS
         SELECT index_name
         FROM user_indexes
@@ -10,8 +11,11 @@ AS
         AND index_name NOT LIKE '%_ID_IDX'
         AND table_name = 'VIOLATION';
 BEGIN
-    v_start_dt := CASE WHEN p_days_back IS NOT NULL THEN TRUNC(SYSDATE - p_days_back) ELSE NULL END;
-    v_rebuild_indexes := p_days_back IS NULL OR p_days_back > 30;
+    SELECT COUNT(*) INTO v_ct
+    FROM sync_crash
+    WHERE sync_id = p_sync_id;
+
+    v_rebuild_indexes := v_ct > 5000;
 
     IF v_rebuild_indexes THEN
         -- disable indexes
@@ -22,82 +26,87 @@ BEGIN
         EXECUTE IMMEDIATE 'ALTER SESSION SET skip_unusable_indexes=TRUE';
     END IF;
 
-    IF v_start_dt IS NULL THEN
-        EXECUTE IMMEDIATE 'TRUNCATE TABLE violation';
-    ELSE
-        DELETE FROM violation vi
-        WHERE EXISTS (
-            SELECT 1
-            FROM v_flat_violation@s4_warehouse vv
-            WHERE vv.last_updt_dt >= v_start_dt
-            AND vv.hsmv_rpt_nbr = vi.hsmv_rpt_nbr
-        );
-    END IF;
+    BEGIN
+        FOR ws IN (
+            SELECT hsmv_rpt_nbr
+            FROM sync_crash
+            WHERE sync_id = p_sync_id
+        )
+        LOOP
+            v_i := v_i + 1;
 
-    INSERT INTO violation (
-        hsmv_rpt_nbr,
-        hsmv_rpt_nbr_trunc,
-        person_nbr,
-        citation_nbr,
-        citation_nbr_trunc,
-        key_crash_dt,
-        crash_yr,
-        crash_mm,
-        crash_mo,
-        crash_dd,
-        crash_day,
-        key_geography,
-        dot_district_nm,
-        rpc_nm,
-        mpo_nm,
-        cnty_cd,
-        cnty_nm,
-        city_cd,
-        city_nm,
-        key_rptg_agncy,
-        rptg_agncy_nm,
-        rptg_agncy_short_nm,
-        rptg_agncy_type_nm,
-        key_rptg_unit,
-        rptg_unit_nm,
-        rptg_unit_short_nm,
-        fl_statute_nbr,
-        charge,
-        batch_nbr
-    )
-    SELECT
-        hsmv_rpt_nbr,
-        hsmv_rpt_nbr_trunc,
-        person_nbr,
-        citation_nbr,
-        citation_nbr_trunc,
-        key_crash_dt,
-        crash_yr,
-        crash_mm,
-        crash_mo,
-        crash_dd,
-        crash_day,
-        key_geography,
-        dot_district_nm,
-        rpc_nm,
-        mpo_nm,
-        cnty_cd,
-        cnty_nm,
-        city_cd,
-        city_nm,
-        key_rptg_agncy,
-        rptg_agncy_nm,
-        rptg_agncy_short_nm,
-        rptg_agncy_type_nm,
-        key_rptg_unit,
-        rptg_unit_nm,
-        rptg_unit_short_nm,
-        fl_statute_nbr,
-        charge,
-        batch_nbr
-    FROM v_flat_violation@s4_warehouse vv
-    WHERE v_start_dt IS NULL
-    OR vv.last_updt_dt >= v_start_dt;
+            DELETE FROM violation v
+            WHERE v.hsmv_rpt_nbr = ws.hsmv_rpt_nbr;
+
+            INSERT INTO violation (
+                hsmv_rpt_nbr,
+                hsmv_rpt_nbr_trunc,
+                person_nbr,
+                citation_nbr,
+                citation_nbr_trunc,
+                key_crash_dt,
+                crash_yr,
+                crash_mm,
+                crash_mo,
+                crash_dd,
+                crash_day,
+                key_geography,
+                dot_district_nm,
+                rpc_nm,
+                mpo_nm,
+                cnty_cd,
+                cnty_nm,
+                city_cd,
+                city_nm,
+                key_rptg_agncy,
+                rptg_agncy_nm,
+                rptg_agncy_short_nm,
+                rptg_agncy_type_nm,
+                key_rptg_unit,
+                rptg_unit_nm,
+                rptg_unit_short_nm,
+                fl_statute_nbr,
+                charge,
+                batch_nbr
+            )
+            SELECT
+                hsmv_rpt_nbr,
+                hsmv_rpt_nbr_trunc,
+                person_nbr,
+                citation_nbr,
+                citation_nbr_trunc,
+                key_crash_dt,
+                crash_yr,
+                crash_mm,
+                crash_mo,
+                crash_dd,
+                crash_day,
+                key_geography,
+                dot_district_nm,
+                rpc_nm,
+                mpo_nm,
+                cnty_cd,
+                cnty_nm,
+                city_cd,
+                city_nm,
+                key_rptg_agncy,
+                rptg_agncy_nm,
+                rptg_agncy_short_nm,
+                rptg_agncy_type_nm,
+                key_rptg_unit,
+                rptg_unit_nm,
+                rptg_unit_short_nm,
+                fl_statute_nbr,
+                charge,
+                batch_nbr
+            FROM v_flat_violation@s4_warehouse vv
+            WHERE vv.hsmv_rpt_nbr = ws.hsmv_rpt_nbr;
+
+            IF MOD(v_i, 1000) = 0 THEN
+                COMMIT;
+            END IF;
+        END LOOP;
+    END;
 
     COMMIT;
 
