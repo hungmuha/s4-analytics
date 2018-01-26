@@ -2,7 +2,7 @@ BEGIN
 	-- configure email server (see https://docs.oracle.com/cd/E18283_01/server.112/e17120/schedadmin001.htm)
     DBMS_SCHEDULER.set_scheduler_attribute('email_server', 'localhost:25');
     DBMS_SCHEDULER.set_scheduler_attribute('email_server_encryption', 'STARTTLS');
-    DBMS_SCHEDULER.set_scheduler_attribute('email_sender', 'nw@ufl.edu');
+    DBMS_SCHEDULER.set_scheduler_attribute('email_sender', 'danieljbrown@ufl.edu');
 END;
 /
 
@@ -48,7 +48,7 @@ BEGIN
 
 	DBMS_SCHEDULER.ADD_JOB_EMAIL_NOTIFICATION (    
              job_name => '"S4_FLAT"."S4_SYNC_WITH_WAREHOUSE_JOB"', 
-             recipients => 'nw@ufl.edu',
+             recipients => 'danieljbrown@ufl.edu,nw@ufl.edu',
              sender => NULL,
              subject => 'Oracle Scheduler Job Notification - %job_owner%.%job_name%.%job_subname% %event_type%',
              body => 'Job: %job_owner%.%job_name%.%job_subname%
