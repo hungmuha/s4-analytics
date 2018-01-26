@@ -157,6 +157,7 @@ namespace S4Analytics.Models
     {
         protected readonly string _connStr;
         protected static readonly string[] _behavioralFactors = { "Aggressive Driving", "Distracted Driving", "Alcohol Involved", "Drugs Involved" };
+        protected static readonly string[] _databases = { "All Crashes", "Crashes on Public Roads", "Long Forms on Public Roads" };
         protected static readonly string[] _dayOrNight = { "Day", "Night" };
         protected static readonly string[] _formTypes = { "Long", "Short" };
         protected static readonly string[] _noYes = { "No", "Yes" };
@@ -169,6 +170,11 @@ namespace S4Analytics.Models
         public IEnumerable<LookupName> GetBehavioralFactorsLookups()
         {
             return GetLookupNames(_behavioralFactors);
+        }
+
+        public IEnumerable<LookupName> GetDatabaseLookups()
+        {
+            return GetLookupNames(_databases);
         }
 
         public IEnumerable<LookupKeyAndName> GetCountyLookups()
