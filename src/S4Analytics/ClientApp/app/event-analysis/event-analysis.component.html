@@ -1,102 +1,85 @@
 ﻿<section class="event-analysis-grid">
-    <div class="filters">filters
+    <div class="filters">
         <!-- Form Type -->
+    <!-- create a lookupkeyname of these nodes -->
         <simple-filter filterName="Form Type"
-                       [nodes]="[{ id: 'L', text: 'Long' }, { id: 'S', text: 'Short' }]"
+                       [nodes]="formType"
                        checkMode="multiple"
                        anyOrAllText="All"
                        [(ngModel)]="this.state.crashQuery.formType"
                 ></simple-filter>
         <!-- Codeable -->
         <simple-filter filterName="DHSMV Codeable Crashes"
-                       [nodes]="[{ id: 'Y', text: 'Codeable' }]"
+                       [nodes]="codeable"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.codeableOnly"></simple-filter>
+                       [(ngModel)]="codeableOnly"></simple-filter>
         <!-- Crash Severity -->
         <simple-filter filterName="Crash Severity"
-                       [nodes]="[
-                            { id: 221, text: 'No Injury' },
-                            { id: 222, text: 'Non-Traffic Fatality' },
-                            { id: 223, text: 'Possible Injury' },
-                            { id: 224, text: 'Non-Incapacitating Injury' },
-                            { id: 225, text: 'Incapacitating Injury' },
-                            { id: 226, text: 'Fatality (within 30 days)' }
-                        ]"
+                       [nodes]="crashSeverity"
                        checkMode="multiple"
                        anyOrAllText="All"
                        [(ngModel)]="this.state.crashQuery.crashSeverity"></simple-filter>
         <!-- Crash Type -->
         <simple-filter filterName="Crash Type"
-                        [nodes]="[
-                            { id: 40, text: 'Bicycle'},
-                            { id: 41, text: 'Head On'},
-                            { id: 42, text: 'Left Entering'},
-                            { id: 43, text: 'Left Leaving'},
-                            { id: 44, text: 'Left Rear'},
-                            { id: 45, text: 'Off Road'},
-                            { id: 46, text: 'Opposing Sideswipe'},
-                            { id: 47, text: 'Other'},
-                            { id: 48, text: 'Pedestrian'},
-                            { id: 49, text: 'Rear End'},
-                            { id: 50, text: 'Right Angle'},
-                            { id: 51, text: 'Right/Left'},
-                            { id: 52, text: 'Right/Through'},
-                            { id: 53, text: 'Right/U-Turn'},
-                            { id: 54, text: 'Rollover'},
-                            { id: 55, text: 'Sideswipe'},
-                            { id: 210, text: 'Animal'},
-                            { id: 56, text: 'Unknown'},
-                            { id: 57, text: 'Single Vehicle'},
-                            { id: 58, text: 'Parked Vehicle'},
-                            { id: 59, text: 'Backed Into'}
-                        ]"
+                        [nodes]="crashTypes"
                         checkMode="multiple"
                         anyOrAllText="All"
                         [(ngModel)]="this.state.crashQuery.crashTypeSimple"></simple-filter>
         <!-- Road System Identifier -->
         <simple-filter filterName="Road System Identifier"
-                        [nodes]= "[
-                            { id: 140, text: 'Interstate'},
-                            { id: 141, text: 'U.S.'},
-                            { id: 142, text: 'State'},
-                            { id: 143, text: 'County'},
-                            { id: 144, text: 'Local'},
-                            { id: 145, text: 'Turnpike/Toll'},
-                            { id: 146, text: 'Forest Road'},
-                            { id: 147, text: 'Private Roadway'},
-                            { id: 148, text: 'Parking Lot'},
-                            { id: 149, text: 'Other'}
-                        ]"
+                        [nodes]= "rdSysIds"
                         checkMode="multiple"
                         anyOrAllText="All"
                         [(ngModel)]="this.state.crashQuery.roadSystemIdentifier"></simple-filter>
         <!-- Weather Condition -->
         <simple-filter filterName="Weather Condition"
-                        [nodes]="[
-                            { id: 200, text: 'Clear'},
-                            { id: 201, text: 'Cloudy'},
-                            { id: 202, text: 'Rain'},
-                            { id: 203, text: 'Fog, Smog, Smoke'},
-                            { id: 204, text: 'Sleet/Hail/Freezing Rain'},
-                            { id: 205, text: 'Blowing Sand, Soil, Dirt'},
-                            { id: 206, text: 'Severe Crosswinds'},
-                            { id: 207, text: 'Other'}
-                        ]"
+                        [nodes]="weatherCondition"
                         checkMode="multiple"
                         anyOrAllText="All"
                         [(ngModel)]="this.state.crashQuery.weatherCondition"></simple-filter>
+        <!--Cmv Involved -->
+        <simple-filter filterName="CMV Involved"
+                       [nodes]="cmvInvolved"
+                       checkMode="multiple"
+                       anyOrAllText="All"
+                       [(ngModel)]="isCmvInvolved"></simple-filter>
+        <!--Bike/Ped Involved -->
+        <simple-filter filterName="Bike/Pedestrain Involved"
+                   [nodes]="bikePedInvolved"
+                   checkMode="multiple"
+                   anyOrAllText="All"
+                   [(ngModel)]="isBikePedInvolved"></simple-filter>
+        <!--Intersection Related -->
+        <simple-filter filterName="Intersection Related"
+                       [nodes]="intersectionRelated"
+                       checkMode="multiple"
+                       anyOrAllText="All"
+                       [(ngModel)]="this.state.crashQuery.intersectionRelated"></simple-filter>
+        <!--Day or Night -->
+        <!--<simple-filter filterName="Day or Night"
+                       [nodes]="dayOrNight"
+                       checkMode="multiple"
+                       anyOrAllText="All"
+                       [(ngModel)]="???"></simple-filter>-->
+        <!--Lane Departure -->
+        <simple-filter filterName="Lane Departure"
+                       [nodes]="laneDeparture"
+                       checkMode="multiple"
+                       anyOrAllText="All"
+                       [(ngModel)]="this.state.crashQuery.laneDeparture"></simple-filter>
+        <!--Reporting Agency -->
+        <!--<simple-filter filterName="Reporting Agency"
+                       [nodes]="reportingAgency
+                       checkMode="multiple"
+                       anyOrAllText="All"
+                       [(ngModel)]="this.state.crashQuery.reportingAgency"></simple-filter>-->
         <!-- Behavioral Factors need to map ngModel -->
-        <simple-filter filterName="Behavioral Factors"
-                        [nodes]="[
-                           {text: 'Aggresssive Driving'},
-                           {text: 'Distracted Driving'},
-                           {text: 'Alcohol Involved'},
-                           {text: 'Drugs Involved'}
-                        ]"
+        <!--<simple-filter filterName="Behavioral Factors"
+                        [nodes]="behavioralFactors
                         checkMode="multiple"
-                        anyOrAllText="All"
-                        ></simple-filter>
+                        anyOrAllText="Any"
+                        [(ngModel)]="???"></simple-filter>-->
 
 
 

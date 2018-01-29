@@ -36,8 +36,8 @@ export class CrashQuery {
     hsmvReportNumbers?: number[];
     cmvInvolved?: boolean;
     bikePedInvolved?: {
-        pedestrian?: boolean,
-        bicyclist?: boolean
+        pedInvolved?: boolean,
+        bikeInvolved?: boolean
     };
     crashSeverity?: number[];
     crashTypeSimple?: string[];
@@ -58,7 +58,7 @@ export class CrashQuery {
         sideswipe?: boolean;
     };
     weatherCondition?: number[];
-
+    dayOrNight?: string[];
     // post-mvp
     dotDistrict?: number[];
     mpoTpo?: number[];

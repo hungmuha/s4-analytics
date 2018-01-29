@@ -332,6 +332,9 @@ namespace S4Analytics.Models
         /// <summary>Weather condition filter, given as a list of weather condition IDs.</summary>
         public IList<int> weatherCondition;
 
+        /// <summary>Day or night filter, given as a list of strings (Day, Night). </summary>
+        public IList<string> dayOrNight;
+
         /// <summary>Collection of lane departure sub-filters.</summary>
         public LaneDepartures laneDepartures;
 

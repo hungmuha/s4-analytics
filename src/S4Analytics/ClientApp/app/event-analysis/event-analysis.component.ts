@@ -3,13 +3,28 @@ import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import { PageChangeEvent } from '@progress/kendo-angular-grid';
-import { LookupService } from '../shared';
+import { LookupService, LookupKeyAndName } from '../shared';
 import { DateTimeScope, PlaceScope, QueryRef, CrashResult, CrashService, EventAnalysisStateService } from './shared';
 
 @Component({
     templateUrl: './event-analysis.component.html'
 })
 export class EventAnalysisComponent {
+    rdSysIds: LookupKeyAndName[];
+    crashTypes: LookupKeyAndName[];
+    crashSeverity: LookupKeyAndName[];
+    weatherCondition: LookupKeyAndName[];
+    cmvInvolved: [{ key: string, name: string }];
+    dayOrNight: [{ key: string, name: string }];
+    intersectionRelated: [{ key: string, name: string }];
+    laneDeparture: [{ key: string, name: string }];
+    formType: [{ key: string, name: string }];
+    codeable: [{ key: string, name: string }];
+    bikePedInvolved: [{ key: string, name: string }];
+    // crashes:LookupKeyAndName[]
+    // behavioralFactors: LookupKeyAndName[];
+    // reportingAgency: LookupKeyAndName[];
+
     constructor(
         private route: ActivatedRoute,
         private crashService: CrashService,
@@ -103,9 +118,32 @@ export class EventAnalysisComponent {
         return label;
     }
 
+    set codeableOnly(results: string[]) {
+        if (results && results.length > 0) {
+            this.state.crashQuery.codeableOnly = results[0] === 'Y' ? true : false;
+        }
+    }
 
+    set isCmvInvolved(results: string[]) {
+        if (results && results.length > 0) {
+            this.state.crashQuery.cmvInvolved = results[0] === 'Y' ? true : false;
+        }
+    }
 
+    set isIntersectionRelated(results: string[]) {
+        if (results && results.length > 0) {
+            this.state.crashQuery.intersectionRelated = results[0] === 'Y' ? true : false;
+        }
+    }
 
+    set isBikePedInvolved(results: string[]) {
+        if (results && results.length > 0) {
+            this.state.crashQuery.bikePedInvolved = {
+                bikeInvolved: results.indexOf('Bike') >= 0 ? true : false,
+                pedInvolved: results.indexOf('Ped') >= 0 ? true : false
+            };
+        }
+    }
 
     ngOnInit() {
         this.route.data
@@ -115,12 +153,44 @@ export class EventAnalysisComponent {
                 this.setInitialPlace();
                 this.issueCrashQuery();
             });
+        this.initFilters();
+    }
+
+    initFilters() {
         this.lookup.getCounties().subscribe(results => {
             this.state.allCounties = results;
         });
         this.lookup.getCities().subscribe(results => {
             this.state.allCities = results;
         });
+        this.lookup.getRoadSystemIdentifiers().subscribe(results => {
+            this.rdSysIds = results;
+        });
+        this.lookup.getCrashTypes().subscribe(results => {
+            this.crashTypes = results;
+        });
+        this.lookup.getCrashSeverity().subscribe(results => {
+            this.crashSeverity = results;
+        });
+        this.lookup.getWeatherCondition().subscribe(results => {
+            this.weatherCondition = results;
+        });
+
+        // this.lookup.getBehavioralFactors().subscribe(results => {
+        //    this.behavioralFactors = results;
+        // });
+        // this.lookup.getReportingAgencies().subscribe(results => {
+        //    this.reportingAgency = results;
+        // });
+
+        this.cmvInvolved = [{ key: 'Y', name: 'Yes' }, { key: 'N', name: 'No' }];
+        this.bikePedInvolved = [{ key: 'Bike', name: 'Bike Involved' }, { key: 'Ped', name: 'Pedestrian Involved' }];
+        this.dayOrNight = [{ key: 'Day', name: 'Day' }, { key: 'Night', name: 'Night' }];
+        this.intersectionRelated = [{ key: 'Y', name: 'Yes' }, { key: 'N', name: 'No' }];
+        this.laneDeparture = [{ key: 'Y', name: 'Yes' }, { key: 'N', name: 'No' }];
+        this.formType = [{ key: 'L', name: 'Long' }, { key: 'S', name: 'Short' }];
+        this.codeable = [{ key: 'Y', name: 'Codeable' }];
+
     }
 
     public pageChange(event: PageChangeEvent) {
@@ -166,4 +236,6 @@ export class EventAnalysisComponent {
     private loadCrashPoints() {
         // todo
     }
+
+
 }
