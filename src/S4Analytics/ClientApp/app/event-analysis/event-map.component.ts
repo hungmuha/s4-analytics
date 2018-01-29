@@ -16,19 +16,23 @@ export class EventMapComponent implements OnInit {
     @Input() mapId: string;
     @Input() set crashFeatureSet(value: EventFeatureSet) {
         this._crashFeatureSet = value;
-        this.drawCrashFeatures();
+        if (this.olMap !== undefined) {
+            this.drawCrashFeatures();
+        }
     }
     get crashFeatureSet(): EventFeatureSet {
         return this._crashFeatureSet;
     }
     @Input() set baseMapType(value: BaseMapType) {
         this._baseMapType = value;
-        this.drawBaseMap();
+        if (this.olMap !== undefined) {
+            this.drawBaseMap();
+        }
     }
     get baseMapType(): BaseMapType {
         return this._baseMapType;
     }
-    @Output() extentChanged = new EventEmitter<ol.Extent>();
+    @Output() extentChange = new EventEmitter<ol.Extent>();
 
     private _baseMapType: BaseMapType = BaseMapType.OpenStreetMap;
     private _crashFeatureSet: EventFeatureSet;
@@ -68,7 +72,7 @@ export class EventMapComponent implements OnInit {
         // set up extent change notification
         let notifyExtentChanged = () => {
             let extent = this.olMap.getView().calculateExtent(this.olMap.getSize());
-            this.extentChanged.emit(extent);
+            this.extentChange.emit(extent);
         };
         this.olMap.on('moveend', _.debounce(notifyExtentChanged, 250));
 
@@ -102,13 +106,16 @@ export class EventMapComponent implements OnInit {
         // create layer if it doesn't exist
         if (this.crashClusterLayer === undefined) {
             this.crashClusterLayer = new ol.layer.Vector();
+            this.olMap.addLayer(this.crashClusterLayer);
         }
 
         // set layer source
         let clusterSource = new ol.source.Cluster({
             distance: 100,
             source: new ol.source.Vector({
-                features: this.crashFeatureSet !== undefined ? (new ol.format.GeoJSON()).readFeatures(this.crashFeatureSet.featureCollection) : []
+                features: this.crashFeatureSet !== undefined
+                    ? (new ol.format.GeoJSON()).readFeatures(this.crashFeatureSet.featureCollection)
+                    : []
             })
         });
         this.crashClusterLayer.setSource(clusterSource);

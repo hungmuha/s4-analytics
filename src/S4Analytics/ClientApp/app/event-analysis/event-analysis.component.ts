@@ -4,7 +4,10 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import { PageChangeEvent } from '@progress/kendo-angular-grid';
 import { LookupService } from '../shared';
-import { DateTimeScope, PlaceScope, QueryRef, CrashResult, CrashService, EventAnalysisStateService } from './shared';
+import {
+    DateTimeScope, PlaceScope, QueryRef, CrashResult,
+    CrashService, EventAnalysisStateService, EventFeatureSet
+} from './shared';
 
 @Component({
     templateUrl: './event-analysis.component.html'
@@ -122,9 +125,15 @@ export class EventAnalysisComponent {
         });
     }
 
-    public pageChange(event: PageChangeEvent) {
+    pageChange(event: PageChangeEvent) {
         this.crashGridSkip = event.skip;
         this.loadCrashAttributes();
+    }
+
+    extentChange(extent: ol.Extent) {
+        if (this.state.crashQueryRef !== undefined) {
+            this.loadCrashPoints(extent);
+        }
     }
 
     private setInitialDateRange(serverDate: Date) {
@@ -162,7 +171,15 @@ export class EventAnalysisComponent {
             });
     }
 
-    private loadCrashPoints() {
-        // todo
+    private loadCrashPoints(extent?: ol.Extent) {
+        // todo: zoom to extent of points on initial load
+        let queryExtent = extent === undefined
+            ? this.state.crashQueryRef.extent
+            : { minX: extent[0], minY: extent[1], maxX: extent[2], maxY: extent[3] };
+        this.crashService
+            .getCrashFeatures(this.state.crashQueryRef.queryToken, queryExtent)
+            .subscribe((featureSet: EventFeatureSet) => {
+                this.state.crashFeatureSet = featureSet;
+            });
     }
 }
