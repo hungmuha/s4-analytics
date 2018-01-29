@@ -6,7 +6,7 @@ import { AppStateService } from '../shared';
 
 export enum BaseMapType {
     OpenStreetMap
-};
+}
 
 @Component({
     selector: 'event-map',
@@ -40,7 +40,6 @@ export class EventMapComponent implements OnInit {
     private olView: ol.View;
     private olExtent: ol.Extent;
     private baseMapLayer: ol.layer.Tile;
-    private crashPointLayer: ol.layer.Vector;
     private crashClusterLayer: ol.layer.Vector;
 
     constructor(
