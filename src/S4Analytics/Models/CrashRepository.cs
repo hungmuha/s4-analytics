@@ -232,16 +232,8 @@ namespace S4Analytics.Models
                 FROM crash_evt ce1
                 INNER JOIN ({preparedQuery.queryText}) pq
                   ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
-                WHERE sdo_inside(ce1.geocode_pt_3857, MDSYS.SDO_GEOMETRY(
-                    2003,  -- 2-dimensional polygon
-                    3857,  -- SRID
-                    NULL,
-                    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3), -- one rectangle (1003 = exterior)
-                    MDSYS.SDO_ORDINATE_ARRAY(
-                        :mapExtentMinX, :mapExtentMinY, -- bottom left corner
-                        :mapExtentMaxX, :mapExtentMaxY -- top right corner
-                    )
-                  )) = 'TRUE'";
+                WHERE ce1.geocode_pt_3857.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                AND ce1.geocode_pt_3857.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
 
             int eventCount;
 
@@ -269,16 +261,8 @@ namespace S4Analytics.Models
                   ON sample_evts.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
                 INNER JOIN ({preparedQuery.queryText}) pq
                     ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
-                WHERE sdo_inside(ce1.geocode_pt_3857, MDSYS.SDO_GEOMETRY(
-                    2003,  -- 2-dimensional polygon
-                    3857,  -- SRID
-                    NULL,
-                    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3), -- one rectangle (1003 = exterior)
-                    MDSYS.SDO_ORDINATE_ARRAY(
-                        :mapExtentMinX, :mapExtentMinY, -- bottom left corner
-                        :mapExtentMaxX, :mapExtentMaxY -- top right corner
-                    )
-                  )) = 'TRUE'";
+                WHERE ce1.geocode_pt_3857.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                AND ce1.geocode_pt_3857.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
             }
             else
             {
@@ -289,16 +273,8 @@ namespace S4Analytics.Models
                 FROM crash_evt ce1
                 INNER JOIN ({preparedQuery.queryText}) pq
                     ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
-                WHERE sdo_inside(ce1.geocode_pt_3857, MDSYS.SDO_GEOMETRY(
-                    2003,  -- 2-dimensional polygon
-                    3857,  -- SRID
-                    NULL,
-                    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3), -- one rectangle (1003 = exterior)
-                    MDSYS.SDO_ORDINATE_ARRAY(
-                        :mapExtentMinX, :mapExtentMinY, -- bottom left corner
-                        :mapExtentMaxX, :mapExtentMaxY -- top right corner
-                    )
-                  )) = 'TRUE'";
+                WHERE ce1.geocode_pt_3857.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                AND ce1.geocode_pt_3857.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
             }
 
             List<EventPoint> eventPoints;
@@ -773,16 +749,8 @@ namespace S4Analytics.Models
             }
 
             // define where clause
-            var whereClause = @"sdo_inside(ce0.geocode_pt_3857, MDSYS.SDO_GEOMETRY(
-                    2003,  -- 2-dimensional polygon
-                    3857,  -- SRID
-                    NULL,
-                    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3), -- one rectangle (1003 = exterior)
-                    MDSYS.SDO_ORDINATE_ARRAY(
-                        :customExtentMinX, :customExtentMinY, -- bottom left corner
-                        :customExtentMaxX, :customExtentMaxY -- top right corner
-                    )
-                  )) = 'TRUE'";
+            var whereClause = @"ce0.geocode_pt_3857.sdo_point.x BETWEEN :customExtentMinX AND :customExtentMaxX
+                AND ce0.geocode_pt_3857.sdo_point.y BETWEEN :customExtentMinY AND :customExtentMaxY";
 
             // define oracle parameters
             var parameters = new {

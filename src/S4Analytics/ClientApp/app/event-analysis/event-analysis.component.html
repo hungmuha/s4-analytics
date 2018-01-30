@@ -21,13 +21,15 @@
         Total: {{totalCount}} / Mapped: {{mappedCount}} / Unmapped: {{unmappedCount}}
     </div>
     <div class="map" id="mapArea">
-        <event-map mapId="eventMap"></event-map>
+        <event-map mapId="eventMap"
+                   [crashFeatureSet]="state.crashFeatureSet"
+                   (extentChange)="extentChange($event)"></event-map>
     </div>
     <kendo-grid [class]="['attributes']"
                 [data]="state.crashGridData"
-                [pageSize]="state.gridPageSize"
+                [pageSize]="gridPageSize"
                 [scrollable]="'virtual'"
-                [skip]="state.crashGridSkip"
+                [skip]="crashGridSkip"
                 [pageable]="true"
                 [rowHeight]="35"
                 (pageChange)="pageChange($event)">
