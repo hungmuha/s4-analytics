@@ -10,8 +10,9 @@ export class ReportOverTime {
     maxDate: Date;
 
     constructor(report: ReportOverTime) {
-        this.categories = report.categories;
-        this.series = report.series;
-        this.maxDate = new Date(report.maxDate);
+        // merge data from the api
+        Object.assign(this, report);
+        // rest api represents dates as strings at runtime; convert
+        this.maxDate = new Date(this.maxDate);
     }
 }
