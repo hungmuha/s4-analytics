@@ -1,88 +1,82 @@
 ﻿<section class="event-analysis-grid">
     <div class="filters">
         <!-- Form Type -->
-    <!-- create a lookupkeyname of these nodes -->
-        <simple-filter filterName="Form Type"
-                       [nodes]="formType"
+       <simple-filter filterName="Form Type"
+                       [nodes]="allFormType"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.formType"
-                ></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.formType"></simple-filter>
         <!-- Codeable -->
         <simple-filter filterName="DHSMV Codeable Crashes"
-                       [nodes]="codeable"
-                       checkMode="multiple"
+                       [nodes]="allCodeableOnly"
                        anyOrAllText="All"
-                       [(ngModel)]="codeableOnly"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.codeableOnly"></simple-filter>
         <!-- Crash Severity -->
         <simple-filter filterName="Crash Severity"
-                       [nodes]="crashSeverity"
+                       [nodes]="allCrashSeverity"
                        checkMode="multiple"
                        anyOrAllText="All"
                        [(ngModel)]="this.state.crashQuery.crashSeverity"></simple-filter>
         <!-- Crash Type -->
         <simple-filter filterName="Crash Type"
-                        [nodes]="crashTypes"
-                        checkMode="multiple"
-                        anyOrAllText="All"
-                        [(ngModel)]="this.state.crashQuery.crashTypeSimple"></simple-filter>
-        <!-- Road System Identifier -->
-        <simple-filter filterName="Road System Identifier"
-                        [nodes]= "rdSysIds"
-                        checkMode="multiple"
-                        anyOrAllText="All"
-                        [(ngModel)]="this.state.crashQuery.roadSystemIdentifier"></simple-filter>
-        <!-- Weather Condition -->
-        <simple-filter filterName="Weather Condition"
-                        [nodes]="weatherCondition"
-                        checkMode="multiple"
-                        anyOrAllText="All"
-                        [(ngModel)]="this.state.crashQuery.weatherCondition"></simple-filter>
-        <!--Cmv Involved -->
-        <simple-filter filterName="CMV Involved"
-                       [nodes]="cmvInvolved"
+                       [nodes]="allCrashTypes"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="isCmvInvolved"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.crashTypeSimple"></simple-filter>
+        <!-- Road System Identifier -->
+        <simple-filter filterName="Road System Identifier"
+                       [nodes]="allRdSysIds"
+                       checkMode="multiple"
+                       anyOrAllText="All"
+                       [(ngModel)]="this.state.crashQuery.roadSystemIdentifier"></simple-filter>
+        <!-- Weather Condition -->
+        <simple-filter filterName="Weather Condition"
+                       [nodes]="allWeatherCondition"
+                       checkMode="multiple"
+                       anyOrAllText="All"
+                       [(ngModel)]="this.state.crashQuery.weatherCondition"></simple-filter>
+        <!--Cmv Involved -->
+        <simple-filter filterName="CMV Involved"
+                       [nodes]="allCmvInvolved"
+                       checkMode="multiple"
+                       anyOrAllText="All"
+                       [(ngModel)]="this.state.crashQuery.cmvInvolved"></simple-filter>
         <!--Bike/Ped Involved -->
-        <simple-filter filterName="Bike/Pedestrain Involved"
-                   [nodes]="bikePedInvolved"
-                   checkMode="multiple"
-                   anyOrAllText="All"
-                   [(ngModel)]="isBikePedInvolved"></simple-filter>
+        <simple-filter filterName="Bike/Pedestrian Involved"
+                       [nodes]="allBikePedInvolved"
+                       checkMode="multiple"
+                       anyOrAllText="All"
+                       [(ngModel)]="bikePedInvolved"></simple-filter>
         <!--Intersection Related -->
         <simple-filter filterName="Intersection Related"
-                       [nodes]="intersectionRelated"
+                       [nodes]="allIntersectionRelated"
                        checkMode="multiple"
                        anyOrAllText="All"
                        [(ngModel)]="this.state.crashQuery.intersectionRelated"></simple-filter>
         <!--Day or Night -->
-        <!--<simple-filter filterName="Day or Night"
-                       [nodes]="dayOrNight"
+        <simple-filter filterName="Day or Night"
+                       [nodes]="allDayOrNight"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="???"></simple-filter>-->
+                       [(ngModel)]="this.state.crashQuery.dayOrNight"></simple-filter>
         <!--Lane Departure -->
         <simple-filter filterName="Lane Departure"
-                       [nodes]="laneDeparture"
+                       [nodes]="allLaneDeparture"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.laneDeparture"></simple-filter>
+                       [(ngModel)]="laneDeparture"></simple-filter>
         <!--Reporting Agency -->
         <!--<simple-filter filterName="Reporting Agency"
-                       [nodes]="reportingAgency
-                       checkMode="multiple"
-                       anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.reportingAgency"></simple-filter>-->
+                   [nodes]="reportingAgency
+                   checkMode="multiple"
+                   anyOrAllText="All"
+                   [(ngModel)]="this.state.crashQuery.reportingAgency"></simple-filter>-->
         <!-- Behavioral Factors need to map ngModel -->
-        <!--<simple-filter filterName="Behavioral Factors"
-                        [nodes]="behavioralFactors
-                        checkMode="multiple"
-                        anyOrAllText="Any"
-                        [(ngModel)]="???"></simple-filter>-->
-
-
-
+        <simple-filter filterName="Behavioral Factors"
+                       [nodes]="allBehavioralFactors"
+                       checkMode="multiple"
+                       anyOrAllText="Any"
+                       [(ngModel)]="behavioralFactors"></simple-filter>
 
     </div>
     <div class="filter-controls">filter controls</div>

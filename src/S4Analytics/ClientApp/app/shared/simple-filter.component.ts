@@ -43,12 +43,14 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
     collapseFilter1: boolean = false;
 
     public isItemChecked = (item: string) => {
+        console.log('isItemChecked');
         return this.multipleSelect
             ? _.includes(this.selectedItemValue, item) ? 'checked' : 'none'
             : this.selectedItemValue === item ? 'checked' : 'none';
     }
 
     public isAllItemChecked = (item: string) => {
+        console.log('isAllItemChecked');
         return this.multipleSelect
             ? _.includes(this.selectedItemValue, item) ? 'checked' : 'none'
             : this.selectedItemValue === item ? 'checked' : 'none';
@@ -75,21 +77,25 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
     }
 
     get isAnyOrAllChecked(): boolean {
+        console.log('isAllOrAllChecked');
         return !this.selectedItemValue
             || this.selectedItemValue.length === 0;
     }
 
     private get selectedItemValue(): any | any[] {
+        console.log('get selectedItemValue');
         // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
         return this.value;
     }
 
     private set selectedItemValue(value: any | any[]) {
+        console.log('set selectedItemValue');
         // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
         this.value = value;
     }
 
     public onAllValueChanged(itemLookup: TreeItemLookup): void {
+        console.log('onallvaluechanged');
         // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
         if (this.multipleSelect && this.value === undefined) {
             this.value = [];
@@ -99,6 +105,7 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
     }
 
     public onValueChanged(itemLookup: TreeItemLookup): void {
+        console.log('onvaluechanged');
         // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
         if (this.multipleSelect && this.value === undefined) {
             this.value = [];
@@ -110,6 +117,7 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
 
     // todo need to clear checkboxes
     toggleAnyOrAll(itemLookup: TreeItemLookup) {
+        console.log('toggleall');
         if (!this.isAnyOrAllChecked) {
             this.selectedItemValue = this.multipleSelect ? [] : undefined;
             // clear other check boxes
@@ -119,6 +127,7 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
 
     // todo: need to uncheck ALL
     toggle(selectedItem: any) {
+        console.log('toggle');
         if (this.multipleSelect) {
             let newItemValues = [...this.selectedItemValue]; // create a copy
             let isChecked = _.includes(newItemValues, selectedItem);
