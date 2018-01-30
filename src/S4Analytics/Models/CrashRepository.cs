@@ -228,25 +228,36 @@ namespace S4Analytics.Models
                 mapExtentMaxY = mapExtent.maxY
             });
 
-            var countQueryText = $@"SELECT COUNT(*)
-                FROM crash_evt ce1
-                INNER JOIN ({preparedQuery.queryText}) pq
-                  ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
-                WHERE ce1.geocode_pt_3857.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
-                AND ce1.geocode_pt_3857.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY";
+            var countQueryText = $@"SELECT
+                ct,
+                sdo_geom.sdo_min_mbr_ordinate(mbr, 1) AS min_x,
+                sdo_geom.sdo_min_mbr_ordinate(mbr, 2) AS min_y,
+                sdo_geom.sdo_max_mbr_ordinate(mbr, 1) AS max_x,
+                sdo_geom.sdo_max_mbr_ordinate(mbr, 2) AS max_y
+                FROM (
+                    SELECT COUNT(*) AS ct, sdo_aggr_mbr(geocode_pt_3857) AS mbr
+                    FROM crash_evt ce1
+                    INNER JOIN ({preparedQuery.queryText}) pq
+                      ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
+                    WHERE ce1.geocode_pt_3857.sdo_point.x BETWEEN :mapExtentMinX AND :mapExtentMaxX
+                    AND ce1.geocode_pt_3857.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY
+                ) x";
 
-            int eventCount;
+            int featureCount;
+            Extent featureExtent;
 
             using (var conn = new OracleConnection(_connStr))
             {
-                eventCount = conn.QuerySingleOrDefault<int>(countQueryText, dynamicParams);
+                var stats = conn.QuerySingleOrDefault(countQueryText, dynamicParams);
+                featureCount = Convert.ToInt32(stats.CT);
+                featureExtent = new Extent(stats.MIN_X, stats.MIN_Y, stats.MAX_X, stats.MAX_Y);
             }
 
             string queryText;
-            var useSample = eventCount > maxPoints;
+            var useSample = featureCount > maxPoints;
             if (useSample)
             {
-                var samplePercentage = 100.0 * maxPoints / eventCount;
+                var samplePercentage = 100.0 * maxPoints / featureCount;
                 queryText = $@"WITH sample_evts AS (
                   SELECT hsmv_rpt_nbr
                   FROM crash_evt
@@ -291,9 +302,11 @@ namespace S4Analytics.Models
             {
                 eventType = "crash",
                 isSample = useSample,
-                eventCount = eventCount,
+                featureCount = featureCount,
+                featureExtent = featureExtent,
+                queryExtent = mapExtent,
                 sampleSize = useSample ? features.Count : 0,
-                sampleMultiplier = useSample ? (double)eventCount / features.Count : 0.0,
+                sampleMultiplier = useSample ? (double)featureCount / features.Count : 0.0,
                 featureCollection = new FeatureCollection(features)
             };
 
