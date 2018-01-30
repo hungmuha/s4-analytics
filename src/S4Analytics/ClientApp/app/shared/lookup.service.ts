@@ -96,7 +96,7 @@ export class LookupService {
             .map(response => response.json() as LookupKeyAndName[]);
     }
 
-    getLaneDepature(): Observable<LookupKeyAndName[]> {
+    getLaneDeparture(): Observable<LookupKeyAndName[]> {
         return this.http
             .get('api/lookup/lane-departure')
             .map(response => response.json() as LookupKeyAndName[]);

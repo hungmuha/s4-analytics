@@ -190,6 +190,9 @@ export class EventAnalysisComponent {
                 pedInvolved: results.indexOf('Ped') >= 0 ? true : false
             };
         }
+        else {
+            this.state.crashQuery.bikePedInvolved = undefined;
+        }
     }
 
     set behavioralFactors(results: string[] | undefined) {
@@ -200,6 +203,9 @@ export class EventAnalysisComponent {
                 distraction: results.indexOf('Distraction') >= 0 ? true : false,
                 aggressiveDriving: results.indexOf('Aggressive') >= 0 ? true : false,
             };
+        }
+        else {
+            this.state.crashQuery.behavioralFactors = undefined;
         }
     }
 
@@ -212,6 +218,9 @@ export class EventAnalysisComponent {
                 crossedIntoOncomingTraffic: results.indexOf('CrossedIntoTraffic') >= 0 ? true : false,
                 sideswipe: results.indexOf('Sideswipe') >= 0 ? true : false
             };
+        }
+        else {
+            this.state.crashQuery.laneDepartures = undefined;
         }
     }
 
