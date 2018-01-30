@@ -7,13 +7,15 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { DatePickerModule } from '@progress/kendo-angular-dateinputs';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
+import { TreeViewModule } from '@progress/kendo-angular-treeview';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { COMPONENTS, PROVIDERS } from './shared';
 
 @NgModule({
     imports: [
         CommonModule,
-        NgbModule
+        NgbModule,
+        TreeViewModule
     ],
     declarations: [
         ...COMPONENTS
@@ -30,6 +32,7 @@ import { COMPONENTS, PROVIDERS } from './shared';
         DatePickerModule,
         BrowserAnimationsModule,
         DropDownsModule,
+        TreeViewModule,
         ...COMPONENTS
     ]
 })

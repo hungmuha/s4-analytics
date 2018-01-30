@@ -356,6 +356,7 @@ namespace S4Analytics.Models
                 () => GenerateBehavioralFactorPredicate(query.behavioralFactors),
                 () => GenerateLaneDeparturePredicate(query.laneDepartures),
                 () => GenerateWeatherConditionPredicate(query.weatherCondition),
+                () => GenerateDayOrNightPredicate(query.dayOrNight),
 
                 // post-mvp
                 () => GenerateDotDistrictPredicate(query.dotDistrict),
@@ -873,6 +874,23 @@ namespace S4Analytics.Models
 
             // define oracle parameters
             var parameters = new { formType };
+
+            return (whereClause, parameters);
+        }
+
+        private (string whereClause, object parameters) GenerateDayOrNightPredicate(IList<string> dayOrNight)
+        {
+            // test for valid filter
+            if (dayOrNight == null || dayOrNight.Count == 0)
+            {
+                return (null, null);
+            }
+
+            // define where clause
+            var whereClause = "DAY_OR_NIGHT IN :dayOrNight";
+
+            // define oracle parameters
+            var parameters = new { dayOrNight };
 
             return (whereClause, parameters);
         }
