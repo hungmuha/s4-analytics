@@ -1,15 +1,17 @@
-﻿import { GridDataResult } from '@progress/kendo-angular-grid';
+﻿import * as ol from 'openlayers';
+import { GridDataResult } from '@progress/kendo-angular-grid';
 import { LookupKeyAndName } from '../../shared';
+import { EventFeatureSet } from './event-feature-set';
 import { DateTimeScope, PlaceScope, CrashQuery, QueryRef } from './crash-query';
 
 export class EventAnalysisStateService {
-    gridPageSize = 10;
     dateTimeScope = new DateTimeScope();
     placeScope = new PlaceScope();
     crashQuery = new CrashQuery();
     crashQueryRef: QueryRef;
+    currentMapExtent: ol.Extent;
     crashGridData: GridDataResult;
-    crashGridSkip = 0;
+    crashFeatureSet: EventFeatureSet;
     allCounties: LookupKeyAndName[];
     allCities: LookupKeyAndName[];
 }

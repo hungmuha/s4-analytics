@@ -4,7 +4,10 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import { PageChangeEvent } from '@progress/kendo-angular-grid';
 import { LookupService, LookupKeyAndName } from '../shared';
-import { DateTimeScope, PlaceScope, QueryRef, CrashResult, CrashService, EventAnalysisStateService } from './shared';
+import {
+    DateTimeScope, PlaceScope, QueryRef, CrashResult,
+    CrashService, EventAnalysisStateService, EventFeatureSet
+} from './shared';
 
 @Component({
     templateUrl: './event-analysis.component.html'
@@ -23,6 +26,9 @@ export class EventAnalysisComponent {
     allBikePedInvolved: [{ key: string, name: string }];
     allBehavioralFactors: [{ key: string, name: string }];
     // reportingAgency: LookupKeyAndName[];
+
+    gridPageSize = 10;
+    crashGridSkip = 0;
 
     constructor(
         private route: ActivatedRoute,
@@ -265,9 +271,15 @@ export class EventAnalysisComponent {
         this.allCodeableOnly = [{ key: true, name: 'Codeable' }];
     }
 
-    public pageChange(event: PageChangeEvent) {
-        this.state.crashGridSkip = event.skip;
+    pageChange(event: PageChangeEvent) {
+        this.crashGridSkip = event.skip;
         this.loadCrashAttributes();
+    }
+
+    extentChange(extent: ol.Extent) {
+        if (this.state.crashQueryRef !== undefined) {
+            this.loadCrashPoints(extent);
+        }
     }
 
     private setInitialDateRange(serverDate: Date) {
@@ -286,7 +298,7 @@ export class EventAnalysisComponent {
             .createCrashQuery(this.state.dateTimeScope, this.state.placeScope, this.state.crashQuery)
             .subscribe((queryRef: QueryRef) => {
                 this.state.crashQueryRef = queryRef;
-                this.state.crashGridSkip = 0;
+                this.crashGridSkip = 0;
                 this.loadCrashAttributes();
                 this.loadCrashPoints();
             });
@@ -294,8 +306,8 @@ export class EventAnalysisComponent {
 
     private loadCrashAttributes() {
         let token = this.state.crashQueryRef.queryToken;
-        let fromIndex = this.state.crashGridSkip;
-        let toIndex = this.state.crashGridSkip + this.state.gridPageSize;
+        let fromIndex = this.crashGridSkip;
+        let toIndex = this.crashGridSkip + this.gridPageSize;
         let totalCount = this.state.crashQueryRef.totalCount;
         this.crashService
             .getCrashData(token, fromIndex, toIndex)
@@ -305,8 +317,16 @@ export class EventAnalysisComponent {
             });
     }
 
-    private loadCrashPoints() {
-        // todo
+    private loadCrashPoints(extent?: ol.Extent) {
+        // todo: zoom to extent of points on initial load
+        let queryExtent = extent === undefined
+            ? this.state.crashQueryRef.extent
+            : { minX: extent[0], minY: extent[1], maxX: extent[2], maxY: extent[3] };
+        this.crashService
+            .getCrashFeatures(this.state.crashQueryRef.queryToken, queryExtent)
+            .subscribe((featureSet: EventFeatureSet) => {
+                this.state.crashFeatureSet = featureSet;
+            });
     }
 
 

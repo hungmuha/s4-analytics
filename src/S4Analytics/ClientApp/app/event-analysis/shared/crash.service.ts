@@ -17,7 +17,6 @@ export class CrashService {
     ): Observable<QueryRef> {
         let url = 'api/crash/query';
         let scopeAndQuery = { ...dateTimeScope, ...placeScope, ...query };
-        console.log(scopeAndQuery);
         return this.http
             .post(url, scopeAndQuery)
             .map(response => response.json() as QueryRef);
@@ -25,12 +24,12 @@ export class CrashService {
 
     getCrashFeatures(
         queryToken: string,
-        extent: ol.Extent
+        extent: ol.Extent | { minX: number, minY: number, maxX: number, maxY: number }
     ): Observable<EventFeatureSet> {
-        let minX = extent[0];
-        let minY = extent[1];
-        let maxX = extent[2];
-        let maxY = extent[3];
+        let minX: number, minY: number, maxX: number, maxY: number;
+        [minX, minY, maxX, maxY] = Array.isArray(extent) // is of type ol.Extent?
+            ? extent
+            : [extent.minX, extent.minY, extent.maxX, extent.maxY];
         let url = `api/crash/${queryToken}/feature?minX=${minX}&minY=${minY}&maxX=${maxX}&maxY=${maxY}`;
         return this.http
             .get(url)
