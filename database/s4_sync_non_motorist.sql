@@ -194,7 +194,7 @@ BEGIN
             FROM v_flat_non_motorist@s4_warehouse vnm
             WHERE vnm.hsmv_rpt_nbr = ws.hsmv_rpt_nbr;
 
-            IF MOD(v_i, 1000) = 0 THEN
+            IF MOD(v_i, 10000) = 0 THEN
                 COMMIT;
             END IF;
         END LOOP;

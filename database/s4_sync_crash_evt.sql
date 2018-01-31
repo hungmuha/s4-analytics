@@ -396,7 +396,7 @@ BEGIN
             FROM v_flat_crash_evt@s4_warehouse vce
             WHERE vce.hsmv_rpt_nbr = ws.hsmv_rpt_nbr;
 
-            IF MOD(v_i, 1000) = 0 THEN
+            IF MOD(v_i, 10000) = 0 THEN
                 COMMIT;
             END IF;
         END LOOP;

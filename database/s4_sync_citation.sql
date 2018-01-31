@@ -316,7 +316,7 @@ BEGIN
             FROM v_flat_citation@s4_warehouse vc
             WHERE vc.citation_nbr = ws.citation_nbr;
 
-            IF MOD(v_i, 1000) = 0 THEN
+            IF MOD(v_i, 10000) = 0 THEN
                 COMMIT;
             END IF;
         END LOOP;
