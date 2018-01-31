@@ -286,7 +286,33 @@ export class EventAnalysisComponent {
     }
 
     extentChange(extent: ol.Extent) {
-        if (this.state.crashQueryRef !== undefined) {
+        // do nothing if there is no query ref (the page may still be loading)
+        if (this.state.crashQueryRef === undefined) {
+            return;
+        }
+
+        // are we zooming outside of the latest query extent?
+        let queryExtent = this.state.crashFeatureSet.queryExtent;
+        let outsideQueryExtent =
+            extent[0] < queryExtent.minX ||
+            extent[1] < queryExtent.minY ||
+            extent[2] > queryExtent.maxX ||
+            extent[3] > queryExtent.maxY;
+
+        // are we zooming inside the (sampled) feature extent?
+        let isSample = this.state.crashFeatureSet.isSample;
+        let insideSampledFeatureExtent = false;
+        if (isSample) {
+            let featureExtent = this.state.crashFeatureSet.featureExtent;
+            insideSampledFeatureExtent =
+                extent[0] > featureExtent.minX ||
+                extent[1] > featureExtent.minY ||
+                extent[2] < featureExtent.maxX ||
+                extent[3] < featureExtent.maxY;
+        }
+
+        // if either case is true, reload points
+        if (outsideQueryExtent || insideSampledFeatureExtent) {
             this.loadCrashPoints(extent);
         }
     }
@@ -327,14 +353,25 @@ export class EventAnalysisComponent {
     }
 
     private loadCrashPoints(extent?: ol.Extent) {
-        // todo: zoom to extent of points on initial load
-        let queryExtent = extent === undefined
-            ? this.state.crashQueryRef.extent
-            : { minX: extent[0], minY: extent[1], maxX: extent[2], maxY: extent[3] };
+        let fitToFeatures: boolean;
+        let queryExtent: { minX: number, minY: number, maxX: number, maxY: number };
+
+        if (extent === undefined) {
+            // new query was issued
+            fitToFeatures = true;
+            queryExtent = this.state.crashQueryRef.extent;
+        }
+        else {
+            // map extent was changed
+            fitToFeatures = false;
+            queryExtent = { minX: extent[0], minY: extent[1], maxX: extent[2], maxY: extent[3] };
+        }
+
         this.crashService
             .getCrashFeatures(this.state.crashQueryRef.queryToken, queryExtent)
             .subscribe((featureSet: EventFeatureSet) => {
                 this.state.crashFeatureSet = featureSet;
+                // todo: zoom to extent of points on initial load
             });
     }
 
