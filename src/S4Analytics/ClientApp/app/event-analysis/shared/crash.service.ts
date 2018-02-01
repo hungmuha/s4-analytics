@@ -27,7 +27,7 @@ export class CrashService {
         extent: ol.Extent | { minX: number, minY: number, maxX: number, maxY: number }
     ): Observable<EventFeatureSet> {
         let minX: number, minY: number, maxX: number, maxY: number;
-        [minX, minY, maxX, maxY] = Array.isArray(extent) // is of type ol.Extent?
+        [minX, minY, maxX, maxY] = Array.isArray(extent)
             ? extent
             : [extent.minX, extent.minY, extent.maxX, extent.maxY];
         let url = `api/crash/${queryToken}/feature?minX=${minX}&minY=${minY}&maxX=${maxX}&maxY=${maxY}`;
@@ -44,7 +44,7 @@ export class CrashService {
         let url = `api/crash/${queryToken}?fromIndex=${fromIndex}&toIndex=${toIndex}`;
         return this.http
             .get(url)
-            .map(response => response.json() as Array<CrashResult>);
-        // todo: convert date values
+            .map(response => response.json() as Array<CrashResult>)
+            .map(results => results.map(result => new CrashResult(result)));
     }
 }

@@ -16,13 +16,6 @@ namespace S4Analytics.Controllers
             _crashRepo = repo;
         }
 
-        [HttpPost("query-test")]
-        public IActionResult CreateQueryTest([FromBody] CrashQuery query)
-        {
-            (var queryText, var parameters) = _crashRepo.CreateQueryTest(query);
-            return Content(queryText + "\r\n\r\n" + parameters.ToPrettyJson());
-        }
-
         [HttpPost("query")]
         public IActionResult CreateQuery([FromBody] CrashQuery query)
         {
@@ -58,19 +51,6 @@ namespace S4Analytics.Controllers
             if (!extent.IsValid) { return BadRequest(); }
 
             var results = _crashRepo.GetCrashFeatureCollection(queryToken, extent);
-            return new ObjectResult(results);
-        }
-
-        // TODO: parameterize the specific attribute(s) to summarize
-        [HttpGet("{queryToken}/summary/crash-severity")]
-        public IActionResult GetCrashSeveritySummary(string queryToken)
-        {
-            var queryExists = _crashRepo.QueryExists(queryToken);
-            if (!queryExists)
-            {
-                return NotFound();
-            }
-            var results = _crashRepo.GetCrashSeveritySummary(queryToken);
             return new ObjectResult(results);
         }
     }

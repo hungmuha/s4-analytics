@@ -44,13 +44,6 @@ namespace S4Analytics.Models
             }
         }
 
-        public (string, Dictionary<string, object>) CreateQueryTest(CrashQuery query)
-        {
-            var queryToken = Guid.NewGuid().ToString();
-            var preparedQuery = PrepareCrashQuery(query);
-            return (preparedQuery.queryText, preparedQuery.queryParameters);
-        }
-
         public CrashQueryRef CreateQuery(CrashQuery query) {
 
             // create new token and save prepared query to session
@@ -87,7 +80,7 @@ namespace S4Analytics.Models
                     totalCount = Convert.ToInt32(result.TOTAL_CT),
                     mappedCount = Convert.ToInt32(result.MAPPED_CT),
                     unmappedCount = Convert.ToInt32(result.UNMAPPED_CT),
-                    extent = new Extent(result.MIN_X, result.MIN_Y, result.MAX_X, result.MAX_Y)
+                    extent = result.MIN_X != null ? new Extent(result.MIN_X, result.MIN_Y, result.MAX_X, result.MAX_Y) : null
                 };
             }
 
@@ -186,33 +179,6 @@ namespace S4Analytics.Models
             }
         }
 
-        public IEnumerable<AttributeSummary> GetCrashSeveritySummary(string queryToken)
-        {
-            // TODO: move to a new repository for summary results?
-            // TODO: parameterize the specific attribute(s) to summarize
-            // TODO: store natural sort order in database
-
-            var preparedQuery = _httpContextAccessor.HttpContext.Session.Get<PreparedQuery>(queryToken);
-
-            var queryText = $@"SELECT attribute, COUNT(*) AS count
-                FROM (
-                  SELECT
-                    key_crash_sev_dtl AS sort_order,
-                    crash_sev_dtl AS attribute
-                  FROM crash_evt ce1
-                  INNER JOIN ({preparedQuery.queryText}) pq
-                    ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
-                )
-                GROUP BY attribute, sort_order
-                ORDER BY sort_order";
-
-            using (var conn = new OracleConnection(_connStr))
-            {
-                var summary = conn.Query<AttributeSummary>(queryText, preparedQuery.DynamicParams);
-                return summary;
-            }
-        }
-
         public EventFeatureSet GetCrashFeatureCollection(string queryToken, Extent mapExtent)
         {
             const int maxPoints = 100000;
@@ -229,13 +195,13 @@ namespace S4Analytics.Models
             });
 
             var countQueryText = $@"SELECT
-                ct,
+                total_ct,
                 sdo_geom.sdo_min_mbr_ordinate(mbr, 1) AS min_x,
                 sdo_geom.sdo_min_mbr_ordinate(mbr, 2) AS min_y,
                 sdo_geom.sdo_max_mbr_ordinate(mbr, 1) AS max_x,
                 sdo_geom.sdo_max_mbr_ordinate(mbr, 2) AS max_y
                 FROM (
-                    SELECT COUNT(*) AS ct, sdo_aggr_mbr(geocode_pt_3857) AS mbr
+                    SELECT COUNT(*) AS total_ct, sdo_aggr_mbr(geocode_pt_3857) AS mbr
                     FROM crash_evt ce1
                     INNER JOIN ({preparedQuery.queryText}) pq
                       ON pq.hsmv_rpt_nbr = ce1.hsmv_rpt_nbr
@@ -243,21 +209,21 @@ namespace S4Analytics.Models
                     AND ce1.geocode_pt_3857.sdo_point.y BETWEEN :mapExtentMinY AND :mapExtentMaxY
                 ) x";
 
-            int featureCount;
+            int totalFeatureCount;
             Extent featureExtent;
 
             using (var conn = new OracleConnection(_connStr))
             {
                 var stats = conn.QuerySingleOrDefault(countQueryText, dynamicParams);
-                featureCount = Convert.ToInt32(stats.CT);
-                featureExtent = new Extent(stats.MIN_X, stats.MIN_Y, stats.MAX_X, stats.MAX_Y);
+                totalFeatureCount = Convert.ToInt32(stats.TOTAL_CT);
+                featureExtent = stats.MIN_X != null ? new Extent(stats.MIN_X, stats.MIN_Y, stats.MAX_X, stats.MAX_Y) : null;
             }
 
             string queryText;
-            var useSample = featureCount > maxPoints;
+            var useSample = totalFeatureCount > maxPoints;
             if (useSample)
             {
-                var samplePercentage = 100.0 * maxPoints / featureCount;
+                var samplePercentage = 100.0 * maxPoints / totalFeatureCount;
                 queryText = $@"WITH sample_evts AS (
                   SELECT hsmv_rpt_nbr
                   FROM crash_evt
@@ -300,13 +266,13 @@ namespace S4Analytics.Models
 
             var eventFeatureColl = new EventFeatureSet()
             {
+                queryToken = queryToken,
                 eventType = "crash",
                 isSample = useSample,
-                featureCount = featureCount,
+                featureCount = totalFeatureCount,
                 featureExtent = featureExtent,
-                queryExtent = mapExtent,
-                sampleSize = useSample ? features.Count : 0,
-                sampleMultiplier = useSample ? (double)featureCount / features.Count : 0.0,
+                sampleSize = useSample ? (int?)features.Count : null,
+                sampleMultiplier = useSample ? (double?)((double)totalFeatureCount / features.Count) : null,
                 featureCollection = new FeatureCollection(features)
             };
 
