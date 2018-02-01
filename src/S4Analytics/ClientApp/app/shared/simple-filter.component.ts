@@ -1,34 +1,30 @@
 ﻿import { Component, Input } from '@angular/core';
-import {  CheckableSettings, TreeItemLookup } from '@progress/kendo-angular-treeview';
+import { TreeItemLookup } from '@progress/kendo-angular-treeview';
 import * as _ from 'lodash';
 import { AbstractValueAccessor, makeProvider } from './abstract-value-accessor';
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 
 @Component({
     selector: `simple-filter`,
     providers: [makeProvider(SimpleFilterComponent)],
-    template:
-    `<filter-card [selectedText]="selectedText">
+    template:`
+    <filter-card [selectedText]="selectedText">
         <ng-container card-header>{{filterName}}</ng-container>
         <div card-block>
-            <kendo-treeview
-                *ngIf="hasAnyOrAll"
-                [nodes]="[{key: -1, name: 'Any'}]"
+           <kendo-treeview
+                [nodes]= "test"
                 textField="name"
-                [kendoTreeViewCheckable]="checkableSettings"
-                [isChecked]="isAllItemChecked"
-                (checkedChange)="onAllValueChanged($event)">
-            </kendo-treeview>
-            <kendo-treeview
-                [nodes]= "nodes"
-                textField="name"
-                kendoTreeViewExpandable
-                [kendoTreeViewCheckable]="{ mode: checkMode }"
-                [isChecked]="isItemChecked"
-                (checkedChange)="onValueChanged($event)">
+                [children]="children"
+                [hasChildren]="hasChildren"
+                customCheck
+                [(checkedKeys)]="checkedKeys"
+                (checkedChange)="onValueChanged($event)"
+                >
              </kendo-treeview>
         </div>
-      </filter-card>`
 
+      </filter-card>`
 })
 
 export class SimpleFilterComponent extends AbstractValueAccessor {
@@ -37,75 +33,65 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
     @Input() nodes: any[];
     @Input() anyOrAllText?: string;
 
+    public test:any[] = [
+        {
+            name: 'Any', items: [
+                { key: 'OffRoadAll', name: 'Off Road - All' },
+                { key: 'OffRoadRollover', name: 'Off Road - Rollover' },
+                { key: 'OffRoadCollision', name: 'Off Road - Collision Fixed Object' },
+                { key: 'CrossedIntoTraffic', name: 'Crossed into Oncoming Traffic' },
+                { key: 'Sideswipe', name: 'Sideswipe' }
+            ]
+        }];
+
+    public checkedKeys: string[] = [];
     public selectedText: string[] = [];
-    public checkedKeys: any[] = [];
-    defaultCheckMode: 'multiple' | 'single' = 'single';
-    collapseFilter1: boolean = false;
 
-    public isItemChecked = (item: string) => {
-        console.log('isItemChecked');
-        return this.multipleSelect
-            ? _.includes(this.selectedItemValue, item) ? 'checked' : 'none'
-            : this.selectedItemValue === item ? 'checked' : 'none';
+    ////private _formattedNodes: any[];
+    ////get formattedNodes(): any[] {
+    ////    console.log('get formatted nodes');
+    ////    this.initFormattedNodes();
+    ////    return this._formattedNodes;
+    ////}
+
+
+    ////initFormattedNodes(): void {
+
+    ////        console.log('init formatted nodes');
+    ////        this._formattedNodes = [];
+    ////        this._formattedNodes.push({ name: 'Any', items: this.nodes });
+    ////}
+
+    private get selectedItemValue(): any | any[] {
+        // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
+
+        return this.value;
     }
 
-    public isAllItemChecked = (item: string) => {
-        console.log('isAllItemChecked');
-        return this.multipleSelect
-            ? _.includes(this.selectedItemValue, item) ? 'checked' : 'none'
-            : this.selectedItemValue === item ? 'checked' : 'none';
+    private set selectedItemValue(value: any | any[]) {
+        // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
+        this.value = value;
     }
 
-    // WIP: won't allow this to be checked when done this way...
-  //  public anyOrAll:any[] = [{ key: -1, name: (this.anyOrAllText) ? this.anyOrAllText: '' }];
-
-    public get checkableSettings(): CheckableSettings {
-        return {
-            checkChildren: false,
-            checkParents: false,
-            mode: this.checkMode ? this.checkMode : this.defaultCheckMode
-        };
-    }
+    public children = (dataItem: any): Observable<any[]> => of(dataItem.items);
+    public hasChildren = (dataItem: any): boolean => !!dataItem.items;
 
     get multipleSelect(): boolean {
         return this.checkMode === 'multiple';
     }
 
-    get hasAnyOrAll(): boolean {
-        return !!this.anyOrAllText
-            && this.anyOrAllText.length > 0;
-    }
+    // WIP: won't allow this to be checked when done this way...
+    //  public anyOrAll:any[] = [{ key: -1, name: (this.anyOrAllText) ? this.anyOrAllText: '' }];
 
-    get isAnyOrAllChecked(): boolean {
-        console.log('isAllOrAllChecked');
-        return !this.selectedItemValue
-            || this.selectedItemValue.length === 0;
-    }
 
-    private get selectedItemValue(): any | any[] {
-        console.log('get selectedItemValue');
-        // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
-        return this.value;
-    }
 
-    private set selectedItemValue(value: any | any[]) {
-        console.log('set selectedItemValue');
-        // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
-        this.value = value;
-    }
 
-    public onAllValueChanged(itemLookup: TreeItemLookup): void {
-        console.log('onallvaluechanged');
-        // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
-        if (this.multipleSelect && this.value === undefined) {
-            this.value = [];
-        }
 
-         this.toggleAnyOrAll(itemLookup.item.dataItem.key);
-    }
 
+
+    // x
     public onValueChanged(itemLookup: TreeItemLookup): void {
-        console.log('onvaluechanged');
+        console.log('onvaluechanged ' + itemLookup.item.dataItem.key);
         // `this.value` maps to `ngModel` and is provided by the `AbstractValueAccessor` base class.
         if (this.multipleSelect && this.value === undefined) {
             this.value = [];
@@ -115,19 +101,15 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
         this.toggle(itemLookup.item.dataItem.key);
     }
 
-    // todo need to clear checkboxes
-    toggleAnyOrAll(itemLookup: TreeItemLookup) {
-        console.log('toggleall');
-        if (!this.isAnyOrAllChecked) {
-            this.selectedItemValue = this.multipleSelect ? [] : undefined;
-            // clear other check boxes
-
-        }
-    }
-
-    // todo: need to uncheck ALL
     toggle(selectedItem: any) {
-        console.log('toggle');
+        if (!selectedItem)
+        {
+            // Any/All has been selected
+            this.selectedItemValue = this.multipleSelect ? [] : undefined;
+            this.selectedText = ['All'];  // need to use AnyOrAllText
+            return;
+        }
+
         if (this.multipleSelect) {
             let newItemValues = [...this.selectedItemValue]; // create a copy
             let isChecked = _.includes(newItemValues, selectedItem);
@@ -140,44 +122,52 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
             // to allow change detection to work as expected, we must overwrite
             // selectedItemValues rather than remove or insert an item directly
             this.selectedItemValue = newItemValues;
+            this.selectedText = [];
+
+            console.log('newItemValues = ' + newItemValues);
+
+            for (let key of newItemValues) {
+                let item = _.find(this.nodes[0].items, function (o) { return o.key === key; });
+                if (item) {
+                    this.selectedText.push(item.name);
+                }
+            }
+
+            console.log('selectedText = ' + this.selectedText);
         }
         else {
             this.selectedItemValue = selectedItem;
+            this.selectedText = [selectedItem];
         }
 
-        this.selectedText = [];
 
-        for (let key of this.value) {
-            let item = _.find(this.nodes, function (o) { return o.key === key; });
-            if (item) {
-                this.selectedText.push(item.name);
-            }
-        }
     }
 
-    updateSelectedText() {
-        for (let key of this.value) {
-            let item = _.find(this.nodes, function (o) { return o.key === key; });
-            if (item) {
-                this.selectedText.push(item.name);
-            }
-        }
-    }
+    //  x
+    //updateSelectedText() {
+    //    for (let key of this.value) {
+    //        let item = _.find(this.nodes, function (o) { return o.key === key; });
+    //        if (item) {
+    //            this.selectedText.push(item.name);
+    //        }
+    //    }
+    //}
 
-    toggleMoreFilterOptions() {
-        this.collapseFilter1 = !this.collapseFilter1;
+    // x
+    //toggleMoreFilterOptions() {
+    //    this.collapseFilter1 = !this.collapseFilter1;
 
-        if (!this.collapseFilter1) {
-            this.selectedText = [];
-            if (this.value && this.value.length > 0) {
-                for (let key of this.value) {
-                    let item = _.find(this.nodes, function (o) { return o.key === key; });
-                    if (item) {
-                        this.selectedText.push(item.name);
-                    }
-                }
-            }
-        }
-    }
+    //    if (!this.collapseFilter1) {
+    //        this.selectedText = [];
+    //        if (this.value && this.value.length > 0) {
+    //            for (let key of this.value) {
+    //                let item = _.find(this.nodes, function (o) { return o.key === key; });
+    //                if (item) {
+    //                    this.selectedText.push(item.name);
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 
 }

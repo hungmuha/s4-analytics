@@ -21,9 +21,6 @@
         <div class="card-block">
             <ng-content select="[card-block]"></ng-content>
         </div>
-        <div class="card-footer d-flex justify-content-between" *ngIf="!hideFooter">
-            <ng-content select="[card-footer]"></ng-content>
-        </div>
     </div>`
 })
 export class FilterCardComponent {
