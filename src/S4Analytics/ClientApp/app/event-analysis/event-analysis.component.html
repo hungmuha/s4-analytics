@@ -1,70 +1,78 @@
 ﻿<section class="event-analysis-grid">
     <div class="filters">
         <!-- Form Type -->
-       <simple-filter filterName="Form Type"
+       <!--<simple-filter filterName="Form Type"
                        [nodes]="allFormType"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.formType"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.formType"></simple-filter>-->
         <!-- Codeable -->
-        <simple-filter filterName="DHSMV Codeable Crashes"
+        <!--<simple-filter filterName="DHSMV Codeable Crashes"
                        [nodes]="allCodeableOnly"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.codeableOnly"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.codeableOnly"></simple-filter>-->
         <!-- Crash Severity -->
-        <simple-filter filterName="Crash Severity"
+        <!--<simple-filter filterName="Crash Severity"
                        [nodes]="allCrashSeverity"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.crashSeverity"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.crashSeverity"></simple-filter>-->
         <!-- Crash Type -->
-        <simple-filter filterName="Crash Type"
+        <!--<simple-filter filterName="Crash Type"
                        [nodes]="allCrashTypes"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.crashTypeSimple"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.crashTypeSimple"></simple-filter>-->
         <!-- Road System Identifier -->
-        <simple-filter filterName="Road System Identifier"
+        <!--<simple-filter filterName="Road System Identifier"
                        [nodes]="allRdSysIds"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.roadSystemIdentifier"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.roadSystemIdentifier"></simple-filter>-->
         <!-- Weather Condition -->
-        <simple-filter filterName="Weather Condition"
+        <!--<simple-filter filterName="Weather Condition"
                        [nodes]="allWeatherCondition"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.weatherCondition"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.weatherCondition"></simple-filter>-->
         <!--Cmv Involved -->
-        <simple-filter filterName="CMV Involved"
+        <!--<simple-filter filterName="CMV Involved"
                        [nodes]="allCmvInvolved"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.cmvInvolved"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.cmvInvolved"></simple-filter>-->
         <!--Bike/Ped Involved -->
-        <simple-filter filterName="Bike/Pedestrian Involved"
+        <!--<simple-filter filterName="Bike/Pedestrian Involved"
                        [nodes]="allBikePedInvolved"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="bikePedInvolved"></simple-filter>
+                       [(ngModel)]="bikePedInvolved"></simple-filter>-->
         <!--Intersection Related -->
-        <simple-filter filterName="Intersection Related"
+        <!--<simple-filter filterName="Intersection Related"
                        [nodes]="allIntersectionRelated"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.intersectionRelated"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.intersectionRelated"></simple-filter>-->
         <!--Day or Night -->
-        <simple-filter filterName="Day or Night"
+        <!--<simple-filter filterName="Day or Night"
                        [nodes]="allDayOrNight"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="this.state.crashQuery.dayOrNight"></simple-filter>
+                       [(ngModel)]="this.state.crashQuery.dayOrNight"></simple-filter>-->
         <!--Lane Departure -->
         <simple-filter filterName="Lane Departure"
                        [nodes]="allLaneDeparture"
                        checkMode="multiple"
                        anyOrAllText="All"
-                       [(ngModel)]="laneDeparture"></simple-filter>
+                       [(ngModel)]="laneDeparture"
+                       ngDefaultControl></simple-filter>
+        <!--<kendo-treeview [nodes]="allLaneDeparture"
+                         textField="name"
+                         [children]="children"
+                         [hasChildren]="hasChildren"
+                         customCheck>
+        </kendo-treeview>-->
+
         <!--Reporting Agency -->
         <!--<simple-filter filterName="Reporting Agency"
                    [nodes]="reportingAgency
@@ -72,14 +80,17 @@
                    anyOrAllText="All"
                    [(ngModel)]="this.state.crashQuery.reportingAgency"></simple-filter>-->
         <!-- Behavioral Factors need to map ngModel -->
-        <simple-filter filterName="Behavioral Factors"
+        <!--<simple-filter filterName="Behavioral Factors"
                        [nodes]="allBehavioralFactors"
                        checkMode="multiple"
                        anyOrAllText="Any"
-                       [(ngModel)]="behavioralFactors"></simple-filter>
+                       [(ngModel)]="behavioralFactors"></simple-filter>-->
 
     </div>
-    <div class="filter-controls">filter controls</div>
+    <div class="filter-controls">
+        <button type="button" class="btn btn-outline-dark" (click)="applyFilters()">Apply</button>
+        <button type="button" class="btn btn-outline-dark" >Clear</button>
+    </div>
     <div class="scope">
         Date/Time
         <a href="javascript:void(0)" (click)="dateTimeModal.open()">

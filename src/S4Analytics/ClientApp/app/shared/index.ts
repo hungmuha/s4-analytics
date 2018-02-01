@@ -14,6 +14,7 @@ export * from './simple-filter.component';
 export * from './server-time-resolve.service';
 export * from './server-date-resolve.service';
 export * from './lookup.service';
+//export * from './check.directive';
 
 import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
 import { OptionsResolveService } from './options-resolve.service';
@@ -30,6 +31,7 @@ import { CardComponent } from './card.component';
 import { FilterCardComponent } from './filter-card.component';
 import { LookupService } from './lookup.service';
 import { SimpleFilterComponent } from './simple-filter.component';
+import { CustomCheckDirective } from './check.directive';
 
 export const PROVIDERS: any[] = [
     KeepSilverlightAliveService,
@@ -43,6 +45,7 @@ export const PROVIDERS: any[] = [
     ServerTimeResolveService,
     ServerDateResolveService,
     LookupService
+
 ];
 
 export const COMPONENTS: any[] = [
@@ -51,5 +54,6 @@ export const COMPONENTS: any[] = [
     ButtonGroupComponent,
     CardComponent,
     FilterCardComponent,
-    SimpleFilterComponent
+    SimpleFilterComponent,
+    CustomCheckDirective
 ];

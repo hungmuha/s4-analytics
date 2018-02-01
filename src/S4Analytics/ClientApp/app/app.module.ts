@@ -11,6 +11,7 @@ import { LoginComponent } from './login.component';
 import { IndexComponent } from './index.component';
 import { Html5ConduitComponent } from './html5-conduit.component';
 
+
 @NgModule({
     imports: [
         RouterModule.forRoot(routes),
@@ -25,6 +26,7 @@ import { Html5ConduitComponent } from './html5-conduit.component';
         IndexComponent,
         LoginComponent,
         Html5ConduitComponent
+
     ],
     providers: [],
     bootstrap: [AppComponent]
