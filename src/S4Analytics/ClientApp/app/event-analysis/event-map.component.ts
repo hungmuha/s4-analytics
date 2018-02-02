@@ -41,6 +41,7 @@ export class EventMapComponent implements OnInit {
     private olExtent: ol.Extent;
     private baseMapLayer: ol.layer.Tile;
     private crashClusterLayer: ol.layer.Vector;
+    private crashQueryToken: string;
 
     constructor(
         private element: ElementRef,
@@ -102,6 +103,9 @@ export class EventMapComponent implements OnInit {
     }
 
     private drawCrashFeatures() {
+        // do nothing if there are no features (page may still be loading)
+        if (this.crashFeatureSet == undefined) { return; }
+
         // create layer if it doesn't exist
         if (this.crashClusterLayer === undefined) {
             this.crashClusterLayer = new ol.layer.Vector();
@@ -112,9 +116,7 @@ export class EventMapComponent implements OnInit {
         let clusterSource = new ol.source.Cluster({
             distance: 100,
             source: new ol.source.Vector({
-                features: this.crashFeatureSet !== undefined
-                    ? (new ol.format.GeoJSON()).readFeatures(this.crashFeatureSet.featureCollection)
-                    : []
+                features: (new ol.format.GeoJSON()).readFeatures(this.crashFeatureSet.featureCollection)
             })
         });
         this.crashClusterLayer.setSource(clusterSource);
@@ -150,6 +152,20 @@ export class EventMapComponent implements OnInit {
             return style;
         };
         this.crashClusterLayer.setStyle(clusterStyle);
+
+        if (this.crashFeatureSet.queryToken !== this.crashQueryToken &&
+            this.crashFeatureSet.featureExtent !== undefined) {
+            // fit view to features
+            let extent: ol.Extent = [
+                this.crashFeatureSet.featureExtent.minX,
+                this.crashFeatureSet.featureExtent.minY,
+                this.crashFeatureSet.featureExtent.maxX,
+                this.crashFeatureSet.featureExtent.maxY
+            ];
+            this.olView.fit(extent);
+            // remember the token
+            this.crashQueryToken = this.crashFeatureSet.queryToken;
+        }
     }
 
     @HostListener('window:resize', [])

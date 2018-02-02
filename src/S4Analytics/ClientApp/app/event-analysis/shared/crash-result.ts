@@ -58,4 +58,12 @@
     injuryIncapacitatingCount: number;
     injuryFatal30Count: number;
     injuryFatalNonTrafficCount: number;
+
+    constructor(result: CrashResult) {
+        // merge data from the api
+        Object.assign(this, result);
+        // rest api represents dates as strings at runtime; convert
+        this.crashDate = new Date(this.crashDate);
+        this.crashTime = new Date(this.crashTime);
+    }
 }
