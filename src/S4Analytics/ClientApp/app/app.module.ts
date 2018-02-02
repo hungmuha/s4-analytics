@@ -26,7 +26,6 @@ import { Html5ConduitComponent } from './html5-conduit.component';
         IndexComponent,
         LoginComponent,
         Html5ConduitComponent
-
     ],
     providers: [],
     bootstrap: [AppComponent]

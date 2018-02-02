@@ -14,7 +14,6 @@ export * from './simple-filter.component';
 export * from './server-time-resolve.service';
 export * from './server-date-resolve.service';
 export * from './lookup.service';
-//export * from './check.directive';
 
 import { KeepSilverlightAliveService } from './keep-silverlight-alive.service';
 import { OptionsResolveService } from './options-resolve.service';
@@ -45,7 +44,6 @@ export const PROVIDERS: any[] = [
     ServerTimeResolveService,
     ServerDateResolveService,
     LookupService
-
 ];
 
 export const COMPONENTS: any[] = [
