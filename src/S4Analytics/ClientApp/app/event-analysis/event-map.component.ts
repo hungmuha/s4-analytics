@@ -34,6 +34,9 @@ export class EventMapComponent implements OnInit {
 
     @Output() extentChange = new EventEmitter<ol.Extent>();
 
+    featureDisplayModes: FeatureDisplayMode[] = ['Cluster', 'Point', 'Auto'];
+    baseMapTypes: BaseMapType[] = ['Cartographic', 'Aerial'];
+
     private _crashFeatureSet: EventFeatureSet;
     private _featureDisplayMode: FeatureDisplayMode = 'Cluster';
     private _baseMapType: BaseMapType = 'Cartographic';
@@ -45,12 +48,9 @@ export class EventMapComponent implements OnInit {
     private crashPointLayer: ol.layer.Vector;
     private crashQueryToken: string;
 
-    featureDisplayModes: FeatureDisplayMode[] = ['Cluster', 'Point', 'Auto'];
-    baseMapTypes: BaseMapType[] = ['Cartographic', 'Aerial'];
-
     get featureDisplayMode(): FeatureDisplayMode {
         return this._featureDisplayMode;
-    };
+    }
     set featureDisplayMode(value: FeatureDisplayMode) {
         this._featureDisplayMode = value;
         this.drawCrashFeatures();
