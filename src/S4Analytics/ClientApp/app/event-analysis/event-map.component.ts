@@ -4,70 +4,62 @@ import * as _ from 'lodash';
 import { EventFeatureSet } from './shared';
 import { AppStateService } from '../shared';
 
-export enum BaseMapType {
-    OpenStreetMap,
-    ArcGisWorldImagery,
-    ArcGisStreets
-}
-
 @Component({
     selector: 'event-map',
-    template: `<div id="{{mapId}}">
+    template: `<div>
                     <button-group [multipleSelect]="false"
-                              [items]="['Cartographic', 'Aerial']"
-                              [(ngModel)]="baseMapTypeSwitcher"
-                              ></button-group>
-               </div>`
+                            [items]="['Cluster', 'Point']"
+                            [(ngModel)]="featureDisplayMode"></button-group>
+                    <button-group [multipleSelect]="false"
+                            [items]="['Cartographic', 'Aerial']"
+                            [(ngModel)]="baseMapType"></button-group>
+                </div>
+                <div id="{{mapId}}"></div>`
 })
 export class EventMapComponent implements OnInit {
     @Input() mapId: string;
+
     @Input() set crashFeatureSet(value: EventFeatureSet) {
         this._crashFeatureSet = value;
         if (this.olMap !== undefined) {
             this.drawCrashFeatures();
         }
     }
-
     get crashFeatureSet(): EventFeatureSet {
         return this._crashFeatureSet;
     }
-    @Input() set baseMapType(value: BaseMapType) {
-        this._baseMapType = value;
-        if (this.olMap !== undefined) {
-            this.drawBaseMap();
-        }
-    }
-    get baseMapType(): BaseMapType {
-        return this._baseMapType;
-    }
+
     @Output() extentChange = new EventEmitter<ol.Extent>();
 
-
-    set baseMapTypeSwitcher(value: string) {
-        switch (value) {
-            case 'Cartographic':
-                this._baseMapType = BaseMapType.ArcGisStreets;
-                break;
-            case 'Aerial':
-                this._baseMapType = BaseMapType.ArcGisWorldImagery;
-                break;
-            default:
-                this._baseMapType = BaseMapType.OpenStreetMap;
-                break;
-        }
-
-        this.drawBaseMap();
-
-    }
-
-    private _baseMapType: BaseMapType = BaseMapType.OpenStreetMap;
     private _crashFeatureSet: EventFeatureSet;
+    private _featureDisplayMode: 'Cluster' | 'Point' | 'Auto' = 'Cluster';
+    private _baseMapType: 'Cartographic' | 'Aerial' = 'Cartographic';
     private olMap: ol.Map;
     private olView: ol.View;
     private olExtent: ol.Extent;
     private baseMapLayer: ol.layer.Tile;
     private crashClusterLayer: ol.layer.Vector;
+    private crashPointLayer: ol.layer.Vector;
     private crashQueryToken: string;
+
+    featureDisplayModes: string[] = ['Cluster', 'Point', 'Auto'];
+    baseMapTypes: string[] = ['Cartographic', 'Aerial'];
+
+    get featureDisplayMode(): 'Cluster' | 'Point' | 'Auto' {
+        return this._featureDisplayMode;
+    };
+    set featureDisplayMode(value: 'Cluster' | 'Point' | 'Auto') {
+        this._featureDisplayMode = value;
+        this.drawCrashFeatures();
+    }
+
+    get baseMapType(): 'Cartographic' | 'Aerial' {
+        return this._baseMapType;
+    }
+    set baseMapType(value: 'Cartographic' | 'Aerial') {
+        this._baseMapType = value;
+        this.drawBaseMap();
+    }
 
     constructor(
         private element: ElementRef,
@@ -126,37 +118,73 @@ export class EventMapComponent implements OnInit {
 
         // set layer source
         switch (this.baseMapType) {
-            case BaseMapType.OpenStreetMap:
-                source = new ol.source.OSM();
-                break;
-            case BaseMapType.ArcGisStreets:
-                source = new ol.source.TileArcGISRest({
-                    url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
-                });
-                break;
-            case BaseMapType.ArcGisWorldImagery:
+            case 'Aerial':
                 source = new ol.source.TileArcGISRest({
                     url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
                 });
                 break;
+            case 'Cartographic':
             default:
-                source = new ol.source.OSM();
+                source = new ol.source.TileArcGISRest({
+                    url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
+                });
                 break;
         }
         this.baseMapLayer.setSource(source);
-
-
     }
 
     private drawCrashFeatures() {
         // do nothing if there are no features (page may still be loading)
         if (this.crashFeatureSet == undefined) { return; }
 
+        switch (this.featureDisplayMode) {
+            case 'Point':
+                if (this.crashClusterLayer !== undefined) {
+                    this.crashClusterLayer.setVisible(false);
+                }
+                this.drawCrashPoints();
+                break;
+            case 'Cluster':
+                if (this.crashPointLayer !== undefined) {
+                    this.crashPointLayer.setVisible(false);
+                }
+                this.drawCrashClusters();
+                break;
+            case 'Auto':
+            default:
+                // todo: implement "auto-drill" mode
+                break;
+        }
+    }
+
+    private drawCrashPoints() {
+        // create layer if it doesn't exist
+        if (this.crashPointLayer === undefined) {
+            this.crashPointLayer = new ol.layer.Vector();
+            this.olMap.addLayer(this.crashPointLayer);
+        }
+
+        // set layer visible
+        this.crashPointLayer.setVisible(true);
+
+        // set layer source
+        let pointSource = new ol.source.Vector({
+            features: (new ol.format.GeoJSON()).readFeatures(this.crashFeatureSet.featureCollection)
+        });
+        this.crashPointLayer.setSource(pointSource);
+
+        this.fitToFeatures();
+    }
+
+    private drawCrashClusters() {
         // create layer if it doesn't exist
         if (this.crashClusterLayer === undefined) {
             this.crashClusterLayer = new ol.layer.Vector();
             this.olMap.addLayer(this.crashClusterLayer);
         }
+
+        // set layer visible
+        this.crashClusterLayer.setVisible(true);
 
         // set layer source
         let clusterSource = new ol.source.Cluster({
@@ -199,6 +227,10 @@ export class EventMapComponent implements OnInit {
         };
         this.crashClusterLayer.setStyle(clusterStyle);
 
+        this.fitToFeatures();
+    }
+
+    private fitToFeatures() {
         if (this.crashFeatureSet.queryToken !== this.crashQueryToken &&
             this.crashFeatureSet.featureExtent !== undefined) {
             // fit view to features
