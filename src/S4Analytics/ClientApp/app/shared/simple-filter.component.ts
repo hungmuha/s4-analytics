@@ -116,8 +116,4 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
 
 
     }
-<<<<<<< HEAD
 }
-=======
- }
->>>>>>> Added in very basic layer switcher. Filters are still in development
