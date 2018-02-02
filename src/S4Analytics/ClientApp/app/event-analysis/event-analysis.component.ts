@@ -20,7 +20,7 @@ export class EventAnalysisComponent {
     allCmvInvolved: [{ key: boolean, name: string }];
     allDayOrNight: [{ key: string, name: string }];
     allIntersectionRelated: [{ key: boolean, name: string }];
-    allLaneDeparture: [{ key: string, name: string }];
+    allLaneDeparture: [{ name: string, items: any[] }];
     allFormType: [{ key: string, name: string }];
     allCodeableOnly: [{ key: boolean, name: string }];
     allBikePedInvolved: [{ key: string, name: string }];
@@ -62,6 +62,11 @@ export class EventAnalysisComponent {
 
     applyPlaceScope(value: PlaceScope) {
         this.state.placeScope = value;
+        this.issueCrashQuery();
+    }
+
+    applyFilters() {
+        console.log('apply');
         this.issueCrashQuery();
     }
 
@@ -262,16 +267,20 @@ export class EventAnalysisComponent {
 
         // todo: make these string keys enums
         this.allBehavioralFactors = [
-                { key: 'Aggressive', name: 'Aggressive Driving' },
-                { key: 'Distracted', name: 'Distracted Driving'},
-                { key: 'Alcohol', name: 'Alcohol Involved'},
-                { key: 'Drugs', name: 'Drugs Involved' }];
+            { key: 'Aggressive', name: 'Aggressive Driving' },
+            { key: 'Distracted', name: 'Distracted Driving' },
+            { key: 'Alcohol', name: 'Alcohol Involved' },
+            { key: 'Drugs', name: 'Drugs Involved' }];
         this.allLaneDeparture = [
-            { key: 'OffRoadAll', name: 'Off Road - All' },
-            { key: 'OffRoadRollover', name: 'Off Road - Rollover' },
-            { key: 'OffRoadCollision', name: 'Off Road - Collision Fixed Object' },
-            { key: 'CrossedIntoTraffic', name: 'Crossed into Oncoming Traffic' },
-            { key: 'Sideswipe', name: 'Sideswipe' }];
+            {
+                name: 'Any', items: [
+                    { key: 'OffRoadAll', name: 'Off Road - All' },
+                    { key: 'OffRoadRollover', name: 'Off Road - Rollover' },
+                    { key: 'OffRoadCollision', name: 'Off Road - Collision Fixed Object' },
+                    { key: 'CrossedIntoTraffic', name: 'Crossed into Oncoming Traffic' },
+                    { key: 'Sideswipe', name: 'Sideswipe' }
+                ]
+            }];
         this.allCmvInvolved = [{ key: true, name: 'Yes' }, { key: false, name: 'No' }];
         this.allBikePedInvolved = [{ key: 'Bike', name: 'Bike Involved' }, { key: 'Ped', name: 'Pedestrian Involved' }];
         this.allDayOrNight = [{ key: 'Day', name: 'Day' }, { key: 'Night', name: 'Night' }];

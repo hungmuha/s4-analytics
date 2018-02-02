@@ -36,6 +36,7 @@
     border-bottom: solid 2px #eee;
     border-right: solid 2px #eee;
     padding: 5px;
+    overflow-y: scroll;
 }
 
 .event-analysis-grid > .filter-controls {

@@ -30,6 +30,7 @@ import { CardComponent } from './card.component';
 import { FilterCardComponent } from './filter-card.component';
 import { LookupService } from './lookup.service';
 import { SimpleFilterComponent } from './simple-filter.component';
+import { CustomCheckDirective } from './check.directive';
 
 export const PROVIDERS: any[] = [
     KeepSilverlightAliveService,
@@ -51,5 +52,6 @@ export const COMPONENTS: any[] = [
     ButtonGroupComponent,
     CardComponent,
     FilterCardComponent,
-    SimpleFilterComponent
+    SimpleFilterComponent,
+    CustomCheckDirective
 ];
