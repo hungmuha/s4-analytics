@@ -18,7 +18,7 @@ export class EventsByDayFormatter {
 
         let mt1 = moment(dt);
         let mt2 = mt1.clone().subtract(364, 'days'); // this is the only line that differs from the method below
-        let mts = this.points.length > 1 ? [mt2, mt1] : [mt1];
+        let mts = [mt2, mt1];
 
         let formattedText = '';
         for (let i = 0; i < this.points.length; i++) {
@@ -37,7 +37,7 @@ export class EventsByDayFormatter {
 
         let mt1 = moment(dt);
         let mt2 = moment([mt1.year() - 1, mt1.month(), mt1.date()]); // this is the only line that differs from the method above
-        let mts = this.points.length > 1 ? [mt2, mt1] : [mt1];
+        let mts = [mt2, mt1];
 
         let formattedText = '';
         for (let i = 0; i < this.points.length; i++) {
