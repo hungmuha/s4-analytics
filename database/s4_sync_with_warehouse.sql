@@ -38,3 +38,12 @@ BEGIN
     COMMIT;
 END;
 /
+
+CREATE OR REPLACE PROCEDURE s4_sync_with_warehouse_trailing (p_days INT DEFAULT NULL)
+AS
+    v_start_dt DATE;
+BEGIN
+    v_start_dt := TRUNC(SYSDATE - p_days);
+    s4_sync_with_warehouse(v_start_dt);
+END;
+/
