@@ -117,3 +117,4 @@ export class SimpleFilterComponent extends AbstractValueAccessor {
 
     }
 }
+
