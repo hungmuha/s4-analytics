@@ -4,6 +4,9 @@ import * as _ from 'lodash';
 import { EventFeatureSet } from './shared';
 import { AppStateService } from '../shared';
 
+type FeatureDisplayMode = 'Cluster' | 'Point' | 'Auto';
+type BaseMapType = 'Cartographic' | 'Aerial';
+
 @Component({
     selector: 'event-map',
     template: `<div>
@@ -32,8 +35,8 @@ export class EventMapComponent implements OnInit {
     @Output() extentChange = new EventEmitter<ol.Extent>();
 
     private _crashFeatureSet: EventFeatureSet;
-    private _featureDisplayMode: 'Cluster' | 'Point' | 'Auto' = 'Cluster';
-    private _baseMapType: 'Cartographic' | 'Aerial' = 'Cartographic';
+    private _featureDisplayMode: FeatureDisplayMode = 'Cluster';
+    private _baseMapType: BaseMapType = 'Cartographic';
     private olMap: ol.Map;
     private olView: ol.View;
     private olExtent: ol.Extent;
@@ -42,21 +45,21 @@ export class EventMapComponent implements OnInit {
     private crashPointLayer: ol.layer.Vector;
     private crashQueryToken: string;
 
-    featureDisplayModes: string[] = ['Cluster', 'Point', 'Auto'];
-    baseMapTypes: string[] = ['Cartographic', 'Aerial'];
+    featureDisplayModes: FeatureDisplayMode[] = ['Cluster', 'Point', 'Auto'];
+    baseMapTypes: BaseMapType[] = ['Cartographic', 'Aerial'];
 
-    get featureDisplayMode(): 'Cluster' | 'Point' | 'Auto' {
+    get featureDisplayMode(): FeatureDisplayMode {
         return this._featureDisplayMode;
     };
-    set featureDisplayMode(value: 'Cluster' | 'Point' | 'Auto') {
+    set featureDisplayMode(value: FeatureDisplayMode) {
         this._featureDisplayMode = value;
         this.drawCrashFeatures();
     }
 
-    get baseMapType(): 'Cartographic' | 'Aerial' {
+    get baseMapType(): BaseMapType {
         return this._baseMapType;
     }
-    set baseMapType(value: 'Cartographic' | 'Aerial') {
+    set baseMapType(value: BaseMapType) {
         this._baseMapType = value;
         this.drawBaseMap();
     }
