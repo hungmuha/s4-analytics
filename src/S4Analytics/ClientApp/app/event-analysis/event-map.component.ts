@@ -5,12 +5,19 @@ import { EventFeatureSet } from './shared';
 import { AppStateService } from '../shared';
 
 export enum BaseMapType {
-    OpenStreetMap
+    OpenStreetMap,
+    ArcGisWorldImagery,
+    ArcGisStreets
 }
 
 @Component({
     selector: 'event-map',
-    template: `<div id="{{mapId}}"></div>`
+    template: `<div id="{{mapId}}">
+                    <button-group [multipleSelect]="false"
+                              [items]="['Cartographic', 'Aerial']"
+                              [(ngModel)]="baseMapTypeSwitcher"
+                              ></button-group>
+               </div>`
 })
 export class EventMapComponent implements OnInit {
     @Input() mapId: string;
@@ -20,6 +27,7 @@ export class EventMapComponent implements OnInit {
             this.drawCrashFeatures();
         }
     }
+
     get crashFeatureSet(): EventFeatureSet {
         return this._crashFeatureSet;
     }
@@ -33,6 +41,24 @@ export class EventMapComponent implements OnInit {
         return this._baseMapType;
     }
     @Output() extentChange = new EventEmitter<ol.Extent>();
+
+
+    set baseMapTypeSwitcher(value: string) {
+        switch (value) {
+            case 'Cartographic':
+                this._baseMapType = BaseMapType.ArcGisStreets;
+                break;
+            case 'Aerial':
+                this._baseMapType = BaseMapType.ArcGisWorldImagery;
+                break;
+            default:
+                this._baseMapType = BaseMapType.OpenStreetMap;
+                break;
+        }
+
+        this.drawBaseMap();
+
+    }
 
     private _baseMapType: BaseMapType = BaseMapType.OpenStreetMap;
     private _crashFeatureSet: EventFeatureSet;
@@ -95,10 +121,30 @@ export class EventMapComponent implements OnInit {
             this.olMap.addLayer(this.baseMapLayer);
         }
 
+        let source: ol.source.Source;
+
         // set layer source
-        if (this.baseMapType === BaseMapType.OpenStreetMap) {
-            this.baseMapLayer.setSource(new ol.source.OSM());
+        switch (this.baseMapType) {
+            case BaseMapType.OpenStreetMap:
+                source = new ol.source.OSM();
+                break;
+            case BaseMapType.ArcGisStreets:
+                source = new ol.source.TileArcGISRest({
+                    url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
+                });
+                break;
+            case BaseMapType.ArcGisWorldImagery:
+                source = new ol.source.TileArcGISRest({
+                    url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
+                });
+                break;
+            default:
+                source = new ol.source.OSM();
+                break;
         }
+        this.baseMapLayer.setSource(source);
+
+
     }
 
     private drawCrashFeatures() {

@@ -1,11 +1,11 @@
 ﻿import { Directive, OnDestroy, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { TreeViewComponent, CheckableSettings, CheckedState, TreeItemLookup, TreeItem } from '@progress/kendo-angular-treeview';
+import { TreeViewComponent, CheckedState, TreeItemLookup, TreeItem } from '@progress/kendo-angular-treeview';
 
 import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
 
-const indexChecked = (keys:any[], index: string) => keys.filter(k => k === index).length > 0;
+const indexChecked = (keys: any[], index: string) => keys.filter(k => k === index).length > 0;
 
 /**
  * A directive which manages the node in-memory checked state of the TreeView.
@@ -40,7 +40,7 @@ export class CustomCheckDirective implements OnInit, OnDestroy {
                 .subscribe((e: TreeItemLookup) => this.checkMultiple(e))
         );
 
-        this.treeView.checkboxes = true; //Shows checkboxes
+        this.treeView.checkboxes = true; // Shows checkboxes
         this.treeView.isChecked = this.isItemChecked.bind(this);
     }
 
@@ -79,6 +79,7 @@ export class CustomCheckDirective implements OnInit, OnDestroy {
         } else {
             this.checkedKeys.push(key);
         }
+
         if (node.children) {
             node.children.map(n => this.checkNode(n, shouldCheck));
         }

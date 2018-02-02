@@ -273,7 +273,7 @@ export class EventAnalysisComponent {
             { key: 'Drugs', name: 'Drugs Involved' }];
         this.allLaneDeparture = [
             {
-                name: 'Any', items:[
+                name: 'Any', items: [
                     { key: 'OffRoadAll', name: 'Off Road - All' },
                     { key: 'OffRoadRollover', name: 'Off Road - Rollover' },
                     { key: 'OffRoadCollision', name: 'Off Road - Collision Fixed Object' },
