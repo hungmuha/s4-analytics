@@ -70,7 +70,7 @@ export class CustomCheckDirective implements OnInit, OnDestroy {
 
         const isChecked = idx > -1;
         const shouldCheck = check === undefined ? !isChecked : check;
-        const isKeyPresent = key !== undefined && key !== null;
+        const isKeyPresent = key !== undefined && key !== undefined;
 
         if (!isKeyPresent || (isChecked && check)) { return; }
 
